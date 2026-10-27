@@ -1,6 +1,6 @@
 {
   "name": "@poetics/adapter-react",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Poetics adapter that detects React components, hooks and functions in .ts and .tsx files.",
   "license": "MIT",
   "type": "module",
