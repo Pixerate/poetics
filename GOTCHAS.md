@@ -147,12 +147,8 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 - **See:** [docs/decisions/0004-provisional-hashes.md](docs/decisions/0004-provisional-hashes.md)
 - **Note:** `01M5YKKDBGV4R0MAVRD0TWAXVZ`
 
-## Releases
+## Resolved and superseded
 
-### Nothing is published to npm
-
-- **Cause:** Every package is `"private": true` until a maintainer sets up the `@poetics` scope and trusted publishing.
-- **Fix:** Follow the one-time setup in `docs/ci-and-releases.md`, then remove `"private": true`.
-- **Applies to:** `.github/workflows/release.yml`, `docs/ci-and-releases.md`
-- **See:** [docs/ci-and-releases.md](docs/ci-and-releases.md)
-- **Note:** `01M5YKKDBHB74W1K94RSHWGRXK`
+| Note | Status |
+| --- | --- |
+| Nothing is published to npm (`01M5YKKDBHB74W1K94RSHWGRXK`) | Resolved by [docs/ci-and-releases.md](docs/ci-and-releases.md) |

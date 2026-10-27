@@ -13,7 +13,11 @@
       "docs/ci-and-releases.md"
     ]
   },
-  "status": "active",
+  "status": "resolved",
+  "resolvedBy": {
+    "kind": "doc",
+    "ref": "docs/ci-and-releases.md"
+  },
   "actor": {
     "kind": "agent",
     "tool": "claude-code",

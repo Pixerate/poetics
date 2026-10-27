@@ -1,7 +1,6 @@
 {
   "name": "@poetics/store",
   "version": "0.1.0",
-  "private": true,
   "description": "Reads and validates the .poetics/ JSON store and maintains the local SQLite index.",
   "license": "MIT",
   "type": "module",
