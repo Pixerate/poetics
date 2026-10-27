@@ -20,6 +20,9 @@ updates:
       # TypeScript 7 drops the compiler API that svelte-check and ts-morph need (ADR 0003).
       - dependency-name: typescript
         update-types: [version-update:semver-major]
+      # Node types must match the runtime major (engines, .nvmrc, CI): Node 24.
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
     directory: /

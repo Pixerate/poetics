@@ -173,3 +173,16 @@ describe("package.json scripts", () => {
     expect(pkg.scripts["preflight"]).toBeDefined();
   });
 });
+
+describe("Node version alignment", () => {
+  it("keeps @types/node on the same major as engines and .nvmrc", async () => {
+    const pkg = JSON.parse(await readFile(join(REPO_ROOT, "package.json"), "utf8")) as {
+      engines: { node: string };
+      devDependencies: Record<string, string>;
+    };
+    const major = (range: string) => Number(/(\d+)/.exec(range)?.[1]);
+    const runtime = major(pkg.engines.node);
+    expect(major(pkg.devDependencies["@types/node"]!)).toBe(runtime);
+    expect(major(await readFile(join(REPO_ROOT, ".nvmrc"), "utf8"))).toBe(runtime);
+  });
+});

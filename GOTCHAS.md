@@ -34,6 +34,17 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 - **Applies to:** `pnpm check`, `sv check`, `evals/fixtures/svelte-app/package.json`
 - **Note:** `01M5YKKDB7ZEAE3KHNYQYCNDRZ`
 
+### `@types/node` must stay on the Node runtime's major
+
+*Invariant.*
+
+- **Cause:** Dependabot proposes major updates to `@types/node` (it bumped 24 to 26). Types from a newer major let code type-check against Node APIs that do not exist on the Node 24 runtime the repo targets.
+- **Fix:** Keep `@types/node` on the same major as `engines.node` and `.nvmrc`. Dependabot ignores its major updates; bump all three together when moving to a new Node major.
+- **Applies to:** `@types/node@^24`, `node@>=24.15`, `package.json`, `.nvmrc`, `.github/dependabot.yml`
+- **Caught by:** test `scripts/scripts.test.ts` (keeps @types/node on the same major as engines and .nvmrc)
+- **See:** [github-pr #2](https://github.com/Pixerate/poetics/pull/2)
+- **Note:** `01M5YNW98CNNKNCWQQT77SECD3`
+
 ## Node, type stripping and modules
 
 ### Workspace imports resolve to `dist/` and fail before a build
