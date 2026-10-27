@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "`use` followed by a capital letter, per the Rules of Hooks.",
   "tests": [
     {
       "file": "packages/adapter-react/src/index.test.ts",

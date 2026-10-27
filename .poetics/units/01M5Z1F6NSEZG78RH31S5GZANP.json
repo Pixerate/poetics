@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "Files that differ between `base` and the working tree, including untracked files, with renames detected. `base` is resolved to its merge base with HEAD so a branch is compared with where it forked.",
   "tests": [
     {
       "file": "scripts/lib/change.test.ts",

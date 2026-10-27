@@ -1,0 +1,23 @@
+{
+  "name": "@poetics/site",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "GitHub Pages demo: Poetics run against its own codebase.",
+  "scripts": {
+    "data": "node --conditions=poetics-source ../scripts/export-site-data.ts",
+    "dev": "pnpm data && vite",
+    "build": "pnpm data && vite build",
+    "preview": "vite preview",
+    "check": "sv check"
+  },
+  "devDependencies": {
+    "@poetics/core": "workspace:*",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "sv": "^1.1.1",
+    "svelte": "^5.57.3",
+    "svelte-check": "^4.7.7",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5"
+  }
+}

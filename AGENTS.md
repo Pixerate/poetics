@@ -49,7 +49,8 @@ Whenever a change is big (a new feature, a refactor across packages, anything
 rendered) run it in a real browser as well as the unit tests:
 
 ```bash
-pnpm --filter @poetics-fixtures/svelte-app dev
+pnpm site:dev                                    # the demo site
+pnpm --filter @poetics-fixtures/svelte-app dev   # the Svelte fixture
 ```
 
 Open the URL, exercise what changed, and check the console for errors and

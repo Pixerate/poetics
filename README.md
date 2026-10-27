@@ -19,6 +19,10 @@ An agent-first TypeScript framework for React and Svelte codebases.
 A developer or agent supplies the idea and the procedure. Poetics is the machine
 that records how each piece of code was made, by whom, and why.
 
+**[See it running on its own codebase →](https://pixerate.github.io/poetics/)**
+Every function and type in this repository, with its history, rationale,
+tests and gotchas, generated from `.poetics/` on each push.
+
 ## Why
 
 Coding agents forget between sessions, spend context finding things, and follow
@@ -108,6 +112,7 @@ the build. See [Getting started](docs/getting-started.md) for every command.
 - [Developer documentation](docs/README.md): architecture, data model, testing,
   CI and releases
 - [`AGENTS.md`](AGENTS.md): rules for agents and humans, including how to commit
+- [Demo site](https://pixerate.github.io/poetics/) ([how it's built](docs/demo.md))
 - [`GOTCHAS.md`](GOTCHAS.md): known pitfalls and workarounds, generated from anchored notes in `.poetics/notes/`
 - [Decision records](docs/decisions/README.md)
 

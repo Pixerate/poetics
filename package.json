@@ -27,7 +27,10 @@
     "preflight": "pnpm typecheck && pnpm check && pnpm test && pnpm validate && pnpm gotchas --check && pnpm poetics:check && pnpm poetics:coverage && pnpm build",
     "gotchas": "node --conditions=poetics-source scripts/gotchas.ts",
     "poetics:check": "node --conditions=poetics-source scripts/check.ts",
-    "poetics:coverage": "node --conditions=poetics-source scripts/coverage.ts"
+    "poetics:coverage": "node --conditions=poetics-source scripts/coverage.ts",
+    "site:dev": "pnpm --filter @poetics/site dev",
+    "site:build": "pnpm --filter @poetics/site build",
+    "site:data": "node --conditions=poetics-source scripts/export-site-data.ts"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^1.0.1",

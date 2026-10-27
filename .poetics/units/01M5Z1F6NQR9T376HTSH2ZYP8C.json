@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "File contents at a ref, or undefined if the file did not exist there.",
   "tests": [
     {
       "file": "scripts/lib/change.test.ts",

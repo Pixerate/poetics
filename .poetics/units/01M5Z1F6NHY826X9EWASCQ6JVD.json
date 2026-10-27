@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "Every tracked-shape declaration in scope.",
   "tests": [
     {
       "file": "scripts/lib/declarations.test.ts",

@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "Best-effort Svelte major for one component: `$props()` means 5; `export let` or `createEventDispatcher` means 4. Mixed codebases are expected.",
   "tests": [
     {
       "file": "packages/adapter-svelte/src/index.test.ts",

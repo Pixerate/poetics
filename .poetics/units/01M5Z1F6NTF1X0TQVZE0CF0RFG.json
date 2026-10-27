@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "Converts a POSIX glob to an anchored regular expression.",
   "tests": [
     {
       "file": "scripts/lib/glob.test.ts",

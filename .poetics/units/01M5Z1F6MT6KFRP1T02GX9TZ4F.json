@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "The component name Svelte tooling uses: the file's basename.",
   "tests": [
     {
       "file": "packages/adapter-svelte/src/index.test.ts",

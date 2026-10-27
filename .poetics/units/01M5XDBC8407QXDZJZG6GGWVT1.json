@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "A JSON file read from the store: a unit file or a note file.",
   "tests": [
     {
       "file": "packages/store/src/json-store.test.ts",

@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "Indexes svelte2tsx output with the shared TypeScript checker, mapping spans back to the `.svelte` file.",
   "tests": [
     {
       "file": "packages/adapter-svelte/src/index.test.ts",

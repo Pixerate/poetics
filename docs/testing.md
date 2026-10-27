@@ -47,6 +47,10 @@ fixture apps, and later the Storybook addon and editor panels. Unit tests
 do not catch a component that compiles but renders wrong.
 
 ```bash
+pnpm site:dev
+```
+
+```bash
 pnpm --filter @poetics-fixtures/svelte-app dev
 ```
 

@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "Exported function, interface and type-alias declarations in one source text.",
   "tests": [
     {
       "file": "scripts/lib/declarations.test.ts",

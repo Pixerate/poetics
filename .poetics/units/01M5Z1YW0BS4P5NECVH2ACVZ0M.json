@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1YW0BS4P5NECVH2ACVZ0M",
+  "kind": "function",
+  "framework": "none",
+  "name": "inlineCode",
+  "location": {
+    "file": "site/src/lib/query.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:b6f013e377e910afc944ddac5a68910552890392",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Renders backtick spans in notes and rationale as code instead of literal backticks.",
+      "links": [
+        {
+          "kind": "doc",
+          "ref": "docs/demo.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Splits text on backtick pairs so `inline code` in notes and rationale renders as code.",
+  "tests": [
+    {
+      "file": "site/src/lib/query.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1YW0CTYAP6NXTPPAQR1S0",
+  "kind": "type",
+  "framework": "none",
+  "name": "Ratio",
+  "location": {
+    "file": "site/src/lib/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:3d4e31ed4e70e477a419adbb738ebf45428f5512",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Coverage ratio with its counts, mirrored from the coverage report.",
+      "links": [
+        {
+          "kind": "doc",
+          "ref": "docs/demo.md"
+        }
+      ]
+    }
+  ],
+  "tests": []
+}

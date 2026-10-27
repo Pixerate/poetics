@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "PascalCase names are component candidates; the adapter still checks they return JSX.",
   "tests": [
     {
       "file": "packages/adapter-react/src/index.test.ts",

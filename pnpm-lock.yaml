@@ -263,6 +263,30 @@ importers:
         specifier: ^8.20.0
         version: 8.20.0
 
+  site:
+    devDependencies:
+      '@poetics/core':
+        specifier: workspace:*
+        version: link:../packages/core
+      '@sveltejs/vite-plugin-svelte':
+        specifier: ^7.3.1
+        version: 7.3.1(svelte@5.57.3)(vite@8.3.5(@types/node@24.19.2)(yaml@2.9.1))
+      sv:
+        specifier: ^1.1.1
+        version: 1.1.1
+      svelte:
+        specifier: ^5.57.3
+        version: 5.57.3
+      svelte-check:
+        specifier: ^4.7.7
+        version: 4.7.7(picomatch@4.0.7)(svelte@5.57.3)(typescript@6.0.3)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vite:
+        specifier: ^8.3.5
+        version: 8.3.5(@types/node@24.19.2)(yaml@2.9.1)
+
 packages:
 
   '@changesets/apply-release-plan@8.1.1':

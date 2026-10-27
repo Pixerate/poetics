@@ -75,7 +75,7 @@ overall figures; the command exits 1 when one is missed, which fails CI.
 This repository uses:
 
 ```json
-"coverage": { "tracked": 1, "fresh": 1, "linkedRationale": 1, "tested": 0.75, "documented": 0.25 }
+"coverage": { "tracked": 1, "fresh": 1, "linkedRationale": 1, "tested": 0.75, "documented": 0.4 }
 ```
 
 Raise `tested` and `documented` as they improve; never lower a threshold to

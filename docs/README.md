@@ -13,6 +13,7 @@ area you are changing.
 | [Change checks and coverage](checks-and-coverage.md) | `poetics:check` on every change, `poetics:coverage` for the codebase |
 | [Testing](testing.md) | Unit tests, browser checks, fixtures and evals |
 | [CI and releases](ci-and-releases.md) | GitHub Actions, Changesets, Dependabot, npm trusted publishing |
+| [Demo site](demo.md) | The GitHub Pages site that shows Poetics on its own codebase |
 | [Plan](plan.md) | The full design, kept current |
 | [Decisions](decisions/README.md) | Why things are the way they are |
 

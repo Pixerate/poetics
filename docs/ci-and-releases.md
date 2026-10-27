@@ -6,6 +6,7 @@
 | --- | --- | --- |
 | [`ci.yml`](../.github/workflows/ci.yml) | Pull requests, pushes to `main` | Install, typecheck, `sv check`, unit tests, `pnpm validate`, `pnpm gotchas --check`, the Poetics change check (pull requests, against the base branch), Poetics coverage, build |
 | [`release.yml`](../.github/workflows/release.yml) | Pushes to `main` | Changesets: open/update the "Version Packages" PR, or publish to npm |
+| [`pages.yml`](../.github/workflows/pages.yml) | Pushes to `main`, manual | Builds the demo site from this repo's `.poetics/` and deploys it to GitHub Pages |
 | [`dependabot.yml`](../.github/dependabot.yml) | Weekly (Monday) | Grouped npm and GitHub Actions updates |
 
 All jobs run on Node 24 with pnpm from `packageManager`. Workflows start with
@@ -56,7 +57,9 @@ publish rights, and provenance is attached automatically. There is no
    environment to the `publish` job, enter it there too.
 5. **Allow Actions to create pull requests:** repository Settings → Actions →
    General → "Allow GitHub Actions to create and approve pull requests".
-6. Optionally, create a `release` environment with required reviewers and set
+6. **Enable GitHub Pages** for the demo: Settings → Pages → Source: GitHub
+   Actions.
+7. Optionally, create a `release` environment with required reviewers and set
    `environment: release` on the `publish` job to gate every publish.
 
 ## Dependabot

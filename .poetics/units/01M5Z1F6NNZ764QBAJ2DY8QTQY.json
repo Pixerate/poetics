@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "Matches declarations to units by file and name (lineage keeps these current across renames and moves). Only units whose file satisfies `covers` can be orphaned: pass the set of files that were scanned, so units for files outside the scan (or that the parser cannot read yet, like .svelte) are left alone.",
   "tests": [
     {
       "file": "scripts/lib/drift.test.ts",

@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "`.svelte` files are components; `.svelte.ts` / `.svelte.js` are rune modules indexed as TypeScript.",
   "tests": [
     {
       "file": "packages/adapter-svelte/src/index.test.ts",

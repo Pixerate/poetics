@@ -38,6 +38,12 @@ pnpm install
 | `pnpm provisional-hash <file> <start> <end>` | Provisional hash of a declaration's lines |
 | `pnpm changeset` | Describe a change for the next release |
 
+Run the demo site (Poetics on this repository) in a browser:
+
+```bash
+pnpm site:dev
+```
+
 Run the Svelte fixture in a browser:
 
 ```bash
@@ -64,6 +70,7 @@ packages/
   adapter-svelte/         Svelte detection (stub)
   mcp/                    MCP tool definitions and server (stub)
   cli/                    poetics CLI (help works; commands stubbed)
+site/                     the GitHub Pages demo (Svelte)
 evals/
   tasks/                  benchmark tasks
   fixtures/               sample React and Svelte apps

@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1YVZZ12PMB9DH2NXKBZFT",
+  "kind": "function",
+  "framework": "none",
+  "name": "parseDecision",
+  "location": {
+    "file": "scripts/lib/site-data.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:fbb0e4b3d0bde7f7f714f0c8d43d2613726d8afb",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Reads decision titles and statuses for the demo's list, skipping the template.",
+      "links": [
+        {
+          "kind": "doc",
+          "ref": "docs/demo.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Title and status from a decision record's first heading and `- Status:` line.",
+  "tests": [
+    {
+      "file": "scripts/lib/site-data.test.ts",
+      "via": "static"
+    }
+  ]
+}

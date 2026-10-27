@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "Detects components, hooks and functions in `.ts` and `.tsx` via ts-morph.",
   "tests": [
     {
       "file": "packages/adapter-react/src/index.test.ts",

@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1YW0J4X5G0AS6KTYG2S4X",
+  "kind": "type",
+  "framework": "none",
+  "name": "SiteData",
+  "location": {
+    "file": "site/src/lib/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:51307a26f758104a64e4c791da95ad1a7cb44305",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The contract between the export script and the demo site.",
+      "links": [
+        {
+          "kind": "doc",
+          "ref": "docs/demo.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Everything the demo renders, exported from the repository at build time.",
+  "tests": []
+}

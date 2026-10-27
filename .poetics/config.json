@@ -8,7 +8,8 @@
   ],
   "include": [
     "packages/*/src/**/*.ts",
-    "scripts/**/*.ts"
+    "scripts/**/*.ts",
+    "site/src/**/*.{ts,svelte}"
   ],
   "exclude": [
     "**/*.test.ts",
@@ -30,7 +31,7 @@
       "fresh": 1,
       "linkedRationale": 1,
       "tested": 0.75,
-      "documented": 0.25
+      "documented": 0.4
     }
   }
 }

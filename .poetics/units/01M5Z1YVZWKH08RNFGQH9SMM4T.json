@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1YVZWKH08RNFGQH9SMM4T",
+  "kind": "function",
+  "framework": "none",
+  "name": "exportSiteData",
+  "location": {
+    "file": "scripts/export-site-data.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:25b39ed2bb1037fd578203abd5bd37103f62a29a",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Writes the demo's data.json from this repository's store, code, coverage and decision records, so the Pages site always shows the committed state.",
+      "links": [
+        {
+          "kind": "doc",
+          "ref": "docs/demo.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/export-site-data.test.ts",
+      "via": "static"
+    }
+  ]
+}

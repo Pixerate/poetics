@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1YW0HGXXTDF5BKG50KQCS",
+  "kind": "type",
+  "framework": "none",
+  "name": "SiteDecision",
+  "location": {
+    "file": "site/src/lib/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:b8e0a088fdbf7ff5db646d7f92b6ec81428ffd77",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A decision record's number, title, status and path.",
+      "links": [
+        {
+          "kind": "doc",
+          "ref": "docs/demo.md"
+        }
+      ]
+    }
+  ],
+  "tests": []
+}

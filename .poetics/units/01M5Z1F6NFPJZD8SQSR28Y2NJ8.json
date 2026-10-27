@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "Repo-relative files in scope, sorted. Files the parser cannot read yet (e.g. .svelte) are listed separately.",
   "tests": [
     {
       "file": "scripts/lib/declarations.test.ts",

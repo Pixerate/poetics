@@ -28,6 +28,7 @@
       ]
     }
   ],
+  "docs": "True when `path` (repo-relative, POSIX) matches any include and no exclude pattern.",
   "tests": [
     {
       "file": "scripts/lib/glob.test.ts",

@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1YW0G6EX3CYT5B1S0KWXK",
+  "kind": "type",
+  "framework": "none",
+  "name": "SiteUnit",
+  "location": {
+    "file": "site/src/lib/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:de942394b82e7e17a084c40912953e6cb210216d",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A stored unit plus its area and current source for display.",
+      "links": [
+        {
+          "kind": "doc",
+          "ref": "docs/demo.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A unit as the demo shows it: the stored record plus derived fields.",
+  "tests": []
+}
