@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC8CVGFP1W5GK6A1W70X",
+  "kind": "function",
+  "framework": "none",
+  "name": "declareLineage",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:253032f17d07d122815ca4e1571388dc16a0eb6a",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Typed stub from the seed plan (Metadata schema and storage); throws NotImplementedError until its phase lands.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#metadata-schema-and-storage"
+        }
+      ]
+    }
+  ],
+  "docs": "Records a rename, move, split or merge; rejected if the diff disagrees.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6BX1B52HMF6DM053F1",
+  "kind": "type",
+  "framework": "none",
+  "name": "Io",
+  "location": {
+    "file": "packages/cli/src/run.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:d0e0432966b3ed944a477caf971c7e1c7da19c99",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Developer workflow: CLI).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#cli"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    }
+  ]
+}

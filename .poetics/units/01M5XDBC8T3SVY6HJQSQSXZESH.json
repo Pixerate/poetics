@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC8T3SVY6HJQSQSXZESH",
+  "kind": "function",
+  "framework": "none",
+  "name": "reindex",
+  "location": {
+    "file": "scripts/reindex.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:5106c62862f9f62d1b7465a4f2d9f3d647cfda82",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed implementation from the plan (Building Poetics with Poetics); small enough to build and test on day one.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#outputs-before-tooling"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/scripts.test.ts",
+      "via": "static"
+    }
+  ]
+}

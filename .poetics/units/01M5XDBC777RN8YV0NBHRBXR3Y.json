@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC777RN8YV0NBHRBXR3Y",
+  "kind": "type",
+  "framework": "none",
+  "name": "LineageEntry",
+  "location": {
+    "file": "packages/core/src/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:078e11c3134404161c103202ec424c0535e5be73",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Core model).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "tests": []
+}

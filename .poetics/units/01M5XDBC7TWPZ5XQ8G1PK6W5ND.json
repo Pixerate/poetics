@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC7TWPZ5XQ8G1PK6W5ND",
+  "kind": "function",
+  "framework": "none",
+  "name": "checkStore",
+  "location": {
+    "file": "packages/store/src/check.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:83b5a341a49d6d52a8a727dcdfef446917080633",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed implementation from the plan (Metadata schema and storage); small enough to build and test on day one.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#metadata-schema-and-storage"
+        }
+      ]
+    }
+  ],
+  "docs": "Validates the whole store: config, lock and every unit file against their\nJSON Schemas, then the rules a schema cannot express (uid matches filename,\nversion chains are intact, references point at real units and files).",
+  "tests": [
+    {
+      "file": "packages/store/src/check.test.ts",
+      "via": "static"
+    }
+  ]
+}

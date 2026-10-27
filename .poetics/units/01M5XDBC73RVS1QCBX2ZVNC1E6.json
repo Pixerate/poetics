@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC73RVS1QCBX2ZVNC1E6",
+  "kind": "type",
+  "framework": "none",
+  "name": "Reference",
+  "location": {
+    "file": "packages/core/src/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:b6142b4629d29479aa39ca34b87a51528b12ecc8",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Core model).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "docs": "A typed reference: metadata stores references, never issue or error content.",
+  "tests": []
+}

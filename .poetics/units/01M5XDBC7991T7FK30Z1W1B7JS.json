@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC7991T7FK30Z1W1B7JS",
+  "kind": "type",
+  "framework": "none",
+  "name": "UnitLocation",
+  "location": {
+    "file": "packages/core/src/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:900ad22925b150aa9b434abdf6f8432b431f725b",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Core model).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "tests": []
+}

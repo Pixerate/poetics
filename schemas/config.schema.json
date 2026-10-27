@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://poetics.dev/schemas/config.schema.json",
+  "title": "Poetics config",
+  "description": "Repository configuration at .poetics/config.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "adapters", "include"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "adapters": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["react", "svelte", "typescript"] }
+    },
+    "include": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "exclude": { "type": "array", "items": { "type": "string" } },
+    "store": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layout": {
+          "enum": ["flat", "sharded"],
+          "description": "flat: units/<uid>.json. sharded: units/<first two uid chars>/<uid>.json, for very large monorepos."
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requireRationale": { "type": "boolean" },
+        "agentRationaleNeedsReview": { "type": "boolean" },
+        "humanSignOffOnAgentInterfaceChanges": { "type": "boolean" },
+        "allowProvisionalHashes": { "type": "boolean" }
+      }
+    }
+  }
+}

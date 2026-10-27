@@ -1,0 +1,17 @@
+{
+  "name": "@poetics-fixtures/react-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Sample React app used by Poetics evals and adapter tests.",
+  "scripts": {
+    "check": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "react": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^6.0.3"
+  }
+}

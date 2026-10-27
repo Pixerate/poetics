@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6M2EVHZX4AM6SBA65Z",
+  "kind": "function",
+  "framework": "none",
+  "name": "stronglyConnectedComponents",
+  "location": {
+    "file": "packages/core/src/graph.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:99f92322a0461a31a010dbeba59c3d8792815192",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Typed stub from the seed plan (Core model); throws NotImplementedError until its phase lands.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "docs": "Collapses cycles into strongly connected components so they hash together.",
+  "tests": [
+    {
+      "file": "packages/core/src/graph.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6YYK0M5RPS3YMPYSPM",
+  "kind": "type",
+  "framework": "none",
+  "name": "Hash",
+  "location": {
+    "file": "packages/core/src/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:c480f39351893cf6576a7a47532964a6b15e4e02",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Core model).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "docs": "`b3:<64 hex>` from the indexer, or `git:<40 hex>` — a provisional git blob\nhash of the unit's source text, written by hand before the indexer exists.",
+  "tests": []
+}

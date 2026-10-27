@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC7SX2FQPK8XCKRSMNY9",
+  "kind": "type",
+  "framework": "none",
+  "name": "CheckResult",
+  "location": {
+    "file": "packages/store/src/check.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:de661aaf6f4624e57f9bbfa7b68d1c675115d16c",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Metadata schema and storage).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#metadata-schema-and-storage"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/store/src/check.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6AE8RH4B1QP8FX3KSH",
+  "kind": "type",
+  "framework": "none",
+  "name": "CommandSpec",
+  "location": {
+    "file": "packages/cli/src/commands.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:9cef28a512c9d57439882c47ac62295350fabe71",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Developer workflow: CLI).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#cli"
+        }
+      ]
+    }
+  ],
+  "tests": []
+}

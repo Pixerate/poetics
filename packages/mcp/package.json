@@ -1,0 +1,39 @@
+{
+  "name": "@poetics/mcp",
+  "version": "0.0.0",
+  "private": true,
+  "description": "MCP server exposing Poetics context packs, search, impact and validated writes to coding agents.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pixerate/poetics.git",
+    "directory": "packages/mcp"
+  },
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "exports": {
+    ".": {
+      "poetics-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/.tsbuildinfo"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@poetics/core": "workspace:*",
+    "@poetics/store": "workspace:*"
+  }
+}

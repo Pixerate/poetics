@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC7KEMBRC2D3WH0MKN0V",
+  "kind": "type",
+  "framework": "none",
+  "name": "PoeticsServer",
+  "location": {
+    "file": "packages/mcp/src/server.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:abd8db03ec7778bca4b52f3cc8c56febee78faf4",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Agent interface: MCP server).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "tests": []
+}

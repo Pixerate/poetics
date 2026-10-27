@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC8J6X886TQM2BP73D20",
+  "kind": "function",
+  "framework": "none",
+  "name": "unitFilePath",
+  "location": {
+    "file": "packages/store/src/paths.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:f14ec81e3c92d8d73dee17638ea703687b85afa3",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed implementation from the plan (Metadata schema and storage); small enough to build and test on day one.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#metadata-schema-and-storage"
+        }
+      ]
+    }
+  ],
+  "docs": "Where a unit file lives. `flat` is `units/<uid>.json`; `sharded` splits by the\nfirst two uid characters, the way git stores objects, for very large repos.",
+  "tests": [
+    {
+      "file": "packages/store/src/paths.test.ts",
+      "via": "static"
+    }
+  ]
+}

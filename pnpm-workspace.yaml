@@ -1,0 +1,5 @@
+packages:
+  - packages/*
+  - evals/fixtures/*
+minimumReleaseAgeExclude:
+  - svelte@5.57.3

@@ -1,0 +1,38 @@
+{
+  "name": "poetics-monorepo",
+  "private": true,
+  "type": "module",
+  "description": "Agent-first versioning for every function, hook and component in React and Svelte codebases.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pixerate/poetics.git"
+  },
+  "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter \"./packages/*\" build",
+    "typecheck": "tsc -b && tsc -p tsconfig.test.json",
+    "check": "pnpm -r --if-present check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "validate": "node --conditions=poetics-source scripts/validate.ts",
+    "reindex": "node --conditions=poetics-source scripts/reindex.ts",
+    "mint-uid": "node --conditions=poetics-source scripts/mint-uid.ts",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "provisional-hash": "node --conditions=poetics-source scripts/provisional-hash.ts",
+    "preflight": "pnpm typecheck && pnpm check && pnpm test && pnpm validate && pnpm build"
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "^1.0.1",
+    "@changesets/cli": "^3.0.3",
+    "@poetics/core": "workspace:*",
+    "@poetics/store": "workspace:*",
+    "@types/node": "^24.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

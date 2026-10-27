@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC82Z5D9AJPVJQXX4EZW",
+  "kind": "function",
+  "framework": "none",
+  "name": "searchUnits",
+  "location": {
+    "file": "packages/store/src/index-db.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:0a43e884af923b87b1b638ccc81b9fa644058856",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Typed stub from the seed plan (Metadata schema and storage); throws NotImplementedError until its phase lands.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#metadata-schema-and-storage"
+        }
+      ]
+    }
+  ],
+  "docs": "Full-text search over names, docs and rationale. Planned on SQLite FTS5.",
+  "tests": [
+    {
+      "file": "packages/store/src/index-db.test.ts",
+      "via": "static"
+    }
+  ]
+}

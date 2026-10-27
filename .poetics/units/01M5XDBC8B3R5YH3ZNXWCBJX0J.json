@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC8B3R5YH3ZNXWCBJX0J",
+  "kind": "function",
+  "framework": "none",
+  "name": "recordRationale",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:8ac5c7b2e81be8b45803efb0c53398daae26418e",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Typed stub from the seed plan (Metadata schema and storage); throws NotImplementedError until its phase lands.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#metadata-schema-and-storage"
+        }
+      ]
+    }
+  ],
+  "docs": "Attaches rationale and links to the newest version of a unit.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6PPE2GXKT3R7QTKP9X",
+  "kind": "function",
+  "framework": "none",
+  "name": "impactOf",
+  "location": {
+    "file": "packages/core/src/graph.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:fa6e7d24427609f2a3f1f9104b60b40a1eb54aa1",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Typed stub from the seed plan (Core model); throws NotImplementedError until its phase lands.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "docs": "Units whose behaviour may have changed, ranked by distance from the edit.",
+  "tests": [
+    {
+      "file": "packages/core/src/graph.test.ts",
+      "via": "static"
+    }
+  ]
+}

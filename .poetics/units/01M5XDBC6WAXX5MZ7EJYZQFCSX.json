@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6WAXX5MZ7EJYZQFCSX",
+  "kind": "function",
+  "framework": "none",
+  "name": "closureHash",
+  "location": {
+    "file": "packages/core/src/hash.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:22657ee2bed0ac5d042b2333a224105d02d76327",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Typed stub from the seed plan (Core model); throws NotImplementedError until its phase lands.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "docs": "Merkle hash: hash(contentHash(u) + sorted closureHash(d) for each dependency d).",
+  "tests": [
+    {
+      "file": "packages/core/src/hash.test.ts",
+      "via": "static"
+    }
+  ]
+}

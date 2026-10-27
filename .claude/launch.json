@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "svelte-fixture",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@poetics-fixtures/svelte-app", "dev", "--port", "5179", "--strictPort"],
+      "port": 5179
+    }
+  ]
+}

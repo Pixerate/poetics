@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6DM1WMEXWCT6ZX2RG5",
+  "kind": "type",
+  "framework": "none",
+  "name": "UnitCandidate",
+  "location": {
+    "file": "packages/core/src/adapter.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:8072d8c33c1ad6eaed412729bab34c67d0563790",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Core model).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "docs": "A unit as an adapter sees it in source, before it has a uid.",
+  "tests": []
+}

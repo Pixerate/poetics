@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC7MTMYXSNCGX98TG71B",
+  "kind": "function",
+  "framework": "none",
+  "name": "createServer",
+  "location": {
+    "file": "packages/mcp/src/server.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:3a4f74023ad2e3f871b549028222e7d4b199c8b6",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Typed stub from the seed plan (Agent interface: MCP server); throws NotImplementedError until its phase lands.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "The stdio MCP server. Tool calls are routed here once the store and indexer land.",
+  "tests": []
+}

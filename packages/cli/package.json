@@ -1,0 +1,42 @@
+{
+  "name": "@poetics/cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The poetics command-line interface, with --json output for agents.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pixerate/poetics.git",
+    "directory": "packages/cli"
+  },
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "exports": {
+    ".": {
+      "poetics-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/.tsbuildinfo"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "bin": {
+    "poetics": "./dist/bin.js"
+  },
+  "dependencies": {
+    "@poetics/core": "workspace:*",
+    "@poetics/store": "workspace:*"
+  }
+}

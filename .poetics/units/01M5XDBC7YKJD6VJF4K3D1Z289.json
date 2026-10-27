@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC7YKJD6VJF4K3D1Z289",
+  "kind": "type",
+  "framework": "none",
+  "name": "UnitRow",
+  "location": {
+    "file": "packages/store/src/index-db.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:9e3461a07a4003c3405cfb103752dbe9f7cfafbb",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Metadata schema and storage).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#metadata-schema-and-storage"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/store/src/index-db.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6HVMJWYFKK186EKB7F",
+  "kind": "type",
+  "framework": "none",
+  "name": "CompositionGraph",
+  "location": {
+    "file": "packages/core/src/graph.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:3833385c2b7e68476f6a8ba1f522066c0ff028a4",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Core model).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "docs": "Units and the \"A uses B\" edges between them.",
+  "tests": [
+    {
+      "file": "packages/core/src/graph.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.svelte-kit/
+.vite/
+
+# Poetics derived data: rebuilt locally from .poetics/units
+.poetics/cache/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log

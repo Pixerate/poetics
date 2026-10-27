@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6FN0EZ8VSKNJTW4AK6",
+  "kind": "type",
+  "framework": "none",
+  "name": "FrameworkAdapter",
+  "location": {
+    "file": "packages/core/src/adapter.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:afb11718b4afab50823c6338920736f5fc3a5d5f",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Core model).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "docs": "Everything framework-specific sits behind this interface. An adapter answers\nfour questions: which nodes are units, what each unit's interface is, what it\nuses, and where its source span is.",
+  "tests": []
+}

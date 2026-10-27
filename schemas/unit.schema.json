@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://poetics.dev/schemas/unit.schema.json",
+  "title": "Poetics unit",
+  "description": "One tracked unit (function, hook, component or type) and its append-only version history. Stored as .poetics/units/<uid>.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["uid", "kind", "framework", "name", "location", "versions"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "uid": { "$ref": "#/$defs/uid" },
+    "kind": { "enum": ["function", "hook", "component", "type"] },
+    "framework": { "enum": ["react", "svelte", "none"] },
+    "name": { "type": "string", "minLength": 1 },
+    "owner": {
+      "$ref": "#/$defs/uid",
+      "description": "uid of the unit that owns this one, e.g. a Svelte component owning functions declared in its script."
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file"],
+      "properties": {
+        "file": { "type": "string", "minLength": 1, "description": "Repo-relative POSIX path." },
+        "export": { "type": "string", "description": "Export name when it differs from the unit name, e.g. \"default\"." }
+      }
+    },
+    "versions": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Append-only, oldest first.",
+      "items": { "$ref": "#/$defs/version" }
+    },
+    "lineage": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/lineage" }
+    },
+    "docs": { "type": "string" },
+    "tests": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/testLink" }
+    }
+  },
+  "$defs": {
+    "uid": {
+      "type": "string",
+      "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
+      "description": "ULID in Crockford base32."
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^(b3:[0-9a-f]{64}|git:[0-9a-f]{40})$",
+      "description": "b3: is a BLAKE3 hash computed by the indexer; git: is a provisional git blob hash of the unit's source text, written by hand."
+    },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contentHash", "change", "actor", "rationale"],
+      "properties": {
+        "contentHash": { "$ref": "#/$defs/hash" },
+        "interfaceHash": { "$ref": "#/$defs/hash" },
+        "closureHash": { "$ref": "#/$defs/hash" },
+        "provisional": {
+          "type": "boolean",
+          "description": "True when the hashes are git blob hashes rather than normalised syntax-tree hashes."
+        },
+        "parent": {
+          "anyOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }],
+          "description": "contentHash of the previous version, or null for the first."
+        },
+        "change": { "enum": ["created", "interface", "behaviour", "cosmetic"] },
+        "commit": {
+          "$ref": "#/$defs/commit",
+          "description": "Commit that introduced this version. When omitted, it is the commit that added this entry; the indexer backfills it."
+        },
+        "actor": { "$ref": "#/$defs/actor" },
+        "rationale": { "type": "string", "minLength": 1 },
+        "links": { "type": "array", "items": { "$ref": "#/$defs/link" } },
+        "deps": {
+          "type": "object",
+          "description": "uid -> contentHash of each dependency when this version was captured.",
+          "propertyNames": { "$ref": "#/$defs/uid" },
+          "additionalProperties": { "$ref": "#/$defs/hash" }
+        }
+      }
+    },
+    "actor": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": { "const": "human" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "tool", "reviewed"],
+          "properties": {
+            "kind": { "const": "agent" },
+            "tool": { "type": "string", "minLength": 1 },
+            "model": { "type": "string" },
+            "session": { "type": "string" },
+            "task": { "type": "string" },
+            "reviewed": { "type": "boolean" }
+          }
+        }
+      ]
+    },
+    "link": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "ref"],
+          "properties": {
+            "kind": { "type": "string", "minLength": 1, "description": "e.g. github-issue, github-pr, uchiage-task, decision, plan." },
+            "ref": { "type": "string", "minLength": 1 },
+            "url": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["rename", "move", "split", "merge"] },
+        "from": { "type": "string", "description": "Previous file path or name." },
+        "uids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/uid" },
+          "description": "Other units involved in a split or merge."
+        },
+        "commit": { "$ref": "#/$defs/commit" }
+      }
+    },
+    "testLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "via"],
+      "properties": {
+        "file": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "via": { "enum": ["static", "coverage", "explicit"] },
+        "verifiedAgainst": { "$ref": "#/$defs/hash" }
+      }
+    }
+  }
+}

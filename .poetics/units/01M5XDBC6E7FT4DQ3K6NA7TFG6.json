@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6E7FT4DQ3K6NA7TFG6",
+  "kind": "type",
+  "framework": "none",
+  "name": "CandidateEdge",
+  "location": {
+    "file": "packages/core/src/adapter.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:9830ae0a0041efba90b3c763664ad09e1183af6d",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Core model).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "docs": "Edges whose endpoints are still source locations; the core resolves them to uids.",
+  "tests": []
+}

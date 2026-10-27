@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC6N4YPDVMQM3397PTQ1",
+  "kind": "function",
+  "framework": "none",
+  "name": "computeClosureHashes",
+  "location": {
+    "file": "packages/core/src/graph.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:3b7972f9e13a024a618dc1a38eb72398347008b1",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Typed stub from the seed plan (Core model); throws NotImplementedError until its phase lands.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        }
+      ]
+    }
+  ],
+  "docs": "Bottom-up closure hashes for every unit, given each unit's own content hash.",
+  "tests": [
+    {
+      "file": "packages/core/src/graph.test.ts",
+      "via": "static"
+    }
+  ]
+}

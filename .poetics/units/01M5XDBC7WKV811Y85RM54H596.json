@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC7WKV811Y85RM54H596",
+  "kind": "type",
+  "framework": "none",
+  "name": "RebuildStats",
+  "location": {
+    "file": "packages/store/src/index-db.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:9bbb84e5b2303c10a5505f420de681973708b103",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed type from the plan (Metadata schema and storage).",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#metadata-schema-and-storage"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/store/src/index-db.test.ts",
+      "via": "static"
+    }
+  ]
+}

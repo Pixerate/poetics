@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://poetics.dev/schemas/lock.schema.json",
+  "title": "Poetics lock",
+  "description": "Optional closure pins for exported components at .poetics/poetics.lock (JSON).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "pins"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "pins": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "closureHash"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "package": { "type": "string" },
+          "packageVersion": { "type": "string" },
+          "closureHash": { "type": "string", "pattern": "^(b3:[0-9a-f]{64}|git:[0-9a-f]{40})$" }
+        }
+      }
+    }
+  }
+}

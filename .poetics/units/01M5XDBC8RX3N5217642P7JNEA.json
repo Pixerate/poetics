@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5XDBC8RX3N5217642P7JNEA",
+  "kind": "function",
+  "framework": "none",
+  "name": "mintUids",
+  "location": {
+    "file": "scripts/mint-uid.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:ef2c790303b9b04d1d21431c5411c07a22ccb5de",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Seed implementation from the plan (Building Poetics with Poetics); small enough to build and test on day one.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#outputs-before-tooling"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/scripts.test.ts",
+      "via": "static"
+    }
+  ]
+}
