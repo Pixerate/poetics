@@ -1,5 +1,16 @@
 # @poetics/store
 
+## 0.2.0
+
+### Minor Changes
+
+- [`02d4607`](https://github.com/Pixerate/poetics/commit/02d460760e1a6f155fa030346f6a2f6a3c0e362a) Thanks [@surrealroad](https://github.com/surrealroad)! - Add notes: gotchas, workarounds and invariants as anchored records in `.poetics/notes/`. `@poetics/core` adds the `Note` types; `@poetics/store` validates notes, warns when an anchored unit has changed since a note was confirmed, and renders `GOTCHAS.md` with `renderGotchas`; `@poetics/mcp` defines the `poetics_notes` and `poetics_record_note` tools.
+
+### Patch Changes
+
+- Updated dependencies [[`02d4607`](https://github.com/Pixerate/poetics/commit/02d460760e1a6f155fa030346f6a2f6a3c0e362a)]:
+  - @poetics/core@0.2.0
+
 ## 0.1.0
 
 ### Minor Changes

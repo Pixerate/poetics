@@ -1,5 +1,14 @@
 # @poetics/cli
 
+## 0.1.1
+
+### Patch Changes
+
+- [`c064012`](https://github.com/Pixerate/poetics/commit/c064012fedef2489dbdef3509f00f45f3d23fd98) Thanks [@surrealroad](https://github.com/surrealroad)! - List the planned `poetics coverage` command and `poetics verify --since <ref>` in the CLI's help.
+- Updated dependencies [[`02d4607`](https://github.com/Pixerate/poetics/commit/02d460760e1a6f155fa030346f6a2f6a3c0e362a)]:
+  - @poetics/core@0.2.0
+  - @poetics/store@0.2.0
+
 ## 0.1.0
 
 ### Minor Changes
