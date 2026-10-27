@@ -4,7 +4,7 @@
 
 | Workflow | Trigger | What it does |
 | --- | --- | --- |
-| [`ci.yml`](../.github/workflows/ci.yml) | Pull requests, pushes to `main` | Install, typecheck, `sv check`, unit tests, `pnpm validate`, build |
+| [`ci.yml`](../.github/workflows/ci.yml) | Pull requests, pushes to `main` | Install, typecheck, `sv check`, unit tests, `pnpm validate`, `pnpm gotchas --check`, the Poetics change check (pull requests, against the base branch), Poetics coverage, build |
 | [`release.yml`](../.github/workflows/release.yml) | Pushes to `main` | Changesets: open/update the "Version Packages" PR, or publish to npm |
 | [`dependabot.yml`](../.github/dependabot.yml) | Weekly (Monday) | Grouped npm and GitHub Actions updates |
 

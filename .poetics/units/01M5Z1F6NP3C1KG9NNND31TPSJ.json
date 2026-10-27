@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6NP3C1KG9NNND31TPSJ",
+  "kind": "function",
+  "framework": "none",
+  "name": "git",
+  "location": {
+    "file": "scripts/lib/git.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:466f26f6fe9890a2f812197e302cb2b99263602b",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Runs git in a repository and returns its output.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/lib/change.test.ts",
+      "via": "static"
+    }
+  ]
+}

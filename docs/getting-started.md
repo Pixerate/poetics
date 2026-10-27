@@ -29,6 +29,8 @@ pnpm install
 | `pnpm check` | `sv check` on the Svelte fixture, `tsc` on the React fixture |
 | `pnpm validate` | Validate `.poetics/` (units and notes) against `schemas/` and the store rules |
 | `pnpm gotchas [--check]` | Generate `GOTCHAS.md` from `.poetics/notes/`, or check it is up to date |
+| `pnpm poetics:check [--since <ref>] [--json]` | Check a change recorded itself in `.poetics/` (default: working tree vs `HEAD`) |
+| `pnpm poetics:coverage [--json]` | Coverage of the code by `.poetics/`, failing below `policy.coverage` |
 | `pnpm build` | Build every package to `dist/` |
 | `pnpm preflight` | Everything CI runs, in order |
 | `pnpm reindex [--fresh]` | Rebuild the local SQLite index at `.poetics/cache/index.db` |
@@ -54,7 +56,7 @@ GOTCHAS.md                pitfalls and workarounds (generated from notes)
   notes/                  one JSON file per gotcha, workaround or invariant
   cache/index.db          SQLite index (gitignored, rebuilt)
 schemas/                  JSON Schemas for unit files, config and lock
-scripts/                  validate, reindex, mint-uid, provisional-hash, gotchas
+scripts/                  validate, reindex, mint-uid, provisional-hash, gotchas, check, coverage
 packages/
   core/                   unit model, uids, hashes, graph (stubs)
   store/                  JSON store, validation, SQLite index

@@ -12,6 +12,7 @@ export const COMMANDS: readonly CommandSpec[] = [
   { name: "why", usage: "poetics why <unit>", summary: "The rationale chain that led to the current version" },
   { name: "impact", usage: "poetics impact [ref]", summary: "Components whose closure changed since a branch or commit" },
   { name: "diff", usage: "poetics diff <unit> <a> <b>", summary: "Semantic diff between two versions of a unit" },
-  { name: "verify", usage: "poetics verify", summary: "List unverified units, stale docs and unresolved edges; non-zero exit for CI" },
+  { name: "verify", usage: "poetics verify [--since <ref>]", summary: "List unverified units, stale docs and unresolved edges, and unrecorded changes since a ref; non-zero exit for CI" },
+  { name: "coverage", usage: "poetics coverage", summary: "How much of the codebase .poetics/ covers, against policy thresholds" },
   { name: "docs", usage: "poetics docs sync", summary: "Write stored docs into TSDoc and @component comments" },
 ];

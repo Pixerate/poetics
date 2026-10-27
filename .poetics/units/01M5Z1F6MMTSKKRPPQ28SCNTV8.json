@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6MMTSKKRPPQ28SCNTV8",
+  "kind": "function",
+  "framework": "none",
+  "name": "isHookName",
+  "location": {
+    "file": "packages/adapter-react/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:43a1de84a0e09e2fa9d8f7df6b093df009555046",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Missed by the seed: the one-off generator skipped index.ts files, but the adapters declare their code there. Found by the new coverage report. Hook naming rule from the plan: `use` followed by a capital letter.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

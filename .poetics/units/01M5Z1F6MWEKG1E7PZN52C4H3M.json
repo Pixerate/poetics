@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6MWEKG1E7PZN52C4H3M",
+  "kind": "function",
+  "framework": "none",
+  "name": "createSvelteAdapter",
+  "location": {
+    "file": "packages/adapter-svelte/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:5d49536696326d4927d2231c0502eb3006f0a307",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Missed by the seed: the one-off generator skipped index.ts files, but the adapters declare their code there. Found by the new coverage report. Typed stub for Svelte detection via svelte2tsx; throws until phase 3.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#svelte-svelte-sveltets"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

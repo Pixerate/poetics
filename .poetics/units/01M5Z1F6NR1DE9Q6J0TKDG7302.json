@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6NR1DE9Q6J0TKDG7302",
+  "kind": "type",
+  "framework": "none",
+  "name": "FileChange",
+  "location": {
+    "file": "scripts/lib/git.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:d89525e837b3a02758ce528621c3943cb372a3db",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A changed path with rename information.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/lib/change.test.ts",
+      "via": "static"
+    }
+  ]
+}

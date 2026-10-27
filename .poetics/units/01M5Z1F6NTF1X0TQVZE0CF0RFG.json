@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6NTF1X0TQVZE0CF0RFG",
+  "kind": "function",
+  "framework": "none",
+  "name": "globToRegExp",
+  "location": {
+    "file": "scripts/lib/glob.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:b84edd69a8b8de10721f8b4b6d9891b6ed90e995",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Local glob support for config scopes, avoiding fs.glob differences across Node versions.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/lib/glob.test.ts",
+      "via": "static"
+    }
+  ]
+}

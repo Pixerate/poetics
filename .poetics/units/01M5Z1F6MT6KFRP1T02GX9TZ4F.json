@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6MT6KFRP1T02GX9TZ4F",
+  "kind": "function",
+  "framework": "none",
+  "name": "componentNameFromFile",
+  "location": {
+    "file": "packages/adapter-svelte/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:ec4ad8083795c09e92539b1b43e53cb556525e5a",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Missed by the seed: the one-off generator skipped index.ts files, but the adapters declare their code there. Found by the new coverage report. Svelte names a component after its file.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#svelte-svelte-sveltets"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5Z1HP0KRF5JE401H3B81EGN",
+  "kind": "invariant",
+  "area": "tooling",
+  "title": "Tests that commit in temporary git repos must disable signing",
+  "symptoms": ["error: 1Password: failed to fill whole buffer", "fatal: failed to write commit object"],
+  "cause": "Git inherits the user's global config, including `commit.gpgsign` and an SSH signer such as 1Password. A test that runs `git commit` in a temp repo would prompt the signer, or fail when it is locked or absent (as in CI).",
+  "fix": "Commit through `runGit` in `scripts/lib/test-repo.ts`, which passes `-c commit.gpgsign=false` and a test identity on every call.",
+  "anchors": { "paths": ["scripts/lib/test-repo.ts"], "commands": ["git commit"] },
+  "check": { "kind": "config", "ref": "scripts/lib/test-repo.ts" },
+  "status": "active",
+  "actor": { "kind": "agent", "tool": "claude-code", "model": "claude-opus-5-5", "reviewed": false },
+  "links": [{ "kind": "decision", "ref": "docs/decisions/0007-change-check-and-coverage.md" }]
+}

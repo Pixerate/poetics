@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6N42D94MR75JZ15KF7K",
+  "kind": "type",
+  "framework": "none",
+  "name": "CoverageThresholds",
+  "location": {
+    "file": "scripts/lib/config.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:0886851a261238f9a5024ac60fd214431edbf043",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Per-metric minimums from policy.coverage, so CI can enforce coverage.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/check.test.ts",
+      "via": "static"
+    }
+  ]
+}

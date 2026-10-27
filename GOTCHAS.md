@@ -45,6 +45,18 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 - **See:** [github-pr #2](https://github.com/Pixerate/poetics/pull/2)
 - **Note:** `01M5YNW98CNNKNCWQQT77SECD3`
 
+### Tests that commit in temporary git repos must disable signing
+
+*Invariant.*
+
+- **Symptom:** `error: 1Password: failed to fill whole buffer`; `fatal: failed to write commit object`
+- **Cause:** Git inherits the user's global config, including `commit.gpgsign` and an SSH signer such as 1Password. A test that runs `git commit` in a temp repo would prompt the signer, or fail when it is locked or absent (as in CI).
+- **Fix:** Commit through `runGit` in `scripts/lib/test-repo.ts`, which passes `-c commit.gpgsign=false` and a test identity on every call.
+- **Applies to:** `git commit`, `scripts/lib/test-repo.ts`
+- **Caught by:** config `scripts/lib/test-repo.ts`
+- **See:** [docs/decisions/0007-change-check-and-coverage.md](docs/decisions/0007-change-check-and-coverage.md)
+- **Note:** `01M5Z1HP0KRF5JE401H3B81EGN`
+
 ## Node, type stripping and modules
 
 ### Workspace imports resolve to `dist/` and fail before a build

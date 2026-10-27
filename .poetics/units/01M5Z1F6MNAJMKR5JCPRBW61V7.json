@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6MNAJMKR5JCPRBW61V7",
+  "kind": "function",
+  "framework": "none",
+  "name": "isComponentName",
+  "location": {
+    "file": "packages/adapter-react/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:ad30b188be813af5206b8a5d3362b078e5a8c7f2",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Missed by the seed: the one-off generator skipped index.ts files, but the adapters declare their code there. Found by the new coverage report. PascalCase names are component candidates before the JSX check.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

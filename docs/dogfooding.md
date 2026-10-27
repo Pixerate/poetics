@@ -11,6 +11,8 @@ describe.
 | Version hashes | `pnpm provisional-hash` (`git:` hashes) | Syntax-tree hashes + rehash migration | 1 |
 | Gather context | Read unit files, plan and decisions | `poetics_context_pack` | 1 |
 | Check the store | `pnpm validate` in CI | `poetics verify` | 1 |
+| Check a change was recorded | `pnpm poetics:check` in preflight and on pull requests | `poetics verify --since`, GitHub Action | 1, 5 |
+| Measure coverage | `pnpm poetics:coverage` with `policy.coverage` | `poetics coverage` | 1 |
 | Record rationale | Append a version entry | `poetics_record_rationale` | 2 |
 | Record lineage | Add a `lineage` entry | `poetics_declare_lineage` | 2 |
 | Link tests | `tests` entries in the unit file | Coverage-based linking | 4 |
@@ -68,4 +70,5 @@ Humans use `"actor": { "kind": "human" }`.
 was removed and why, then delete the unit file in the same commit. History stays
 in git. (A tombstone format is an open question for phase 2.)
 
-Then run `pnpm validate`.
+Then run `pnpm validate` and `pnpm poetics:check`; see
+[Change checks and coverage](checks-and-coverage.md).

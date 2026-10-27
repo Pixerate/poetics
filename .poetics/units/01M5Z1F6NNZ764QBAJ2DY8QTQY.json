@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6NNZ764QBAJ2DY8QTQY",
+  "kind": "function",
+  "framework": "none",
+  "name": "compareCodeWithStore",
+  "location": {
+    "file": "scripts/lib/drift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:ee22600146e516446508ee165faad0f62865c105",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Matches declarations to units by file and name and reports untracked, stale, orphaned and duplicate units.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/lib/drift.test.ts",
+      "via": "static"
+    }
+  ]
+}

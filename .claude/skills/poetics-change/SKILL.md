@@ -48,4 +48,6 @@ Run `poetics-orient` first. Day-one version: you edit unit files by hand. When
    changed needs re-checking, confirm it still holds and set its `observedAt`
    to the new `contentHash`, or retire it (`poetics-gotcha`). If the change hit
    a pitfall that cost you time, record it with `poetics-gotcha`.
-9. **Check**: `pnpm validate`, then `pnpm test`.
+9. **Check**: `pnpm validate`, `pnpm poetics:check` and `pnpm test`.
+   `poetics:check` prints the line range and new hash for any export whose
+   unit is missing or behind, so you can fix each finding directly.

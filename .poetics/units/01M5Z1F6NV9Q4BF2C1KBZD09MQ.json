@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6NV9Q4BF2C1KBZD09MQ",
+  "kind": "function",
+  "framework": "none",
+  "name": "createMatcher",
+  "location": {
+    "file": "scripts/lib/glob.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:d63f1383f36bf44462d270c76fe925d3067384f9",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Applies include then exclude globs to a path.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/lib/glob.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6MPEXQE12X4E844Z8Z1",
+  "kind": "type",
+  "framework": "none",
+  "name": "ReactAdapterOptions",
+  "location": {
+    "file": "packages/adapter-react/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:e306064ca64b62ea050891223f5055950737914d",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Missed by the seed: the one-off generator skipped index.ts files, but the adapters declare their code there. Found by the new coverage report. The React adapter builds its TypeScript program from a tsconfig.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

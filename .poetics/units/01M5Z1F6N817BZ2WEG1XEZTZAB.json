@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6N817BZ2WEG1XEZTZAB",
+  "kind": "type",
+  "framework": "none",
+  "name": "CoverageMetrics",
+  "location": {
+    "file": "scripts/lib/coverage.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:d6758ce099956caee76b752e650c391c9e878dee",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The six coverage measures: tracked, fresh, linked rationale, reviewed, tested, documented.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/lib/coverage.test.ts",
+      "via": "static"
+    }
+  ]
+}

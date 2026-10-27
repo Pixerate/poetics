@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6N3MZ76YDZE94J79SXQ",
+  "kind": "function",
+  "framework": "none",
+  "name": "checkChange",
+  "location": {
+    "file": "scripts/lib/change.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:aaa218311d672774147109e027f798040d698b48",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Checks code drift in changed files, append-only history, lineage on moves, links, test changes and callers for each new version.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/lib/change.test.ts",
+      "via": "static"
+    }
+  ]
+}

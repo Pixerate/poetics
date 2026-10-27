@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   check:
-    name: Typecheck, sv check, test, validate, build
+    name: Typecheck, sv check, test, Poetics checks, build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,6 +21,7 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v7
         with:
+          fetch-depth: 0 # the Poetics change check compares with the base branch
           persist-credentials: false
 
       - name: Set up pnpm
@@ -49,6 +50,15 @@ jobs:
 
       - name: Check GOTCHAS.md is generated from notes
         run: pnpm gotchas --check
+
+      - name: Poetics change check
+        if: github.event_name == 'pull_request'
+        run: pnpm poetics:check --since "origin/$BASE_REF"
+        env:
+          BASE_REF: ${{ github.base_ref }}
+
+      - name: Poetics coverage
+        run: pnpm poetics:coverage
 
       - name: Build
         run: pnpm build

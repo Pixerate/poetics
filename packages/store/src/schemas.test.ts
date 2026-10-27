@@ -95,3 +95,12 @@ describe("note schema", () => {
     expect(validator.note({ ...makeNote(), anchors: { files: [] } }).valid).toBe(false);
   });
 });
+
+describe("config coverage policy", () => {
+  it("accepts ratios between 0 and 1 and rejects others", () => {
+    const withCoverage = (coverage: object) => ({ ...defaultConfig(), policy: { coverage } });
+    expect(validator.config(withCoverage({ tracked: 1, tested: 0.75 })).valid).toBe(true);
+    expect(validator.config(withCoverage({ tracked: 1.5 })).valid).toBe(false);
+    expect(validator.config(withCoverage({ lines: 0.5 })).valid).toBe(false);
+  });
+});

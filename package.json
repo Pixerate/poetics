@@ -24,8 +24,10 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "provisional-hash": "node --conditions=poetics-source scripts/provisional-hash.ts",
-    "preflight": "pnpm typecheck && pnpm check && pnpm test && pnpm validate && pnpm gotchas --check && pnpm build",
-    "gotchas": "node --conditions=poetics-source scripts/gotchas.ts"
+    "preflight": "pnpm typecheck && pnpm check && pnpm test && pnpm validate && pnpm gotchas --check && pnpm poetics:check && pnpm poetics:coverage && pnpm build",
+    "gotchas": "node --conditions=poetics-source scripts/gotchas.ts",
+    "poetics:check": "node --conditions=poetics-source scripts/check.ts",
+    "poetics:coverage": "node --conditions=poetics-source scripts/coverage.ts"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^1.0.1",

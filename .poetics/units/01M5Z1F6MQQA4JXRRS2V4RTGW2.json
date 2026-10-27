@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6MQQA4JXRRS2V4RTGW2",
+  "kind": "function",
+  "framework": "none",
+  "name": "createReactAdapter",
+  "location": {
+    "file": "packages/adapter-react/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:00a0f9f2f91767789a78c0f57ebeb9f2c1c243cb",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Missed by the seed: the one-off generator skipped index.ts files, but the adapters declare their code there. Found by the new coverage report. Typed stub for React detection via ts-morph; throws until phase 1.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

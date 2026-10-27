@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6MR3DTK3T9DQXFVHM3E",
+  "kind": "type",
+  "framework": "none",
+  "name": "SvelteMajor",
+  "location": {
+    "file": "packages/adapter-svelte/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:5916b8be2d1c2ce8598a2d104daebde439f1c65d",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Missed by the seed: the one-off generator skipped index.ts files, but the adapters declare their code there. Found by the new coverage report. Mixed Svelte 4 and 5 codebases are supported.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#svelte-svelte-sveltets"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

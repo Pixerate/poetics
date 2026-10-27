@@ -222,7 +222,8 @@ Humans and agents share the same surfaces: the CLI, git hooks and CI below serve
 | `poetics why <unit>` | The rationale chain that led to the current version |
 | `poetics impact [ref]` | Components whose closure changed since a branch or commit |
 | `poetics diff <unit> <a> <b>` | Semantic diff between two versions of a unit, ignoring moves and formatting |
-| `poetics verify` | Lists unverified units, stale docs, stale notes and unresolved edges; non-zero exit for CI |
+| `poetics verify [--since ref]` | Lists unverified units, stale docs, stale notes and unresolved edges; with `--since`, also checks that every change in the range recorded itself (unit versions, lineage, append-only history); non-zero exit for CI |
+| `poetics coverage` | How much of the codebase the store covers: tracked, fresh, linked rationale, reviewed, tested and documented ratios per package, with thresholds from `policy.coverage` ([ADR 0007](decisions/0007-change-check-and-coverage.md)) |
 | `poetics notes [query]` | Notes matching an error message, unit, path or command; `poetics notes render` writes `GOTCHAS.md` |
 | `poetics docs sync` | Writes stored docs into TSDoc and `@component` comments |
 
@@ -243,7 +244,7 @@ A standalone language server runs beside the TypeScript and Svelte language serv
 
 ### CI
 
-A GitHub Action posts an impact report on each pull request: units changed with their change class, interface breaks and their direct callers, components whose closure changed, and units changed without passing linked tests.
+A GitHub Action posts an impact report on each pull request, and fails it when changes were not recorded (`poetics verify --since <base>`): units changed with their change class, interface breaks and their direct callers, components whose closure changed, and units changed without passing linked tests.
 
 ## Agent interface
 

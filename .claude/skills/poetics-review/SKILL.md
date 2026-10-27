@@ -8,7 +8,9 @@ description: Use when reviewing a diff or pull request in a Poetics repo, to lis
 Day-one version: you compare the diff with `.poetics/units` by hand. When
 `poetics_impact` and `poetics_verify` land, steps 2–4 become calls to them.
 
-1. Run `pnpm validate`. Any error blocks the review.
+1. Run `pnpm validate` and `pnpm poetics:check --since origin/<base branch>`.
+   Any error blocks the review. Steps 2–5 below are what the check automates;
+   read its warnings and confirm them by hand.
 2. **Changed units:** for every exported function, hook, component or type the
    diff touches, check its unit file gained a version entry with the right
    `change` class and a `parent` equal to the previous `contentHash`. Code

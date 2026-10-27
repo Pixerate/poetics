@@ -1,14 +1,36 @@
 {
   "$schema": "../schemas/config.schema.json",
   "version": 1,
-  "adapters": ["typescript", "react", "svelte"],
-  "include": ["packages/*/src/**/*.ts", "scripts/**/*.ts", "evals/fixtures/**/*.{ts,tsx,svelte}"],
-  "exclude": ["**/*.test.ts", "**/test-helpers.ts", "**/dist/**", "**/node_modules/**"],
-  "store": { "layout": "flat" },
+  "adapters": [
+    "typescript",
+    "react",
+    "svelte"
+  ],
+  "include": [
+    "packages/*/src/**/*.ts",
+    "scripts/**/*.ts"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/test-helpers.ts",
+    "**/test-repo.ts",
+    "**/dist/**",
+    "**/node_modules/**"
+  ],
+  "store": {
+    "layout": "flat"
+  },
   "policy": {
     "requireRationale": true,
     "agentRationaleNeedsReview": true,
     "humanSignOffOnAgentInterfaceChanges": true,
-    "allowProvisionalHashes": true
+    "allowProvisionalHashes": true,
+    "coverage": {
+      "tracked": 1,
+      "fresh": 1,
+      "linkedRationale": 1,
+      "tested": 0.75,
+      "documented": 0.25
+    }
   }
 }

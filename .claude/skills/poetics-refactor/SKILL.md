@@ -27,7 +27,9 @@ it, checked against the diff.
      rationale "Merged into <uid>" so their history stays readable.
 4. **Append a version** to each unit whose source text changed, per
    `poetics-change`. A pure move with identical text needs no new version.
-5. **Check**: `pnpm validate` and `pnpm test`.
+5. **Check**: `pnpm validate`, `pnpm poetics:check` and `pnpm test`. The
+   check fails a unit whose name or location changed without a new lineage
+   entry, and a unit left behind in a deleted file.
 
 Never work around a problem by deleting unit files or rewriting `versions`.
 If a declaration does not fit these cases, stop and ask.

@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5Z1F6ND8XM1DD3V2T49XSGD",
+  "kind": "type",
+  "framework": "none",
+  "name": "Declaration",
+  "location": {
+    "file": "scripts/lib/declarations.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:52b1b242cf808909f5bb0e5f4303723e2ea9d1ce",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A trackable declaration with its provisional hash and line range.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/lib/declarations.test.ts",
+      "via": "static"
+    }
+  ]
+}

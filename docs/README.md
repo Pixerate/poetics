@@ -10,6 +10,7 @@ area you are changing.
 | [Data model and store](data-model.md) | Units, versions, hashes, the JSON files and the SQLite index |
 | [Working on Poetics with Poetics](dogfooding.md) | Recording your own changes in `.poetics/` by hand |
 | [Agents: skills and MCP](agents.md) | The skills in `.claude/skills/` and the planned MCP tools |
+| [Change checks and coverage](checks-and-coverage.md) | `poetics:check` on every change, `poetics:coverage` for the codebase |
 | [Testing](testing.md) | Unit tests, browser checks, fixtures and evals |
 | [CI and releases](ci-and-releases.md) | GitHub Actions, Changesets, Dependabot, npm trusted publishing |
 | [Plan](plan.md) | The full design, kept current |

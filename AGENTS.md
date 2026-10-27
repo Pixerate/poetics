@@ -24,6 +24,8 @@ pnpm typecheck        # tsc -b, then tests and scripts
 pnpm check            # sv check (Svelte fixture) + tsc (React fixture)
 pnpm validate         # .poetics/ against schemas/ and store rules
 pnpm gotchas          # regenerate GOTCHAS.md from .poetics/notes/
+pnpm poetics:check    # did this change record itself in .poetics/? (vs HEAD; --since <ref>)
+pnpm poetics:coverage # how well .poetics/ covers the code, against policy thresholds
 pnpm preflight        # all of the above (gotchas --check), then build: what CI runs
 ```
 
@@ -61,7 +63,10 @@ Follow `poetics-change` (edits), `poetics-refactor` (renames, moves, splits,
 merges) and [`docs/dogfooding.md`](docs/dogfooding.md). In short: append a
 version with a specific rationale to each unit you changed, mint a uid for each
 new exported function or type, and never delete or rewrite history. Then run
-`pnpm validate`.
+`pnpm validate` and `pnpm poetics:check`: it fails on exports with no unit, code
+changes with no version, orphaned units, edited history and moves without
+lineage, and warns about versions with no links or no test changes. Pull
+requests run it against their base branch.
 
 ## How to commit
 
