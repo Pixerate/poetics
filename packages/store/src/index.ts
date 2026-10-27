@@ -1,5 +1,7 @@
 export type { CheckResult, Problem } from "./check.ts";
 export { checkStore } from "./check.ts";
+export type { RenderOptions } from "./gotchas.ts";
+export { AREA_TITLES, renderGotchas } from "./gotchas.ts";
 export type { RebuildStats, UnitRow } from "./index-db.ts";
 export {
   INDEX_SCHEMA_VERSION,
@@ -16,8 +18,11 @@ export {
   appendVersion,
   declareLineage,
   linkTest,
+  listNoteFiles,
   listUnitFiles,
+  parseNote,
   parseUnit,
+  readNoteFiles,
   readUnitFiles,
   recordRationale,
   setDocs,

@@ -24,7 +24,8 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "provisional-hash": "node --conditions=poetics-source scripts/provisional-hash.ts",
-    "preflight": "pnpm typecheck && pnpm check && pnpm test && pnpm validate && pnpm build"
+    "preflight": "pnpm typecheck && pnpm check && pnpm test && pnpm validate && pnpm gotchas --check && pnpm build",
+    "gotchas": "node --conditions=poetics-source scripts/gotchas.ts"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^1.0.1",

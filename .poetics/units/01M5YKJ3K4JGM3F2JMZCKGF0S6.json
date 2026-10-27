@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5YKJ3K4JGM3F2JMZCKGF0S6",
+  "kind": "function",
+  "framework": "none",
+  "name": "parseNote",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:dcdf974601ce0820eecbedb8816b403c8ef6448f",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Parses a note file, naming the file on invalid JSON like parseUnit.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0006-notes-replace-gotchas.md"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    }
+  ]
+}

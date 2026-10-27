@@ -14,6 +14,7 @@ describe.
 | Record rationale | Append a version entry | `poetics_record_rationale` | 2 |
 | Record lineage | Add a `lineage` entry | `poetics_declare_lineage` | 2 |
 | Link tests | `tests` entries in the unit file | Coverage-based linking | 4 |
+| Record gotchas | A note file per `poetics-gotcha`; `pnpm gotchas` | `poetics_record_note`, failure hook | 2 |
 
 ## What gets a unit
 

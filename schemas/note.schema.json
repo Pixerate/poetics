@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://poetics.dev/schemas/note.schema.json",
+  "title": "Poetics note",
+  "description": "A gotcha, workaround or invariant: a structured, anchored record of something that cost time and is likely to recur. Stored as .poetics/notes/<id>.json. GOTCHAS.md is generated from these files.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "kind", "area", "title", "symptoms", "cause", "fix", "anchors", "status", "actor"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "$ref": "unit.schema.json#/$defs/uid" },
+    "kind": {
+      "enum": ["gotcha", "workaround", "invariant"],
+      "description": "gotcha: a surprising failure and its fix. workaround: a deliberate detour around a problem not fixed yet. invariant: a rule that must keep holding."
+    },
+    "area": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Grouping for the rendered GOTCHAS.md, e.g. tooling, node, sqlite, store, releases."
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "symptoms": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "What you see, copied exactly (error text, log lines), so an error can be matched to this note."
+    },
+    "cause": { "type": "string", "minLength": 1 },
+    "fix": { "type": "string", "minLength": 1, "description": "The solution or workaround." },
+    "anchors": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the note is about. A note surfaces when a task touches any anchor.",
+      "properties": {
+        "units": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["uid"],
+            "properties": {
+              "uid": { "$ref": "unit.schema.json#/$defs/uid" },
+              "observedAt": {
+                "$ref": "unit.schema.json#/$defs/hash",
+                "description": "The unit's contentHash when the note was last confirmed. A newer version means the note needs re-checking."
+              }
+            }
+          }
+        },
+        "paths": { "type": "array", "items": { "type": "string", "minLength": 1 }, "description": "Repo-relative files or folders." },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1, "description": "npm package, or a runtime such as node or pnpm." },
+              "range": { "type": "string", "description": "Semver range the note applies to." }
+            }
+          }
+        },
+        "commands": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ref"],
+      "description": "Something that catches this automatically. A note with a check is on its way to being resolved.",
+      "properties": {
+        "kind": { "enum": ["test", "validator", "command", "config"] },
+        "ref": { "type": "string", "minLength": 1, "description": "test: a test file path. validator: the rule's message. command: the command. config: the file enforcing it." },
+        "name": { "type": "string", "description": "Test name, for kind test." }
+      }
+    },
+    "status": { "enum": ["active", "resolved", "superseded"] },
+    "resolvedBy": { "$ref": "unit.schema.json#/$defs/link", "description": "The change that removed the cause." },
+    "supersededBy": { "$ref": "unit.schema.json#/$defs/uid" },
+    "actor": { "$ref": "unit.schema.json#/$defs/actor" },
+    "links": { "type": "array", "items": { "$ref": "unit.schema.json#/$defs/link" } }
+  },
+  "allOf": [
+    { "if": { "properties": { "status": { "const": "resolved" } } }, "then": { "properties": { "resolvedBy": true }, "required": ["resolvedBy"] } },
+    { "if": { "properties": { "status": { "const": "superseded" } } }, "then": { "properties": { "supersededBy": true }, "required": ["supersededBy"] } }
+  ]
+}

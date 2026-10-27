@@ -1,0 +1,40 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDBDDA41D5W3J7NVVBR8",
+  "kind": "invariant",
+  "area": "sqlite",
+  "title": "Keep all `node:sqlite` access in `index-db.ts`",
+  "symptoms": [],
+  "cause": "`node:sqlite` became a release candidate (stability 1.2) in Node 24.15; before that it was experimental, and its API may still change.",
+  "fix": "Only `packages/store/src/index-db.ts` imports `node:sqlite`, so an API change touches one file. The index is disposable: `pnpm reindex --fresh` fixes a broken one.",
+  "anchors": {
+    "dependencies": [
+      {
+        "name": "node",
+        "range": ">=24.15"
+      }
+    ],
+    "paths": [
+      "packages/store/src/index-db.ts"
+    ],
+    "units": [
+      {
+        "uid": "01M5XDBC7VGCSGJXZPVP5ZPWG7",
+        "observedAt": "git:4441b210a270fb54d623dac08efb73ef6513e79c"
+      }
+    ]
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  },
+  "links": [
+    {
+      "kind": "decision",
+      "ref": "docs/decisions/0005-node-24-type-stripping.md"
+    }
+  ]
+}

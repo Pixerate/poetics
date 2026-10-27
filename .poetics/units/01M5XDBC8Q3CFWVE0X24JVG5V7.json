@@ -26,6 +26,25 @@
           "ref": "docs/plan.md#metadata-schema-and-storage"
         }
       ]
+    },
+    {
+      "contentHash": "git:c84cac0445ce58d7204860ca32c53380507fee5b",
+      "provisional": true,
+      "parent": "git:a1a78123265e4741a487021912ad46fb27c8dd8e",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Compiles the note schema after the unit schema, whose definitions it references.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0006-notes-replace-gotchas.md"
+        }
+      ]
     }
   ],
   "tests": [

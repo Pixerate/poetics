@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5YKJ3K6TN9PPBZ3J5PBS6B5",
+  "kind": "function",
+  "framework": "none",
+  "name": "syncGotchas",
+  "location": {
+    "file": "scripts/gotchas.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:f497311af981a4a2075ee2546cc4f1cb17c3aa54",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Writes GOTCHAS.md, or with --check fails CI when it is out of date with the notes.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0006-notes-replace-gotchas.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Returns true when GOTCHAS.md already matched (or, without check, was written).",
+  "tests": [
+    {
+      "file": "scripts/scripts.test.ts",
+      "via": "static"
+    }
+  ]
+}

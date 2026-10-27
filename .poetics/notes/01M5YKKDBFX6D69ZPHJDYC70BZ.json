@@ -1,0 +1,40 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDBFX6D69ZPHJDYC70BZ",
+  "kind": "gotcha",
+  "area": "store",
+  "title": "`validate` says a version has git: hashes but is not marked provisional",
+  "symptoms": [
+    "has git: hashes but is not marked provisional"
+  ],
+  "cause": "Hand-written versions use `git:` hashes, which must carry `\"provisional\": true`.",
+  "fix": "Add `\"provisional\": true` to that version.",
+  "anchors": {
+    "commands": [
+      "pnpm validate"
+    ],
+    "units": [
+      {
+        "uid": "01M5XDBC7TWPZ5XQ8G1PK6W5ND",
+        "observedAt": "git:6d61640a211bc2b1fa6bd005c871277ba17f4915"
+      }
+    ]
+  },
+  "check": {
+    "kind": "validator",
+    "ref": "has git: hashes but is not marked provisional"
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  },
+  "links": [
+    {
+      "kind": "decision",
+      "ref": "docs/decisions/0004-provisional-hashes.md"
+    }
+  ]
+}

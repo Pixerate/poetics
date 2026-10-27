@@ -1,0 +1,28 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDB7ZEAE3KHNYQYCNDRZ",
+  "kind": "gotcha",
+  "area": "tooling",
+  "title": "`sv check` downloads pnpm the first time",
+  "symptoms": [
+    "Corepack is about to download"
+  ],
+  "cause": "`sv check` runs `svelte-check` through the detected package manager via Corepack.",
+  "fix": "Harmless. Run `corepack enable` once so the pinned pnpm is cached.",
+  "anchors": {
+    "commands": [
+      "pnpm check",
+      "sv check"
+    ],
+    "paths": [
+      "evals/fixtures/svelte-app/package.json"
+    ]
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  }
+}

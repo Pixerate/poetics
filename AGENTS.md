@@ -6,7 +6,9 @@ with Poetics: the code's history, rationale and tests are recorded in
 
 ## Before you start
 
-- Read [`GOTCHAS.md`](GOTCHAS.md). Someone may already have hit your problem.
+- Read [`GOTCHAS.md`](GOTCHAS.md), or search `.poetics/notes/` for the error
+  you hit (`grep -ril '<error text>' .poetics/notes/`). Someone may already
+  have hit your problem.
 - Use the `poetics-orient` skill before changing any exported function, hook,
   component or type.
 - The design is in [`docs/plan.md`](docs/plan.md); decisions are in
@@ -21,7 +23,8 @@ pnpm test             # Vitest, all unit tests
 pnpm typecheck        # tsc -b, then tests and scripts
 pnpm check            # sv check (Svelte fixture) + tsc (React fixture)
 pnpm validate         # .poetics/ against schemas/ and store rules
-pnpm preflight        # all of the above, then build: what CI runs
+pnpm gotchas          # regenerate GOTCHAS.md from .poetics/notes/
+pnpm preflight        # all of the above (gotchas --check), then build: what CI runs
 ```
 
 `pnpm ci` is a built-in pnpm command (clean install), not our checks. Use
@@ -86,12 +89,21 @@ new exported function or type, and never delete or rewrite history. Then run
 6. Agents: add a `Co-Authored-By:` trailer for the model, and never push,
    force-push, or publish unless a human asked you to.
 
-## Maintain GOTCHAS.md
+## Maintain GOTCHAS.md (through notes)
 
 When you hit a problem that cost you time (a tool quirk, a confusing error, a
-workaround), add it to [`GOTCHAS.md`](GOTCHAS.md) in the same commit as the fix:
-the symptom as you saw it, the cause, and the solution or workaround. Remove or
-update entries that stop being true.
+workaround), record it with the `poetics-gotcha` skill, in the same commit as
+the fix. Each gotcha is a note in `.poetics/notes/`: the symptom copied exactly,
+the cause, the fix, and anchors to the units, paths, dependencies or commands it
+is about. [`GOTCHAS.md`](GOTCHAS.md) is generated from the notes by
+`pnpm gotchas`; **never edit it by hand**, as CI fails if it drifts.
+
+- Prefer a check over a note: if a test, validator rule or config can catch the
+  problem, add it and point the note's `check` at it.
+- When `pnpm validate` warns that a note's unit has changed, re-check the note
+  and update `observedAt`, or retire it.
+- Retire notes that stop being true (`resolved` or `superseded`); never delete
+  them. See [ADR 0006](docs/decisions/0006-notes-replace-gotchas.md).
 
 ## Code style
 
@@ -112,3 +124,4 @@ update entries that stop being true.
 | An MCP tool | `packages/mcp/src/tools.ts`, the skills that mention it, `docs/agents.md` |
 | A CLI command | `packages/cli/src/commands.ts`, `docs/getting-started.md` |
 | A design decision | A new record in `docs/decisions/`, and `docs/plan.md` |
+| A note field | `schemas/note.schema.json`, the `Note` type in `packages/core/src/types.ts`, `renderGotchas`, the `poetics-gotcha` skill |

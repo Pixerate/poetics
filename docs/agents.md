@@ -18,6 +18,7 @@ Skills live in `.claude/skills/<name>/SKILL.md`. Each has front matter with a
 | `poetics-svelte-component` | When writing Svelte components or rune modules |
 | `poetics-review` | When reviewing a diff or pull request |
 | `poetics-debug` | When tracking down a regression |
+| `poetics-gotcha` | When something cost real time and will recur |
 
 Today's skills are the day-one versions: they tell the agent to edit
 `.poetics/units/*.json` by hand. As each MCP tool lands, rewrite the matching
@@ -41,6 +42,11 @@ itself is a stub. Rules every tool follows:
   against the indexer. No tool deletes or rewrites history.
 - Results are token-budgeted.
 - Every description ends with `DATA_NOT_INSTRUCTIONS`.
+
+Notes (gotchas, workarounds, invariants) get two tools: `poetics_notes` finds
+them by error text, unit, path or command, and `poetics_record_note` records or
+re-confirms one. The plan adds a hook on failed tool calls that sends the error
+text to `poetics_notes`, so the fix reaches the agent when it fails.
 
 Tool descriptions are prompts. Changing one is a behaviour change: record it as
 a unit version and, once evals exist, gate it on them.

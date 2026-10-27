@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { checkStore } from "./check.ts";
 import { storePaths } from "./paths.ts";
 import { createValidator, loadSchemaSet } from "./schemas.ts";
-import { REPO_SCHEMAS, UID_A, UID_B, defaultConfig, hash, makeRepo, makeUnit, writeUnit } from "./test-helpers.ts";
+import { NOTE_ID, REPO_SCHEMAS, UID_A, UID_B, defaultConfig, hash, makeNote, makeRepo, makeUnit, writeNote, writeUnit } from "./test-helpers.ts";
 
 const validator = createValidator(await loadSchemaSet(REPO_SCHEMAS));
 const check = async (root: string) => checkStore(storePaths(root), validator);
@@ -13,7 +13,7 @@ const messages = (result: Awaited<ReturnType<typeof check>>) => result.problems.
 describe("checkStore", () => {
   it("passes a consistent store", async () => {
     const root = await makeRepo([makeUnit(UID_A), makeUnit(UID_B, { versions: [{ ...makeUnit(UID_B).versions[0]!, deps: { [UID_A]: hash("1") } }] })]);
-    expect(await check(root)).toEqual({ units: 2, problems: [] });
+    expect(await check(root)).toEqual({ units: 2, notes: 0, problems: [] });
   });
 
   it("reports a missing config", async () => {
@@ -98,5 +98,67 @@ describe("checkStore", () => {
     const root = await makeRepo([makeUnit(UID_A)]);
     await writeUnit(root, makeUnit(UID_A), join(".poetics", "units", "01", `${UID_A}.json`));
     expect(messages(await check(root)).some((m) => m.startsWith("duplicate uid"))).toBe(true);
+  });
+});
+
+describe("checkStore notes", () => {
+  it("counts valid notes", async () => {
+    const root = await makeRepo([makeUnit(UID_A)]);
+    await writeNote(root, makeNote({ anchors: { units: [{ uid: UID_A, observedAt: hash("1") }], paths: ["src/lib.ts"] } }));
+    expect(await check(root)).toEqual({ units: 1, notes: 1, problems: [] });
+  });
+
+  it("reports schema errors and filename mismatches", async () => {
+    const root = await makeRepo([]);
+    await writeNote(root, { ...makeNote(), status: "resolved" } as never);
+    await writeNote(root, makeNote({ id: UID_B }), join(".poetics", "notes", `${UID_A}.json`));
+    const result = messages(await check(root));
+    expect(result.some((m) => m.includes("resolvedBy"))).toBe(true);
+    expect(result).toContain(`filename does not match id ${UID_B}`);
+  });
+
+  it("checks anchors, check files and supersession", async () => {
+    const root = await makeRepo([]);
+    await writeNote(
+      root,
+      makeNote({
+        status: "superseded",
+        supersededBy: UID_B,
+        anchors: { units: [{ uid: UID_A }], paths: ["src/gone.ts"] },
+        check: { kind: "test", ref: "src/gone.test.ts" },
+      }),
+    );
+    expect(messages(await check(root))).toEqual([
+      `anchored unit ${UID_A} is not a known unit`,
+      "anchored path src/gone.ts does not exist",
+      "check file src/gone.test.ts does not exist",
+      `supersededBy ${UID_B} is not a known note`,
+    ]);
+  });
+
+  it("warns when an anchored unit has changed since the note was confirmed", async () => {
+    const unit = makeUnit(UID_A, { name: "formatPrice" });
+    unit.versions.push({ ...unit.versions[0]!, contentHash: hash("2"), parent: hash("1"), change: "behaviour" });
+    const root = await makeRepo([unit]);
+    await writeNote(root, makeNote({ anchors: { units: [{ uid: UID_A, observedAt: hash("1") }] } }));
+    const result = await check(root);
+    expect(result.problems).toEqual([
+      {
+        severity: "warning",
+        file: `.poetics/notes/${NOTE_ID}.json`,
+        message: "formatPrice has changed since this note was confirmed; re-check it and update observedAt",
+      },
+    ]);
+  });
+
+  it("does not ask for re-checks on resolved notes", async () => {
+    const unit = makeUnit(UID_A);
+    unit.versions.push({ ...unit.versions[0]!, contentHash: hash("2"), parent: hash("1"), change: "behaviour" });
+    const root = await makeRepo([unit]);
+    await writeNote(
+      root,
+      makeNote({ status: "resolved", resolvedBy: { kind: "commit", ref: "abc1234" }, anchors: { units: [{ uid: UID_A, observedAt: hash("1") }] } }),
+    );
+    expect((await check(root)).problems).toEqual([]);
   });
 });

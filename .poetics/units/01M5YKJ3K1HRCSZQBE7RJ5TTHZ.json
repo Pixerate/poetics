@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5YKJ3K1HRCSZQBE7RJ5TTHZ",
+  "kind": "function",
+  "framework": "none",
+  "name": "renderGotchas",
+  "location": {
+    "file": "packages/store/src/gotchas.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:dbcab89eb09352b5ae870108f340f5c9065148b2",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "GOTCHAS.md is generated from notes, deterministically, so CI can check the committed file matches.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0006-notes-replace-gotchas.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Renders notes as GOTCHAS.md. Deterministic: the same notes always give the\nsame bytes, so CI can check the committed file is up to date.",
+  "tests": [
+    {
+      "file": "packages/store/src/gotchas.test.ts",
+      "via": "static"
+    }
+  ]
+}

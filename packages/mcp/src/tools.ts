@@ -90,6 +90,23 @@ export const TOOLS: readonly ToolDefinition[] = [
     inputSchema: { type: "object", properties: { unit: unitRef }, required: ["unit"], additionalProperties: false },
   },
   {
+    name: "poetics_notes",
+    access: "read",
+    description:
+      "Gotchas, workarounds and invariants matching an error message, unit, path or command. Call this when a command fails or before touching unfamiliar tooling.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        error: { type: "string", description: "Error text, matched against recorded symptoms." },
+        unit: unitRef,
+        path: { type: "string" },
+        command: { type: "string" },
+        includeRetired: { type: "boolean" },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
     name: "poetics_record_rationale",
     access: "write",
     description:
@@ -140,6 +157,27 @@ export const TOOLS: readonly ToolDefinition[] = [
       type: "object",
       properties: { unit: unitRef, docs: { type: "string" } },
       required: ["unit", "docs"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "poetics_record_note",
+    access: "write",
+    description:
+      "Records a gotcha, workaround or invariant that cost time and will recur, or confirms an existing note against the current unit versions. Search with poetics_notes first. Copy symptoms verbatim and anchor to the narrowest units, paths, dependencies or commands. Prefer adding a test or validator rule when one would catch it.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        confirm: { type: "string", description: "Id of an existing note to re-confirm instead of recording a new one." },
+        kind: { enum: ["gotcha", "workaround", "invariant"] },
+        area: { type: "string" },
+        title: { type: "string" },
+        symptoms: { type: "array", items: { type: "string" } },
+        cause: { type: "string" },
+        fix: { type: "string" },
+        anchors: { type: "object" },
+        check: { type: "object" },
+      },
       additionalProperties: false,
     },
   },

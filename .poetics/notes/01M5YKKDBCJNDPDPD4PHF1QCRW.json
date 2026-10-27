@@ -1,0 +1,34 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDBCJNDPDPD4PHF1QCRW",
+  "kind": "gotcha",
+  "area": "schemas",
+  "title": "Ajv strict mode rejects `required` inside `if`/`then`",
+  "symptoms": [
+    "strict mode: required property \"resolvedBy\" is not defined"
+  ],
+  "cause": "Ajv's `strictRequired` wants every required property declared in the same schema object, and a `then` branch is its own object.",
+  "fix": "Declare the property in the branch too: `\"then\": { \"properties\": { \"resolvedBy\": true }, \"required\": [\"resolvedBy\"] }`.",
+  "anchors": {
+    "paths": [
+      "schemas/note.schema.json"
+    ],
+    "units": [
+      {
+        "uid": "01M5XDBC8Q3CFWVE0X24JVG5V7",
+        "observedAt": "git:c84cac0445ce58d7204860ca32c53380507fee5b"
+      }
+    ]
+  },
+  "check": {
+    "kind": "test",
+    "ref": "packages/store/src/schemas.test.ts"
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  }
+}

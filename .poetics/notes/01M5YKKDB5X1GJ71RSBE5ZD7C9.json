@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDB5X1GJ71RSBE5ZD7C9",
+  "kind": "gotcha",
+  "area": "tooling",
+  "title": "`pnpm ci` wipes `node_modules` instead of running checks",
+  "symptoms": [
+    "Removing node_modules"
+  ],
+  "cause": "`ci` is a built-in pnpm command (clean install), so it shadows a package script of the same name.",
+  "fix": "Run `pnpm preflight` for the full local check. Never add a script named `ci`.",
+  "anchors": {
+    "commands": [
+      "pnpm ci"
+    ],
+    "paths": [
+      "package.json"
+    ],
+    "dependencies": [
+      {
+        "name": "pnpm",
+        "range": ">=10"
+      }
+    ]
+  },
+  "check": {
+    "kind": "test",
+    "ref": "scripts/scripts.test.ts",
+    "name": "has no script named ci, which pnpm would shadow with its clean-install command"
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  }
+}

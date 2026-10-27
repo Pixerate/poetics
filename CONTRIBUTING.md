@@ -10,4 +10,5 @@ Thanks for helping build Poetics. Humans and agents follow the same rules:
 4. Pull requests need passing CI and, if a package changed, a changeset
    (`pnpm changeset`).
 
-Found a pitfall? Add it to [`GOTCHAS.md`](GOTCHAS.md).
+Found a pitfall? Record it as a note with the `poetics-gotcha` skill;
+[`GOTCHAS.md`](GOTCHAS.md) is generated from notes and shouldn't be edited by hand.

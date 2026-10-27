@@ -1,8 +1,8 @@
 import { access, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { isProvisional } from "@poetics/core";
-import type { Unit } from "@poetics/core";
-import { readUnitFiles } from "./json-store.ts";
+import type { Note, Unit } from "@poetics/core";
+import { readNoteFiles, readUnitFiles } from "./json-store.ts";
 import type { StorePaths } from "./paths.ts";
 import type { StoreValidator } from "./schemas.ts";
 
@@ -14,13 +14,15 @@ export interface Problem {
 
 export interface CheckResult {
   units: number;
+  notes: number;
   problems: Problem[];
 }
 
 /**
- * Validates the whole store: config, lock and every unit file against their
- * JSON Schemas, then the rules a schema cannot express (uid matches filename,
- * version chains are intact, references point at real units and files).
+ * Validates the whole store: config, lock, every unit file and every note
+ * against their JSON Schemas, then the rules a schema cannot express (ids
+ * match filenames, version chains are intact, references point at real units,
+ * notes and files, and notes are flagged when their units have moved on).
  */
 export async function checkStore(paths: StorePaths, validator: StoreValidator): Promise<CheckResult> {
   const problems: Problem[] = [];
@@ -92,7 +94,65 @@ export async function checkStore(paths: StorePaths, validator: StoreValidator): 
     }
   }
 
-  return { units: units.size, problems };
+  const notes = await checkNotes(paths, validator, units, error, warning);
+
+  return { units: units.size, notes, problems };
+}
+
+async function checkNotes(
+  paths: StorePaths,
+  validator: StoreValidator,
+  units: ReadonlyMap<string, { unit: Unit }>,
+  error: (file: string, message: string) => void,
+  warning: (file: string, message: string) => void,
+): Promise<number> {
+  const notes = new Map<string, { note: Note; file: string }>();
+  for (const file of await readNoteFiles(paths)) {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(file.raw);
+    } catch (cause) {
+      error(file.relativePath, `invalid JSON: ${(cause as Error).message}`);
+      continue;
+    }
+    const result = validator.note(parsed);
+    if (!result.valid) {
+      for (const message of result.errors) error(file.relativePath, message);
+      continue;
+    }
+    const note = parsed as Note;
+    if (basename(file.path, ".json") !== note.id) error(file.relativePath, `filename does not match id ${note.id}`);
+    if (notes.has(note.id)) {
+      error(file.relativePath, `duplicate note id, also in ${notes.get(note.id)!.file}`);
+      continue;
+    }
+    notes.set(note.id, { note, file: file.relativePath });
+  }
+
+  for (const { note, file } of notes.values()) {
+    for (const anchor of note.anchors.units ?? []) {
+      const unit = units.get(anchor.uid)?.unit;
+      if (!unit) {
+        error(file, `anchored unit ${anchor.uid} is not a known unit`);
+        continue;
+      }
+      const latest = unit.versions.at(-1)?.contentHash;
+      if (note.status === "active" && anchor.observedAt !== undefined && anchor.observedAt !== latest) {
+        warning(file, `${unit.name} has changed since this note was confirmed; re-check it and update observedAt`);
+      }
+    }
+    for (const path of note.anchors.paths ?? []) {
+      if (!(await exists(join(paths.root, path)))) error(file, `anchored path ${path} does not exist`);
+    }
+    if (note.check?.kind === "test" || note.check?.kind === "config") {
+      if (!(await exists(join(paths.root, note.check.ref)))) error(file, `check file ${note.check.ref} does not exist`);
+    }
+    if (note.supersededBy !== undefined) {
+      if (!notes.has(note.supersededBy)) error(file, `supersededBy ${note.supersededBy} is not a known note`);
+      else if (note.supersededBy === note.id) error(file, "a note cannot supersede itself");
+    }
+  }
+  return notes.size;
 }
 
 function checkVersions(

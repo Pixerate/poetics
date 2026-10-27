@@ -2,7 +2,7 @@
 
 Oct 24, 2026 · @Someone
 
-> Kept current in the repo. Changes since the original: the metadata store is a hybrid of git-tracked JSON and a local SQLite index ([ADR 0002](decisions/0002-hybrid-json-sqlite-store.md)), and a unit's first version has change class `created`.
+> Kept current in the repo. Changes since the original: the metadata store is a hybrid of git-tracked JSON and a local SQLite index ([ADR 0002](decisions/0002-hybrid-json-sqlite-store.md)), a unit's first version has change class `created`, and gotchas are anchored notes from which `GOTCHAS.md` is generated ([ADR 0006](decisions/0006-notes-replace-gotchas.md)).
 
 ## Summary
 
@@ -130,6 +130,8 @@ Metadata lives in a `.poetics/` folder at the repo root, as **one JSON file per 
   config.json            # adapters, include/exclude globs, policy
   units/
     01JB8K…Q3.json       # one file per unit, named by uid
+  notes/
+    01M5YK…C9.json       # one file per gotcha, workaround or invariant
   poetics.lock           # optional closure pins for exported components
   cache/                 # gitignored, disposable
     index.db             # SQLite index rebuilt from units/ (node:sqlite)
@@ -175,6 +177,7 @@ Decisions behind this layout:
 - **Human authorship and dates come from git**, via the recorded commit, so there is one source of truth.
 - **Agent provenance is stored**, because git only records who committed, not which agent session, model or task produced a change. The `reviewed` flag lets policy treat agent-written rationale differently until a human approves it.
 - **Rationale is stored per unit**, because a commit message describes a whole commit while a rationale describes one unit's change. It defaults to the commit message.
+- **Notes are stored** for gotchas, workarounds and invariants: verbatim symptoms, cause, fix, and anchors to units, paths, dependency ranges and commands, so the right note surfaces when a task touches what it is about. A unit anchor records the unit version it was confirmed against, so a newer version flags the note for re-checking. `GOTCHAS.md` is generated from notes ([ADR 0006](decisions/0006-notes-replace-gotchas.md)).
 - **Lineage is stored** when an agent or human declares a rename, move, split or merge, so identity never depends on heuristics alone.
 - **`versions` is append-only.** A custom git merge driver unions version entries by `contentHash`, so branch merges almost never need manual resolution.
 - **Derived data stays out of git.** The SQLite index, spans, the reverse dependency index and search embeddings are rebuilt locally in `cache/`. Rebuilds are incremental (unit files whose bytes are unchanged are skipped) and deleting `cache/` always yields an identical index.
@@ -219,7 +222,8 @@ Humans and agents share the same surfaces: the CLI, git hooks and CI below serve
 | `poetics why <unit>` | The rationale chain that led to the current version |
 | `poetics impact [ref]` | Components whose closure changed since a branch or commit |
 | `poetics diff <unit> <a> <b>` | Semantic diff between two versions of a unit, ignoring moves and formatting |
-| `poetics verify` | Lists unverified units, stale docs and unresolved edges; non-zero exit for CI |
+| `poetics verify` | Lists unverified units, stale docs, stale notes and unresolved edges; non-zero exit for CI |
+| `poetics notes [query]` | Notes matching an error message, unit, path or command; `poetics notes render` writes `GOTCHAS.md` |
 | `poetics docs sync` | Writes stored docs into TSDoc and `@component` comments |
 
 ### Git integration
@@ -255,7 +259,7 @@ Agents use Poetics through an MCP server with structured, token-budgeted output 
 
 | Tool | What it returns or does | Access |
 | --- | --- | --- |
-| `poetics_context_pack` | For a unit or a task description: the unit's code, signature, docs and latest rationale, plus the signatures of its callers and dependencies and its linked tests, trimmed to a token budget | Read |
+| `poetics_context_pack` | For a unit or a task description: the unit's code, signature, docs and latest rationale, plus the signatures of its callers and dependencies, its linked tests and the active notes anchored to anything in its closure, trimmed to a token budget | Read |
 | `poetics_search` | Units matching a query across names, docs and rationale | Read |
 | `poetics_unit`, `poetics_history` | One unit's current state, or its version chain with rationale and provenance | Read |
 | `poetics_impact` | Components whose closure changed since a ref, or would change if a unit changed | Read |
@@ -265,6 +269,8 @@ Agents use Poetics through an MCP server with structured, token-budgeted output 
 | `poetics_declare_lineage` | Declares a rename, move, split or merge so identity and history carry over | Write |
 | `poetics_link_test`, `poetics_set_docs` | Adds a test link or updates a unit's docs | Write |
 | `poetics_signals` | Linked issues, review notes and production errors for a unit, newest first | Read |
+| `poetics_notes` | Gotchas, workarounds and invariants matching an error message, unit, path or command | Read |
+| `poetics_record_note` | Records a new note or confirms an existing one against the current unit versions | Write |
 
 Write rules: every write is append-only, attributed to the calling agent session, and checked against the indexer. A lineage declaration that doesn't match what the diff shows is rejected. No tool can delete or rewrite history.
 
@@ -279,6 +285,7 @@ Write rules: every write is append-only, attributed to the calling agent session
 | `poetics-svelte-component` | Creating or editing Svelte components | Typed `$props()`, callback props for events, snippets over slots |
 | `poetics-review` | Reviewing a diff or pull request | Run impact, list interface breaks and unverified units, judge rationale quality |
 | `poetics-debug` | Tracking down a regression | Walk a component's closure versions to find which unit version changed behaviour |
+| `poetics-gotcha` | Something cost real time and will recur | Search notes, prefer a check over a note, record an anchored note with verbatim symptoms, regenerate `GOTCHAS.md` |
 
 `poetics init --agents` installs the skills into the repo (for example `.claude/skills/`), adds a short `AGENTS.md` pointer for agents that read that convention, and registers the MCP server. An example skill:
 
@@ -296,6 +303,17 @@ description: Use before renaming, moving, splitting or merging any function, hoo
    Never work around it by deleting units.
 5. Call poetics_record_rationale on each resulting unit, then poetics_verify.
 ```
+
+### Gotchas as notes
+
+Quirks and workarounds are recorded as notes rather than appended to a document, so they reach an agent when they matter instead of all at once:
+
+- **In context:** `poetics_context_pack` includes active notes anchored to any unit in the task's closure, or to the paths and commands it touches.
+- **On failure:** a Claude Code hook on failed tool calls sends the error text to `poetics_notes` and adds the matching fix to the agent's context.
+- **When stale:** `poetics verify` flags a note when an anchored unit has a newer version than the note was confirmed against, when an anchored dependency moves outside its range (a Dependabot bump surfaces the note on its own pull request), or when the note's check stops failing.
+- **Toward automation:** each note is pushed up a ladder: note, then a check (test, validator rule, config) that catches it, then a fix that removes the cause. Resolved notes are retired, never deleted.
+
+`GOTCHAS.md` remains for humans and agents without MCP, generated from the notes and checked in CI.
 
 ### Agent provenance
 
@@ -375,6 +393,7 @@ The first deliverable is the schema, not the indexer. Once the formats are fixed
 | Version hashes | Provisional git blob hash | Normalised syntax-tree hash, with a rehash migration | 1 |
 | Gather context | Agent reads unit files and the linked plan sections | `poetics_context_pack` | 1 |
 | Check the store | JSON Schema validation in CI | `poetics verify` | 1 |
+| Record gotchas | Agent writes a note file, per `poetics-gotcha`; `GOTCHAS.md` generated | `poetics_record_note`; failure hook surfaces matching notes | 2 |
 | Record rationale | Agent writes it into the unit file, per `poetics-change` | `poetics_record_rationale` | 2 |
 | Record lineage | Agent adds a lineage entry, per `poetics-refactor` | `poetics_declare_lineage`, checked against the diff | 2 |
 | Link tests | Explicit entries in the unit file | Coverage-based linking | 4 |

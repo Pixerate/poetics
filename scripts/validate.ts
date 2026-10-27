@@ -1,4 +1,4 @@
-// The day-one store check: validates .poetics/ against schemas/ and the rules
+// The day-one store check: validates .poetics/ (units and notes) against schemas/ and the rules
 // a schema cannot express. `poetics verify` takes this over in phase 1.
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,7 +29,7 @@ export async function main(argv: readonly string[], io: Io): Promise<number> {
 function printHuman(result: CheckResult, errors: number, io: Io): void {
   for (const problem of result.problems) io.err(`${problem.severity}: ${problem.file}: ${problem.message}`);
   const warnings = result.problems.length - errors;
-  io.out(`Checked ${result.units} unit(s): ${errors} error(s), ${warnings} warning(s).`);
+  io.out(`Checked ${result.units} unit(s) and ${result.notes} note(s): ${errors} error(s), ${warnings} warning(s).`);
 }
 
 if (import.meta.main) {

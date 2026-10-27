@@ -44,4 +44,8 @@ Run `poetics-orient` first. Day-one version: you edit unit files by hand. When
 7. **New units** (a new exported function, hook, component or type): mint a uid
    with `pnpm mint-uid`, create `.poetics/units/<uid>.json` with a single
    `"change": "created"` version and `"parent": null`, and link its tests.
-8. **Check**: `pnpm validate`, then `pnpm test`.
+8. **Notes:** if `pnpm validate` warns that a note anchored to a unit you
+   changed needs re-checking, confirm it still holds and set its `observedAt`
+   to the new `contentHash`, or retire it (`poetics-gotcha`). If the change hit
+   a pitfall that cost you time, record it with `poetics-gotcha`.
+9. **Check**: `pnpm validate`, then `pnpm test`.

@@ -1,0 +1,28 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDBA6EPBM57MVPV5P99G",
+  "kind": "gotcha",
+  "area": "node",
+  "title": "Relative imports need `.ts` extensions",
+  "symptoms": [
+    "ERR_MODULE_NOT_FOUND"
+  ],
+  "cause": "Node's ESM resolver does not guess extensions.",
+  "fix": "Import `./foo.ts`. `rewriteRelativeImportExtensions` turns it into `./foo.js` in `dist/`.",
+  "anchors": {
+    "paths": [
+      "tsconfig.base.json"
+    ]
+  },
+  "check": {
+    "kind": "config",
+    "ref": "tsconfig.base.json"
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  }
+}

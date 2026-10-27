@@ -1,0 +1,34 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDB9E5CAKYK9Z1WP5W4S",
+  "kind": "gotcha",
+  "area": "node",
+  "title": "Type stripping rejects some TypeScript syntax",
+  "symptoms": [
+    "ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX"
+  ],
+  "cause": "Node only strips types; it does not transform `enum`, `namespace` or constructor parameter properties.",
+  "fix": "Use union types and `as const` objects instead of `enum`, and assign fields explicitly in constructors. `erasableSyntaxOnly` makes `tsc` reject them early.",
+  "anchors": {
+    "paths": [
+      "tsconfig.base.json"
+    ]
+  },
+  "check": {
+    "kind": "config",
+    "ref": "tsconfig.base.json"
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  },
+  "links": [
+    {
+      "kind": "decision",
+      "ref": "docs/decisions/0005-node-24-type-stripping.md"
+    }
+  ]
+}

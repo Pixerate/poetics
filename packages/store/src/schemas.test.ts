@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createValidator, loadSchemaSet } from "./schemas.ts";
-import { REPO_SCHEMAS, UID_A, defaultConfig, hash, makeUnit } from "./test-helpers.ts";
+import { REPO_SCHEMAS, UID_A, defaultConfig, hash, makeNote, makeUnit } from "./test-helpers.ts";
 
 const validator = createValidator(await loadSchemaSet(REPO_SCHEMAS));
 
@@ -61,5 +61,37 @@ describe("config and lock schemas", () => {
   it("accepts a lock with pins keyed by uid", () => {
     expect(validator.lock({ version: 1, pins: { [UID_A]: { name: "PriceTag", closureHash: hash("a", "b3") } } }).valid).toBe(true);
     expect(validator.lock({ version: 1, pins: { nope: { name: "X", closureHash: hash("a", "b3") } } }).valid).toBe(false);
+  });
+});
+
+describe("note schema", () => {
+  it("accepts a minimal note and a fully anchored one", () => {
+    expect(validator.note(makeNote()).errors).toEqual([]);
+    const full = makeNote({
+      kind: "workaround",
+      anchors: {
+        units: [{ uid: UID_A, observedAt: hash("1") }],
+        paths: ["package.json"],
+        dependencies: [{ name: "typescript", range: "^6" }],
+        commands: ["pnpm ci"],
+      },
+      check: { kind: "test", ref: "scripts/scripts.test.ts", name: "x" },
+      links: [{ kind: "decision", ref: "docs/decisions/0003-typescript-compiler-api.md" }],
+      actor: { kind: "agent", tool: "claude-code", reviewed: false },
+    });
+    expect(validator.note(full).errors).toEqual([]);
+  });
+
+  it("requires resolvedBy on resolved notes and supersededBy on superseded ones", () => {
+    expect(validator.note(makeNote({ status: "resolved" })).valid).toBe(false);
+    expect(validator.note(makeNote({ status: "resolved", resolvedBy: { kind: "commit", ref: "abc1234" } })).valid).toBe(true);
+    expect(validator.note(makeNote({ status: "superseded" })).valid).toBe(false);
+  });
+
+  it("rejects bad areas, kinds and anchor fields", () => {
+    expect(validator.note(makeNote({ area: "Tooling" })).valid).toBe(false);
+    expect(validator.note({ ...makeNote(), kind: "tip" }).valid).toBe(false);
+    expect(validator.note(makeNote({ anchors: { units: [{ uid: "nope" }] } })).valid).toBe(false);
+    expect(validator.note({ ...makeNote(), anchors: { files: [] } }).valid).toBe(false);
   });
 });

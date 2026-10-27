@@ -7,6 +7,7 @@ export interface StorePaths {
   dir: string;
   config: string;
   units: string;
+  notes: string;
   lock: string;
   cache: string;
   indexDb: string;
@@ -21,6 +22,7 @@ export function storePaths(root: string): StorePaths {
     dir,
     config: join(dir, "config.json"),
     units: join(dir, "units"),
+    notes: join(dir, "notes"),
     lock: join(dir, "poetics.lock"),
     cache,
     indexDb: join(cache, "index.db"),

@@ -1,10 +1,11 @@
 import { execFileSync } from "node:child_process";
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { isUid } from "@poetics/core";
+import { buildGotchas, syncGotchas } from "./gotchas.ts";
 import { mintUids } from "./mint-uid.ts";
 import { provisionalHash } from "./provisional-hash.ts";
 import { reindex } from "./reindex.ts";
@@ -53,7 +54,7 @@ async function validate(...argv: string[]) {
 describe("scripts/validate.ts", () => {
   it("passes a valid store", async () => {
     const result = await validate("--root", await repoWith(goodUnit));
-    expect(result).toMatchObject({ code: 0, out: "Checked 1 unit(s): 0 error(s), 0 warning(s)." });
+    expect(result).toMatchObject({ code: 0, out: "Checked 1 unit(s) and 0 note(s): 0 error(s), 0 warning(s)." });
   });
 
   it("exits 1 and reports problems", async () => {
@@ -64,7 +65,7 @@ describe("scripts/validate.ts", () => {
 
   it("emits JSON for agents", async () => {
     const result = await validate("--json", "--root", await repoWith(goodUnit));
-    expect(JSON.parse(result.out)).toEqual({ units: 1, problems: [] });
+    expect(JSON.parse(result.out)).toEqual({ units: 1, notes: 0, problems: [] });
   });
 
   it("validates this repository's own store", async () => {
@@ -115,5 +116,60 @@ describe("scripts/provisional-hash.ts", () => {
     expect(() => provisionalHash(source, 0, 1)).toThrow(RangeError);
     expect(() => provisionalHash(source, 3, 2)).toThrow(RangeError);
     expect(() => provisionalHash(source, 1, 99)).toThrow(RangeError);
+  });
+});
+
+describe("scripts/gotchas.ts", () => {
+  const note = {
+    id: "01JB8N0000000000000000000N",
+    kind: "gotcha",
+    area: "tooling",
+    title: "Thing breaks",
+    symptoms: ["boom"],
+    cause: "Because.",
+    fix: "Don't.",
+    anchors: { units: [{ uid: UID }] },
+    status: "active",
+    actor: { kind: "human" },
+  };
+
+  async function repoWithNote(): Promise<string> {
+    const root = await repoWith(goodUnit);
+    await mkdir(join(root, ".poetics", "notes"));
+    await writeFile(join(root, ".poetics", "notes", `${note.id}.json`), JSON.stringify(note));
+    return root;
+  }
+
+  it("renders notes with unit names for anchors", async () => {
+    const out = await buildGotchas(await repoWithNote());
+    expect(out).toContain("### Thing breaks");
+    expect(out).toContain("- **Applies to:** `a`");
+  });
+
+  it("writes GOTCHAS.md, then --check passes", async () => {
+    const root = await repoWithNote();
+    expect(await syncGotchas(root, true)).toBe(false);
+    expect(await syncGotchas(root, false)).toBe(true);
+    expect(await readFile(join(root, "GOTCHAS.md"), "utf8")).toBe(await buildGotchas(root));
+    expect(await syncGotchas(root, true)).toBe(true);
+  });
+
+  it("--check fails after a hand edit", async () => {
+    const root = await repoWithNote();
+    await syncGotchas(root, false);
+    await writeFile(join(root, "GOTCHAS.md"), "# edited by hand\n");
+    expect(await syncGotchas(root, true)).toBe(false);
+  });
+
+  it("this repository's GOTCHAS.md matches its notes", async () => {
+    expect(await syncGotchas(REPO_ROOT, true)).toBe(true);
+  });
+});
+
+describe("package.json scripts", () => {
+  it("has no script named ci, which pnpm would shadow with its clean-install command", async () => {
+    const pkg = JSON.parse(await readFile(join(REPO_ROOT, "package.json"), "utf8")) as { scripts: Record<string, string> };
+    expect(pkg.scripts).not.toHaveProperty("ci");
+    expect(pkg.scripts["preflight"]).toBeDefined();
   });
 });

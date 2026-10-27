@@ -2,13 +2,14 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { Unit } from "@poetics/core";
+import type { Note, Unit } from "@poetics/core";
 
 export const REPO_SCHEMAS = join(dirname(fileURLToPath(import.meta.url)), "../../../schemas");
 
 export const UID_A = "01JB8K0000000000000000000A";
 export const UID_B = "01JB8K0000000000000000000B";
 export const UID_C = "01JB8K0000000000000000000C";
+export const NOTE_ID = "01JB8N0000000000000000000N";
 
 export const hash = (char: string, family: "git" | "b3" = "git") =>
   (family === "git" ? `git:${char.repeat(40)}` : `b3:${char.repeat(64)}`) as `git:${string}`;
@@ -52,4 +53,25 @@ export async function writeUnit(root: string, unit: Unit, path = join(".poetics"
 
 export function defaultConfig(): object {
   return { version: 1, adapters: ["typescript"], include: ["src/**"], policy: { allowProvisionalHashes: true } };
+}
+
+export function makeNote(overrides: Partial<Note> = {}): Note {
+  return {
+    id: NOTE_ID,
+    kind: "gotcha",
+    area: "tooling",
+    title: "Something surprising",
+    symptoms: ["Error: boom"],
+    cause: "Because.",
+    fix: "Do the other thing.",
+    anchors: {},
+    status: "active",
+    actor: { kind: "human" },
+    ...overrides,
+  };
+}
+
+export async function writeNote(root: string, note: Note, path = join(".poetics", "notes", `${note.id}.json`)): Promise<void> {
+  await mkdir(dirname(join(root, path)), { recursive: true });
+  await writeFile(join(root, path), `${JSON.stringify(note, null, 2)}\n`);
 }

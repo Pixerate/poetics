@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDBBB0T8MJ5ZCSH55CZ8",
+  "kind": "gotcha",
+  "area": "node",
+  "title": "`import.meta.main` needs Node 24.2+",
+  "symptoms": [],
+  "cause": "`import.meta.main` arrived in Node 24.2 (stability 1.0).",
+  "fix": "Use Node ≥ 24.15 (`engines` enforces it). Keep script logic in an exported function so tests import it without side effects.",
+  "anchors": {
+    "dependencies": [
+      {
+        "name": "node",
+        "range": ">=24.2"
+      }
+    ],
+    "paths": [
+      "scripts"
+    ]
+  },
+  "check": {
+    "kind": "config",
+    "ref": "package.json"
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  }
+}

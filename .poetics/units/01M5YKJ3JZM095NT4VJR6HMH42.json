@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5YKJ3JZM095NT4VJR6HMH42",
+  "kind": "type",
+  "framework": "none",
+  "name": "Note",
+  "location": {
+    "file": "packages/core/src/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:831b913d52233b645a94958db98ee3a532b11c73",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Gotchas become structured, anchored records in .poetics/notes/ instead of free text in GOTCHAS.md.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0006-notes-replace-gotchas.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A gotcha, workaround or invariant, anchored to what it is about. The shape\nof one `.poetics/notes/<id>.json` file; GOTCHAS.md is generated from these.",
+  "tests": []
+}

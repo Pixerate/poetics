@@ -27,7 +27,8 @@ pnpm install
 | `pnpm test:watch` | Vitest in watch mode |
 | `pnpm typecheck` | `tsc -b` over all packages, then type-check tests and scripts |
 | `pnpm check` | `sv check` on the Svelte fixture, `tsc` on the React fixture |
-| `pnpm validate` | Validate `.poetics/` against `schemas/` and the store rules |
+| `pnpm validate` | Validate `.poetics/` (units and notes) against `schemas/` and the store rules |
+| `pnpm gotchas [--check]` | Generate `GOTCHAS.md` from `.poetics/notes/`, or check it is up to date |
 | `pnpm build` | Build every package to `dist/` |
 | `pnpm preflight` | Everything CI runs, in order |
 | `pnpm reindex [--fresh]` | Rebuild the local SQLite index at `.poetics/cache/index.db` |
@@ -45,14 +46,15 @@ pnpm --filter @poetics-fixtures/svelte-app dev
 
 ```
 AGENTS.md                 rules for agents and humans
-GOTCHAS.md                pitfalls and workarounds
+GOTCHAS.md                pitfalls and workarounds (generated from notes)
 .claude/skills/           poetics-orient, poetics-change, poetics-refactor, …
 .poetics/
   config.json             adapters, globs, policy
   units/                  one JSON file per unit (source of truth, in git)
+  notes/                  one JSON file per gotcha, workaround or invariant
   cache/index.db          SQLite index (gitignored, rebuilt)
 schemas/                  JSON Schemas for unit files, config and lock
-scripts/                  validate, reindex, mint-uid, provisional-hash
+scripts/                  validate, reindex, mint-uid, provisional-hash, gotchas
 packages/
   core/                   unit model, uids, hashes, graph (stubs)
   store/                  JSON store, validation, SQLite index

@@ -1,0 +1,29 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDBHB74W1K94RSHWGRXK",
+  "kind": "gotcha",
+  "area": "releases",
+  "title": "Nothing is published to npm",
+  "symptoms": [],
+  "cause": "Every package is `\"private\": true` until a maintainer sets up the `@poetics` scope and trusted publishing.",
+  "fix": "Follow the one-time setup in `docs/ci-and-releases.md`, then remove `\"private\": true`.",
+  "anchors": {
+    "paths": [
+      ".github/workflows/release.yml",
+      "docs/ci-and-releases.md"
+    ]
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  },
+  "links": [
+    {
+      "kind": "doc",
+      "ref": "docs/ci-and-releases.md"
+    }
+  ]
+}

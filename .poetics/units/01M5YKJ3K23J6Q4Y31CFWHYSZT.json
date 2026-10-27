@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5YKJ3K23J6Q4Y31CFWHYSZT",
+  "kind": "function",
+  "framework": "none",
+  "name": "listNoteFiles",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:1c7a7874f9bcb0c3716b17ef90c89d8d47d4649d",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Notes live beside units in .poetics/notes/ and are listed the same way.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0006-notes-replace-gotchas.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Every `*.json` under `.poetics/notes/`, sorted by path.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    }
+  ]
+}

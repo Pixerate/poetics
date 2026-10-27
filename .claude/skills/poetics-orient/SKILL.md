@@ -21,7 +21,11 @@ When `poetics_context_pack` lands, steps 1–3 become one call to it.
    updated too.
 4. **Check its tests.** `tests` lists linked test files. Run them before you
    start so you know the baseline: `pnpm vitest run <file>`.
-5. **Check flags.** `provisional: true` means the hashes are git blob hashes,
+5. **Check notes.** Search `.poetics/notes/` for the unit's uid, its file
+   path, and the commands and dependencies you will use
+   (`grep -l '<uid or path>' .poetics/notes/*.json`). Active notes are known
+   pitfalls; read their `fix` before you start.
+6. **Check flags.** `provisional: true` means the hashes are git blob hashes,
    which is normal for now. `reviewed: false` on an agent actor means a human has
    not approved that rationale yet; weigh it accordingly.
 

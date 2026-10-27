@@ -26,9 +26,28 @@
           "ref": "docs/plan.md#metadata-schema-and-storage"
         }
       ]
+    },
+    {
+      "contentHash": "git:6d61640a211bc2b1fa6bd005c871277ba17f4915",
+      "provisional": true,
+      "parent": "git:83b5a341a49d6d52a8a727dcdfef446917080633",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Also validates notes: schema, id matches filename, anchors and check files exist, supersession is valid, and warns when an anchored unit has changed since the note was confirmed.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0006-notes-replace-gotchas.md"
+        }
+      ]
     }
   ],
-  "docs": "Validates the whole store: config, lock and every unit file against their\nJSON Schemas, then the rules a schema cannot express (uid matches filename,\nversion chains are intact, references point at real units and files).",
+  "docs": "Validates the whole store: config, lock, every unit file and every note\nagainst their JSON Schemas, then the rules a schema cannot express (ids\nmatch filenames, version chains are intact, references point at real units,\nnotes and files, and notes are flagged when their units have moved on).",
   "tests": [
     {
       "file": "packages/store/src/check.test.ts",

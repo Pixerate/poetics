@@ -19,10 +19,10 @@ flowchart TD
 | Package | Built today | Stubbed (throws `NotImplementedError`) |
 | --- | --- | --- |
 | `@poetics/core` | Model types, `mintUid`, `isUid`, `uidTime`, `gitBlobHash`, `isHash`, `FrameworkAdapter` interface | `contentHash`, `interfaceHash`, `closureHash`, graph construction, SCCs, closure hashes, impact |
-| `@poetics/store` | Store paths and sharding layout, JSON Schema validation, `checkStore`, reading unit files, the incremental SQLite index with lookups and reverse dependencies | Validated writes (`appendVersion`, `recordRationale`, `declareLineage`, `linkTest`, `setDocs`), FTS search |
+| `@poetics/store` | Store paths and sharding layout, JSON Schema validation, `checkStore` (units and notes), reading unit and note files, `renderGotchas`, the incremental SQLite index with lookups and reverse dependencies | Validated writes (`appendVersion`, `recordRationale`, `declareLineage`, `linkTest`, `setDocs`), FTS search |
 | `@poetics/adapter-react` | Hook and component naming rules | Detection, interfaces, edges |
 | `@poetics/adapter-svelte` | File-kind detection, component naming, Svelte 4/5 detection | Detection, interfaces, edges |
-| `@poetics/mcp` | Tool definitions with input schemas and access levels | Server and tool handlers |
+| `@poetics/mcp` | Tool definitions with input schemas and access levels, including `poetics_notes` and `poetics_record_note` | Server and tool handlers |
 | `@poetics/cli` | `help`, `--version`, `--json`, exit codes | Every command |
 
 Later packages from the plan (`skills`, `evals`, `testlink`, `lsp`, `action`,

@@ -47,6 +47,9 @@ jobs:
       - name: Validate .poetics store
         run: pnpm validate
 
+      - name: Check GOTCHAS.md is generated from notes
+        run: pnpm gotchas --check
+
       - name: Build
         run: pnpm build
 

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDB6HEDGYN42QZJTVZR8",
+  "kind": "workaround",
+  "area": "tooling",
+  "title": "TypeScript is pinned to 6, not 7",
+  "symptoms": [],
+  "cause": "TypeScript 7 (the native port) does not export the classic `typescript` JS API. `svelte-check` requires `^5 || ^6`, and ts-morph and `svelte2tsx` need the classic API.",
+  "fix": "Stay on `^6`. Dependabot ignores TypeScript major updates; revisit when the Svelte tooling supports 7.",
+  "anchors": {
+    "dependencies": [
+      {
+        "name": "typescript",
+        "range": "^6"
+      },
+      {
+        "name": "svelte-check",
+        "range": "^4"
+      }
+    ],
+    "paths": [
+      ".github/dependabot.yml",
+      "package.json"
+    ]
+  },
+  "check": {
+    "kind": "config",
+    "ref": ".github/dependabot.yml"
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  },
+  "links": [
+    {
+      "kind": "decision",
+      "ref": "docs/decisions/0003-typescript-compiler-api.md"
+    }
+  ]
+}

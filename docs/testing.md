@@ -25,6 +25,7 @@ Conventions:
   `packages/store/src/test-helpers.ts`). Never write into the working tree.
 - Prefer exact assertions (`toEqual`) over snapshots for structured output.
 - Tests are linked from unit files (`tests` with `via: "static"`).
+- When a test exists to catch a gotcha, point the note's `check` at it.
 
 ## Type checks
 

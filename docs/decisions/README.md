@@ -12,5 +12,6 @@ new record here.
 | [0003](0003-typescript-compiler-api.md) | TypeScript compiler API, not tree-sitter | Accepted |
 | [0004](0004-provisional-hashes.md) | Provisional git blob hashes until the indexer exists | Accepted |
 | [0005](0005-node-24-type-stripping.md) | Node 24, native type stripping and `node:sqlite` | Accepted |
+| [0006](0006-notes-replace-gotchas.md) | Gotchas are anchored notes; GOTCHAS.md is generated | Accepted |
 
 New records copy [`template.md`](template.md).

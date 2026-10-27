@@ -108,7 +108,7 @@ the build. See [Getting started](docs/getting-started.md) for every command.
 - [Developer documentation](docs/README.md): architecture, data model, testing,
   CI and releases
 - [`AGENTS.md`](AGENTS.md): rules for agents and humans, including how to commit
-- [`GOTCHAS.md`](GOTCHAS.md): known pitfalls and workarounds
+- [`GOTCHAS.md`](GOTCHAS.md): known pitfalls and workarounds, generated from anchored notes in `.poetics/notes/`
 - [Decision records](docs/decisions/README.md)
 
 ## Contributing

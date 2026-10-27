@@ -5,6 +5,7 @@ import type { ErrorObject, ValidateFunction } from "ajv";
 
 export interface SchemaSet {
   unit: object;
+  note: object;
   config: object;
   lock: object;
 }
@@ -18,17 +19,19 @@ export interface StoreValidator {
   unit(value: unknown): ValidationResult;
   config(value: unknown): ValidationResult;
   lock(value: unknown): ValidationResult;
+  note(value: unknown): ValidationResult;
 }
 
-/** Reads `unit.schema.json`, `config.schema.json` and `lock.schema.json` from a directory. */
+/** Reads the unit, note, config and lock schemas from a directory. */
 export async function loadSchemaSet(dir: string): Promise<SchemaSet> {
   const read = async (name: string): Promise<object> => JSON.parse(await readFile(join(dir, name), "utf8")) as object;
-  const [unit, config, lock] = await Promise.all([
+  const [unit, note, config, lock] = await Promise.all([
     read("unit.schema.json"),
+    read("note.schema.json"),
     read("config.schema.json"),
     read("lock.schema.json"),
   ]);
-  return { unit, config, lock };
+  return { unit, note, config, lock };
 }
 
 export function createValidator(schemas: SchemaSet): StoreValidator {
@@ -39,8 +42,11 @@ export function createValidator(schemas: SchemaSet): StoreValidator {
       const valid = validate(value);
       return { valid, errors: valid ? [] : formatErrors(validate.errors ?? []) };
     };
+  // The note schema refers to definitions in the unit schema, so the unit schema is compiled first.
+  const unit = wrap(ajv.compile(schemas.unit));
   return {
-    unit: wrap(ajv.compile(schemas.unit)),
+    unit,
+    note: wrap(ajv.compile(schemas.note)),
     config: wrap(ajv.compile(schemas.config)),
     lock: wrap(ajv.compile(schemas.lock)),
   };

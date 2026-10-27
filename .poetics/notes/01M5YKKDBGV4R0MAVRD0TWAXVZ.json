@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M5YKKDBGV4R0MAVRD0TWAXVZ",
+  "kind": "gotcha",
+  "area": "store",
+  "title": "Provisional hashes change when code is reformatted",
+  "symptoms": [],
+  "cause": "A `git:` hash is a hash of the raw text, not the syntax tree.",
+  "fix": "Don't append versions for formatting-only edits; the phase 1 indexer replaces provisional hashes with syntax-tree hashes.",
+  "anchors": {
+    "units": [
+      {
+        "uid": "01M5XDBC6ST4ATSSPWGG8KZ6B5",
+        "observedAt": "git:0fc96813e0ce59ae112d2a0c69a5c8d876ce713a"
+      },
+      {
+        "uid": "01M5XDBC8SVK6FDBMQKHJZGMPN",
+        "observedAt": "git:fefc100d4e6b39358e7fbad54b340d3c08d5db5d"
+      }
+    ]
+  },
+  "status": "active",
+  "actor": {
+    "kind": "agent",
+    "tool": "claude-code",
+    "model": "claude-opus-5-5",
+    "reviewed": false
+  },
+  "links": [
+    {
+      "kind": "decision",
+      "ref": "docs/decisions/0004-provisional-hashes.md"
+    }
+  ]
+}

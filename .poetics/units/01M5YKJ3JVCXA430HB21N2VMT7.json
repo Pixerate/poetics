@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M5YKJ3JVCXA430HB21N2VMT7",
+  "kind": "type",
+  "framework": "none",
+  "name": "NoteKind",
+  "location": {
+    "file": "packages/core/src/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:df4af3f69d5ba733f043352974b234e947335f99",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Notes distinguish gotchas, workarounds and invariants so a reader knows whether something is a surprise, a deliberate detour or a rule to keep.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0006-notes-replace-gotchas.md"
+        }
+      ]
+    }
+  ],
+  "tests": []
+}

@@ -1,9 +1,10 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import { notImplemented } from "@poetics/core";
-import type { Hash, LineageEntry, Link, TestLink, Unit, Version } from "@poetics/core";
+import type { Hash, LineageEntry, Link, Note, TestLink, Unit, Version } from "@poetics/core";
 import type { StorePaths } from "./paths.ts";
 
+/** A JSON file read from the store: a unit file or a note file. */
 export interface UnitFile {
   /** Absolute path. */
   path: string;
@@ -14,9 +15,18 @@ export interface UnitFile {
 
 /** Every `*.json` under `.poetics/units/`, in either layout, sorted by path. */
 export async function listUnitFiles(paths: StorePaths): Promise<string[]> {
+  return listJsonFiles(paths.units);
+}
+
+/** Every `*.json` under `.poetics/notes/`, sorted by path. */
+export async function listNoteFiles(paths: StorePaths): Promise<string[]> {
+  return listJsonFiles(paths.notes);
+}
+
+async function listJsonFiles(dir: string): Promise<string[]> {
   let entries;
   try {
-    entries = await readdir(paths.units, { recursive: true, withFileTypes: true });
+    entries = await readdir(dir, { recursive: true, withFileTypes: true });
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
     throw error;
@@ -28,7 +38,14 @@ export async function listUnitFiles(paths: StorePaths): Promise<string[]> {
 }
 
 export async function readUnitFiles(paths: StorePaths): Promise<UnitFile[]> {
-  const files = await listUnitFiles(paths);
+  return readFiles(paths, await listUnitFiles(paths));
+}
+
+export async function readNoteFiles(paths: StorePaths): Promise<UnitFile[]> {
+  return readFiles(paths, await listNoteFiles(paths));
+}
+
+async function readFiles(paths: StorePaths, files: string[]): Promise<UnitFile[]> {
   return Promise.all(
     files.map(async (path) => ({
       path,
@@ -41,6 +58,14 @@ export async function readUnitFiles(paths: StorePaths): Promise<UnitFile[]> {
 export function parseUnit(file: UnitFile): Unit {
   try {
     return JSON.parse(file.raw) as Unit;
+  } catch (error) {
+    throw new SyntaxError(`${file.relativePath}: ${(error as Error).message}`);
+  }
+}
+
+export function parseNote(file: UnitFile): Note {
+  try {
+    return JSON.parse(file.raw) as Note;
   } catch (error) {
     throw new SyntaxError(`${file.relativePath}: ${(error as Error).message}`);
   }

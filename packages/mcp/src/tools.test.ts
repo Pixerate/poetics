@@ -12,6 +12,8 @@ describe("TOOLS", () => {
         "poetics_history",
         "poetics_impact",
         "poetics_link_test",
+        "poetics_notes",
+        "poetics_record_note",
         "poetics_record_rationale",
         "poetics_search",
         "poetics_set_docs",
@@ -29,6 +31,7 @@ describe("TOOLS", () => {
       "poetics_declare_lineage",
       "poetics_link_test",
       "poetics_set_docs",
+      "poetics_record_note",
     ]);
   });
 
