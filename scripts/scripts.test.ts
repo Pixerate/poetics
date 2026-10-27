@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -184,5 +184,47 @@ describe("Node version alignment", () => {
     const runtime = major(pkg.engines.node);
     expect(major(pkg.devDependencies["@types/node"]!)).toBe(runtime);
     expect(major(await readFile(join(REPO_ROOT, ".nvmrc"), "utf8"))).toBe(runtime);
+  });
+});
+
+describe("published package manifests", () => {
+  interface Manifest {
+    name: string;
+    files: string[];
+    bin?: Record<string, string>;
+    exports: Record<string, Record<string, string>>;
+    publishConfig?: { exports?: Record<string, Record<string, string>> };
+  }
+
+  async function manifests(): Promise<Manifest[]> {
+    const dirs = await readdir(join(REPO_ROOT, "packages"));
+    return Promise.all(
+      dirs
+        .filter((d) => !d.startsWith("."))
+        .map(async (d) => JSON.parse(await readFile(join(REPO_ROOT, "packages", d, "package.json"), "utf8")) as Manifest),
+    );
+  }
+
+  // Only `files` entries ship, so a published path outside them fails to resolve for consumers.
+  const shipped = (pkg: Manifest, target: string) =>
+    pkg.files.some((f) => !f.startsWith("!") && target.replace(/^\.\//, "").startsWith(`${f}/`));
+
+  it("publishes exports without the poetics-source condition, which points at unshipped src/", async () => {
+    for (const pkg of await manifests()) {
+      const local = Object.fromEntries(
+        Object.entries(pkg.exports).map(([k, v]) => [k, Object.fromEntries(Object.entries(v).filter(([c]) => c !== "poetics-source"))]),
+      );
+      expect(pkg.publishConfig?.exports, pkg.name).toEqual(local);
+    }
+  });
+
+  it("points every published export and bin at a shipped file", async () => {
+    for (const pkg of await manifests()) {
+      const targets = [
+        ...Object.values(pkg.publishConfig?.exports ?? pkg.exports).flatMap((c) => Object.values(c)),
+        ...Object.values(pkg.bin ?? {}),
+      ];
+      for (const target of targets) expect(shipped(pkg, target), `${pkg.name}: ${target}`).toBe(true);
+    }
   });
 });
