@@ -439,7 +439,7 @@ poetics/
 
 Seed the repo with formats, skills and the plan first, then build identity tracking, because every later feature depends on uids surviving real refactors; then add one framework at a time, then the tools developers see.
 
-_The roadmap diagram (5 phases, 4 gates) from the original plan document is tracked as GitHub milestones, one per phase._
+_The roadmap diagram (5 phases, 4 gates) from the original plan document is tracked as GitHub milestones, one per phase: [1 Identity and indexer](https://github.com/Pixerate/poetics/milestone/1), [2 React adapter and recorded rationale](https://github.com/Pixerate/poetics/milestone/2), [3 Svelte adapter](https://github.com/Pixerate/poetics/milestone/3), [4 Developer tools](https://github.com/Pixerate/poetics/milestone/4) and [5 Integrations](https://github.com/Pixerate/poetics/milestone/5)._
 
 Phases 2 and 3 can run in parallel once phase 1's gate is passed, since both adapters target the same core. Each gate is measured on real repositories rather than synthetic examples: one React app, one Svelte app, and one repo that mixes both around a shared utilities package.
 
@@ -460,10 +460,10 @@ The hardest problem is keeping a unit's identity stable through real refactors; 
 | Incomplete graph from dynamic rendering | Unresolved edges are recorded and shown, never hidden. |
 | Integration outages, rate limits or leaking private data | The core works with no integrations reachable. Integrations are read on demand and cached locally, and git stores only references, never issue or error content. |
 
-Open questions:
+Open questions, each tracked as an issue labelled `question`:
 
-- Should a unit's `uid` live only in the sidecar, or may Poetics write an inline marker comment as a fallback for hard-to-match refactors?
-- ~~One JSON file per unit, or a single SQLite file with a custom merge driver?~~ Resolved: JSON per unit in git, SQLite as a local index. See [ADR 0002](decisions/0002-hybrid-json-sqlite-store.md).
-- Should type-only changes count as a new version, or only as `cosmetic` metadata?
-- Is `poetics.lock` pinning worth building before a team asks for it?
-- Which agent runtimes to target first for skills and evals, and whether to ship skills in one format or generate per-runtime variants?
+- Should a unit's `uid` live only in the sidecar, or may Poetics write an inline marker comment as a fallback for hard-to-match refactors? ([#4](https://github.com/Pixerate/poetics/issues/4))
+- ~~One JSON file per unit, or a single SQLite file with a custom merge driver?~~ Resolved: JSON per unit in git, SQLite as a local index. See [ADR 0002](decisions/0002-hybrid-json-sqlite-store.md). ([#8](https://github.com/Pixerate/poetics/issues/8), closed)
+- Should type-only changes count as a new version, or only as `cosmetic` metadata? ([#5](https://github.com/Pixerate/poetics/issues/5))
+- Is `poetics.lock` pinning worth building before a team asks for it? ([#6](https://github.com/Pixerate/poetics/issues/6))
+- Which agent runtimes to target first for skills and evals, and whether to ship skills in one format or generate per-runtime variants? ([#7](https://github.com/Pixerate/poetics/issues/7))
