@@ -100,6 +100,10 @@ Both adapters feed the same TypeScript type checker, so a Svelte component calli
 
 Dynamic components (`<svelte:component this={x}>`, a JSX element chosen from a map), higher-order components and render props can hide what is actually rendered. Poetics records these as **unresolved edges** rather than guessing, and shows them in impact reports so reviewers know where the graph is incomplete.
 
+### Other languages
+
+Languages the TypeScript checker cannot read get adapters that run out of process: a native tool emits units, interfaces and edges as versioned JSON, and the core stays the only writer of the store. Swift comes first, as a separate SwiftPM package, after the React adapter gate. Until then, phase 1 lets adapters own their content and interface hashes and asks them for files in batches. See [ADR 0008](decisions/0008-out-of-process-adapters.md) (proposed) and [#11](https://github.com/Pixerate/poetics/issues/11).
+
 ## Composition and version propagation
 
 Every unit carries two versions: an **own version** that changes only when its code changes, and a **closure version** that changes when it or anything it depends on changes. This answers both "did someone edit this component?" and "could this component now behave differently?".
@@ -469,4 +473,5 @@ Open questions, each tracked as an issue labelled `question`:
 - ~~One JSON file per unit, or a single SQLite file with a custom merge driver?~~ Resolved: JSON per unit in git, SQLite as a local index. See [ADR 0002](decisions/0002-hybrid-json-sqlite-store.md). ([#8](https://github.com/Pixerate/poetics/issues/8), closed)
 - Should type-only changes count as a new version, or only as `cosmetic` metadata? ([#5](https://github.com/Pixerate/poetics/issues/5))
 - Is `poetics.lock` pinning worth building before a team asks for it? ([#6](https://github.com/Pixerate/poetics/issues/6))
+- When to build the Swift adapter, and what the out-of-process adapter contract looks like? See [ADR 0008](decisions/0008-out-of-process-adapters.md) (proposed). ([#11](https://github.com/Pixerate/poetics/issues/11))
 - Which agent runtimes to target first for skills and evals, and whether to ship skills in one format or generate per-runtime variants? ([#7](https://github.com/Pixerate/poetics/issues/7))
