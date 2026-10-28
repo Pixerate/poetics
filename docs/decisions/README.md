@@ -17,5 +17,6 @@ new record here.
 | [0008](0008-out-of-process-adapters.md) | Non-TypeScript adapters run out of process | Proposed |
 | [0009](0009-changes-between-refs.md) | "What changed, and why" between two refs | Accepted |
 | [0010](0010-removed-versions.md) | Removal is a version; unit files are never deleted | Accepted |
+| [0011](0011-backfill.md) | Backfill: capture the current state, then the history behind it | Proposed |
 
 New records copy [`template.md`](template.md).
