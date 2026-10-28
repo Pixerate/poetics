@@ -1,7 +1,7 @@
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { gitBlobHash } from "@poetics/core";
+import { REMOVED_CONTENT_HASH, gitBlobHash } from "@poetics/core";
 import type { Unit } from "@poetics/core";
 import { checkChange } from "./change.ts";
 import { FN_A, SCOPE, makeGitRepo, runGit, unitFor, write, writeUnitFile } from "./test-repo.ts";
@@ -65,6 +65,40 @@ describe("checkChange", () => {
     const root = await makeGitRepo(UID);
     await rm(join(root, "src", "a.ts"));
     expect(kinds(await checkChange(root, "HEAD", SCOPE))).toEqual(["error:orphaned"]);
+  });
+
+  it("accepts a deleted export recorded with a removed version", async () => {
+    const root = await makeGitRepo(UID);
+    await rm(join(root, "src", "a.ts"));
+    await writeUnitFile(
+      root,
+      appendVersion(unitFor(UID, "a", FN_A), "", { contentHash: REMOVED_CONTENT_HASH, change: "removed", rationale: "Folded into b" }),
+    );
+    expect((await checkChange(root, "HEAD", SCOPE)).findings).toEqual([]);
+  });
+
+  it("flags deleted unit files", async () => {
+    const root = await makeGitRepo(UID);
+    await rm(join(root, "src", "a.ts"));
+    await rm(join(root, ".poetics", "units", `${UID}.json`));
+    expect(kinds(await checkChange(root, "HEAD", SCOPE))).toEqual(["error:deleted-unit"]);
+  });
+
+  it("warns when a removal leaves dependents without versions", async () => {
+    const root = await makeGitRepo(UID);
+    const callerSource = "export function b() {\n  return a();\n}";
+    const caller = unitFor(UID_B, "b", callerSource, { location: { file: "src/b.ts" }, tests: [] });
+    caller.versions[0]!.deps = { [UID]: gitBlobHash(FN_A) };
+    await write(root, "src/b.ts", `${callerSource}\n`);
+    await writeUnitFile(root, caller);
+    runGit(root, "add", "-A");
+    runGit(root, "commit", "-q", "-m", "caller");
+
+    await rm(join(root, "src", "a.ts"));
+    await writeUnitFile(root, appendVersion(unitFor(UID, "a", FN_A), "", { contentHash: REMOVED_CONTENT_HASH, change: "removed" }));
+    const report = await checkChange(root, "HEAD", SCOPE);
+    expect(kinds(report)).toEqual(["warning:callers-not-updated"]);
+    expect(report.findings[0]!.message).toBe("a: removed but its dependent b got no version");
   });
 
   it("flags edits to earlier versions", async () => {

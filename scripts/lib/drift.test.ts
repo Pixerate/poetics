@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { Hash, Unit } from "@poetics/core";
 import type { Declaration } from "./declarations.ts";
 import { compareCodeWithStore } from "./drift.ts";
@@ -24,6 +25,14 @@ const unit = (uid: string, name: string, hash = h("1"), file = "src/a.ts", extra
     { contentHash: hash, provisional: true, parent: null, change: "created", actor: { kind: "human" }, rationale: "r" },
   ],
   ...extra,
+});
+
+const removed = (u: Unit): Unit => ({
+  ...u,
+  versions: [
+    ...u.versions,
+    { contentHash: REMOVED_CONTENT_HASH, provisional: true, parent: u.versions.at(-1)!.contentHash, change: "removed", actor: { kind: "human" }, rationale: "gone" },
+  ],
 });
 
 const U1 = "01JB8K0000000000000000000A";
@@ -53,6 +62,18 @@ describe("compareCodeWithStore", () => {
     ]);
     expect(drift).toMatchObject({ tracked: 1, fresh: 0, declarations: 2 });
     expect(drift.findings[0]!.message).toContain(h("2"));
+  });
+
+  it("tells orphans to record lineage or a removed version", () => {
+    const [finding] = compareCodeWithStore([], [unit(U1, "gone")], all).findings;
+    expect(finding!.message).toContain('append a "removed" version');
+  });
+
+  it("never orphans or matches removed units, so a returning name is untracked", () => {
+    expect(compareCodeWithStore([], [removed(unit(U1, "gone"))], all).findings).toEqual([]);
+    const drift = compareCodeWithStore([decl("gone")], [removed(unit(U1, "gone"))], all);
+    expect(drift.findings.map((f) => f.kind)).toEqual(["untracked"]);
+    expect(drift.tracked).toBe(0);
   });
 
   it("only orphans units in files it covers", () => {

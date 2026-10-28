@@ -23,7 +23,7 @@ closure version changes when any function it uses changes.
 | `contentHash`, `interfaceHash`, `closureHash` | `b3:<64 hex>` from the indexer, or provisional `git:<40 hex>` ([ADR 0004](decisions/0004-provisional-hashes.md)) |
 | `provisional` | Must be `true` exactly when any hash is `git:` |
 | `parent` | Previous version's `contentHash`, or `null` for the first |
-| `change` | `created` (first version only), `interface`, `behaviour` or `cosmetic` |
+| `change` | `created` (first version only), `interface`, `behaviour`, `cosmetic`, or `removed` (last version only) |
 | `commit` | Commit that introduced it; omitted in hand-written entries and backfilled from git |
 | `actor` | `{ kind: "human" }` or an agent with `tool`, `model`, `session`, `task`, `reviewed` |
 | `rationale` | Why this unit changed, citing its source |
@@ -58,7 +58,19 @@ validate as you type.
 - `provisional` matches the hash family, and policy may forbid provisional hashes;
 - `location.file`, linked test files, `owner` and `deps` all point at things that
   exist (unknown lineage uids are warnings);
-- lock pins refer to known units.
+- lock pins refer to known units;
+- `removed` is only ever the last version ([ADR 0010](decisions/0010-removed-versions.md)).
+
+### Removed units
+
+Unit files are never deleted. When an export is deleted from the code, its unit
+gains a final version with `"change": "removed"`, a rationale saying why, and
+`contentHash` set to git's empty-blob hash
+(`git:e69de29bb2d1d6434b8b29ae775ad8c2e48c5391`, `REMOVED_CONTENT_HASH` in
+`@poetics/core`), marked `provisional` and with no interface or closure hash. A
+removed unit's `location.file` and linked tests need not exist; drift and
+coverage skip it; live units that still depend on it get a warning. An export
+that later reappears with the same name gets a new uid.
 
 ### Sharding
 

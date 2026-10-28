@@ -1,6 +1,6 @@
 // Compares the code with the store: which declarations have no unit, which
 // units are behind their code, and which units no longer have code.
-import { isProvisional } from "@poetics/core";
+import { isProvisional, isRemoved } from "@poetics/core";
 import type { Unit } from "@poetics/core";
 import type { Declaration } from "./declarations.ts";
 
@@ -38,6 +38,8 @@ const key = (file: string, name: string) => `${file}#${name}`;
  * across renames and moves). Only units whose file satisfies `covers` can be
  * orphaned: pass the set of files that were scanned, so units for files outside
  * the scan (or that the parser cannot read yet, like .svelte) are left alone.
+ * Removed units are history, not code, so they never match: an export that
+ * reappears under a removed unit's name gets a new unit.
  */
 export function compareCodeWithStore(
   declarations: readonly Declaration[],
@@ -47,7 +49,7 @@ export function compareCodeWithStore(
   const findings: DriftFinding[] = [];
   const byKey = new Map<string, Unit>();
   for (const unit of units) {
-    if (unit.owner !== undefined) continue;
+    if (unit.owner !== undefined || isRemoved(unit)) continue;
     const k = key(unit.location.file, unit.location.export ?? unit.name);
     const existing = byKey.get(k);
     if (existing) {
@@ -111,7 +113,7 @@ export function compareCodeWithStore(
       file: unit.location.file,
       name: unit.name,
       uid: unit.uid,
-      message: `${unit.name} no longer exists in ${unit.location.file}; record lineage if it moved or was renamed, or retire the unit`,
+      message: `${unit.name} no longer exists in ${unit.location.file}; record lineage if it moved or was renamed, or append a "removed" version saying why it went`,
     });
   }
 

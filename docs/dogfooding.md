@@ -66,9 +66,11 @@ Humans use `"actor": { "kind": "human" }`.
 **Renamed or moved something:** keep the uid; see
 [`poetics-refactor`](../.claude/skills/poetics-refactor/SKILL.md).
 
-**Deleted an exported function:** append a final version whose rationale says it
-was removed and why, then delete the unit file in the same commit. History stays
-in git. (A tombstone format is an open question for phase 2.)
+**Deleted an exported function:** keep the unit file and append a final version
+with `"change": "removed"`, `"contentHash": "git:e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"`
+(the empty-blob hash), `"provisional": true`, and a rationale saying why it went
+and what replaces it, if anything. Never delete the unit file
+([ADR 0010](decisions/0010-removed-versions.md)).
 
 Then run `pnpm validate` and `pnpm poetics:check`; see
 [Change checks and coverage](checks-and-coverage.md).

@@ -19,6 +19,7 @@ export type ChangeFindingKind =
   | "duplicate"
   | "unverifiable"
   | "rewritten-history"
+  | "deleted-unit"
   | "missing-lineage"
   | "no-links"
   | "unverified"
@@ -65,7 +66,15 @@ export async function checkChange(root: string, since: string, scope: Scope): Pr
   const unitChanges = changes.filter((c) => c.path.startsWith(".poetics/units/") && c.path.endsWith(".json"));
   const newVersions: Array<{ unit: Unit; file: string; version: Unit["versions"][number] }> = [];
   for (const change of unitChanges) {
-    if (change.status === "D") continue;
+    if (change.status === "D") {
+      findings.push({
+        severity: "error",
+        kind: "deleted-unit",
+        file: change.path,
+        message: `unit files are never deleted; restore it and append a "removed" version saying why the code went (ADR 0010)`,
+      });
+      continue;
+    }
     const head = parseUnit({ path: join(root, change.path), relativePath: change.path, raw: await readFile(join(root, change.path), "utf8") });
     const baseRaw = change.status === "A" ? undefined : showAt(root, base, change.from ?? change.path);
     const before = baseRaw === undefined ? undefined : (JSON.parse(baseRaw) as Unit);
@@ -123,14 +132,15 @@ export async function checkChange(root: string, since: string, scope: Scope): Pr
         });
       }
     }
-    if (version.change === "interface") {
+    // A removal breaks callers at least as surely as an interface change.
+    if (version.change === "interface" || version.change === "removed") {
       for (const caller of dependents(unit.uid)) {
         if (versioned.has(caller.uid)) continue;
         findings.push({
           severity: "warning",
           kind: "callers-not-updated",
           file,
-          message: `${unit.name}: interface changed but its dependent ${caller.name} got no version`,
+          message: `${unit.name}: ${version.change === "removed" ? "removed" : "interface changed"} but its dependent ${caller.name} got no version`,
         });
       }
     }

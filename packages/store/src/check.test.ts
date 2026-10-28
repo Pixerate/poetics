@@ -1,6 +1,8 @@
 import { rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { REMOVED_CONTENT_HASH } from "@poetics/core";
+import type { Hash, Version } from "@poetics/core";
 import { checkStore } from "./check.ts";
 import { storePaths } from "./paths.ts";
 import { createValidator, loadSchemaSet } from "./schemas.ts";
@@ -8,6 +10,14 @@ import { NOTE_ID, REPO_SCHEMAS, UID_A, UID_B, defaultConfig, hash, makeNote, mak
 
 const validator = createValidator(await loadSchemaSet(REPO_SCHEMAS));
 const check = async (root: string) => checkStore(storePaths(root), validator);
+const removedVersion = (parent: Hash): Version => ({
+  contentHash: REMOVED_CONTENT_HASH,
+  provisional: true,
+  parent,
+  change: "removed",
+  actor: { kind: "human" },
+  rationale: "Folded into formatRange.",
+});
 const messages = (result: Awaited<ReturnType<typeof check>>) => result.problems.map((p) => p.message);
 
 describe("checkStore", () => {
@@ -47,6 +57,39 @@ describe("checkStore", () => {
     expect(result).toContain(`versions[1].parent should be ${hash("1")}`);
     expect(result).toContain(`versions[2] repeats contentHash ${hash("2")}`);
     expect(result).toContain('versions[2].change cannot be "created"');
+  });
+
+  it("only allows removed as the last version", async () => {
+    const unit = makeUnit(UID_A);
+    unit.versions.push(removedVersion(hash("1")), { ...unit.versions[0]!, contentHash: hash("2"), parent: REMOVED_CONTENT_HASH, change: "behaviour" });
+    expect(messages(await check(await makeRepo([unit])))).toContain(
+      'versions[1] is "removed" but versions follow it; a removed unit gets no more versions',
+    );
+  });
+
+  it("does not require a removed unit's file or tests to exist", async () => {
+    const unit = makeUnit(UID_A, { location: { file: "src/gone.ts" }, tests: [{ file: "src/gone.test.ts", via: "static" }] });
+    unit.versions.push(removedVersion(hash("1")));
+    expect(await check(await makeRepo([unit]))).toEqual({ units: 1, notes: 0, problems: [] });
+  });
+
+  it("exempts the removed sentinel from the provisional-hash policy", async () => {
+    const unit = makeUnit(UID_A);
+    const { provisional: _, ...seed } = unit.versions[0]!;
+    unit.versions[0] = { ...seed, contentHash: hash("1", "b3") };
+    unit.versions.push(removedVersion(hash("1", "b3")));
+    const root = await makeRepo([unit], { ...defaultConfig(), policy: { allowProvisionalHashes: false } });
+    expect(messages(await check(root))).toEqual([]);
+  });
+
+  it("warns when a live unit still depends on a removed one", async () => {
+    const gone = makeUnit(UID_A, { name: "formatRange" });
+    gone.versions.push(removedVersion(hash("1")));
+    const caller = makeUnit(UID_B, { versions: [{ ...makeUnit(UID_B).versions[0]!, deps: { [UID_A]: hash("1") } }] });
+    const result = await check(await makeRepo([gone, caller]));
+    expect(result.problems).toEqual([
+      { severity: "warning", file: `.poetics/units/${UID_B}.json`, message: `depends on formatRange (${UID_A}), which has been removed` },
+    ]);
   });
 
   it("ties the provisional flag to git: hashes", async () => {

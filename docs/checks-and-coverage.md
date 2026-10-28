@@ -35,14 +35,15 @@ before you commit.
 | --- | --- | --- |
 | `untracked` | error | A changed file has an export with no unit. Mint a uid and create one; the message gives the line range and hash. |
 | `stale` | error | An export changed but its unit's latest `contentHash` is older. Append a version; the message gives the new hash. |
-| `orphaned` | error | A unit's declaration is gone from a changed or deleted file. Record lineage if it moved or was renamed, or retire it. |
+| `orphaned` | error | A unit's declaration is gone from a changed or deleted file. Record lineage if it moved or was renamed, or append a `removed` version saying why it went. |
 | `duplicate` | error | Two units claim the same file and name. Merge them with lineage. |
 | `rewritten-history` | error | Earlier versions in a unit file were edited or removed. Versions are append-only. |
+| `deleted-unit` | error | A unit file was deleted. Restore it and append a `removed` version instead ([ADR 0010](decisions/0010-removed-versions.md)). |
 | `missing-lineage` | error | A unit's name or location changed without a new `lineage` entry. |
 | `no-links` | warning | A new version cites no issue, task, decision or plan section. |
 | `repeated-rationale` | warning | Three or more new versions share one rationale. Say what changed for each unit. |
 | `unverified` | warning | A `behaviour` or `interface` version, but none of the unit's linked tests changed (or it has none). |
-| `callers-not-updated` | warning | An `interface` version, but units depending on it got no version. |
+| `callers-not-updated` | warning | An `interface` or `removed` version, but units depending on it got no version. |
 | `unverifiable` | warning | The latest hash is a `b3:` hash, which needs the indexer to compare. |
 
 Exit code 1 on any error. Provisional hashes are hashes of raw text, so a

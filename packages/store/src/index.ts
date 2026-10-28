@@ -1,3 +1,5 @@
+export type { ChangeSet, ChangesOptions, CommitChanges, CommitSummary, UnitChange } from "./changes.ts";
+export { changesBetween } from "./changes.ts";
 export type { CheckResult, Problem } from "./check.ts";
 export { checkStore } from "./check.ts";
 export type { RenderOptions } from "./gotchas.ts";

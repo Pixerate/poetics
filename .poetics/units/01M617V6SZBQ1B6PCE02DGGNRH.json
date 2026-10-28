@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M617V6SZBQ1B6PCE02DGGNRH",
+  "kind": "type",
+  "framework": "none",
+  "name": "CommitChanges",
+  "location": {
+    "file": "packages/store/src/changes.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:ae48b4af55524dba0721c659284fe8d3d71e35d1",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Groups unit changes by commit, because that is how people think about change (ADR 0009).",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0009-changes-between-refs.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A commit and the unit changes it recorded, interface changes and removals first.",
+  "tests": [
+    {
+      "file": "packages/store/src/changes.test.ts",
+      "via": "static"
+    }
+  ]
+}

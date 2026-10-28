@@ -61,6 +61,21 @@ export const TOOLS: readonly ToolDefinition[] = [
     },
   },
   {
+    name: "poetics_changes",
+    access: "read",
+    description:
+      "What changed between two refs and why: each commit's unit versions with change class, rationale and links (interface changes and removals first), commits that recorded no unit change, and decisions and notes added. Call at the start of a task to catch up, or to review a branch.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        from: { type: "string", description: "Git ref the range starts after. Defaults to the merge base with the default branch." },
+        to: { type: "string", description: "Git ref the range ends at. Defaults to the working tree." },
+        impact: { type: "boolean", description: "Also list components whose closure changed, as poetics_impact does." },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
     name: "poetics_impact",
     access: "read",
     description:

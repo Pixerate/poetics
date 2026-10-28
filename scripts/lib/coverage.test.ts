@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { Note, Unit } from "@poetics/core";
 import type { Declaration } from "./declarations.ts";
 import { areaOf, computeCoverage, formatCoverage } from "./coverage.ts";
@@ -74,6 +75,14 @@ describe("computeCoverage", () => {
     expect(Object.keys(report.byArea)).toEqual(["packages/core", "scripts"]);
     expect(report.byArea["scripts"]!.tracked).toEqual({ covered: 0, total: 1, ratio: 0 });
     expect(report.byArea["scripts"]!.tested).toEqual({ covered: 0, total: 0, ratio: 1 });
+  });
+
+  it("leaves removed units out of every metric", () => {
+    const gone = unit("01JB8K0000000000000000000D", A, "gone");
+    gone.versions.push({ ...gone.versions[0]!, contentHash: REMOVED_CONTENT_HASH, parent: h("1"), change: "removed" });
+    const withRemoved = computeCoverage(declarations, [...units, gone], [], new Set([A, S]), [], {});
+    const without = computeCoverage(declarations, units, [], new Set([A, S]), [], {});
+    expect(withRemoved.overall).toEqual(without.overall);
   });
 
   it("summarises notes and fails only the thresholds that are missed", () => {
