@@ -171,6 +171,7 @@ describe("package.json scripts", () => {
     const pkg = JSON.parse(await readFile(join(REPO_ROOT, "package.json"), "utf8")) as { scripts: Record<string, string> };
     expect(pkg.scripts).not.toHaveProperty("ci");
     expect(pkg.scripts["preflight"]).toBeDefined();
+    expect(pkg.scripts["release"]).toBe("changeset publish");
   });
 });
 

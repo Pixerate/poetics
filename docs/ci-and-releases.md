@@ -5,7 +5,7 @@
 | Workflow | Trigger | What it does |
 | --- | --- | --- |
 | [`ci.yml`](../.github/workflows/ci.yml) | Pull requests, pushes to `main` | Install, typecheck, `sv check`, unit tests, `pnpm validate`, `pnpm gotchas --check`, the Poetics change check (pull requests, against the base branch), Poetics coverage, build |
-| [`release.yml`](../.github/workflows/release.yml) | Pushes to `main` | Changesets: open/update the "Version Packages" PR, or publish to npm |
+| [`release.yml`](../.github/workflows/release.yml) | Pushes to `main`, manual | Version packages, update changelogs, push to `main` and publish to npm |
 | [`pages.yml`](../.github/workflows/pages.yml) | Pushes to `main`, manual | Builds the demo site from this repo's `.poetics/` and deploys it to GitHub Pages |
 | [`dependabot.yml`](../.github/dependabot.yml) | Weekly (Monday) | Grouped npm and GitHub Actions updates |
 
@@ -24,15 +24,14 @@ Pick the packages and bump type, and write one line for the changelog. While
 packages are below 1.0, use `minor` for interface changes and `patch` for
 everything else. Changes that release nothing (docs, tests, CI) don't need one.
 
-On every push to `main`, `release.yml` picks a mode:
+On every push to `main` (and on manual `workflow_dispatch`), `release.yml` checks
+for pending changesets:
 
-- **version** — changesets exist. It runs `changeset version`, which bumps
-  versions and writes changelogs, and opens or updates a "Version Packages" PR.
-- **publish** — no pending changesets, but some package version is not on npm.
-  It builds, packs and publishes them, then creates git tags and GitHub releases.
-- **none** — nothing to do.
-
-Merging the "Version Packages" PR is how a release happens.
+- If changesets exist, it runs `pnpm version-packages`, builds and tests, commits
+  and pushes the version bumps and changelogs to `main` with `[skip ci]`,
+  publishes the changed packages to npm with provenance, and pushes release tags.
+  Releases are fully automatic; no release pull request or manual approval is needed.
+- If no changesets exist, the workflow skips release.
 
 ## npm publishing with OIDC
 
@@ -55,8 +54,8 @@ publish rights, and provenance is attached automatically. There is no
    Settings → Trusted publishing → GitHub Actions, with organisation `Pixerate`,
    repository `poetics`, and workflow filename `release.yml`. If you add a GitHub
    environment to the `publish` job, enter it there too.
-5. **Allow Actions to create pull requests:** repository Settings → Actions →
-   General → "Allow GitHub Actions to create and approve pull requests".
+5. **Ensure GitHub Actions can write to the repository** (Read and write permissions
+   under repository Settings → Actions → General → Workflow permissions).
 6. **Enable GitHub Pages** for the demo: Settings → Pages → Source: GitHub
    Actions.
 7. Optionally, create a `release` environment with required reviewers and set
