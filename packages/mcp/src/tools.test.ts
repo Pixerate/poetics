@@ -7,6 +7,7 @@ describe("TOOLS", () => {
   it("covers the plan's tool table", () => {
     expect(TOOLS.map((tool) => tool.name).sort()).toEqual(
       [
+        "poetics_changes",
         "poetics_context_pack",
         "poetics_declare_lineage",
         "poetics_history",

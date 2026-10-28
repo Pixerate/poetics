@@ -10,6 +10,7 @@ export const COMMANDS: readonly CommandSpec[] = [
   { name: "index", usage: "poetics index", summary: "Incremental re-index of changed files; run by the git hook" },
   { name: "log", usage: "poetics log <unit>", summary: "Version history of one unit, with rationale and commits" },
   { name: "why", usage: "poetics why <unit>", summary: "The rationale chain that led to the current version" },
+  { name: "changes", usage: "poetics changes [from] [to]", summary: "Every recorded change between two refs and why, grouped by commit, removals included" },
   { name: "impact", usage: "poetics impact [ref]", summary: "Components whose closure changed since a branch or commit" },
   { name: "diff", usage: "poetics diff <unit> <a> <b>", summary: "Semantic diff between two versions of a unit" },
   { name: "verify", usage: "poetics verify [--since <ref>]", summary: "List unverified units, stale docs and unresolved edges, and unrecorded changes since a ref; non-zero exit for CI" },

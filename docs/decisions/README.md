@@ -14,6 +14,7 @@ new record here.
 | [0005](0005-node-24-type-stripping.md) | Node 24, native type stripping and `node:sqlite` | Accepted |
 | [0006](0006-notes-replace-gotchas.md) | Gotchas are anchored notes; GOTCHAS.md is generated | Accepted |
 | [0007](0007-change-check-and-coverage.md) | A per-change check and a coverage report | Accepted |
+| [0009](0009-changes-between-refs.md) | "What changed, and why" between two refs | Accepted |
 | [0010](0010-removed-versions.md) | Removal is a version; unit files are never deleted | Accepted |
 
 New records copy [`template.md`](template.md).
