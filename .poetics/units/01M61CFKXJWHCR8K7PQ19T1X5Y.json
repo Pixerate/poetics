@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M61CFKXJWHCR8K7PQ19T1X5Y",
+  "kind": "function",
+  "framework": "none",
+  "name": "formatChanges",
+  "location": {
+    "file": "packages/cli/src/changes.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:3e4dd872883eb4251220a67a590a1481bacaaa33",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Terminal rendering for `poetics changes`: one block per commit, a +/~/- mark per unit, its change classes, rationale, links and lineage, then the commits that recorded nothing, so a human reads the same answer an agent gets as JSON.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0009-changes-between-refs.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Renders a change set for a terminal: each commit's units with change class and rationale.",
+  "tests": [
+    {
+      "file": "packages/cli/src/changes.test.ts",
+      "via": "static"
+    }
+  ]
+}

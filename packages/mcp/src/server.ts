@@ -1,4 +1,5 @@
 import { notImplemented } from "@poetics/core";
+import { changesBetween, storePaths } from "@poetics/store";
 import { findTool } from "./tools.ts";
 
 export interface ServerOptions {
@@ -13,11 +14,17 @@ export interface PoeticsServer {
   listen(): Promise<void>;
 }
 
-/** The stdio MCP server. Tool calls are routed here once the store and indexer land. */
-export function createServer(_options: ServerOptions): PoeticsServer {
+/** The stdio MCP server. Tool calls are routed here as the store and indexer land. */
+export function createServer(options: ServerOptions): PoeticsServer {
   return {
-    async callTool(name) {
+    async callTool(name, args) {
       if (!findTool(name)) throw new Error(`Unknown tool: ${name}`);
+      if (name === "poetics_changes") {
+        // impact needs the composition graph, which arrives with the indexer.
+        if (args["impact"] === true) return notImplemented("poetics_changes impact");
+        const { from, to } = args as { from?: string; to?: string };
+        return changesBetween(storePaths(options.root), { ...(from ? { from } : {}), ...(to ? { to } : {}) });
+      }
       return notImplemented(name);
     },
     async listen() {

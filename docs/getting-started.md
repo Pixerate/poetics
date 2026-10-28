@@ -29,6 +29,7 @@ pnpm install
 | `pnpm check` | `sv check` on the Svelte fixture, `tsc` on the React fixture |
 | `pnpm validate` | Validate `.poetics/` (units and notes) against `schemas/` and the store rules |
 | `pnpm gotchas [--check]` | Generate `GOTCHAS.md` from `.poetics/notes/`, or check it is up to date |
+| `pnpm poetics changes [from] [to] [--json]` | What changed and why: every recorded unit change between two refs, grouped by commit (default: your branch since it forked, plus uncommitted work) |
 | `pnpm poetics:check [--since <ref>] [--json]` | Check a change recorded itself in `.poetics/` (default: working tree vs `HEAD`) |
 | `pnpm poetics:coverage [--json]` | Coverage of the code by `.poetics/`, failing below `policy.coverage` |
 | `pnpm build` | Build every package to `dist/` |
@@ -69,7 +70,7 @@ packages/
   adapter-react/          React detection (stub)
   adapter-svelte/         Svelte detection (stub)
   mcp/                    MCP tool definitions and server (stub)
-  cli/                    poetics CLI (help works; commands stubbed)
+  cli/                    poetics CLI (help and changes work; the rest stubbed)
 site/                     the GitHub Pages demo (Svelte)
 evals/
   tasks/                  benchmark tasks

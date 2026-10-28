@@ -26,9 +26,28 @@
           "ref": "docs/decisions/0009-changes-between-refs.md"
         }
       ]
+    },
+    {
+      "contentHash": "git:0ad8f7ea74cf127420191c150ddf8e778bcb9553",
+      "provisional": true,
+      "parent": "git:d5a96d6557d1b8debab0ff16e33af3ffa22ee0de",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Implemented ahead of the indexer: walks non-merge commits in the range, diffs each unit file before and after to find the versions and lineage it gained, puts removals and interface changes first, and adds uncommitted work when `to` is omitted. Defaults `from` to the merge base with origin/HEAD, main or master.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0009-changes-between-refs.md"
+        }
+      ]
     }
   ],
-  "docs": "Every recorded change between two refs, with its rationale, grouped by commit.",
+  "docs": "Every recorded change between two refs, with its rationale, grouped by commit, newest first. Merge commits are skipped: their changes arrive with the commits they merge. Commits are walked with git, so no `commit` backfill is needed.",
   "tests": [
     {
       "file": "packages/store/src/changes.test.ts",

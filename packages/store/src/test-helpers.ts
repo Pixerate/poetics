@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -74,4 +75,22 @@ export function makeNote(overrides: Partial<Note> = {}): Note {
 export async function writeNote(root: string, note: Note, path = join(".poetics", "notes", `${note.id}.json`)): Promise<void> {
   await mkdir(dirname(join(root, path)), { recursive: true });
   await writeFile(join(root, path), `${JSON.stringify(note, null, 2)}\n`);
+}
+
+/**
+ * Runs git in a test repo. Signing is disabled and the identity fixed so tests
+ * never prompt the user's signer (see the note on signing in GOTCHAS.md).
+ */
+export function runGit(root: string, ...args: string[]): string {
+  return execFileSync(
+    "git",
+    ["-c", "user.name=Test", "-c", "user.email=test@example.com", "-c", "commit.gpgsign=false", "-c", "tag.gpgsign=false", ...args],
+    { cwd: root, encoding: "utf8" },
+  );
+}
+
+/** Stages everything and commits it with `message`. */
+export function commitAll(root: string, message: string): void {
+  runGit(root, "add", "-A");
+  runGit(root, "commit", "-q", "-m", message);
 }

@@ -54,5 +54,6 @@ Changesets integration, render from the same data.
   index and for `poetics log`, but `changes` does not wait on it.
 - The quality of the answer is the quality of the rationale; `poetics:check`
   warnings on missing links and repeated rationale matter more now.
-- `poetics changes` and `poetics_changes` land as stubs, with the result type
-  in `@poetics/store`, and are built with the indexer in phase 1.
+- `poetics changes` and `poetics_changes` landed as stubs, with the result
+  type in `@poetics/store`. Since the query needs only git and the unit files,
+  they were then built ahead of the indexer; only `--impact` waits for it.

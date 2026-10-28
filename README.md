@@ -72,6 +72,7 @@ Poetics records its own history by hand while the tools are built.
 | JSON Schemas for units, config and lock | ✅ |
 | Store validation (`pnpm validate`) and the SQLite index | ✅ |
 | Agent skills (`.claude/skills/`) | ✅ day-one versions |
+| "What changed, and why" (`poetics changes`, `poetics_changes`) | ✅ |
 | `@poetics/core`, adapters, MCP server, CLI | 🧱 typed stubs |
 | Indexer, closure hashes, impact reports | Phase 1 |
 
