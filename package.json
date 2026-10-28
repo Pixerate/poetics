@@ -23,6 +23,7 @@
     "mint-uid": "node --conditions=poetics-source scripts/mint-uid.ts",
     "changeset": "changeset",
     "version-packages": "changeset version",
+    "release": "changeset publish",
     "provisional-hash": "node --conditions=poetics-source scripts/provisional-hash.ts",
     "preflight": "pnpm typecheck && pnpm check && pnpm test && pnpm validate && pnpm gotchas --check && pnpm poetics:check && pnpm poetics:coverage && pnpm build",
     "gotchas": "node --conditions=poetics-source scripts/gotchas.ts",
