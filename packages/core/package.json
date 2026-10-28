@@ -36,5 +36,8 @@
         "default": "./dist/index.js"
       }
     }
+  },
+  "dependencies": {
+    "@noble/hashes": "^2.4.0"
   }
 }

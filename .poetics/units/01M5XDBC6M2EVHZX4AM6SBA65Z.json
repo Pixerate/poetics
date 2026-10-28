@@ -26,9 +26,28 @@
           "ref": "docs/plan.md#core-model"
         }
       ]
+    },
+    {
+      "contentHash": "git:bb2b3aee4ebda8ee4d26fd8c94b25f5ae44a26dc",
+      "provisional": true,
+      "parent": "git:99f92322a0461a31a010dbeba59c3d8792815192",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Implemented as an iterative Tarjan so deep call chains cannot overflow the stack; components come in dependency order with sorted members, which computeClosureHashes relies on.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#composition-and-version-propagation"
+        }
+      ]
     }
   ],
-  "docs": "Collapses cycles into strongly connected components so they hash together.",
+  "docs": "Collapses cycles into strongly connected components so they hash together. Components come in dependency order: each after every component it uses. Members are sorted, so the result is deterministic.",
   "tests": [
     {
       "file": "packages/core/src/graph.test.ts",

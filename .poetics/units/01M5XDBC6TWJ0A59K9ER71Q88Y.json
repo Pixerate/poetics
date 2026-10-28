@@ -26,6 +26,29 @@
           "ref": "docs/plan.md#core-model"
         }
       ]
+    },
+    {
+      "contentHash": "git:3a1ccb55688c0438d73b4d070dfc3c9f7b1867d7",
+      "provisional": true,
+      "parent": "git:2dc233aed0b902f75ec19bd6a76cb5b492e76a98",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Implemented as BLAKE3 over a canonical JSON encoding (sorted keys, non-JSON values rejected) of the normalised tree the indexer will produce, so the core stays framework-neutral and key order never makes a version. Phase 1, replacing the provisional git: hashes of ADR 0004.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#core-model"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0004-provisional-hashes.md"
+        }
+      ]
     }
   ],
   "docs": "BLAKE3 of the unit's normalised syntax tree, comments and formatting stripped.",
