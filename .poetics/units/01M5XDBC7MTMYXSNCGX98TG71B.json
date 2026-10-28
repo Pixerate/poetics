@@ -26,8 +26,32 @@
           "ref": "docs/plan.md#mcp-server-poeticsmcp"
         }
       ]
+    },
+    {
+      "contentHash": "git:632b058a3e180e0c807c7d4ab464a1c3f2406e99",
+      "provisional": true,
+      "parent": "git:3a4f74023ad2e3f871b549028222e7d4b199c8b6",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Answers `poetics_changes` from the store and git history instead of throwing; `impact: true` still throws until the indexer lands. Every other tool is still a stub.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0009-changes-between-refs.md"
+        }
+      ]
     }
   ],
-  "docs": "The stdio MCP server. Tool calls are routed here once the store and indexer land.",
-  "tests": []
+  "docs": "The stdio MCP server. Tool calls are routed here as the store and indexer land.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/tools.test.ts",
+      "via": "static"
+    }
+  ]
 }

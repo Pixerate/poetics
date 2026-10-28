@@ -46,7 +46,8 @@ itself is a stub. Rules every tool follows:
 `poetics_changes` answers "what changed, and why" between two refs: each
 commit's unit versions with rationale, removals included, plus commits that
 recorded nothing ([ADR 0009](decisions/0009-changes-between-refs.md)). Agents
-call it to catch up at the start of a task.
+call it to catch up at the start of a task. It is the first tool the server
+answers; `impact: true` waits for the indexer.
 
 Notes (gotchas, workarounds, invariants) get two tools: `poetics_notes` finds
 them by error text, unit, path or command, and `poetics_record_note` records or

@@ -59,4 +59,17 @@ describe("createServer", () => {
     await expect(server.callTool("poetics_unit", { unit: "x" })).rejects.toThrow(NotImplementedError);
     await expect(server.listen()).rejects.toThrow(NotImplementedError);
   });
+
+  it("answers poetics_changes from the repository's git history", async () => {
+    const server = createServer({ root: process.cwd() });
+    // An empty range: the store's own tests cover what a non-empty one returns.
+    await expect(server.callTool("poetics_changes", { from: "HEAD", to: "HEAD" })).resolves.toMatchObject({
+      commits: [],
+      unrecorded: [],
+      decisions: [],
+      notes: [],
+    });
+    await expect(server.callTool("poetics_changes", { impact: true })).rejects.toThrow(NotImplementedError);
+    await expect(server.callTool("poetics_changes", { from: "nope", to: "HEAD" })).rejects.toThrow("Unknown git ref: nope");
+  });
 });

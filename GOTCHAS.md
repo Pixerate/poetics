@@ -51,8 +51,8 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 
 - **Symptom:** `error: 1Password: failed to fill whole buffer`; `fatal: failed to write commit object`
 - **Cause:** Git inherits the user's global config, including `commit.gpgsign` and an SSH signer such as 1Password. A test that runs `git commit` in a temp repo would prompt the signer, or fail when it is locked or absent (as in CI).
-- **Fix:** Commit through `runGit` in `scripts/lib/test-repo.ts`, which passes `-c commit.gpgsign=false` and a test identity on every call.
-- **Applies to:** `git commit`, `scripts/lib/test-repo.ts`
+- **Fix:** Commit through `runGit` in `scripts/lib/test-repo.ts` (scripts) or `packages/store/src/test-helpers.ts` (packages), which pass `-c commit.gpgsign=false` and a test identity on every call. A test file outside both passes the same flags itself.
+- **Applies to:** `git commit`, `scripts/lib/test-repo.ts`, `packages/store/src/test-helpers.ts`, `packages/cli/src/run.test.ts`
 - **Caught by:** config `scripts/lib/test-repo.ts`
 - **See:** [docs/decisions/0007-change-check-and-coverage.md](docs/decisions/0007-change-check-and-coverage.md)
 - **Note:** `01M5Z1HP0KRF5JE401H3B81EGN`
@@ -98,12 +98,12 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 
 ## JSON Schemas
 
-### Ajv strict mode rejects `required` inside `if`/`then`
+### Ajv strict mode rejects `required` inside `if`/`then` and `not`
 
-- **Symptom:** `strict mode: required property "resolvedBy" is not defined`
-- **Cause:** Ajv's `strictRequired` wants every required property declared in the same schema object, and a `then` branch is its own object.
-- **Fix:** Declare the property in the branch too: `"then": { "properties": { "resolvedBy": true }, "required": ["resolvedBy"] }`.
-- **Applies to:** `schemas/note.schema.json`, `createValidator`
+- **Symptom:** `strict mode: required property "resolvedBy" is not defined`; `strict mode: required property "interfaceHash" is not defined at "https://poetics.dev/schemas/unit.schema.json#/then/not/anyOf/0" (strictRequired)`
+- **Cause:** Ajv's `strictRequired` wants every required property declared in the same schema object, and a `then` branch, or a `not`/`anyOf` inside it, is its own object.
+- **Fix:** Declare the property in the branch too: `"then": { "properties": { "resolvedBy": true }, "required": ["resolvedBy"] }`. To forbid a property in a branch, set it to `false` under `properties` (`"interfaceHash": false`) instead of `not: { required }`.
+- **Applies to:** `schemas/note.schema.json`, `schemas/unit.schema.json`, `createValidator`
 - **Caught by:** test `packages/store/src/schemas.test.ts`
 - **Note:** `01M5YKKDBCJNDPDPD4PHF1QCRW`
 

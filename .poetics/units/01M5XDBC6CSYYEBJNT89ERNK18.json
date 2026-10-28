@@ -26,9 +26,28 @@
           "ref": "docs/plan.md#cli"
         }
       ]
+    },
+    {
+      "contentHash": "git:58ec15b551d48e7902962a6ed39cb41833784ed3",
+      "provisional": true,
+      "parent": "git:9795015afaabaa7ecf4d5edda815cfe6dd082038",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Takes the repository root as an optional third argument (default: the working directory) so commands that read the store can be tested against a temporary repo, and runs `poetics changes`, the first command that does real work. Unknown refs exit 2 as invalid arguments; `--impact` is not implemented until the indexer lands.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0009-changes-between-refs.md"
+        }
+      ]
     }
   ],
-  "docs": "Exit codes: 0 ok, 1 findings (e.g. verify), 2 usage or not-implemented.",
+  "docs": "Exit codes: 0 ok, 1 findings (e.g. verify), 2 usage or not-implemented. `root` is the repository root.",
   "tests": [
     {
       "file": "packages/cli/src/run.test.ts",
