@@ -57,6 +57,19 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["contentHash", "change", "actor", "rationale"],
+      "if": { "properties": { "change": { "const": "removed" } }, "required": ["change"] },
+      "then": {
+        "properties": {
+          "contentHash": {
+            "const": "git:e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+            "description": "The empty-blob hash: a removed unit has no source."
+          },
+          "provisional": { "const": true },
+          "interfaceHash": false,
+          "closureHash": false
+        },
+        "required": ["provisional"]
+      },
       "properties": {
         "contentHash": { "$ref": "#/$defs/hash" },
         "interfaceHash": { "$ref": "#/$defs/hash" },
@@ -69,7 +82,10 @@
           "anyOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }],
           "description": "contentHash of the previous version, or null for the first."
         },
-        "change": { "enum": ["created", "interface", "behaviour", "cosmetic"] },
+        "change": {
+          "enum": ["created", "interface", "behaviour", "cosmetic", "removed"],
+          "description": "created is the first version and removed the last: the unit was deleted from the code and its file is kept (ADR 0010)."
+        },
         "commit": {
           "$ref": "#/$defs/commit",
           "description": "Commit that introduced this version. When omitted, it is the commit that added this entry; the indexer backfills it."

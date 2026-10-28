@@ -23,13 +23,14 @@ it, checked against the diff.
      `lineage` gets `{ "kind": "split", "uids": ["<original uid>"] }` and the
      original gets `{ "kind": "split", "uids": ["<new uids>"] }`.
    - **Merge:** the surviving unit gets `{ "kind": "merge", "uids": [<merged uids>] }`.
-     Do not delete the merged units' files; append a final version with
-     rationale "Merged into <uid>" so their history stays readable.
+     Do not delete the merged units' files; append a final `removed` version
+     (see `poetics-change`) with rationale "Merged into <uid>: <why>" so their
+     history stays readable.
 4. **Append a version** to each unit whose source text changed, per
    `poetics-change`. A pure move with identical text needs no new version.
 5. **Check**: `pnpm validate`, `pnpm poetics:check` and `pnpm test`. The
    check fails a unit whose name or location changed without a new lineage
-   entry, and a unit left behind in a deleted file.
+   entry, a unit left behind in a deleted file, and a deleted unit file.
 
 Never work around a problem by deleting unit files or rewriting `versions`.
 If a declaration does not fit these cases, stop and ask.

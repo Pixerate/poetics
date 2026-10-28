@@ -11,8 +11,11 @@ export type UnitKind = "function" | "hook" | "component" | "type";
 
 export type Framework = "react" | "svelte" | "none";
 
-/** `created` marks a unit's first version; the rest follow the plan's change classes. */
-export type ChangeClass = "created" | "interface" | "behaviour" | "cosmetic";
+/**
+ * `created` marks a unit's first version and `removed` its last (ADR 0010);
+ * the rest follow the plan's change classes.
+ */
+export type ChangeClass = "created" | "interface" | "behaviour" | "cosmetic" | "removed";
 
 export type Actor =
   | { kind: "human" }

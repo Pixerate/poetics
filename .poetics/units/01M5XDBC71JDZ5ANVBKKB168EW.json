@@ -26,8 +26,32 @@
           "ref": "docs/plan.md#core-model"
         }
       ]
+    },
+    {
+      "contentHash": "git:a6c6d99622deb48a0db784f0b3694b6fec440b42",
+      "provisional": true,
+      "parent": "git:bca4afe89c2ffda230ee1f11a50984d77e25ea11",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Adds `removed` as the last-version change class, so deleting an export appends history instead of deleting the unit file. Code that switches exhaustively on ChangeClass must handle it.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0010-removed-versions.md"
+        }
+      ]
     }
   ],
-  "docs": "`created` marks a unit's first version; the rest follow the plan's change classes.",
-  "tests": []
+  "docs": "`created` marks a unit's first version and `removed` its last (ADR 0010);\nthe rest follow the plan's change classes.",
+  "tests": [
+    {
+      "file": "packages/core/src/removal.test.ts",
+      "via": "static"
+    }
+  ]
 }

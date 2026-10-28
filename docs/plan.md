@@ -2,7 +2,7 @@
 
 Oct 24, 2026 · @Someone
 
-> Kept current in the repo. Changes since the original: the metadata store is a hybrid of git-tracked JSON and a local SQLite index ([ADR 0002](decisions/0002-hybrid-json-sqlite-store.md)), a unit's first version has change class `created`, and gotchas are anchored notes from which `GOTCHAS.md` is generated ([ADR 0006](decisions/0006-notes-replace-gotchas.md)).
+> Kept current in the repo. Changes since the original: the metadata store is a hybrid of git-tracked JSON and a local SQLite index ([ADR 0002](decisions/0002-hybrid-json-sqlite-store.md)), a unit's first version has change class `created` and its last, when deleted, `removed` ([ADR 0010](decisions/0010-removed-versions.md)), and gotchas are anchored notes from which `GOTCHAS.md` is generated ([ADR 0006](decisions/0006-notes-replace-gotchas.md)).
 
 ## Summary
 
@@ -37,7 +37,7 @@ Each unit has three identifiers:
 - **`contentHash`** — a hash of the unit's normalised syntax tree, with comments and formatting stripped. Running Prettier never creates a version; changing logic always does.
 - **`interfaceHash`** — a hash of the unit's public signature only. When it changes, the version is flagged as breaking for callers.
 
-A **version** is a `(uid, contentHash)` pair with a pointer to its parent version, the commit that introduced it, and a change class: `created` (the unit's first version), `interface` (breaking), `behaviour` (body changed) or `cosmetic` (types or docs only).
+A **version** is a `(uid, contentHash)` pair with a pointer to its parent version, the commit that introduced it, and a change class: `created` (the unit's first version), `interface` (breaking), `behaviour` (body changed), `cosmetic` (types or docs only) or `removed` (the unit's last version: it was deleted from the code, and its file is kept).
 
 Units form a **composition graph**. An edge records that unit A uses unit B: a component renders a child component, calls a hook, or calls a utility function. Each edge records which version of B was current when A's version was captured. This graph is what lets a component's version account for the functions it composes (see Composition and version propagation).
 
@@ -179,6 +179,7 @@ Decisions behind this layout:
 - **Rationale is stored per unit**, because a commit message describes a whole commit while a rationale describes one unit's change. It defaults to the commit message.
 - **Notes are stored** for gotchas, workarounds and invariants: verbatim symptoms, cause, fix, and anchors to units, paths, dependency ranges and commands, so the right note surfaces when a task touches what it is about. A unit anchor records the unit version it was confirmed against, so a newer version flags the note for re-checking. `GOTCHAS.md` is generated from notes ([ADR 0006](decisions/0006-notes-replace-gotchas.md)).
 - **Lineage is stored** when an agent or human declares a rename, move, split or merge, so identity never depends on heuristics alone.
+- **Unit files are never deleted.** A unit removed from the code gets a final `removed` version saying why, so its history stays in the store ([ADR 0010](decisions/0010-removed-versions.md)).
 - **`versions` is append-only.** A custom git merge driver unions version entries by `contentHash`, so branch merges almost never need manual resolution.
 - **Derived data stays out of git.** The SQLite index, spans, the reverse dependency index and search embeddings are rebuilt locally in `cache/`. Rebuilds are incremental (unit files whose bytes are unchanged are skipped) and deleting `cache/` always yields an identical index.
 - **Sharding for very large repos.** If a monorepo reaches tens of thousands of units, `store.layout: "sharded"` moves files to `units/<first two uid characters>/<uid>.json`, the way git stores objects. Nothing else changes.

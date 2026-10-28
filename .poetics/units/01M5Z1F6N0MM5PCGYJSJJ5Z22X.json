@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "git:3fabfb42134e7e83e27aa2e0954223198413ad78",
+      "provisional": true,
+      "parent": "git:e57fd26858d4a4a88e73aa89bfad546739ad3776",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Adds the `deleted-unit` finding kind, now that unit files must never be deleted.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0010-removed-versions.md"
+        }
+      ]
     }
   ],
   "tests": [
