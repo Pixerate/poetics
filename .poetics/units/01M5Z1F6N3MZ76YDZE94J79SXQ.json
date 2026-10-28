@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "git:20035aa41501fdd0ce7e303bb170811fdce6352d",
+      "provisional": true,
+      "parent": "git:aaa218311d672774147109e027f798040d698b48",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Fails a change that deletes a unit file instead of appending a `removed` version, and warns about dependents left without versions after a removal, as it already did for interface changes.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0010-removed-versions.md"
+        }
+      ]
     }
   ],
   "tests": [

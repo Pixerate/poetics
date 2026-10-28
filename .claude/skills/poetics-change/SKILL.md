@@ -15,6 +15,7 @@ Run `poetics-orient` first. Day-one version: you edit unit files by hand. When
      props, events, snippets, default prop values). Breaking for callers.
    - `behaviour` — the body changed in a way that can alter results.
    - `cosmetic` — types or docs only.
+   - `removed` — the export was deleted. Keep the unit file; see step 5.
    Formatting and comment-only edits are not a new version; skip steps 4–5.
 3. **Handle callers** for `interface` changes: update every unit that depends on
    this one, and give each of those its own version entry.

@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M617V6SY87SHR1E5D3MH2TRK",
+  "kind": "type",
+  "framework": "none",
+  "name": "CommitSummary",
+  "location": {
+    "file": "packages/store/src/changes.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:8dcdd17c007428d71885b76c844bfb78a3fcd358",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A commit's sha and subject, shared by recorded commits and the ones that touched no unit, so `poetics changes` can list both.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0009-changes-between-refs.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A commit's sha and subject.",
+  "tests": [
+    {
+      "file": "packages/store/src/changes.test.ts",
+      "via": "static"
+    }
+  ]
+}

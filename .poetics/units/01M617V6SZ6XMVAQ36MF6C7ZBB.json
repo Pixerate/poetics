@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M617V6SZ6XMVAQ36MF6C7ZBB",
+  "kind": "function",
+  "framework": "none",
+  "name": "changesBetween",
+  "location": {
+    "file": "packages/store/src/changes.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:d5a96d6557d1b8debab0ff16e33af3ffa22ee0de",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Stub for the range query behind `poetics changes` and `poetics_changes`, built by diffing .poetics/ between two refs so it needs no commit backfill.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0009-changes-between-refs.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Every recorded change between two refs, with its rationale, grouped by commit.",
+  "tests": [
+    {
+      "file": "packages/store/src/changes.test.ts",
+      "via": "static"
+    }
+  ]
+}

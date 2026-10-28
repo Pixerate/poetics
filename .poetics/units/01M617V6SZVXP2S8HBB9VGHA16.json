@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M617V6SZVXP2S8HBB9VGHA16",
+  "kind": "type",
+  "framework": "none",
+  "name": "ChangesOptions",
+  "location": {
+    "file": "packages/store/src/changes.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:2b94119684deb551ce10100907ad4a6a10465f7a",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The range for `changesBetween`; defaults to the merge base with the default branch through the working tree, the range a branch under review covers.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0009-changes-between-refs.md"
+        }
+      ]
+    }
+  ],
+  "docs": "The range to report: from a ref (default: merge base with the default branch) to a ref (default: the working tree).",
+  "tests": [
+    {
+      "file": "packages/store/src/changes.test.ts",
+      "via": "static"
+    }
+  ]
+}

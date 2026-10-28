@@ -33,6 +33,12 @@ describe("poetics CLI", () => {
     expect(JSON.parse(err)).toMatchObject({ error: "unknown-command" });
   });
 
+  it("lists changes as a planned command", async () => {
+    const { code, err } = await exec("changes", "main", "--json");
+    expect(code).toBe(2);
+    expect(JSON.parse(err)).toMatchObject({ error: "not-implemented", command: "changes" });
+  });
+
   it("exits 2 with a structured error for planned commands", async () => {
     const { code, err } = await exec("verify", "--json");
     expect(code).toBe(2);

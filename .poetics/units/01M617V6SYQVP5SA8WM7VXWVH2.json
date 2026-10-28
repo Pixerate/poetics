@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M617V6SYQVP5SA8WM7VXWVH2",
+  "kind": "type",
+  "framework": "none",
+  "name": "UnitChange",
+  "location": {
+    "file": "packages/store/src/changes.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:c8b73f8615eafc2340854f5e6f57b2caac582c55",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "One unit's part in a commit for `poetics changes`: the versions it gained and the lineage declared, with a status so removals stand out.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0009-changes-between-refs.md"
+        }
+      ]
+    }
+  ],
+  "docs": "One unit's part in a commit: the versions it gained and any lineage declared.",
+  "tests": [
+    {
+      "file": "packages/store/src/changes.test.ts",
+      "via": "static"
+    }
+  ]
+}

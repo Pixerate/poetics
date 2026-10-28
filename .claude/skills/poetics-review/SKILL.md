@@ -18,7 +18,8 @@ Day-one version: you compare the diff with `.poetics/units` by hand. When
 3. **Interface breaks:** for each `interface` change, list the units that
    depend on it and check each was updated.
 4. **Refactors:** renames, moves, splits and merges must keep uids and add
-   `lineage`. A deleted unit file plus a new one for the same code is a finding.
+   `lineage`. A deleted unit file is a finding: removals are a final
+   `removed` version, and their dependents need versions too.
 5. **Tests:** each `behaviour` or `interface` change has a changed or new test.
 6. **Rationale quality:** specific to the unit, says why rather than what, and
    cites an issue, task, decision or plan section. Agent-written entries stay

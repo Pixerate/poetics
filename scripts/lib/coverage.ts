@@ -1,5 +1,6 @@
 // How well Poetics covers a codebase: tracked and fresh units, and the quality
 // of what is recorded about them.
+import { isRemoved } from "@poetics/core";
 import type { Note, Unit } from "@poetics/core";
 import type { Declaration } from "./declarations.ts";
 import { compareCodeWithStore } from "./drift.ts";
@@ -48,7 +49,7 @@ export function areaOf(file: string): string {
 
 function metricsFor(declarations: readonly Declaration[], units: readonly Unit[], covers: (file: string) => boolean): CoverageMetrics {
   const drift = compareCodeWithStore(declarations, units, covers);
-  const tracked = units.filter((unit) => covers(unit.location.file));
+  const tracked = units.filter((unit) => !isRemoved(unit) && covers(unit.location.file));
   const versions = tracked.flatMap((unit) => unit.versions);
   const agentVersions = versions.filter((v) => v.actor.kind === "agent");
   return {

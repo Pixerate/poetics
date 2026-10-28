@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M617V6SYQFWYR12XS2NY4D60",
+  "kind": "function",
+  "framework": "none",
+  "name": "isRemoved",
+  "location": {
+    "file": "packages/core/src/removal.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:9dc90008669ceaf9d3c8d7a11bf3fac2e3c0555b",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "One shared test for whether a unit is history only, used by the store check, drift and coverage so they agree on what a removed unit is.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0010-removed-versions.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Whether a unit's latest version records its removal from the code.",
+  "tests": [
+    {
+      "file": "packages/core/src/removal.test.ts",
+      "via": "static"
+    }
+  ]
+}

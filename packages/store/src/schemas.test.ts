@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import { createValidator, loadSchemaSet } from "./schemas.ts";
 import { REPO_SCHEMAS, UID_A, defaultConfig, hash, makeNote, makeUnit } from "./test-helpers.ts";
 
@@ -40,6 +41,34 @@ describe("unit schema", () => {
     expect(result.errors.join("\n")).toMatch(/uid/);
     expect(result.errors.join("\n")).toMatch(/contentHash/);
     expect(result.errors.join("\n")).toMatch(/additional properties/);
+  });
+
+  it("accepts a removed version only with the empty-blob hash and no other hashes", () => {
+    const removed = () => {
+      const unit = makeUnit(UID_A);
+      unit.versions.push({
+        contentHash: REMOVED_CONTENT_HASH,
+        provisional: true,
+        parent: hash("1"),
+        change: "removed",
+        actor: { kind: "human" },
+        rationale: "Folded into formatRange.",
+      });
+      return unit;
+    };
+    expect(validator.unit(removed()).errors).toEqual([]);
+
+    const wrongHash = removed();
+    wrongHash.versions[1]!.contentHash = hash("2");
+    expect(validator.unit(wrongHash).valid).toBe(false);
+
+    const withInterface = removed();
+    withInterface.versions[1]!.interfaceHash = hash("3");
+    expect(validator.unit(withInterface).valid).toBe(false);
+
+    const notProvisional = removed();
+    delete notProvisional.versions[1]!.provisional;
+    expect(validator.unit(notProvisional).valid).toBe(false);
   });
 
   it("requires agents to carry a reviewed flag", () => {

@@ -1,6 +1,6 @@
 import { access, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
-import { isProvisional } from "@poetics/core";
+import { isProvisional, isRemoved } from "@poetics/core";
 import type { Note, Unit } from "@poetics/core";
 import { readNoteFiles, readUnitFiles } from "./json-store.ts";
 import type { StorePaths } from "./paths.ts";
@@ -23,6 +23,7 @@ export interface CheckResult {
  * against their JSON Schemas, then the rules a schema cannot express (ids
  * match filenames, version chains are intact, references point at real units,
  * notes and files, and notes are flagged when their units have moved on).
+ * Removed units keep their files but need not point at code that still exists.
  */
 export async function checkStore(paths: StorePaths, validator: StoreValidator): Promise<CheckResult> {
   const problems: Problem[] = [];
@@ -71,7 +72,8 @@ export async function checkStore(paths: StorePaths, validator: StoreValidator): 
 
   for (const { unit, file } of units.values()) {
     checkVersions(unit, file, error, allowProvisional);
-    if (!(await exists(join(paths.root, unit.location.file)))) {
+    const removed = isRemoved(unit);
+    if (!removed && !(await exists(join(paths.root, unit.location.file)))) {
       error(file, `location.file ${unit.location.file} does not exist`);
     }
     if (unit.owner !== undefined && !units.has(unit.owner)) error(file, `owner ${unit.owner} is not a known unit`);
@@ -80,10 +82,16 @@ export async function checkStore(paths: StorePaths, validator: StoreValidator): 
         if (!units.has(dep)) error(file, `dependency ${dep} is not a known unit`);
       }
     }
+    if (!removed) {
+      for (const dep of Object.keys(unit.versions.at(-1)?.deps ?? {})) {
+        const target = units.get(dep)?.unit;
+        if (target && isRemoved(target)) warning(file, `depends on ${target.name} (${dep}), which has been removed`);
+      }
+    }
     for (const entry of unit.lineage ?? []) {
       for (const uid of entry.uids ?? []) if (!units.has(uid)) warning(file, `lineage refers to unknown unit ${uid}`);
     }
-    for (const test of unit.tests ?? []) {
+    for (const test of removed ? [] : (unit.tests ?? [])) {
       if (!(await exists(join(paths.root, test.file)))) error(file, `linked test ${test.file} does not exist`);
     }
   }
@@ -174,12 +182,16 @@ function checkVersions(
     if ((i === 0) !== (version.change === "created")) {
       error(file, i === 0 ? `${at}.change must be "created"` : `${at}.change cannot be "created"`);
     }
+    if (version.change === "removed" && i !== unit.versions.length - 1) {
+      error(file, `${at} is "removed" but versions follow it; a removed unit gets no more versions`);
+    }
 
     const hashes = [version.contentHash, version.interfaceHash, version.closureHash].filter((h) => h !== undefined);
     const provisional = hashes.some(isProvisional);
     if (provisional && version.provisional !== true) error(file, `${at} has git: hashes but is not marked provisional`);
     if (!provisional && version.provisional === true) error(file, `${at} is marked provisional but has no git: hashes`);
-    if (provisional && allowProvisional === false) error(file, `${at} is provisional but policy forbids it`);
+    // The removed sentinel is a git: hash by definition, not a placeholder awaiting the indexer.
+    if (provisional && allowProvisional === false && version.change !== "removed") error(file, `${at} is provisional but policy forbids it`);
   });
 }
 

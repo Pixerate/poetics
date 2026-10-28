@@ -45,9 +45,28 @@
           "ref": "docs/decisions/0006-notes-replace-gotchas.md"
         }
       ]
+    },
+    {
+      "contentHash": "git:1e119046112a3ba745601d492d569c9bdc3f7189",
+      "provisional": true,
+      "parent": "git:6d61640a211bc2b1fa6bd005c871277ba17f4915",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Enforces removed versions: only last in the chain, exempt from the provisional-hash policy, and a removed unit's file and linked tests need not exist. Warns when a live unit's latest version still depends on a removed one.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0010-removed-versions.md"
+        }
+      ]
     }
   ],
-  "docs": "Validates the whole store: config, lock, every unit file and every note\nagainst their JSON Schemas, then the rules a schema cannot express (ids\nmatch filenames, version chains are intact, references point at real units,\nnotes and files, and notes are flagged when their units have moved on).",
+  "docs": "Validates the whole store: config, lock, every unit file and every note\nagainst their JSON Schemas, then the rules a schema cannot express (ids\nmatch filenames, version chains are intact, references point at real units,\nnotes and files, and notes are flagged when their units have moved on).\nRemoved units keep their files but need not point at code that still exists.",
   "tests": [
     {
       "file": "packages/store/src/check.test.ts",
