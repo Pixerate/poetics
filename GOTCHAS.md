@@ -98,12 +98,12 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 
 ## JSON Schemas
 
-### Ajv strict mode rejects `required` inside `if`/`then`
+### Ajv strict mode rejects `required` inside `if`/`then` and `not`
 
-- **Symptom:** `strict mode: required property "resolvedBy" is not defined`
-- **Cause:** Ajv's `strictRequired` wants every required property declared in the same schema object, and a `then` branch is its own object.
-- **Fix:** Declare the property in the branch too: `"then": { "properties": { "resolvedBy": true }, "required": ["resolvedBy"] }`.
-- **Applies to:** `schemas/note.schema.json`, `createValidator`
+- **Symptom:** `strict mode: required property "resolvedBy" is not defined`; `strict mode: required property "interfaceHash" is not defined at "https://poetics.dev/schemas/unit.schema.json#/then/not/anyOf/0" (strictRequired)`
+- **Cause:** Ajv's `strictRequired` wants every required property declared in the same schema object, and a `then` branch, or a `not`/`anyOf` inside it, is its own object.
+- **Fix:** Declare the property in the branch too: `"then": { "properties": { "resolvedBy": true }, "required": ["resolvedBy"] }`. To forbid a property in a branch, set it to `false` under `properties` (`"interfaceHash": false`) instead of `not: { required }`.
+- **Applies to:** `schemas/note.schema.json`, `schemas/unit.schema.json`, `createValidator`
 - **Caught by:** test `packages/store/src/schemas.test.ts`
 - **Note:** `01M5YKKDBCJNDPDPD4PHF1QCRW`
 
