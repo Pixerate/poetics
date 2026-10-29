@@ -26,9 +26,28 @@
           "ref": "docs/plan.md#core-model"
         }
       ]
+    },
+    {
+      "contentHash": "git:28259a79093b2d95f551c715108472ad90f5f2bf",
+      "provisional": true,
+      "parent": "git:3b7972f9e13a024a618dc1a38eb72398347008b1",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Implemented bottom-up over the SCCs. Each cycle member hashes its own content with one hash of the whole cycle and its external dependencies, as the plan asks that cycles hash together; units without edges are leaves, and a unit missing a content hash throws rather than hashing as empty.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#composition-and-version-propagation"
+        }
+      ]
     }
   ],
-  "docs": "Bottom-up closure hashes for every unit, given each unit's own content hash.",
+  "docs": "Bottom-up closure hashes for every unit, given each unit's own content hash. Units in `contentHashes` with no edges are leaves. Members of a cycle each hash their own content with one hash of the whole cycle, so a change to any member, or to anything the cycle uses, changes all of them.",
   "tests": [
     {
       "file": "packages/core/src/graph.test.ts",

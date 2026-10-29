@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M62A8NBHCKPTEMBBFM15D4JT",
+  "kind": "type",
+  "framework": "none",
+  "name": "ImpactOptions",
+  "location": {
+    "file": "packages/core/src/graph.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:a7c453fa5b25d384da30da307252a319b00f0ee4",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Options for impactOf: which changed units broke their interface, so their direct callers are flagged interface-caller as the plan's propagation rules ask.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#composition-and-version-propagation"
+        }
+      ]
+    }
+  ],
+  "docs": "Options for impactOf: changed units whose interface hash changed, so their direct callers need review.",
+  "tests": [
+    {
+      "file": "packages/core/src/graph.test.ts",
+      "via": "static"
+    }
+  ]
+}

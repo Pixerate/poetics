@@ -26,9 +26,28 @@
           "ref": "docs/plan.md#core-model"
         }
       ]
+    },
+    {
+      "contentHash": "git:45c3b3a3a9aa5fdd313bfaa0b3b9026c3725904d",
+      "provisional": true,
+      "parent": "git:fa6e7d24427609f2a3f1f9104b60b40a1eb54aa1",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Implemented as a breadth-first walk over dependents, and added an optional ImpactOptions parameter: the plan's interface-caller warnings need to know which changes broke an interface, which the list of changed uids alone cannot say.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#composition-and-version-propagation"
+        }
+      ]
     }
   ],
-  "docs": "Units whose behaviour may have changed, ranked by distance from the edit.",
+  "docs": "Units whose behaviour may have changed, ranked by distance from the edit. Changed units are `own`; their transitive dependents are `closure`, except direct callers of an interface change, which are `interface-caller`.",
   "tests": [
     {
       "file": "packages/core/src/graph.test.ts",
