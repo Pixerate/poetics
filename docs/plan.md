@@ -324,6 +324,8 @@ Quirks and workarounds are recorded as notes rather than appended to a document,
 
 `GOTCHAS.md` remains for humans and agents without MCP, generated from the notes and checked in CI.
 
+Proposed in [ADR 0012](decisions/0012-open-items-as-notes.md): notes also record unvalidated assumptions, considerations for future development and anchors for planned work, so open items surface the same way. Planned work keeps its status in the issue tracker.
+
 ### Agent provenance
 
 Each version records who produced it: a human, or an agent with its tool, model, session id and task link. Teams can set policy on that, for example marking agent-written rationale as unreviewed until a human approves the pull request, or requiring human sign-off on any interface change made by an agent.
@@ -475,4 +477,5 @@ Open questions, each tracked as an issue labelled `question`:
 - Should type-only changes count as a new version, or only as `cosmetic` metadata? ([#5](https://github.com/Pixerate/poetics/issues/5))
 - Is `poetics.lock` pinning worth building before a team asks for it? ([#6](https://github.com/Pixerate/poetics/issues/6))
 - When to build the Swift adapter, and what the out-of-process adapter contract looks like? See [ADR 0008](decisions/0008-out-of-process-adapters.md) (proposed). ([#11](https://github.com/Pixerate/poetics/issues/11))
+- Should assumptions, considerations and planned work be note kinds, with `TODO` comments required to reference one or a tracker item? See [ADR 0012](decisions/0012-open-items-as-notes.md) (proposed).
 - Which agent runtimes to target first for skills and evals, and whether to ship skills in one format or generate per-runtime variants? ([#7](https://github.com/Pixerate/poetics/issues/7))
