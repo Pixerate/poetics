@@ -1,7 +1,6 @@
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { NotImplementedError } from "@poetics/core";
 import {
   INDEX_SCHEMA_VERSION,
   dependentsOf,
@@ -105,7 +104,47 @@ describe("openIndex", () => {
 });
 
 describe("searchUnits", () => {
-  it("is a stub until FTS lands", () => {
-    expect(() => searchUnits(openIndex(":memory:"), "price")).toThrow(NotImplementedError);
+  const searchable = async () => {
+    const price = makeUnit(UID_A, { name: "formatPrice", docs: "Formats a price in the user's currency." });
+    const total = makeUnit(UID_B, { name: "cartTotal", docs: "Sums line items." });
+    total.versions[0]!.rationale = "Needed to show a price total at checkout";
+    const other = makeUnit(UID_C, { name: "slugify", docs: "Lowercases and hyphenates." });
+    const paths = storePaths(await makeRepo([price, total, other]));
+    const db = openIndex(paths.indexDb);
+    await rebuildIndex(paths, db);
+    return db;
+  };
+  const uids = (rows: Array<{ uid: string }>) => rows.map((row) => row.uid);
+
+  it("matches camelCase name parts, docs and rationale, name hits first", async () => {
+    const db = await searchable();
+    expect(uids(searchUnits(db, "price"))).toEqual([UID_A, UID_B]);
+    expect(searchUnits(db, "price")[0]).toMatchObject({ name: "formatPrice", version_count: 1 });
+  });
+
+  it("requires every word, each as a prefix", async () => {
+    const db = await searchable();
+    expect(uids(searchUnits(db, "pri check"))).toEqual([UID_B]);
+    expect(uids(searchUnits(db, "price nowhere"))).toEqual([]);
+  });
+
+  it("treats FTS syntax as text and returns nothing for an empty query", async () => {
+    const db = await searchable();
+    expect(uids(searchUnits(db, 'slug* OR "price" NEAR('))).toEqual([]);
+    expect(uids(searchUnits(db, "slug-"))).toEqual([UID_C]);
+    expect(searchUnits(db, "  ** ")).toEqual([]);
+  });
+
+  it("follows edits and deletions on rebuild", async () => {
+    const root = await makeRepo([makeUnit(UID_A, { name: "formatPrice" }), makeUnit(UID_B, { name: "cartTotal" })]);
+    const paths = storePaths(root);
+    const db = openIndex(paths.indexDb);
+    await rebuildIndex(paths, db);
+    await writeUnit(root, makeUnit(UID_A, { name: "formatCost" }));
+    await rm(join(root, ".poetics", "units", `${UID_B}.json`));
+    await rebuildIndex(paths, db);
+    expect(uids(searchUnits(db, "price"))).toEqual([]);
+    expect(uids(searchUnits(db, "cost"))).toEqual([UID_A]);
+    expect(uids(searchUnits(db, "cart"))).toEqual([]);
   });
 });

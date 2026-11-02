@@ -119,6 +119,7 @@ full, grouped by area and ordered by id, then a table of retired notes. CI runs
 | `versions` | Every version, flattened |
 | `deps` | The newest version's dependencies; indexed by `to_uid` for reverse lookups |
 | `test_links`, `lineage` | Flattened from the unit file |
+| `units_fts` | FTS5 table of each unit's name (with its camelCase parts), docs and every version's rationale, for `searchUnits` |
 | `meta` | `schema_version` |
 
 Guarantees, covered by tests in `packages/store/src/index-db.test.ts`:

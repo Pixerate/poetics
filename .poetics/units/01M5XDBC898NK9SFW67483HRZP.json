@@ -26,6 +26,25 @@
           "ref": "docs/plan.md#metadata-schema-and-storage"
         }
       ]
+    },
+    {
+      "contentHash": "git:dc2a0f425dd06b52d329249a0a3e8a68e0c5a5e6",
+      "provisional": true,
+      "parent": "git:f66beda2429564fe8d917b39e626fb962a4a9398",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Gains an optional validator so appendVersion can refuse a version the unit schema rejects before writing; optional, so existing callers are unaffected.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#22"
+        }
+      ]
     }
   ],
   "tests": [
