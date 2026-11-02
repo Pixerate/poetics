@@ -1,8 +1,10 @@
-import { readdir, readFile } from "node:fs/promises";
+import { readdir, readFile, rename, writeFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
-import { notImplemented } from "@poetics/core";
+import { isRemoved, notImplemented } from "@poetics/core";
 import type { Hash, LineageEntry, Link, Note, TestLink, Unit, Version } from "@poetics/core";
+import { unitFilePath } from "./paths.ts";
 import type { StorePaths } from "./paths.ts";
+import type { StoreValidator } from "./schemas.ts";
 
 /** A JSON file read from the store: a unit file or a note file. */
 export interface UnitFile {
@@ -78,11 +80,51 @@ export function toPosix(path: string): string {
 export interface WriteContext {
   paths: StorePaths;
   actor: Version["actor"];
+  /** When given, the updated unit must pass the unit schema before it is written. */
+  validator?: StoreValidator;
 }
 
-/** Appends a version to a unit file. Append-only; never rewrites history. */
-export function appendVersion(_ctx: WriteContext, _uid: string, _version: Version): Promise<void> {
-  return notImplemented("appendVersion");
+/**
+ * Appends a version to a unit file. Append-only; never rewrites history.
+ * The written version's actor is `ctx.actor`: who wrote it is the writer's to
+ * say, not the payload's.
+ */
+export async function appendVersion(ctx: WriteContext, uid: string, version: Version): Promise<void> {
+  const file = await readUnitFile(ctx.paths, uid);
+  const unit = parseUnit(file);
+  const latest = unit.versions.at(-1);
+  const fail = (reason: string): never => {
+    throw new Error(`Cannot append a version to ${uid}: ${reason}`);
+  };
+
+  if (unit.uid !== uid) fail(`${file.relativePath} holds ${unit.uid}`);
+  if (!latest) fail("it has no versions");
+  // ADR 0010: `created` is only ever first and `removed` only ever last.
+  if (isRemoved(unit)) fail("its latest version is removed");
+  if (version.change === "created") fail("only a unit's first version is created");
+  if (version.parent !== latest!.contentHash) fail(`parent is ${version.parent ?? "null"}, latest is ${latest!.contentHash}`);
+
+  unit.versions.push({ ...version, actor: ctx.actor });
+  if (ctx.validator) {
+    const result = ctx.validator.unit(unit);
+    if (!result.valid) fail(result.errors.join("; "));
+  }
+  // Write then rename, so a crash never leaves a half-written unit file.
+  const temp = `${file.path}.${process.pid}.tmp`;
+  await writeFile(temp, `${JSON.stringify(unit, null, 2)}\n`);
+  await rename(temp, file.path);
+}
+
+/** The unit file for `uid`, in whichever layout it was written. */
+async function readUnitFile(paths: StorePaths, uid: string): Promise<UnitFile> {
+  for (const path of [unitFilePath(paths, uid, "flat"), unitFilePath(paths, uid, "sharded")]) {
+    try {
+      return { path, relativePath: toPosix(relative(paths.root, path)), raw: await readFile(path, "utf8") };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
+  }
+  throw new Error(`No unit file for ${uid} under ${toPosix(relative(paths.root, paths.units))}`);
 }
 
 /** Attaches rationale and links to the newest version of a unit. */

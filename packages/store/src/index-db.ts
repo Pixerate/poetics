@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { notImplemented } from "@poetics/core";
 import type { Unit } from "@poetics/core";
 import { parseUnit, readUnitFiles } from "./json-store.ts";
 import type { StorePaths } from "./paths.ts";
@@ -11,7 +10,7 @@ import type { StorePaths } from "./paths.ts";
  * The local SQLite index at `.poetics/cache/index.db`. It is derived data:
  * gitignored, rebuilt from `.poetics/units/*.json`, and safe to delete.
  */
-export const INDEX_SCHEMA_VERSION = 1;
+export const INDEX_SCHEMA_VERSION = 2;
 
 const DDL = `
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -69,6 +68,7 @@ CREATE TABLE IF NOT EXISTS lineage (
   from_path TEXT,
   PRIMARY KEY (uid, seq)
 );
+CREATE VIRTUAL TABLE IF NOT EXISTS units_fts USING fts5 (uid UNINDEXED, name, docs, rationale);
 `;
 
 /** Tables in dump order, each with the columns that make row order deterministic. */
@@ -79,6 +79,7 @@ const TABLES: ReadonlyArray<readonly [string, string]> = [
   ["deps", "from_uid, to_uid"],
   ["test_links", "uid, file, name"],
   ["lineage", "uid, seq"],
+  ["units_fts", "uid"],
 ];
 
 export function openIndex(path: string): DatabaseSync {
@@ -170,6 +171,7 @@ function deleteUnitRows(db: DatabaseSync, uid: string): void {
   db.prepare("DELETE FROM deps WHERE from_uid = ?").run(uid);
   db.prepare("DELETE FROM test_links WHERE uid = ?").run(uid);
   db.prepare("DELETE FROM lineage WHERE uid = ?").run(uid);
+  db.prepare("DELETE FROM units_fts WHERE uid = ?").run(uid);
 }
 
 function insertUnit(db: DatabaseSync, unit: Unit): void {
@@ -225,6 +227,19 @@ function insertUnit(db: DatabaseSync, unit: Unit): void {
 
   const insertLineage = db.prepare("INSERT INTO lineage (uid, seq, kind, from_path) VALUES (?, ?, ?, ?)");
   (unit.lineage ?? []).forEach((entry, seq) => insertLineage.run(unit.uid, seq, entry.kind, entry.from ?? null));
+
+  db.prepare("INSERT INTO units_fts (uid, name, docs, rationale) VALUES (?, ?, ?, ?)").run(
+    unit.uid,
+    searchableName(unit.name),
+    unit.docs ?? "",
+    unit.versions.map((version) => version.rationale).join("\n"),
+  );
+}
+
+/** `formatPrice` → `formatPrice format Price`, so a search for "price" finds it. */
+function searchableName(name: string): string {
+  const words = name.split(/(?<=[a-z0-9])(?=[A-Z])|[^A-Za-z0-9]+/).filter(Boolean);
+  return words.length > 1 ? `${name} ${words.join(" ")}` : name;
 }
 
 export interface UnitRow {
@@ -258,9 +273,24 @@ export function dependentsOf(db: DatabaseSync, uid: string): string[] {
   );
 }
 
-/** Full-text search over names, docs and rationale. Planned on SQLite FTS5. */
-export function searchUnits(_db: DatabaseSync, _query: string): UnitRow[] {
-  return notImplemented("searchUnits");
+/**
+ * Full-text search over names, docs and rationale, best match first. Every
+ * word must match, as a prefix; FTS5 operators in the query are treated as
+ * plain text.
+ */
+export function searchUnits(db: DatabaseSync, query: string): UnitRow[] {
+  const words = query.match(/[\p{L}\p{N}_]+/gu) ?? [];
+  if (words.length === 0) return [];
+  const match = words.map((word) => `"${word}"*`).join(" ");
+  // bm25 weights favour a hit in the name over docs, and docs over rationale.
+  return db
+    .prepare(
+      `SELECT u.uid, u.kind, u.framework, u.name, u.file, u.latest_content_hash, u.version_count
+       FROM units_fts JOIN units u ON u.uid = units_fts.uid
+       WHERE units_fts MATCH ?
+       ORDER BY bm25(units_fts, 0, 10, 4, 1), u.uid`,
+    )
+    .all(match) as unknown as UnitRow[];
 }
 
 /** Every row of every table in a stable order, for comparing two indexes. */

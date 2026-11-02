@@ -26,9 +26,32 @@
           "ref": "docs/plan.md#metadata-schema-and-storage"
         }
       ]
+    },
+    {
+      "contentHash": "git:906659794a6e24db365bc9894ad74b180abef8e5",
+      "provisional": true,
+      "parent": "git:34751fedae3ec2d0a8799ff92b9e05d5ddce9cff",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Implemented as the indexer's write path: finds the unit file in either layout, refuses a parent other than the latest contentHash, a second created version or anything after removed (ADR 0010), stamps ctx.actor so the writer rather than the payload says who wrote it, validates against the unit schema when given a validator, and writes via a temp file and rename so a crash never leaves half a file.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#22"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0010-removed-versions.md"
+        }
+      ]
     }
   ],
-  "docs": "Appends a version to a unit file. Append-only; never rewrites history.",
+  "docs": "Appends a version to a unit file, append-only: the parent must be the latest version, created and removed keep their places, and the actor comes from the write context.",
   "tests": [
     {
       "file": "packages/store/src/json-store.test.ts",
