@@ -340,7 +340,7 @@ The integrations worth building first connect Poetics to where the reason for a 
 
 | Integration | What flows in | What flows out | Phase |
 | --- | --- | --- | --- |
-| Issue trackers: GitHub Issues first, then Uchiage, Linear, Jira | Issue references from commits and PRs; issue text as agent context | Impact reports posted on the issue | 2 and 5 |
+| Issue trackers: GitHub Issues first, then Uchiage, Linear, Jira, and the agent task trackers dex and beads | Issue references from commits and PRs; issue text as agent context | Impact reports posted on the issue | 2 and 5 |
 | Pull requests and reviews | Review comments on lines inside a unit | Impact report and unverified units on the PR | 5 |
 | Error monitoring: Sentry first | Production stack frames, resolved to unit versions | Error signals in agent tools and PR reports | 5 |
 | Release tooling: Changesets | Changeset files | Suggested bump type and changelog entries per package | 5 |
@@ -356,6 +356,8 @@ The integrations worth building first connect Poetics to where the reason for a 
 - **Optional auto-filing:** `poetics verify` findings can be opened as labelled issues for agents to pick up.
 
 Uchiage is the second adapter. Tasks orchestrated in Uchiage carry their task ID into agent sessions, so provenance links task, agent session and unit versions in both directions. The adapter interface stays small: parse references, resolve a reference to its title, body and status, and post a comment.
+
+Agent task trackers such as [dex](https://github.com/dcramer/dex) and [beads](https://github.com/gastownhall/beads) get adapters on the same interface. They handle planning and coordination between agents (ready work, claims, blocker graphs), which Poetics leaves to trackers; Poetics ties their tasks to code through `planned` notes ([ADR 0012](decisions/0012-open-items-as-notes.md), proposed). Both keep tasks in the repository, so references resolve locally.
 
 ### Pull requests and reviews
 
