@@ -18,7 +18,11 @@ Some knowledge about the code is not yet true or not yet done:
 Today these end up in three places, none of them tied to the code:
 
 - planned work in GitHub issues and milestones, which say what to do but not
-  which units it touches, so an agent editing those units never sees it;
+  which units it touches, so an agent editing those units never sees it.
+  Agent task trackers such as [dex](https://github.com/dcramer/dex) (JSONL in
+  `.dex/`) and [beads](https://github.com/gastownhall/beads) (a Dolt database
+  in `.beads/`) bring the tasks into the repository, but a task still names no
+  units, so the agent editing them never sees it either;
 - assumptions and considerations in rationale prose, PR descriptions or
   nowhere;
 - `TODO` and `FIXME` comments, which the source has none of yet, but which
@@ -40,6 +44,15 @@ Options considered:
 - **A todo store, `.poetics/todos/`.** A new entity with its own schema,
   lifecycle, rendering and tools, duplicating most of what notes already do,
   and competing with the issue tracker for planned work.
+- **Adopt an agent task tracker (dex, beads) for planned work.** They do what
+  Poetics does not and should not: ready work (`bd ready`), atomic claims
+  with leases, blocker graphs, epics and subtasks, and turning a plan into
+  tasks. But they track work, not code: neither parses source, so a task
+  cannot surface when its code is touched, go stale when that code changes,
+  or hold an assumption with a check. Building their features into Poetics
+  would make it a second tracker; using one instead of notes would leave
+  assumptions and considerations with no home. They are trackers, so they
+  belong behind the same reference as GitHub Issues.
 - **Links on units only.** A unit could link to the issues and assumptions
   about it. But links live on versions, which record a past change; open items
   are about the future and must outlive the version that added them.
@@ -74,7 +87,7 @@ anchors it to the code.
   ("more than 10,000 units"). A trigger about a dependency is a `dependencies`
   anchor with a range instead, so `poetics verify` can detect it.
 - `planned` should link to its tracker item (`github-issue`, later
-  `uchiage-task`). When it does, the tracker's status is authoritative and the
+  `uchiage-task`, `dex-task` and `beads-issue`). When it does, the tracker's status is authoritative and the
   note carries no description beyond `statement`. Without one, the note stands
   alone, so the core still works with no tracker reachable.
 - **The new kinds need at least one anchor.** Something that is not about a
@@ -122,6 +135,12 @@ A `notImplemented()` stub is planned work already encoded in code.
 - Assumptions become checkable and go stale visibly, and the record shows
   which ones were refuted and what that changed.
 - No second tracker: planned work keeps one source of status.
+- Poetics works alongside agent task trackers rather than competing with
+  them. With a dex or beads adapter, an agent that claims a task can pull the
+  context pack for the units its `planned` notes anchor, and an agent editing
+  those units sees the open task. Both trackers keep their tasks in the
+  repository, so their adapters can resolve references locally, with no
+  network call.
 - Notes are no longer only gotchas, so the `poetics-gotcha` skill's guidance
   does not cover them. A `poetics-note` skill, or a section in
   `poetics-change`, has to say when to record each kind.
@@ -138,3 +157,7 @@ A `notImplemented()` stub is planned work already encoded in code.
     text names a unit, or always by hand?
   - Should the `TODO` rule be a warning or, once a repository has none
     unreferenced, an error?
+  - Recording a note takes more than beads' `bd remember "insight"`. Should
+    there be a quick capture, `poetics note "…"`, that saves a draft with
+    inferred anchors for an agent or human to complete later, or does a draft
+    state invite notes that never get finished?
