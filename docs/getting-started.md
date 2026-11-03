@@ -69,7 +69,7 @@ packages/
   store/                  JSON store, validation, SQLite index
   adapter-react/          React detection (stub)
   adapter-svelte/         Svelte detection (stub)
-  mcp/                    MCP tool definitions and server (stub)
+  mcp/                    MCP tool definitions and the read-only stdio server
   cli/                    poetics CLI (help and changes work; the rest stubbed)
 site/                     the GitHub Pages demo (Svelte)
 evals/

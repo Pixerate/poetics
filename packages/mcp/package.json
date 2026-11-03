@@ -37,6 +37,9 @@
       }
     }
   },
+  "bin": {
+    "poetics-mcp": "./dist/bin.js"
+  },
   "dependencies": {
     "@poetics/core": "workspace:*",
     "@poetics/store": "workspace:*"

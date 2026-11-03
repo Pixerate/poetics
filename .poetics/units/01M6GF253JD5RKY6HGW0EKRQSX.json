@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6GF253JD5RKY6HGW0EKRQSX",
+  "kind": "type",
+  "framework": "none",
+  "name": "ContextPackRequest",
+  "location": {
+    "file": "packages/mcp/src/read-tools.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:366429b6bbc788c425d335b366c22075015c5fe2",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The inputs of poetics_context_pack, checked before they reach contextPack.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "A unit reference, task text or issue, and an optional token budget.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/read-tools.test.ts",
+      "via": "static"
+    }
+  ]
+}

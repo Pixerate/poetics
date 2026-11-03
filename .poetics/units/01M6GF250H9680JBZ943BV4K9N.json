@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6GF250H9680JBZ943BV4K9N",
+  "kind": "function",
+  "framework": "none",
+  "name": "matchNotes",
+  "location": {
+    "file": "packages/mcp/src/read-tools.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:6d69e26f7d2a631bcf6754f3fa794a533a5d9fb3",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Backs poetics_notes and the context pack: error text and commands match either way round ignoring case and spacing so a pasted error finds its recorded symptom, paths match inside or around an anchor, and results rank by how many criteria matched.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "Notes matching any criterion, ranked by criteria matched, with stale unit anchors flagged.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/read-tools.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6GF2ARGHQC5RBVWJQRWMVNG",
+  "kind": "function",
+  "framework": "none",
+  "name": "readUnit",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:004e55169fa856c45f2669c300245d5362317215",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The MCP tools need a whole unit by uid, which the index does not hold; this reuses appendVersion's layout-aware lookup.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ]
+    }
+  ],
+  "docs": "Reads and parses one unit file by uid, in either layout.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    }
+  ]
+}

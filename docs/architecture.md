@@ -22,7 +22,7 @@ flowchart TD
 | `@poetics/store` | Store paths and sharding layout, JSON Schema validation, `checkStore` (units and notes), reading unit and note files, `renderGotchas`, the incremental SQLite index with lookups, reverse dependencies and FTS search (`searchUnits`), `appendVersion` | Validated writes (`recordRationale`, `declareLineage`, `linkTest`, `setDocs`) |
 | `@poetics/adapter-react` | Hook and component naming rules | Detection, interfaces, edges |
 | `@poetics/adapter-svelte` | File-kind detection, component naming, Svelte 4/5 detection | Detection, interfaces, edges |
-| `@poetics/mcp` | Tool definitions with input schemas and access levels, including `poetics_notes` and `poetics_record_note` | Server and tool handlers |
+| `@poetics/mcp` | Tool definitions with input schemas and access levels; a stdio server (`poetics-mcp`) answering `poetics_context_pack`, `poetics_search`, `poetics_unit`, `poetics_history`, `poetics_changes`, `poetics_tests_for` and `poetics_notes` | `poetics_impact`, `poetics_verify`, `poetics_signals`, code and signatures in context packs, and the write tools |
 | `@poetics/cli` | `help`, `--version`, `--json`, exit codes | Every command |
 
 Later packages from the plan (`skills`, `evals`, `testlink`, `lsp`, `action`,

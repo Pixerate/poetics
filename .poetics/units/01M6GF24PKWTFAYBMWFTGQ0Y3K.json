@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6GF24PKWTFAYBMWFTGQ0Y3K",
+  "kind": "function",
+  "framework": "none",
+  "name": "resolveUnit",
+  "location": {
+    "file": "packages/mcp/src/read-tools.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:c864fa96c711365f8c78c7469bef923d22353f00",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Tools take a unit reference that may be a uid, a name or file#name; an ambiguous name is refused with its candidates rather than guessed, as the plan requires of every match.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "Resolves a uid, unique name or file#name to a unit; refuses ambiguous names with the candidates.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/read-tools.test.ts",
+      "via": "static"
+    }
+  ]
+}
