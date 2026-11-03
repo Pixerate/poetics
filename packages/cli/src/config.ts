@@ -14,6 +14,7 @@ export interface CoverageThresholds {
 export interface PoeticsConfig extends Scope {
   /** The tsconfig whose compiler options the indexer uses, relative to the root. */
   typescript?: { tsconfig?: string };
+  store?: { layout?: "flat" | "sharded" };
   policy?: { coverage?: CoverageThresholds };
 }
 

@@ -18,6 +18,7 @@ export {
 export type { UnitFile, WriteContext } from "./json-store.ts";
 export {
   appendVersion,
+  createUnit,
   declareLineage,
   linkTest,
   listNoteFiles,
@@ -28,6 +29,7 @@ export {
   readUnit,
   readUnitFiles,
   recordRationale,
+  relocateUnit,
   setDocs,
 } from "./json-store.ts";
 export type { StoreLayout, StorePaths } from "./paths.ts";

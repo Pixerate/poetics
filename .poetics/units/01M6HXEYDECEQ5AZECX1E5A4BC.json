@@ -1,0 +1,45 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HXEYDECEQ5AZECX1E5A4BC",
+  "kind": "function",
+  "framework": "none",
+  "name": "hasWrites",
+  "location": {
+    "file": "packages/cli/src/indexing.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:67536e5ead5f3accb284d40c29db4e7d2aac58e4aeb487e8466570f1be500511",
+      "interfaceHash": "b3:4cdae39dc418b79521963541b45d1dcb10e91c4ce4f353c4212f0d59c6052232",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Lets the CLI and applyIndex ask whether a plan would write anything, since a missing rationale only matters when it would.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:c714b6f2b4b0ae397bc2483dcc704a988464e8e661d4bf5719c7bff0371c8566"
+      }
+    }
+  ],
+  "docs": "Whether applying the plan would write anything.",
+  "tests": [
+    {
+      "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/indexing.test.ts",
+      "via": "static"
+    }
+  ]
+}

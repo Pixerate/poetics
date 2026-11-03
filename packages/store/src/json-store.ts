@@ -1,9 +1,9 @@
-import { readdir, readFile, rename, writeFile } from "node:fs/promises";
-import { join, relative, sep } from "node:path";
+import { mkdir, readdir, readFile, rename, writeFile } from "node:fs/promises";
+import { dirname, join, relative, sep } from "node:path";
 import { isRemoved, notImplemented } from "@poetics/core";
 import type { Hash, LineageEntry, Link, Note, TestLink, Unit, Version } from "@poetics/core";
 import { unitFilePath } from "./paths.ts";
-import type { StorePaths } from "./paths.ts";
+import type { StoreLayout, StorePaths } from "./paths.ts";
 import type { StoreValidator } from "./schemas.ts";
 
 /** A JSON file read from the store: a unit file or a note file. */
@@ -110,14 +110,59 @@ export async function appendVersion(ctx: WriteContext, uid: string, version: Ver
   if (version.parent !== latest!.contentHash) fail(`parent is ${version.parent ?? "null"}, latest is ${latest!.contentHash}`);
 
   unit.versions.push({ ...version, actor: ctx.actor });
+  await writeUnit(ctx, file.path, unit, fail);
+}
+
+/**
+ * Writes a new unit file. Its only version must be `created`, as `ctx.actor`,
+ * and no unit file may exist for its uid in either layout.
+ */
+export async function createUnit(ctx: WriteContext, unit: Unit, layout: StoreLayout = "flat"): Promise<void> {
+  const fail = (reason: string): never => {
+    throw new Error(`Cannot create unit ${unit.uid}: ${reason}`);
+  };
+  if (unit.versions.length !== 1 || unit.versions[0]!.change !== "created" || unit.versions[0]!.parent != null) {
+    fail("a new unit has exactly one version, created, with no parent");
+  }
+  const existing = await readUnitFile(ctx.paths, unit.uid).catch(() => undefined);
+  if (existing) fail(`${existing.relativePath} already exists`);
+  const path = unitFilePath(ctx.paths, unit.uid, layout);
+  await mkdir(dirname(path), { recursive: true });
+  await writeUnit(ctx, path, { ...unit, versions: [{ ...unit.versions[0]!, actor: ctx.actor }] }, fail);
+}
+
+/**
+ * Records that a unit now lives at `to`, appending the lineage entries that say
+ * how it got there. Versions are untouched; a move with no lineage is refused,
+ * since identity must never rest on an unexplained change of place.
+ */
+export async function relocateUnit(
+  ctx: WriteContext,
+  uid: string,
+  to: { file: string; name: string; export?: string },
+  lineage: readonly LineageEntry[],
+): Promise<void> {
+  const file = await readUnitFile(ctx.paths, uid);
+  const unit = parseUnit(file);
+  const fail = (reason: string): never => {
+    throw new Error(`Cannot relocate ${uid}: ${reason}`);
+  };
+  if (lineage.length === 0) fail("no lineage entry says how it moved");
+  if (isRemoved(unit)) fail("its latest version is removed");
+  const location: Unit["location"] = { file: to.file };
+  if (to.export !== undefined) location.export = to.export;
+  await writeUnit(ctx, file.path, { ...unit, name: to.name, location, lineage: [...(unit.lineage ?? []), ...lineage] }, fail);
+}
+
+async function writeUnit(ctx: WriteContext, path: string, unit: Unit, fail: (reason: string) => never): Promise<void> {
   if (ctx.validator) {
     const result = ctx.validator.unit(unit);
     if (!result.valid) fail(result.errors.join("; "));
   }
   // Write then rename, so a crash never leaves a half-written unit file.
-  const temp = `${file.path}.${process.pid}.tmp`;
+  const temp = `${path}.${process.pid}.tmp`;
   await writeFile(temp, `${JSON.stringify(unit, null, 2)}\n`);
-  await rename(temp, file.path);
+  await rename(temp, path);
 }
 
 /** The unit file for `uid`, in whichever layout it was written. */

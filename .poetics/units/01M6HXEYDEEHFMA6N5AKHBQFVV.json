@@ -1,0 +1,45 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HXEYDEEHFMA6N5AKHBQFVV",
+  "kind": "function",
+  "framework": "none",
+  "name": "relocateUnit",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:c84e0bd900761ef7ebbbbee9b23a2b3b4d4efbdfc0112ef955ffd9ee7ca6e618",
+      "interfaceHash": "b3:9353937e6454a334e68d05a2f1d493b52f20c20e7b7c5071f498ce24365bddda",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Moves and renames found by identity matching update a unit's place with lineage and never touch its versions. A move without lineage is refused, so identity never rests on an unexplained change of place.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC777RN8YV0NBHRBXR3Y": "b3:c728ec79ae2af36596a032d15eca00fa56ff655bde1dfe678b1717b84a191eef",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e",
+        "01M5XDBC898NK9SFW67483HRZP": "b3:e7700ce887b5ee465cedbcd55a226dbc989c7aad2a73e4e5bfb5545b86880520",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981"
+      }
+    }
+  ],
+  "docs": "Records that a unit now lives at `to`, appending the lineage entries that say\nhow it got there. Versions are untouched; a move with no lineage is refused,\nsince identity must never rest on an unexplained change of place.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    }
+  ]
+}

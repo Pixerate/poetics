@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HXEYDDNG0KFMNFYRAH0DBY",
+  "kind": "type",
+  "framework": "none",
+  "name": "PlannedVersion",
+  "location": {
+    "file": "packages/cli/src/indexing.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:2dcfd2ff21f0d716b631e7363cf944c01033f78c07a05ff9dd5d77021e995d79",
+      "interfaceHash": "b3:0f092b1c0c3128130925d9a2bd880698f7e2f251620b582649a04e38c75368f3",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Pairs each version to append with its unit's key, so the plan can be reported per unit before anything is written.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:28f022ab2eeb35e0920e0410a86408c5c80409994a18a62a92cdc58f4914366e"
+      }
+    }
+  ],
+  "docs": "A version to append, with where its unit is, for reporting.",
+  "tests": [
+    {
+      "file": "packages/cli/src/indexing.test.ts",
+      "via": "static"
+    }
+  ]
+}

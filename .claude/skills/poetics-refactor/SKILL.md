@@ -12,7 +12,12 @@ it, checked against the diff.
 
 1. **Before touching code**, find every unit you will rename, move, split or
    merge (`poetics-orient`) and note each uid.
-2. **Make the code change.**
+2. **Make the code change**, then run `pnpm poetics index` (a dry run). It
+   follows renames and moves itself, by content or by syntax-tree similarity,
+   and lists them as `>` lines; `--write` records them with lineage. Lines
+   starting with `?` are matches it would not guess (look-alikes): declare
+   those by hand as below, and run it again. Splits and merges are never
+   inferred.
 3. **Declare lineage** in each affected unit file:
    - **Rename or move:** keep the same file and uid. Update `name` and/or
      `location.file`, and append to `lineage`:

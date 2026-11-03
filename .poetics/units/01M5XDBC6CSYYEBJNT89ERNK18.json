@@ -114,6 +114,28 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:b5ef3ed04865a15041e424c9aec47967cfb4f2dd69cc44439eadfd03a3ab1842",
+      "interfaceHash": "b3:2b936ea454e8c7cbabfa58cc1ed0887dfd73bd82e751b73fe26102853d7e9b1d",
+      "parent": "b3:14bca2802186f3572262d738572f55f4e433639710f4fcf1a9fcbbe2db9c726b",
+      "change": "behaviour",
+      "rationale": "Adds poetics index, which plans by default and records with --write, taking --since, --rationale and an agent actor. Flag parsing is shared with poetics rehash, and the command exits 1 while matches are queued.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M5XDBC6BX1B52HMF6DM053F1": "b3:fd7995b89805f459c0a4b4dbe445e5b548d35808e5648b8b4b2782b4ee8edfe4"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "Exit codes: 0 ok, 1 findings (e.g. verify), 2 usage or not-implemented. `root` is the repository root.",

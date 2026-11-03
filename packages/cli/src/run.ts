@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { NotImplementedError } from "@poetics/core";
-import type { Unit } from "@poetics/core";
+import type { Actor, Unit } from "@poetics/core";
 import { changesBetween, openIndex, rebuildIndex, resolveUnit, storePaths } from "@poetics/store";
 import type { ChangeSet } from "@poetics/store";
 import { checkChange } from "./change.ts";
@@ -10,6 +10,8 @@ import { COMMANDS } from "./commands.ts";
 import { readConfig } from "./config.ts";
 import { coverageFor, formatCoverage } from "./coverage.ts";
 import { formatLog, formatWhy } from "./history.ts";
+import { applyIndex, formatIndexPlan, hasWrites, planIndex } from "./indexing.ts";
+import type { IndexPlan } from "./indexing.ts";
 import { applyRehash, planRehash, unitHashes } from "./rehash.ts";
 
 export interface Io {
@@ -50,6 +52,7 @@ export async function run(argv: readonly string[], io: Io, root: string = proces
     if (command.name === "coverage") return await coverage(args.slice(1), io, json, root);
     if (command.name === "hash") return await hash(args.slice(1), io, json, root);
     if (command.name === "rehash") return await rehash(args.slice(1), io, json, root);
+    if (command.name === "index") return await index(args.slice(1), io, json, root);
     throw new NotImplementedError(`poetics ${command.name}`);
   } catch (error) {
     if (error instanceof NotImplementedError) {
@@ -169,30 +172,75 @@ async function hash(args: readonly string[], io: Io, json: boolean, root: string
 }
 
 async function rehash(args: readonly string[], io: Io, json: boolean, root: string): Promise<number> {
-  const value = (flag: string) => {
-    const i = args.indexOf(flag);
-    return i === -1 ? undefined : args[i + 1];
-  };
-  const agent = value("--agent");
-  const model = value("--model");
-  const known = new Set(["--write", "--agent", "--model", agent, model]);
-  if (args.some((arg) => !known.has(arg)) || (args.includes("--agent") && (!agent || agent.startsWith("-"))) || (model !== undefined && !agent)) {
+  const parsed = parseFlags(args, ["--write"], ["--agent", "--model"]);
+  if (!parsed) {
     report(io, json, { error: "usage", command: "rehash", message: "Usage: poetics rehash [--write] [--agent <tool> [--model <id>]]" });
     return 2;
   }
   const plan = await planRehash(root, await readConfig(root));
-  const written = args.includes("--write")
-    ? await applyRehash(root, plan, agent ? { kind: "agent", tool: agent, ...(model ? { model } : {}), reviewed: false } : { kind: "human" })
-    : 0;
+  const written = parsed.flags.has("--write") ? await applyRehash(root, plan, actorOf(parsed.values)) : 0;
   if (json) {
     io.out(JSON.stringify({ ...plan, written }));
   } else {
     const lines = plan.skipped.map((s) => `skipped: ${s.file}#${s.name} (${s.uid}): ${s.reason}`);
-    const verb = args.includes("--write") ? `Rehashed ${written}` : `Would rehash ${plan.rehash.length}`;
+    const verb = parsed.flags.has("--write") ? `Rehashed ${written}` : `Would rehash ${plan.rehash.length}`;
     lines.push(`${verb} unit(s); ${plan.skipped.length} skipped; ${plan.alreadyIndexed} already on b3: hashes.`);
     io.out(lines.join("\n"));
   }
   return plan.skipped.length > 0 ? 1 : 0;
+}
+
+async function index(args: readonly string[], io: Io, json: boolean, root: string): Promise<number> {
+  const usage = "Usage: poetics index [--since <ref>] [--write] [--rationale <text>] [--agent <tool> [--model <id>]]";
+  const parsed = parseFlags(args, ["--write"], ["--since", "--rationale", "--agent", "--model"]);
+  if (!parsed) {
+    report(io, json, { error: "usage", command: "index", message: usage });
+    return 2;
+  }
+  const config = await readConfig(root);
+  const since = parsed.values.get("--since");
+  const rationale = parsed.values.get("--rationale");
+  let plan: IndexPlan;
+  try {
+    plan = await planIndex(root, config, { ...(since ? { since } : {}), ...(rationale ? { rationale } : {}) });
+  } catch (error) {
+    report(io, json, { error: "invalid-argument", command: "index", message: (error as Error).message });
+    return 2;
+  }
+  const write = parsed.flags.has("--write");
+  if (write && plan.rationale === undefined && hasWrites(plan)) {
+    report(io, json, { error: "usage", command: "index", message: "No rationale: pass --rationale, or commit with a message first" });
+    return 2;
+  }
+  const written = write ? await applyIndex(root, plan, actorOf(parsed.values), config.store?.layout) : 0;
+  io.out(json ? JSON.stringify({ ...plan, written }) : formatIndexPlan(plan, write ? written : undefined));
+  return plan.queued.length > 0 ? 1 : 0;
+}
+
+/**
+ * Boolean `flags` and `--name <value>` options, or undefined when an argument is
+ * unknown, a value is missing, or `--model` comes without `--agent`.
+ */
+function parseFlags(args: readonly string[], flags: readonly string[], options: readonly string[]) {
+  const seen = new Set<string>();
+  const values = new Map<string, string>();
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]!;
+    if (flags.includes(arg)) seen.add(arg);
+    else if (options.includes(arg)) {
+      const value = args[++i];
+      if (value === undefined || value.startsWith("--")) return undefined;
+      values.set(arg, value);
+    } else return undefined;
+  }
+  if (values.has("--model") && !values.has("--agent")) return undefined;
+  return { flags: seen, values };
+}
+
+function actorOf(values: ReadonlyMap<string, string>): Actor {
+  const agent = values.get("--agent");
+  const model = values.get("--model");
+  return agent ? { kind: "agent", tool: agent, ...(model ? { model } : {}), reviewed: false } : { kind: "human" };
 }
 
 function report(io: Io, json: boolean, payload: { error: string; message: string; command?: string }): void {

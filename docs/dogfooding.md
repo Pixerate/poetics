@@ -7,7 +7,7 @@ describe.
 
 | Job | Today, by hand | Taken over by | Phase |
 | --- | --- | --- | --- |
-| Assign identity | `pnpm mint-uid`, create the unit file | Indexer | 1 |
+| Assign identity | `pnpm poetics index --write` (or `pnpm mint-uid` and a unit file by hand) | Post-commit hook | 1 |
 | Version hashes | `pnpm poetics hash <file>#<name>` (`b3:` hashes; done, ADR 0014) | `poetics index` | 1 |
 | Gather context | Read unit files, plan and decisions | `poetics_context_pack` | 1 |
 | Check the store | `pnpm validate` in CI | `poetics verify` | 1 |

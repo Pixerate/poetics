@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -230,6 +230,53 @@ describe("poetics CLI", () => {
       const result = await execIn(root, "rehash");
       expect(result.code).toBe(1);
       expect(result.out).toMatch(/^skipped: src\/a\.ts#a/);
+    });
+  });
+
+  describe("index", () => {
+    const config = JSON.stringify({ version: 1, adapters: ["typescript"], include: ["src/**/*.ts"], exclude: ["**/*.test.ts"] });
+    const fresh = async () => {
+      const root = await mkdtemp(join(tmpdir(), "poetics-cli-index-"));
+      execFileSync("git", ["init", "-q", "-b", "main"], { cwd: root });
+      await write(root, ".poetics/config.json", config);
+      await write(root, "src/a.ts", "export function a() {\n  return 1;\n}\n");
+      return root;
+    };
+
+    it("plans by default and records with --write, as the given actor", async () => {
+      const root = await fresh();
+      const dry = await execIn(root, "index");
+      expect(dry.code).toBe(0);
+      expect(dry.out).toMatch(/^\+ src\/a\.ts#a \(function, new uid [0-9A-Z]{26}\)\nNo rationale yet/);
+      expect(dry.out).toContain("Would record: 0 moved, 0 changed, 1 new, 0 removed, 0 queued, 0 up to date.");
+
+      const written = await execIn(root, "index", "--write", "--rationale", "Seed", "--agent", "claude-code", "--json");
+      expect(JSON.parse(written.out)).toMatchObject({ written: 1, created: [{ name: "a" }] });
+      const units = await readdir(join(root, ".poetics/units"));
+      const unit = JSON.parse(await readFile(join(root, ".poetics/units", units[0]!), "utf8")) as { versions: Array<{ actor: unknown }> };
+      expect(unit.versions[0]!.actor).toEqual({ kind: "agent", tool: "claude-code", reviewed: false });
+      expect((await execIn(root, "index")).out).toBe("Would record: 0 moved, 0 changed, 0 new, 0 removed, 0 queued, 1 up to date. Run with --write to record it.");
+    });
+
+    it("exits 2 for bad flags, an unknown ref or a write with no rationale, and 1 when matches are queued", async () => {
+      const root = await fresh();
+      expect((await execIn(root, "index", "--rationale")).code).toBe(2);
+      expect((await execIn(root, "index", "--model", "m")).code).toBe(2);
+      expect((await execIn(root, "index", "extra")).code).toBe(2);
+      expect(JSON.parse((await execIn(root, "index", "--write", "--json")).err)).toMatchObject({ error: "usage", message: expect.stringContaining("No rationale") });
+
+      const twin = "export function x(n: number) {\n  let s = 0;\n  for (let i = 0; i < n; i++) s += i * 2;\n  return s;\n}\n";
+      await write(root, "src/a.ts", twin + twin.replace("function x(", "function y("));
+      await execIn(root, "index", "--write", "--rationale", "Seed");
+      execFileSync("git", ["add", "-A"], { cwd: root });
+      execFileSync("git", ["-c", "user.name=T", "-c", "user.email=t@example.com", "-c", "commit.gpgsign=false", "commit", "-q", "-m", "Seed"], { cwd: root });
+      expect(JSON.parse((await execIn(root, "index", "--since", "nope", "--json")).err)).toMatchObject({ error: "invalid-argument" });
+
+      await rm(join(root, "src/a.ts"));
+      await write(root, "src/b.ts", (twin + twin.replace("function x(", "function y(")).replace("function x(", "function p(").replace("function y(", "function q("));
+      const queued = await execIn(root, "index");
+      expect(queued.code).toBe(1);
+      expect(queued.out).toMatch(/^\? 4 units share the same content: /);
     });
   });
 });

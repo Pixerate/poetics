@@ -188,6 +188,13 @@ stages and never revisits a decision:
    entries, at 0.65 or more. A pair is matched only when neither unit resembles
    anything else above the threshold; otherwise the whole group is queued.
 
+`poetics index` runs this on every unit that is no longer at its recorded
+place, with the code at `--since` (default `HEAD`) as the earlier snapshot,
+and the code in the working tree as the current one. Units still at their place
+are either up to date or get a version, and units someone already moved by hand
+are up to date. Queued matches are reported on every run until someone declares
+them; nothing is stored for them, since the next run finds them again.
+
 Whatever is left over is created or removed. Matches carry the lineage entries
 (`move`, `rename`, `merge`) their unit files should gain. Splits and merges are
 only ever applied when declared, never inferred.
