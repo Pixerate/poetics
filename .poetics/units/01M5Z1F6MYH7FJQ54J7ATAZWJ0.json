@@ -26,6 +26,29 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "git:e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "provisional": true,
+      "parent": "git:953ea1e3f5c3c257b00fec129d1d7341f5f27a4a",
+      "change": "removed",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Folded into poetics verify in packages/cli/src/run.ts, which runs the same change check (ADR 0007 said phase 1 moves it behind the CLI); pnpm poetics:check now calls the CLI.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
     }
   ],
   "tests": [

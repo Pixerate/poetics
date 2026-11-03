@@ -2,9 +2,12 @@
 // of what is recorded about them.
 import { isRemoved } from "@poetics/core";
 import type { Note, Unit } from "@poetics/core";
+import { parseNote, parseUnit, readNoteFiles, readUnitFiles, storePaths } from "@poetics/store";
+import { readConfig } from "./config.ts";
+import type { CoverageThresholds } from "./config.ts";
+import { discoverDeclarations, filesInScope } from "./declarations.ts";
 import type { Declaration } from "./declarations.ts";
 import { compareCodeWithStore } from "./drift.ts";
-import type { CoverageThresholds } from "./config.ts";
 
 export interface Ratio {
   covered: number;
@@ -117,4 +120,14 @@ export function formatCoverage(report: CoverageReport): string {
   if (report.unsupportedFiles.length > 0) lines.push(`Not yet indexable: ${report.unsupportedFiles.length} file(s) (e.g. ${report.unsupportedFiles[0]}).`);
   for (const f of report.failures) lines.push(`Below threshold: ${f.metric} ${(f.ratio * 100).toFixed(1)}% < ${(f.threshold * 100).toFixed(1)}%`);
   return lines.join("\n");
+}
+
+export async function coverageFor(root: string): Promise<CoverageReport> {
+  const config = await readConfig(root);
+  const paths = storePaths(root);
+  const { declarations, unsupported } = await discoverDeclarations(root, config);
+  const { parseable } = await filesInScope(root, config);
+  const units = (await readUnitFiles(paths)).map(parseUnit);
+  const notes = (await readNoteFiles(paths)).map(parseNote);
+  return computeCoverage(declarations, units, notes, new Set(parseable), unsupported, config.policy?.coverage);
 }

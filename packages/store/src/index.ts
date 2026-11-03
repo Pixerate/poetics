@@ -31,6 +31,7 @@ export {
   setDocs,
 } from "./json-store.ts";
 export type { StoreLayout, StorePaths } from "./paths.ts";
+export { resolveUnit } from "./resolve.ts";
 export { storePaths, unitFilePath } from "./paths.ts";
 export type { SchemaSet, StoreValidator, ValidationResult } from "./schemas.ts";
 export { createValidator, loadSchemaSet } from "./schemas.ts";

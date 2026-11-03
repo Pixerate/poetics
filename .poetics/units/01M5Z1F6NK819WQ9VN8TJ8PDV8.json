@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "DriftFinding",
   "location": {
-    "file": "scripts/lib/drift.ts"
+    "file": "packages/cli/src/drift.ts"
   },
   "versions": [
     {
@@ -30,8 +30,14 @@
   ],
   "tests": [
     {
-      "file": "scripts/lib/drift.test.ts",
+      "file": "packages/cli/src/drift.test.ts",
       "via": "static"
+    }
+  ],
+  "lineage": [
+    {
+      "kind": "move",
+      "from": "scripts/lib/drift.ts"
     }
   ]
 }

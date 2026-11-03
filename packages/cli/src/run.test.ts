@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { COMMANDS } from "./commands.ts";
 import { VERSION, run } from "./run.ts";
+import { FN_A, makeGitRepo, write } from "./test-helpers.ts";
 
 async function exec(...argv: string[]) {
   return execIn(process.cwd(), ...argv);
@@ -101,8 +102,94 @@ describe("poetics CLI", () => {
   });
 
   it("exits 2 with a structured error for planned commands", async () => {
-    const { code, err } = await exec("verify", "--json");
+    const { code, err } = await exec("init", "--json");
     expect(code).toBe(2);
-    expect(JSON.parse(err)).toMatchObject({ error: "not-implemented", command: "verify" });
+    expect(JSON.parse(err)).toMatchObject({ error: "not-implemented", command: "init" });
+  });
+
+  describe("log and why", () => {
+    it("answer for a unit of this repository by name, uid or file#name", async () => {
+      const log = await exec("log", "packages/store/src/index-db.ts#searchUnits");
+      expect(log.code).toBe(0);
+      expect(log.out).toMatch(/^searchUnits \(function, packages\/store\/src\/index-db\.ts\)/);
+      expect(log.out).toMatch(/#0 created/);
+
+      const why = JSON.parse((await exec("why", "searchUnits", "--json")).out) as { name: string; chain: Array<{ seq: number; change: string }> };
+      expect(why.name).toBe("searchUnits");
+      expect(why.chain[0]).toMatchObject({ seq: 0, change: "created" });
+
+      const json = JSON.parse((await exec("log", "searchUnits", "--json")).out) as { uid: string; versions: Array<{ seq: number }> };
+      expect(json.versions[0]!.seq).toBe(json.versions.length - 1);
+      expect((await exec("why", json.uid)).out).toContain("Why searchUnits");
+    });
+
+    it("exit 2 for a missing, unknown or ambiguous unit", async () => {
+      expect(JSON.parse((await exec("log", "--json")).err)).toMatchObject({ error: "usage", command: "log" });
+      expect(JSON.parse((await exec("why", "noSuchUnit", "--json")).err)).toMatchObject({ error: "invalid-argument", command: "why" });
+      // Io is exported by more than one module here.
+      const ambiguous = await exec("log", "Io");
+      expect(ambiguous.code).toBe(2);
+      expect(ambiguous.err).toMatch(/Io is ambiguous/);
+    });
+  });
+
+  describe("verify", () => {
+    const UID = "01JB8K0000000000000000000A";
+    const config = JSON.stringify({ version: 1, adapters: ["typescript"], include: ["src/**/*.ts"], exclude: ["**/*.test.ts"] });
+    const repo = async () => {
+      const root = await makeGitRepo(UID);
+      await write(root, ".poetics/config.json", config);
+      return root;
+    };
+
+    it("passes a clean tree and exits 1 on an unrecorded change", async () => {
+      const root = await repo();
+      expect((await execIn(root, "verify")).code).toBe(0);
+
+      await write(root, "src/a.ts", FN_A.replace("1", "2"));
+      const result = await execIn(root, "verify");
+      expect(result.code).toBe(1);
+      expect(result.err).toContain("error: stale: src/a.ts");
+      expect(result.out).toMatch(/1 code file\(s\), 0 unit file\(s\) changed; 1 error\(s\), 0 warning\(s\)/);
+    });
+
+    it("emits the report as JSON and compares with --since", async () => {
+      const root = await repo();
+      expect(JSON.parse((await execIn(root, "verify", "--json", "--since", "HEAD")).out)).toMatchObject({ findings: [] });
+    });
+
+    it("exits 2 for bad arguments and unknown refs", async () => {
+      const root = await repo();
+      expect(JSON.parse((await execIn(root, "verify", "--since", "--json")).err)).toMatchObject({ error: "usage" });
+      expect((await execIn(root, "verify", "main")).code).toBe(2);
+      const unknown = await execIn(root, "verify", "--since", "nope", "--json");
+      expect(unknown.code).toBe(2);
+      expect(JSON.parse(unknown.err)).toMatchObject({ error: "invalid-argument", command: "verify" });
+    });
+  });
+
+  describe("coverage", () => {
+    const UID = "01JB8K0000000000000000000A";
+    const config = { version: 1, adapters: ["typescript"], include: ["src/**/*.ts"], exclude: ["**/*.test.ts"] };
+
+    it("reports coverage and exits 1 below a policy threshold", async () => {
+      const root = await makeGitRepo(UID);
+      await write(root, "src/b.ts", "export function b() {}\n");
+      await write(root, ".poetics/config.json", JSON.stringify({ ...config, policy: { coverage: { tracked: 1 } } }));
+      const result = await execIn(root, "coverage", "--json");
+      expect(result.code).toBe(1);
+      const report = JSON.parse(result.out) as { overall: { tracked: unknown; fresh: { ratio: number } }; failures: Array<{ metric: string }> };
+      expect(report.overall.tracked).toEqual({ covered: 1, total: 2, ratio: 0.5 });
+      expect(report.overall.fresh.ratio).toBe(1);
+      expect(report.failures.map((f) => f.metric)).toEqual(["tracked"]);
+      expect((await execIn(root, "coverage")).out).toContain("tracked");
+    });
+
+    it("exits 0 when every threshold is met, and 2 for extra arguments", async () => {
+      const root = await makeGitRepo(UID);
+      await write(root, ".poetics/config.json", JSON.stringify({ ...config, policy: { coverage: { tracked: 1 } } }));
+      expect((await execIn(root, "coverage")).code).toBe(0);
+      expect((await execIn(root, "coverage", "extra")).code).toBe(2);
+    });
   });
 });

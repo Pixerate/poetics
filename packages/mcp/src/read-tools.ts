@@ -4,15 +4,7 @@
 import type { DatabaseSync } from "node:sqlite";
 import { isRemoved, notImplemented } from "@poetics/core";
 import type { Hash, Note, Uid, Unit, Version } from "@poetics/core";
-import {
-  dependentsOf,
-  findUnitsByName,
-  getUnit,
-  parseNote,
-  readNoteFiles,
-  readUnit,
-  searchUnits,
-} from "@poetics/store";
+import { dependentsOf, getUnit, parseNote, readNoteFiles, readUnit, resolveUnit as resolveInStore, searchUnits } from "@poetics/store";
 import type { StorePaths, UnitRow } from "@poetics/store";
 
 export interface ReadContext {
@@ -24,19 +16,8 @@ export interface ReadContext {
 const DEFAULT_LIMIT = 20;
 const DEFAULT_TOKEN_BUDGET = 4000;
 
-/**
- * Resolves a tool's unit reference: a uid, a unit name, or `file#name` when a
- * name is shared. Ambiguous names are refused with the candidates, never guessed.
- */
-export async function resolveUnit(ctx: ReadContext, ref: string): Promise<Unit> {
-  if (getUnit(ctx.db, ref)) return readUnit(ctx.paths, ref);
-  const hashAt = ref.lastIndexOf("#");
-  const [file, name] = hashAt > 0 ? [ref.slice(0, hashAt), ref.slice(hashAt + 1)] : [undefined, ref];
-  const rows = findUnitsByName(ctx.db, name).filter((row) => file === undefined || row.file === file);
-  if (rows.length === 1) return readUnit(ctx.paths, rows[0]!.uid);
-  if (rows.length === 0) throw new Error(`No unit matches ${ref}; try poetics_search`);
-  const candidates = rows.map((row) => `${row.uid} (${row.file}#${row.name})`).join(", ");
-  throw new Error(`${ref} is ambiguous: ${candidates}. Pass a uid or file#name`);
+function resolveUnit(ctx: ReadContext, ref: string): Promise<Unit> {
+  return resolveInStore(ctx.paths, ctx.db, ref);
 }
 
 export interface NoteQuery {

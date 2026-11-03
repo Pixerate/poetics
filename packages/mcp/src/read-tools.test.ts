@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { NotImplementedError, REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { Note, Unit } from "@poetics/core";
 import { openIndex, rebuildIndex, storePaths } from "@poetics/store";
-import { callReadTool, contextPack, matchNotes, resolveUnit } from "./read-tools.ts";
+import { callReadTool, contextPack, matchNotes } from "./read-tools.ts";
 import type { ReadContext } from "./read-tools.ts";
 
 const UID_A = "01JB8K0000000000000000000A";
@@ -82,21 +82,6 @@ async function repo(notes: Note[] = []): Promise<ReadContext> {
   return { paths, db };
 }
 
-describe("resolveUnit", () => {
-  it("accepts a uid, a unique name, or file#name", async () => {
-    const ctx = await repo();
-    expect((await resolveUnit(ctx, UID_A)).name).toBe("formatPrice");
-    expect((await resolveUnit(ctx, "formatPrice")).uid).toBe(UID_A);
-    expect((await resolveUnit(ctx, "src/b.ts#render")).uid).toBe(UID_D);
-  });
-
-  it("refuses an ambiguous name with its candidates, and an unknown one", async () => {
-    const ctx = await repo();
-    await expect(resolveUnit(ctx, "render")).rejects.toThrow(`render is ambiguous: ${UID_C} (src/a.ts#render), ${UID_D} (src/b.ts#render)`);
-    await expect(resolveUnit(ctx, "nothing")).rejects.toThrow("No unit matches nothing");
-  });
-});
-
 describe("matchNotes", () => {
   const N1 = "01JB8N0000000000000000000A";
   const N2 = "01JB8N0000000000000000000B";
@@ -144,6 +129,12 @@ describe("callReadTool", () => {
     expect(many.units).toHaveLength(1);
     await expect(callReadTool(ctx, "poetics_search", { query: 3 })).rejects.toThrow("query must be a non-empty string");
     await expect(callReadTool(ctx, "poetics_search", { query: "x", limit: 0 })).rejects.toThrow("limit must be a positive integer");
+  });
+
+  it("resolves unit references by uid, name or file#name, refusing ambiguous ones", async () => {
+    const ctx = await repo();
+    expect(await callReadTool(ctx, "poetics_unit", { unit: "src/b.ts#render" })).toMatchObject({ uid: UID_D });
+    await expect(callReadTool(ctx, "poetics_history", { unit: "render" })).rejects.toThrow(/render is ambiguous/);
   });
 
   it("poetics_unit returns current state, dependencies and callers", async () => {

@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "PoeticsConfig",
   "location": {
-    "file": "scripts/lib/config.ts"
+    "file": "packages/cli/src/config.ts"
   },
   "versions": [
     {
@@ -30,8 +30,14 @@
   ],
   "tests": [
     {
-      "file": "scripts/check.test.ts",
+      "file": "packages/cli/src/run.test.ts",
       "via": "static"
+    }
+  ],
+  "lineage": [
+    {
+      "kind": "move",
+      "from": "scripts/lib/config.ts"
     }
   ]
 }

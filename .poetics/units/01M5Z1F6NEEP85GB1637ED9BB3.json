@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "Scope",
   "location": {
-    "file": "scripts/lib/declarations.ts"
+    "file": "packages/cli/src/declarations.ts"
   },
   "versions": [
     {
@@ -30,8 +30,14 @@
   ],
   "tests": [
     {
-      "file": "scripts/lib/declarations.test.ts",
+      "file": "packages/cli/src/declarations.test.ts",
       "via": "static"
+    }
+  ],
+  "lineage": [
+    {
+      "kind": "move",
+      "from": "scripts/lib/declarations.ts"
     }
   ]
 }

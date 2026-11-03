@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "showAt",
   "location": {
-    "file": "scripts/lib/git.ts"
+    "file": "packages/cli/src/git.ts"
   },
   "versions": [
     {
@@ -31,8 +31,14 @@
   "docs": "File contents at a ref, or undefined if the file did not exist there.",
   "tests": [
     {
-      "file": "scripts/lib/change.test.ts",
+      "file": "packages/cli/src/change.test.ts",
       "via": "static"
+    }
+  ],
+  "lineage": [
+    {
+      "kind": "move",
+      "from": "scripts/lib/git.ts"
     }
   ]
 }

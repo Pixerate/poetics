@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { REMOVED_CONTENT_HASH, gitBlobHash } from "@poetics/core";
 import type { Unit } from "@poetics/core";
 import { checkChange } from "./change.ts";
-import { FN_A, SCOPE, makeGitRepo, runGit, unitFor, write, writeUnitFile } from "./test-repo.ts";
+import { FN_A, SCOPE, makeGitRepo, runGit, unitFor, write, writeUnitFile } from "./test-helpers.ts";
 
 const UID = "01JB8K0000000000000000000A";
 const UID_B = "01JB8K0000000000000000000B";

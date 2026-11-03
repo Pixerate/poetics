@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6H9V1C1FZTVMQJ89JMP9GTQ",
+  "kind": "function",
+  "framework": "none",
+  "name": "formatWhy",
+  "location": {
+    "file": "packages/cli/src/history.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:c3555cee9ff732503bd0c82e4c5519a060920bdf",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "poetics why answers how a unit came to be as it is, so it reads the rationale oldest first and leaves out hashes and authors that log already shows.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ]
+    }
+  ],
+  "docs": "Renders poetics why: the rationale chain that led to a unit's current version, oldest first.",
+  "tests": [
+    {
+      "file": "packages/cli/src/history.test.ts",
+      "via": "static"
+    }
+  ]
+}
