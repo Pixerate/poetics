@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HS3HPGWQSVQ3NJ5VJ8WEVV",
+  "kind": "type",
+  "framework": "none",
+  "name": "TrackedUnit",
+  "location": {
+    "file": "packages/core/src/identity.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:8ddd03ee725a0e57557bfe06acc673b5255ec452",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The earlier snapshot's code units carry the uid the store gives them, which is what matching hands on.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
+    }
+  ],
+  "docs": "A code unit in the earlier snapshot, with its store uid.",
+  "tests": [
+    {
+      "file": "packages/core/src/identity.test.ts",
+      "via": "static"
+    }
+  ]
+}

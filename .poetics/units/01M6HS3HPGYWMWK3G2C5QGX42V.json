@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HS3HPGYWMWK3G2C5QGX42V",
+  "kind": "type",
+  "framework": "none",
+  "name": "QueuedMatch",
+  "location": {
+    "file": "packages/core/src/identity.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:eb700d76ff2a81b24c4579d3bbab53f26a8dc53d",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Ambiguous matches are queued, never guessed (#20). Queued units are neither created nor removed until someone confirms.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
+    }
+  ],
+  "docs": "Units that could each be several others, with the reason, held for confirmation.",
+  "tests": [
+    {
+      "file": "packages/core/src/identity.test.ts",
+      "via": "static"
+    }
+  ]
+}

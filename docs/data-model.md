@@ -154,4 +154,42 @@ Each indexed unit carries three hashes, all `b3:`:
 | `runtimeHash` | The same tree with types, type-only declarations and TypeScript-only modifiers erased. Equal runtime hashes with different content hashes mean a types-only change. |
 | `interfaceHash` | The signature: for functions and hooks, the visible overloads' type parameters, parameters (rest, optional, type, default value; not names) and return type, with omitted types as the checker prints them; for types, their structure. |
 
+Each unit also carries a `fingerprint` for identity matching: one 16-hex hash
+per internal node of the content tree, over that node and the two levels below
+it, sorted, with repeats numbered (`hash#2`) so it counts like a multiset. An
+edit changes only the entries near it.
+
 Global declarations reached without an import are not part of a file's key.
+
+## Identity matching
+
+`matchIdentities` in `@poetics/core` decides which unit in the code now is which
+tracked unit. It takes the earlier snapshot's units paired with their uids
+(`trackedUnits` pairs live store units with the code at their recorded file and
+name), the current snapshot's units, and any declared lineage. It works in
+stages and never revisits a decision:
+
+1. **Declared lineage.** Renames and moves name one uid and one target. A split
+   names one uid and its parts; the first part keeps the uid and the others are
+   created with `{ "kind": "split", "uids": [<original>] }`. A merge names the
+   merged uids and one target; the first uid survives and the rest are removed,
+   marked `mergedInto`. A declaration the snapshots disagree with is rejected
+   with a reason, for example a "move" whose unit is still at its old place, or a
+   "rename" that kept its name.
+2. **File and name.** A unit at the same place, in the same namespace (types and
+   values apart), is the same unit, edited or not.
+3. **Content hash.** A unique pair with the same content hash is a rename or move.
+   Several units sharing content are queued.
+4. **Similarity.** Jaccard similarity of fingerprints, for units with at least 8
+   entries, at 0.65 or more. A pair is matched only when neither unit resembles
+   anything else above the threshold; otherwise the whole group is queued.
+
+Whatever is left over is created or removed. Matches carry the lineage entries
+(`move`, `rename`, `merge`) their unit files should gain. Splits and merges are
+only ever applied when declared, never inferred.
+
+The defaults come from this repository. The closest unrelated pair of functions
+scores 0.61. The move of `resolveUnit` in `a5da380`, which also renamed a
+parameter used in every statement, scores 0.68. With no declarations, matching
+the code before and after commits `9cda7f2`, `a5da380` and `98015d7` agrees
+with the hand-recorded store for every unit.

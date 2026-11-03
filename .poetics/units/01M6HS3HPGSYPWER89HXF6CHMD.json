@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HS3HPGSYPWER89HXF6CHMD",
+  "kind": "type",
+  "framework": "none",
+  "name": "RemovedUnit",
+  "location": {
+    "file": "packages/core/src/identity.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:7ed1c1ecd9ca0fc996625788841d0d7b9f9cbbfe",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Marks units a declared merge absorbed, so their removed versions can say where they went (ADR 0010).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
+    }
+  ],
+  "docs": "A tracked unit no longer in the code, and the unit it merged into if any.",
+  "tests": [
+    {
+      "file": "packages/core/src/identity.test.ts",
+      "via": "static"
+    }
+  ]
+}

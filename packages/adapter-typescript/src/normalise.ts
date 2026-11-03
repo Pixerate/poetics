@@ -2,6 +2,7 @@
 // formatting never reach the tree, and neither does anything a formatter may
 // rewrite without changing meaning (quotes, redundant parentheses, numeric
 // spelling, quoted property names, JSX text wrapping).
+import { createHash } from "node:crypto";
 import ts from "typescript";
 
 /** `[kind, ...children]` for nodes, `[kind, text]` for names and literals. */
@@ -43,6 +44,37 @@ const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
 export function normaliseNode(node: ts.Node, options: NormaliseOptions = {}): NormalTree {
   const tree = visit(node, options);
   return tree ?? ["Erased"];
+}
+
+// How many levels below each node its shingle sees: enough to tell `a.b(c)` from `a.b(d)`, few
+// enough that an edit only changes the shingles of the nodes near it.
+const SHINGLE_DEPTH = 2;
+
+/**
+ * What identity matching compares when a unit was edited as well as renamed or
+ * moved: one hash per internal node of `tree`, each over the node and the
+ * levels just below it, sorted. A hash seen more than once is numbered
+ * (`hash#2`), so the list works as a multiset. Leaves alone are left out, since
+ * every unit shares them.
+ */
+export function fingerprint(tree: NormalTree): string[] {
+  const counts = new Map<string, number>();
+  const walk = (node: NormalTree) => {
+    const children = node.slice(1);
+    if (!children.some((child) => typeof child !== "string")) return;
+    const hash = createHash("sha1").update(shingle(node, SHINGLE_DEPTH)).digest("hex").slice(0, 16);
+    counts.set(hash, (counts.get(hash) ?? 0) + 1);
+    for (const child of children) if (typeof child !== "string") walk(child);
+  };
+  walk(tree);
+  return [...counts].flatMap(([hash, count]) => Array.from({ length: count }, (_, i) => (i === 0 ? hash : `${hash}#${i + 1}`))).sort();
+}
+
+function shingle(node: NormalTree | string, depth: number): string {
+  if (typeof node === "string") return JSON.stringify(node);
+  const [kind, ...children] = node;
+  if (depth === 0) return kind;
+  return `${kind}(${children.map((child) => shingle(child, depth - 1)).join(",")})`;
 }
 
 function visit(node: ts.Node, options: NormaliseOptions): NormalTree | undefined {

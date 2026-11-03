@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HS3HPGSA1NB2JTM6ZM903R",
+  "kind": "function",
+  "framework": "none",
+  "name": "fingerprint",
+  "location": {
+    "file": "packages/adapter-typescript/src/normalise.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:00185ae0842a9724d1e29ca803a3664fa0093084",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Identity matching (#20) needs to compare units that were edited as well as moved. One hash per internal node over that node and two levels below it keeps an edit local: Merkle subtree hashes changed every ancestor and missed resolveUnit's move in a5da380, which scores 0.68 this way.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
+    }
+  ],
+  "docs": "Shingle hashes of a normalised tree, one per internal node, as a sorted multiset for similarity.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/normalise.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-typescript/src/identity.test.ts",
+      "via": "static"
+    }
+  ]
+}
