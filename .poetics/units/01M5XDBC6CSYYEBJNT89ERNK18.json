@@ -68,6 +68,29 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "git:5942334dd97cb41689c79a8ffe39b79aa1229751",
+      "provisional": true,
+      "parent": "git:bda8a40657e5dc122d4c3216cc18eb0fdddfc2b0",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Routes log and why: both bring the index up to date, resolve the unit as the MCP tools do, and exit 2 for a missing, unknown or ambiguous unit. log prints every version newest first; why prints the rationale chain oldest first.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#cli"
+        }
+      ]
     }
   ],
   "docs": "Exit codes: 0 ok, 1 findings (e.g. verify), 2 usage or not-implemented. `root` is the repository root.",

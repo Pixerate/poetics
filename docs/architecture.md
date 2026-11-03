@@ -19,11 +19,11 @@ flowchart TD
 | Package | Built today | Stubbed (throws `NotImplementedError`) |
 | --- | --- | --- |
 | `@poetics/core` | Model types, `mintUid`, `isUid`, `uidTime`, `gitBlobHash`, `isHash`, `FrameworkAdapter` interface | `contentHash`, `interfaceHash`, `closureHash`, graph construction, SCCs, closure hashes, impact |
-| `@poetics/store` | Store paths and sharding layout, JSON Schema validation, `checkStore` (units and notes), reading unit and note files, `renderGotchas`, the incremental SQLite index with lookups, reverse dependencies and FTS search (`searchUnits`), `appendVersion` | Validated writes (`recordRationale`, `declareLineage`, `linkTest`, `setDocs`) |
+| `@poetics/store` | Store paths and sharding layout, JSON Schema validation, `checkStore` (units and notes), reading unit and note files, `renderGotchas`, the incremental SQLite index with lookups, reverse dependencies and FTS search (`searchUnits`), `resolveUnit`, `readUnit`, `appendVersion` | Validated writes (`recordRationale`, `declareLineage`, `linkTest`, `setDocs`) |
 | `@poetics/adapter-react` | Hook and component naming rules | Detection, interfaces, edges |
 | `@poetics/adapter-svelte` | File-kind detection, component naming, Svelte 4/5 detection | Detection, interfaces, edges |
 | `@poetics/mcp` | Tool definitions with input schemas and access levels; a stdio server (`poetics-mcp`) answering `poetics_context_pack`, `poetics_search`, `poetics_unit`, `poetics_history`, `poetics_changes`, `poetics_tests_for` and `poetics_notes` | `poetics_impact`, `poetics_verify`, `poetics_signals`, code and signatures in context packs, and the write tools |
-| `@poetics/cli` | `help`, `--version`, `--json`, exit codes | Every command |
+| `@poetics/cli` | `help`, `--version`, `--json`, exit codes; `changes`, `log`, `why`, `verify` (the change check) and `coverage`, with the declaration discovery behind them | `init`, `index`, `impact`, `diff`, `docs sync`, `changes --impact`, and the indexer's findings in `verify` |
 
 Later packages from the plan (`skills`, `evals`, `testlink`, `lsp`, `action`,
 `storybook-addon`, `tracker-*`, `monitor-sentry`, `release`) are added when their

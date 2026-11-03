@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6H9V1C1ETVK5RASY2JE4R93",
+  "kind": "function",
+  "framework": "none",
+  "name": "formatLog",
+  "location": {
+    "file": "packages/cli/src/history.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:aa0e9ef3199a552b01291cf79c4a0d05d8d9f715",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "poetics log needs a terminal view of a unit's whole record: each version newest first with its hash, commit, author and review state, rationale and links, then lineage.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ]
+    }
+  ],
+  "docs": "Renders poetics log: a unit's versions newest first with hash, commit, author, rationale and links.",
+  "tests": [
+    {
+      "file": "packages/cli/src/history.test.ts",
+      "via": "static"
+    }
+  ]
+}

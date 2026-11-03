@@ -107,6 +107,32 @@ describe("poetics CLI", () => {
     expect(JSON.parse(err)).toMatchObject({ error: "not-implemented", command: "init" });
   });
 
+  describe("log and why", () => {
+    it("answer for a unit of this repository by name, uid or file#name", async () => {
+      const log = await exec("log", "packages/store/src/index-db.ts#searchUnits");
+      expect(log.code).toBe(0);
+      expect(log.out).toMatch(/^searchUnits \(function, packages\/store\/src\/index-db\.ts\)/);
+      expect(log.out).toMatch(/#0 created/);
+
+      const why = JSON.parse((await exec("why", "searchUnits", "--json")).out) as { name: string; chain: Array<{ seq: number; change: string }> };
+      expect(why.name).toBe("searchUnits");
+      expect(why.chain[0]).toMatchObject({ seq: 0, change: "created" });
+
+      const json = JSON.parse((await exec("log", "searchUnits", "--json")).out) as { uid: string; versions: Array<{ seq: number }> };
+      expect(json.versions[0]!.seq).toBe(json.versions.length - 1);
+      expect((await exec("why", json.uid)).out).toContain("Why searchUnits");
+    });
+
+    it("exit 2 for a missing, unknown or ambiguous unit", async () => {
+      expect(JSON.parse((await exec("log", "--json")).err)).toMatchObject({ error: "usage", command: "log" });
+      expect(JSON.parse((await exec("why", "noSuchUnit", "--json")).err)).toMatchObject({ error: "invalid-argument", command: "why" });
+      // Io is exported by more than one module here.
+      const ambiguous = await exec("log", "Io");
+      expect(ambiguous.code).toBe(2);
+      expect(ambiguous.err).toMatch(/Io is ambiguous/);
+    });
+  });
+
   describe("verify", () => {
     const UID = "01JB8K0000000000000000000A";
     const config = JSON.stringify({ version: 1, adapters: ["typescript"], include: ["src/**/*.ts"], exclude: ["**/*.test.ts"] });

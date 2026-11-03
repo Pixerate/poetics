@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { NotImplementedError } from "@poetics/core";
-import { changesBetween, storePaths } from "@poetics/store";
+import type { Unit } from "@poetics/core";
+import { changesBetween, openIndex, rebuildIndex, resolveUnit, storePaths } from "@poetics/store";
 import type { ChangeSet } from "@poetics/store";
 import { checkChange } from "./change.ts";
 import type { ChangeReport } from "./change.ts";
@@ -8,6 +9,7 @@ import { formatChanges } from "./changes.ts";
 import { COMMANDS } from "./commands.ts";
 import { readConfig } from "./config.ts";
 import { coverageFor, formatCoverage } from "./coverage.ts";
+import { formatLog, formatWhy } from "./history.ts";
 
 export interface Io {
   out(text: string): void;
@@ -42,6 +44,7 @@ export async function run(argv: readonly string[], io: Io, root: string = proces
 
   try {
     if (command.name === "changes") return await changes(args.slice(1), io, json, root);
+    if (command.name === "log" || command.name === "why") return await history(command.name, args.slice(1), io, json, root);
     if (command.name === "verify") return await verify(args.slice(1), io, json, root);
     if (command.name === "coverage") return await coverage(args.slice(1), io, json, root);
     throw new NotImplementedError(`poetics ${command.name}`);
@@ -70,6 +73,36 @@ async function changes(args: readonly string[], io: Io, json: boolean, root: str
     return 2;
   }
   io.out(json ? JSON.stringify(set) : formatChanges(set));
+  return 0;
+}
+
+async function history(name: "log" | "why", args: readonly string[], io: Io, json: boolean, root: string): Promise<number> {
+  const [ref, ...extra] = args;
+  if (ref === undefined || ref.startsWith("-") || extra.length > 0) {
+    report(io, json, { error: "usage", command: name, message: `Usage: poetics ${name} <unit>` });
+    return 2;
+  }
+  const paths = storePaths(root);
+  const db = openIndex(paths.indexDb);
+  let unit: Unit;
+  try {
+    await rebuildIndex(paths, db);
+    unit = await resolveUnit(paths, db, ref);
+  } catch (error) {
+    report(io, json, { error: "invalid-argument", command: name, message: (error as Error).message });
+    return 2;
+  } finally {
+    db.close();
+  }
+  if (!json) {
+    io.out(name === "log" ? formatLog(unit) : formatWhy(unit));
+  } else if (name === "log") {
+    const versions = unit.versions.map((version, seq) => ({ seq, ...version })).reverse();
+    io.out(JSON.stringify({ uid: unit.uid, name: unit.name, location: unit.location, versions, lineage: unit.lineage ?? [] }));
+  } else {
+    const chain = unit.versions.map(({ change, rationale, links, commit }, seq) => ({ seq, change, rationale, links: links ?? [], ...(commit ? { commit } : {}) }));
+    io.out(JSON.stringify({ uid: unit.uid, name: unit.name, location: unit.location, chain, lineage: unit.lineage ?? [] }));
+  }
   return 0;
 }
 

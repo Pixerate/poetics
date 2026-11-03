@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "resolveUnit",
   "location": {
-    "file": "packages/mcp/src/read-tools.ts"
+    "file": "packages/store/src/resolve.ts"
   },
   "versions": [
     {
@@ -30,13 +30,42 @@
           "ref": "docs/plan.md#mcp-server-poeticsmcp"
         }
       ]
+    },
+    {
+      "contentHash": "git:6856c2d9bdac4bfa2a9c243644e085d361f37f71",
+      "provisional": true,
+      "parent": "git:c864fa96c711365f8c78c7469bef923d22353f00",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Moved into the store so poetics log and poetics why resolve units exactly as the MCP tools do; takes paths and db instead of the MCP ReadContext, and its not-found message no longer names an MCP tool. The MCP handlers call it through a local wrapper.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ]
     }
   ],
-  "docs": "Resolves a uid, unique name or file#name to a unit; refuses ambiguous names with the candidates.",
+  "docs": "Resolves a uid, unique name or file#name to a unit, given an up-to-date index; refuses ambiguous names with the candidates.",
   "tests": [
+    {
+      "file": "packages/store/src/resolve.test.ts",
+      "via": "static"
+    },
     {
       "file": "packages/mcp/src/read-tools.test.ts",
       "via": "static"
+    }
+  ],
+  "lineage": [
+    {
+      "kind": "move",
+      "from": "packages/mcp/src/read-tools.ts"
     }
   ]
 }
