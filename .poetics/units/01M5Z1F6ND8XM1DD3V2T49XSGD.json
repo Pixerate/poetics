@@ -26,11 +26,38 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:61e0decd4f3c2ee8c2bcbeec36371a6dc4c9aab4ba968f52b7976fc60d6af2b5",
+      "interfaceHash": "b3:68c00f580b89788124fd14a241ee0f8d3e883853114f63ef8f2af40cb32ce5b0",
+      "parent": "git:52b1b242cf808909f5bb0e5f4303723e2ea9d1ce",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Declarations carry the indexer's b3: contentHash next to the provisional text hash, so freshness can be checked for units on either side of the rehash.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "tests": [
     {
       "file": "packages/cli/src/declarations.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/drift.test.ts",
       "via": "static"
     }
   ],

@@ -192,4 +192,44 @@ describe("poetics CLI", () => {
       expect((await execIn(root, "coverage", "extra")).code).toBe(2);
     });
   });
+
+  describe("hash and rehash", () => {
+    const UID = "01JB8K0000000000000000000A";
+    const config = JSON.stringify({ version: 1, adapters: ["typescript"], include: ["src/**/*.ts"], exclude: ["**/*.test.ts"] });
+
+    it("prints a file's unit hashes, as text or JSON, and refuses an unknown unit", async () => {
+      const root = await makeGitRepo(UID);
+      await write(root, ".poetics/config.json", config);
+      const text = await execIn(root, "hash", "src/a.ts");
+      expect(text.code).toBe(0);
+      expect(text.out).toMatch(/^a \(function, lines 1-3\)\n {2}contentHash {3}b3:[0-9a-f]{64}\n {2}interfaceHash b3:/);
+      expect(JSON.parse((await execIn(root, "hash", "src/a.ts#a", "--json")).out)).toMatchObject({ file: "src/a.ts", units: [{ name: "a" }] });
+      expect(JSON.parse((await execIn(root, "hash", "src/a.ts#nope", "--json")).err)).toMatchObject({ error: "invalid-argument" });
+      expect((await execIn(root, "hash")).code).toBe(2);
+    });
+
+    it("plans by default, writes with --write as the given actor, and checks its flags", async () => {
+      const root = await makeGitRepo(UID);
+      await write(root, ".poetics/config.json", config);
+      const dry = await execIn(root, "rehash");
+      expect([dry.code, dry.out]).toEqual([0, "Would rehash 1 unit(s); 0 skipped; 0 already on b3: hashes."]);
+      const written = JSON.parse((await execIn(root, "rehash", "--write", "--agent", "claude-code", "--model", "m", "--json")).out) as { written: number };
+      expect(written.written).toBe(1);
+      const unit = JSON.parse(await readFile(join(root, ".poetics/units", `${UID}.json`), "utf8")) as { versions: Array<{ change: string; actor: unknown }> };
+      expect(unit.versions.at(-1)).toMatchObject({ change: "rehash", actor: { kind: "agent", tool: "claude-code", model: "m", reviewed: false } });
+      expect((await execIn(root, "rehash")).out).toBe("Would rehash 0 unit(s); 0 skipped; 1 already on b3: hashes.");
+      expect((await execIn(root, "rehash", "--model", "m")).code).toBe(2);
+      expect((await execIn(root, "rehash", "--agent")).code).toBe(2);
+      expect((await execIn(root, "rehash", "--force")).code).toBe(2);
+    });
+
+    it("exits 1 when units are skipped", async () => {
+      const root = await makeGitRepo(UID);
+      await write(root, ".poetics/config.json", config);
+      await write(root, "src/a.ts", "export function a() {\n  return 2;\n}\n");
+      const result = await execIn(root, "rehash");
+      expect(result.code).toBe(1);
+      expect(result.out).toMatch(/^skipped: src\/a\.ts#a/);
+    });
+  });
 });

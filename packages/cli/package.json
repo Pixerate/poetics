@@ -41,6 +41,7 @@
     "poetics": "./dist/bin.js"
   },
   "dependencies": {
+    "@poetics/adapter-typescript": "workspace:*",
     "@poetics/core": "workspace:*",
     "@poetics/store": "workspace:*",
     "typescript": "^6.0.3"

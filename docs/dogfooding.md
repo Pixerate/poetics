@@ -8,7 +8,7 @@ describe.
 | Job | Today, by hand | Taken over by | Phase |
 | --- | --- | --- | --- |
 | Assign identity | `pnpm mint-uid`, create the unit file | Indexer | 1 |
-| Version hashes | `pnpm provisional-hash` (`git:` hashes) | Syntax-tree hashes + rehash migration | 1 |
+| Version hashes | `pnpm poetics hash <file>#<name>` (`b3:` hashes; done, ADR 0014) | `poetics index` | 1 |
 | Gather context | Read unit files, plan and decisions | `poetics_context_pack` | 1 |
 | Check the store | `pnpm validate` in CI | `poetics verify` | 1 |
 | Check a change was recorded | `pnpm poetics:check` in preflight and on pull requests | `poetics verify --since`, GitHub Action | 1, 5 |
@@ -48,8 +48,8 @@ Then create `.poetics/units/<uid>.json`:
   "location": { "file": "packages/core/src/format.ts" },
   "versions": [
     {
-      "contentHash": "<pnpm provisional-hash output>",
-      "provisional": true,
+      "contentHash": "<contentHash from pnpm poetics hash>",
+      "interfaceHash": "<interfaceHash from pnpm poetics hash>",
       "parent": null,
       "change": "created",
       "actor": { "kind": "agent", "tool": "claude-code", "model": "<model id>", "reviewed": false },

@@ -248,6 +248,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@poetics/adapter-typescript':
+        specifier: workspace:*
+        version: link:../adapter-typescript
       '@poetics/core':
         specifier: workspace:*
         version: link:../core

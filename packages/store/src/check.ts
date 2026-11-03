@@ -144,8 +144,7 @@ async function checkNotes(
         error(file, `anchored unit ${anchor.uid} is not a known unit`);
         continue;
       }
-      const latest = unit.versions.at(-1)?.contentHash;
-      if (note.status === "active" && anchor.observedAt !== undefined && anchor.observedAt !== latest) {
+      if (note.status === "active" && anchor.observedAt !== undefined && changedSince(unit, anchor.observedAt)) {
         warning(file, `${unit.name} has changed since this note was confirmed; re-check it and update observedAt`);
       }
     }
@@ -161,6 +160,12 @@ async function checkNotes(
     }
   }
   return notes.size;
+}
+
+/** Whether the unit has a version after `hash` that changed code. A rehash re-records the same code (ADR 0014). */
+function changedSince(unit: Unit, hash: string): boolean {
+  const at = unit.versions.findIndex((version) => version.contentHash === hash);
+  return at === -1 || unit.versions.slice(at + 1).some((version) => version.change !== "rehash");
 }
 
 function checkVersions(
@@ -190,9 +195,18 @@ function checkVersions(
     const provisional = hashes.some(isProvisional);
     if (provisional && version.provisional !== true) error(file, `${at} has git: hashes but is not marked provisional`);
     if (!provisional && version.provisional === true) error(file, `${at} is marked provisional but has no git: hashes`);
-    // The removed sentinel is a git: hash by definition, not a placeholder awaiting the indexer.
-    if (provisional && allowProvisional === false && version.change !== "removed") error(file, `${at} is provisional but policy forbids it`);
+    // A rehash replaces a provisional hash with the indexer's, so it needs one before it and none of its own (ADR 0014).
+    if (version.change === "rehash") {
+      if (provisional) error(file, `${at} is a rehash but its hashes are not all b3:`);
+      if (i > 0 && !isProvisional(unit.versions[i - 1]!.contentHash)) error(file, `${at} is a rehash but the version before it already has a b3: hash`);
+    }
   });
+  // History keeps the hashes it was recorded with; the policy is about where each live unit stands now.
+  // The removed sentinel is a git: hash by definition, not a placeholder awaiting the indexer.
+  const latest = unit.versions.at(-1);
+  if (allowProvisional === false && latest && latest.change !== "removed" && isProvisional(latest.contentHash)) {
+    error(file, `versions[${unit.versions.length - 1}] is provisional but policy forbids it`);
+  }
 }
 
 async function readJsonIfPresent(path: string): Promise<unknown> {

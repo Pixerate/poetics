@@ -45,12 +45,39 @@
           "ref": "docs/decisions/0010-removed-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:15b02c3dbcc5b7c1d93a89f604dbb5aa20e8b6b319338904d3189c6c1305ed69",
+      "interfaceHash": "b3:50fdcc2725803bc9f8714295e3328b5e76cd72a2e04657ce5c7b3e0dcbc9d8d2",
+      "parent": "git:a6c6d99622deb48a0db784f0b3694b6fec440b42",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Adds rehash: the same code as the previous git: version, re-recorded under the indexer's b3: hash, so the migration appends rather than rewrites history (ADR 0014).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "`created` marks a unit's first version and `removed` its last (ADR 0010);\nthe rest follow the plan's change classes.",
   "tests": [
     {
       "file": "packages/core/src/removal.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/store/src/check.test.ts",
       "via": "static"
     }
   ]

@@ -23,7 +23,8 @@
   const recent = $derived(
     data.units
       .flatMap((unit) => unit.versions.map((version, index) => ({ unit, version, index })))
-      .filter(({ index }) => index > 0)
+      // A rehash re-records unchanged code (ADR 0014), so it is not a change to show.
+      .filter(({ version, index }) => index > 0 && version.change !== "rehash")
       .slice(-6)
       .reverse(),
   );

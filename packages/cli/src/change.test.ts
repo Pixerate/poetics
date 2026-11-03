@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { REMOVED_CONTENT_HASH, gitBlobHash } from "@poetics/core";
 import type { Unit } from "@poetics/core";
 import { checkChange } from "./change.ts";
+import { declarationsIn } from "./declarations.ts";
 import { FN_A, SCOPE, makeGitRepo, runGit, unitFor, write, writeUnitFile } from "./test-helpers.ts";
 
 const UID = "01JB8K0000000000000000000A";
@@ -157,5 +158,52 @@ describe("checkChange", () => {
       await writeUnitFile(root, unit);
     }
     expect(kinds(await checkChange(root, "HEAD", SCOPE))).toEqual(Array(3).fill("warning:repeated-rationale"));
+  });
+
+  describe("rehash versions", () => {
+    const rehashOf = (unit: Unit, code: string, rationale = "Rehashed by the indexer.") => {
+      const [decl] = declarationsIn("src/a.ts", code);
+      unit.versions.push({
+        contentHash: decl!.contentHash,
+        parent: unit.versions.at(-1)!.contentHash,
+        change: "rehash",
+        actor: { kind: "human" },
+        rationale,
+        links: [{ kind: "decision", ref: "docs/decisions/0014-rehash-versions.md" }],
+      });
+      return unit;
+    };
+
+    it("accepts a rehash of unchanged code, and many sharing one rationale", async () => {
+      const root = await makeGitRepo(UID);
+      await write(root, "src/b.ts", "export function b() {}\nexport function c() {}\nexport function d() {}\n");
+      const others = ["b", "c", "d"].map((name, i) => unitFor(`01JB8K000000000000000000${i}C`, name, `export function ${name}() {}`, { location: { file: "src/b.ts" } }));
+      for (const unit of others) await writeUnitFile(root, unit);
+      runGit(root, "add", "-A");
+      runGit(root, "commit", "-q", "-m", "more");
+      await writeUnitFile(root, rehashOf(unitFor(UID, "a", FN_A), FN_A));
+      for (const unit of others) {
+        const code = `export function ${unit.name}() {}`;
+        const [decl] = declarationsIn("src/b.ts", code);
+        unit.versions.push({ contentHash: decl!.contentHash, parent: unit.versions[0]!.contentHash, change: "rehash", actor: { kind: "human" }, rationale: "Rehashed by the indexer.", links: ["ADR 0014"] });
+        await writeUnitFile(root, unit);
+      }
+      expect(kinds(await checkChange(root, "HEAD", SCOPE))).toEqual([]);
+    });
+
+    it("rejects a rehash that hides a code change", async () => {
+      const root = await makeGitRepo(UID);
+      await write(root, "src/a.ts", `${FN_A2}\n`);
+      await writeUnitFile(root, rehashOf(unitFor(UID, "a", FN_A), FN_A2));
+      const report = await checkChange(root, "HEAD", SCOPE);
+      expect(kinds(report)).toEqual(["error:changed-rehash"]);
+      expect(report.findings[0]!.message).toMatch(/the code changed since git:/);
+    });
+
+    it("rejects a rehash whose hash is not the code's", async () => {
+      const root = await makeGitRepo(UID);
+      await writeUnitFile(root, rehashOf(unitFor(UID, "a", FN_A), FN_A2));
+      expect((await checkChange(root, "HEAD", SCOPE)).findings).toMatchObject([{ kind: "changed-rehash", message: expect.stringMatching(/is not the code's/) }]);
+    });
   });
 });

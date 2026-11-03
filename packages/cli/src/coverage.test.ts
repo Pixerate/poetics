@@ -5,7 +5,7 @@ import type { Declaration } from "./declarations.ts";
 import { areaOf, computeCoverage, formatCoverage } from "./coverage.ts";
 
 const h = (c: string) => `git:${c.repeat(40)}` as const;
-const decl = (file: string, name: string, hash = h("1")): Declaration => ({ file, name, kind: "function", hash, startLine: 1, endLine: 1 });
+const decl = (file: string, name: string, hash = h("1")): Declaration => ({ file, name, kind: "function", hash, contentHash: `b3:${"1".repeat(64)}`, startLine: 1, endLine: 1 });
 const unit = (uid: string, file: string, name: string, extra: Partial<Unit> = {}, reviewed = false): Unit => ({
   uid,
   kind: "function",

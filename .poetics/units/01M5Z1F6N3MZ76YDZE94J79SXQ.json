@@ -45,6 +45,29 @@
           "ref": "docs/decisions/0010-removed-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:626a1bcbab69040e31141608c5b7b626651f8be2d435594e2b66ff363ed0ed58",
+      "interfaceHash": "b3:fd52ee6eabb732e9d44e102b12bcfae4053c1b68bfb741790b922e5ae5dbd0b8",
+      "parent": "git:20035aa41501fdd0ce7e303bb170811fdce6352d",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Checks each new rehash version that is a unit's latest: its parent must be the code's provisional hash and its contentHash the code's b3: hash, so a rehash never hides a code change. Rehash versions are exempt from the repeated-rationale warning, since their rationale is the same by design.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "tests": [

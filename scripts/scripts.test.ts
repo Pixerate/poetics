@@ -7,7 +7,6 @@ import { describe, expect, it } from "vitest";
 import { isUid } from "@poetics/core";
 import { buildGotchas, syncGotchas } from "./gotchas.ts";
 import { mintUids } from "./mint-uid.ts";
-import { provisionalHash } from "./provisional-hash.ts";
 import { reindex } from "./reindex.ts";
 import { main } from "./validate.ts";
 
@@ -101,21 +100,6 @@ describe("scripts/mint-uid.ts", () => {
   it("rejects bad counts", () => {
     expect(() => mintUids(0)).toThrow(RangeError);
     expect(() => mintUids(Number.NaN)).toThrow(RangeError);
-  });
-});
-
-describe("scripts/provisional-hash.ts", () => {
-  const source = "import x from 'y';\nexport function a() {\n  return 1;\n}\n";
-
-  it("hashes the line range without a trailing newline", async () => {
-    const { gitBlobHash } = await import("@poetics/core");
-    expect(provisionalHash(source, 2, 4)).toBe(gitBlobHash("export function a() {\n  return 1;\n}"));
-  });
-
-  it("rejects ranges outside the file", () => {
-    expect(() => provisionalHash(source, 0, 1)).toThrow(RangeError);
-    expect(() => provisionalHash(source, 3, 2)).toThrow(RangeError);
-    expect(() => provisionalHash(source, 1, 99)).toThrow(RangeError);
   });
 });
 

@@ -64,6 +64,29 @@
           "ref": "docs/decisions/0010-removed-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:bd2feaef3fcc49d646a71bfaac403e7f7a4538817e1428851f85f90ddfb032ab",
+      "interfaceHash": "b3:09665c304e423693bba21bbe37f9d41896e52e4693d688fe83bdf937a12c64a2",
+      "parent": "git:1e119046112a3ba745601d492d569c9bdc3f7189",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A rehash version must have only b3: hashes and follow a git: version. With allowProvisionalHashes off, only each live unit's latest version must be b3:, so recorded history keeps its git: hashes. A note anchored to a unit stays confirmed through rehash versions, since they re-record the same code.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Validates the whole store: config, lock, every unit file and every note\nagainst their JSON Schemas, then the rules a schema cannot express (ids\nmatch filenames, version chains are intact, references point at real units,\nnotes and files, and notes are flagged when their units have moved on).\nRemoved units keep their files but need not point at code that still exists.",

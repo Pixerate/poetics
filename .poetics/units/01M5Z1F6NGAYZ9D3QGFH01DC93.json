@@ -26,12 +26,39 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:d6e7d65e75d53eb9181e64f9547325ed2152fdacdc9424e4fd13be3c739408bf",
+      "interfaceHash": "b3:2887ea1c4df231061fb99f442c9376993aa37209d80e65be4402ced07e9de4a8",
+      "parent": "git:bfa7964a7255fb9f254ca7f4955e673b50bff206",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Detection now comes from the TypeScript adapter's detectUnits, so the change check sees exactly the units the indexer does (including export lists and exported arrow functions), and each declaration gets its b3: content hash.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Exported function, interface and type-alias declarations in one source text.",
   "tests": [
     {
       "file": "packages/cli/src/declarations.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/change.test.ts",
       "via": "static"
     }
   ],

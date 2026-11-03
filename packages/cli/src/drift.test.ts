@@ -6,11 +6,14 @@ import { compareCodeWithStore } from "./drift.ts";
 
 const h = (c: string): Hash => `git:${c.repeat(40)}`;
 
-const decl = (name: string, hash = h("1"), file = "src/a.ts"): Declaration => ({
+const b3 = (c: string): Hash => `b3:${c.repeat(64)}`;
+
+const decl = (name: string, hash = h("1"), file = "src/a.ts", contentHash = b3("1")): Declaration => ({
   file,
   name,
   kind: "function",
   hash,
+  contentHash,
   startLine: 1,
   endLine: 3,
 });
@@ -51,7 +54,7 @@ describe("compareCodeWithStore", () => {
 
   it("reports untracked, stale and orphaned", () => {
     const drift = compareCodeWithStore(
-      [decl("a", h("2")), decl("b")],
+      [decl("a", h("2"), "src/a.ts", b3("2")), decl("b")],
       [unit(U1, "a"), unit(U2, "gone")],
       all,
     );
@@ -61,7 +64,8 @@ describe("compareCodeWithStore", () => {
       ["orphaned", "gone"],
     ]);
     expect(drift).toMatchObject({ tracked: 1, fresh: 0, declarations: 2 });
-    expect(drift.findings[0]!.message).toContain(h("2"));
+    // New versions take the indexer's hash, whatever family the unit's history used.
+    expect(drift.findings[0]!.message).toContain(b3("2"));
   });
 
   it("tells orphans to record lineage or a removed version", () => {
@@ -91,9 +95,20 @@ describe("compareCodeWithStore", () => {
     expect(drift.fresh).toBe(1);
   });
 
-  it("reports duplicate units and cannot compare non-provisional hashes", () => {
-    const b3 = `b3:${"a".repeat(64)}` as const;
-    const drift = compareCodeWithStore([decl("a")], [unit(U1, "a", b3), unit(U2, "a")], all);
-    expect(drift.findings.map((f) => f.kind)).toEqual(["duplicate", "unverifiable"]);
+  it("reports duplicate units", () => {
+    const drift = compareCodeWithStore([decl("a")], [unit(U1, "a"), unit(U2, "a")], all);
+    expect(drift.findings.map((f) => f.kind)).toEqual(["duplicate"]);
+  });
+
+  it("compares a b3: latest hash with the code's content hash, and a git: one with its text hash", () => {
+    const rehashed = (u: Unit, hash: Hash): Unit => ({
+      ...u,
+      versions: [...u.versions, { contentHash: hash, parent: u.versions[0]!.contentHash, change: "rehash", actor: { kind: "human" }, rationale: "Rehashed." }],
+    });
+    const fresh = compareCodeWithStore([decl("a"), decl("b")], [rehashed(unit(U1, "a"), b3("1")), unit(U2, "b")], all);
+    expect([fresh.findings, fresh.fresh]).toEqual([[], 2]);
+
+    const stale = compareCodeWithStore([decl("a", h("1"), "src/a.ts", b3("2"))], [rehashed(unit(U1, "a"), b3("1"))], all);
+    expect(stale.findings).toMatchObject([{ kind: "stale", message: expect.stringContaining(`append one with contentHash ${b3("2")}`) }]);
   });
 });

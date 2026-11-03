@@ -19,17 +19,19 @@ Run `poetics-orient` first. Day-one version: you edit unit files by hand. When
    Formatting and comment-only edits are not a new version; skip steps 4–5.
 3. **Handle callers** for `interface` changes: update every unit that depends on
    this one, and give each of those its own version entry.
-4. **Compute the provisional hash** of the unit's new source text, the whole
-   declaration from `export` to its closing brace:
-   `pnpm provisional-hash <file> <startLine> <endLine>` (1-based, inclusive).
-   It prints a `git:` hash: the git blob hash of that text.
+4. **Get the unit's hashes** from the indexer:
+   `pnpm poetics hash <file>#<name>`. It prints the `b3:` `contentHash` (the
+   normalised syntax tree, so formatting and comments never change it) and the
+   `interfaceHash`. `pnpm poetics:check` prints the same `contentHash` for any
+   unit that is behind. Provisional `git:` hashes are history only
+   ([ADR 0014](../../../docs/decisions/0014-rehash-versions.md)).
 5. **Append a version** to `.poetics/units/<uid>.json`. Never edit or remove
    earlier entries.
 
    ```json
    {
-     "contentHash": "git:<new hash>",
-     "provisional": true,
+     "contentHash": "b3:<contentHash>",
+     "interfaceHash": "b3:<interfaceHash>",
      "parent": "<previous version's contentHash>",
      "change": "behaviour",
      "actor": { "kind": "agent", "tool": "claude-code", "model": "<your model id>", "reviewed": false },

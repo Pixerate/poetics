@@ -403,7 +403,7 @@ The first deliverable is the schema, not the indexer. Once the formats are fixed
 | Job | Day one, by hand | Taken over by | Phase |
 | --- | --- | --- | --- |
 | Assign identity | Agent mints a ULID and creates the unit file | Indexer | 1 |
-| Version hashes | Provisional git blob hash | Normalised syntax-tree hash, with a rehash migration | 1 |
+| Version hashes | Provisional git blob hash | Normalised syntax-tree hash, with a rehash migration ([ADR 0014](decisions/0014-rehash-versions.md), proposed) | 1 |
 | Gather context | Agent reads unit files and the linked plan sections | `poetics_context_pack` | 1 |
 | Check the store | JSON Schema validation in CI | `poetics verify` | 1 |
 | Record gotchas | Agent writes a note file, per `poetics-gotcha`; `GOTCHAS.md` generated | `poetics_record_note`; failure hook surfaces matching notes | 2 |

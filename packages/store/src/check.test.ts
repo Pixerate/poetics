@@ -107,6 +107,39 @@ describe("checkStore", () => {
     expect(messages(await check(root))).toContain("versions[0] is provisional but policy forbids it");
   });
 
+  it("keeps provisional history under the policy once the latest version is rehashed", async () => {
+    const unit = makeUnit(UID_A);
+    unit.versions.push({ contentHash: hash("1", "b3"), parent: hash("1"), change: "rehash", actor: { kind: "human" }, rationale: "Rehashed by the indexer." });
+    const root = await makeRepo([unit], { ...defaultConfig(), policy: { allowProvisionalHashes: false } });
+    expect(messages(await check(root))).toEqual([]);
+  });
+
+  it("keeps a note confirmed through a rehash, but not through a code change", async () => {
+    const unit = makeUnit(UID_A);
+    unit.versions.push({ contentHash: hash("1", "b3"), parent: hash("1"), change: "rehash", actor: { kind: "human" }, rationale: "Rehashed." });
+    const note = makeNote({ anchors: { units: [{ uid: UID_A, observedAt: hash("1") }] } });
+    const root = await makeRepo([unit]);
+    await writeNote(root, note);
+    expect(messages(await check(root))).toEqual([]);
+
+    unit.versions.push({ contentHash: hash("2", "b3"), parent: hash("1", "b3"), change: "behaviour", actor: { kind: "human" }, rationale: "Changed." });
+    await writeUnit(root, unit);
+    expect(messages(await check(root))).toEqual(["fnA has changed since this note was confirmed; re-check it and update observedAt"]);
+  });
+
+  it("only allows a rehash with b3: hashes, straight after a git: version", async () => {
+    const unit = makeUnit(UID_A);
+    unit.versions.push(
+      { contentHash: hash("1", "b3"), parent: hash("1"), change: "rehash", actor: { kind: "human" }, rationale: "Rehashed." },
+      { contentHash: hash("2", "b3"), parent: hash("1", "b3"), change: "rehash", actor: { kind: "human" }, rationale: "Rehashed again." },
+    );
+    const other = makeUnit(UID_B);
+    other.versions.push({ contentHash: hash("2"), provisional: true, parent: hash("1"), change: "rehash", actor: { kind: "human" }, rationale: "Not a rehash." });
+    const result = messages(await check(await makeRepo([unit, other])));
+    expect(result).toContain("versions[2] is a rehash but the version before it already has a b3: hash");
+    expect(result).toContain("versions[1] is a rehash but its hashes are not all b3:");
+  });
+
   it("checks references to files and units", async () => {
     const unit = makeUnit(UID_A, {
       owner: UID_B,

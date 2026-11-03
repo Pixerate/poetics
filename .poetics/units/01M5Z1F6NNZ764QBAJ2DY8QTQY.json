@@ -45,6 +45,29 @@
           "ref": "docs/decisions/0010-removed-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:8328cff2c93ae3c1c1b94d67d654b156f548f918557a96b6047f05d74b42f9cd",
+      "interfaceHash": "b3:d2d1956c9b7817646951f6053f428dde41a5909d80a27c0d347baf2685573bfa",
+      "parent": "git:38a708078ee4c33d79702a5156f601bf4b98f2c8",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Compares a unit's latest hash with the code's hash of the same family: git: against the text hash, b3: against the syntax-tree hash. Messages suggest the b3: hash for new versions, since the policy no longer allows provisional ones (ADR 0014).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Matches declarations to units by file and name (lineage keeps these current across renames and moves). Only units whose file satisfies `covers` can be orphaned: pass the set of files that were scanned, so units for files outside the scan (or that the parser cannot read yet, like .svelte) are left alone. Removed units are history, not code, so they never match: an export that reappears under a removed unit's name gets a new unit.",

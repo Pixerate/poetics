@@ -1,0 +1,46 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HVGXY257HZAJPVZA78VQB1",
+  "kind": "function",
+  "framework": "none",
+  "name": "planRehash",
+  "location": {
+    "file": "packages/cli/src/rehash.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:c714293f4324c96dbab1312236285555c11fbbc86ebbc884fceadbea33dd9cc6",
+      "interfaceHash": "b3:c1af4691214155a56fc6dbc2a4a8b499ef69cdb0caaaadbd0466c97620e8a182",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Pairs each live provisional unit with the indexed code at its place. It plans a rehash only when the code still has exactly that provisional hash, so a code change is never re-recorded as unchanged (ADR 0014).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Which units the rehash would touch, and which it must leave until their code is recorded.",
+  "tests": [
+    {
+      "file": "packages/cli/src/rehash.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    }
+  ]
+}
