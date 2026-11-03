@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKEJSWRBVTV414A2Q0",
+  "kind": "type",
+  "framework": "none",
+  "name": "NormaliseOptions",
+  "location": {
+    "file": "packages/adapter-typescript/src/normalise.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:990a7601a67a493feeaab9d7283f1e1503f4c64d",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "eraseTypes gives the runtime tree that separates types-only edits from behaviour ones. omit lets a unit leave out its own name, so a pure rename keeps its content hash for identity matching (#20).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "Options for normaliseNode: erase types, or omit given nodes such as the unit's own name.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/normalise.test.ts",
+      "via": "static"
+    }
+  ]
+}

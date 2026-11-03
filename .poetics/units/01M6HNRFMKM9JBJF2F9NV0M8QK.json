@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKM9JBJF2F9NV0M8QK",
+  "kind": "function",
+  "framework": "none",
+  "name": "edgesOf",
+  "location": {
+    "file": "packages/adapter-typescript/src/units.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:c0e67cdcf8f8344bb78e7ce878a910600c45613e",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Resolves every identifier in a unit through the checker, following aliases, re-exports and shorthand properties. It classifies each use as calls, uses-hook or references-type, and skips recursion and untracked declarations.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "The units a unit uses, resolved through the checker with aliases followed, plus unresolved calls.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-typescript/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

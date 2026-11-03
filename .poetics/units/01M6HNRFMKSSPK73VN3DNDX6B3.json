@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKSSPK73VN3DNDX6B3",
+  "kind": "function",
+  "framework": "none",
+  "name": "detectUnits",
+  "location": {
+    "file": "packages/adapter-typescript/src/units.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:2453633e2c88ee8f19a921e04ae1f885b2d215d9",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Finds exported functions, arrow functions, hooks, interfaces and type aliases in every export form, joining overloads and merged interfaces. On this repository it detects exactly the units the day-one declaration scan seeded.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "Exported functions, hooks, interfaces and type aliases declared in a source file, in source order.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    }
+  ]
+}

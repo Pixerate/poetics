@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKE4EY0HQ21A8WP27D",
+  "kind": "function",
+  "framework": "none",
+  "name": "signatureOf",
+  "location": {
+    "file": "packages/adapter-typescript/src/units.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:e75873d712f0fcb61ae4090fbedfa84eb68810b3",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Builds the interface hash input from the declaration itself, calling on the checker only for types the author left out.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "A unit's public signature, with omitted types inferred by the checker.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-typescript/src/indexer.test.ts",
+      "via": "static"
+    }
+  ]
+}

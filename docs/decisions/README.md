@@ -19,5 +19,6 @@ new record here.
 | [0010](0010-removed-versions.md) | Removal is a version; unit files are never deleted | Accepted |
 | [0011](0011-backfill.md) | Backfill: capture the current state, then the history behind it | Proposed |
 | [0012](0012-open-items-as-notes.md) | Assumptions, considerations and planned work are notes | Proposed |
+| [0013](0013-compiler-api-without-ts-morph.md) | The TypeScript compiler API directly, without ts-morph | Proposed |
 
 New records copy [`template.md`](template.md).

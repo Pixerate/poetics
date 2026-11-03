@@ -1,0 +1,183 @@
+import ts from "typescript";
+import { describe, expect, it } from "vitest";
+import { contentHash, interfaceHash } from "@poetics/core";
+import { contentTree, detectUnits, signatureOf } from "./units.ts";
+import { createTypeScriptIndexer } from "./indexer.ts";
+import { makeProject } from "./test-helpers.ts";
+
+const detect = (code: string, file = "src/a.ts") => detectUnits(ts.createSourceFile(file, code, ts.ScriptTarget.Latest, true), file);
+
+/** Indexes one or more files and returns their units by name. */
+function indexed(files: Record<string, string>) {
+  const root = makeProject(files);
+  const { units } = createTypeScriptIndexer({ root, files: Object.keys(files) }).index();
+  return new Map(units.map((unit) => [unit.key.split("#")[1]!, unit]));
+}
+
+describe("detectUnits", () => {
+  it("finds exported functions, hooks and types in every export form", () => {
+    const units = detect(`
+      export function formatPrice(n: number) { return n; }
+      export const useCart = () => ({});
+      export const round = (function (n: number) { return n; }) satisfies (n: number) => number;
+      export default function () {}
+      function local() {}
+      const renamed = () => 1;
+      export { local, renamed as alias };
+      export interface Price { n: number }
+      export type Cents = number;
+      type Hidden = string;
+      export const NOT_A_FUNCTION = 1;
+    `);
+    expect(units.map((u) => [u.name, u.kind, u.exportedAs])).toEqual([
+      ["formatPrice", "function", undefined],
+      ["useCart", "hook", undefined],
+      ["round", "function", undefined],
+      ["default", "function", undefined],
+      ["local", "function", undefined],
+      ["renamed", "function", "alias"],
+      ["Price", "type", undefined],
+      ["Cents", "type", undefined],
+    ]);
+    expect(units.map((u) => u.key)).toContain("src/a.ts#formatPrice");
+  });
+
+  it("names a default export after its declaration", () => {
+    expect(detect(`export default function main() {}`).map((u) => [u.name, u.exportedAs])).toEqual([["main", "default"]]);
+    expect(detect(`function main() {}\nexport default main;`).map((u) => [u.name, u.exportedAs])).toEqual([["main", "default"]]);
+  });
+
+  it("joins overloads and merged interfaces into one unit spanning them all", () => {
+    const code = `export function f(a: string): string;\nexport function f(a: number): number;\nexport function f(a: any) { return a; }\nexport interface I { a: 1 }\nexport interface I { b: 2 }`;
+    const [f, i] = detect(code);
+    expect(f!.declarations).toHaveLength(3);
+    expect(code.slice(f!.span.start, f!.span.end)).toMatch(/^export function f\(a: string\)[\s\S]*return a; }$/);
+    expect(i!.declarations).toHaveLength(2);
+  });
+
+  it("keeps a type and a function of the same name apart", () => {
+    expect(detect(`export type Io = { a: 1 };\nexport function Io() {}`).map((u) => u.key)).toEqual(["src/a.ts#Io:type", "src/a.ts#Io"]);
+  });
+
+  it("reads the leading TSDoc and leaves line comments out", () => {
+    expect(detect(`/** Formats a price. */\nexport function f() {}`)[0]!.docs).toBe("Formats a price.");
+    expect(detect(`/** Rounds. */\nexport const r = () => 1;`)[0]!.docs).toBe("Rounds.");
+    expect(detect(`// not docs\nexport function f() {}`)[0]!.docs).toBeUndefined();
+  });
+
+  it("starts the span at the declaration, after its docs", () => {
+    const code = `/** Docs. */\nexport function f() {}`;
+    const [f] = detect(code);
+    expect(code.slice(f!.span.start, f!.span.end)).toBe("export function f() {}");
+  });
+});
+
+describe("contentTree", () => {
+  const hash = (code: string, erase = false) => contentHash(contentTree(detect(code)[0]!, erase));
+
+  it("is the same across a rename, a reformat and a change of export style", () => {
+    expect(hash(`export function f(a: number) { return a * 2; }`)).toBe(hash(`function g(a: number) {\n  return a * 2\n}\nexport { g };`));
+  });
+
+  it("separates types-only changes from runtime ones", () => {
+    const base = `export function f(a: number) { return a * 2; }`;
+    const typed = `export function f(a: string) { return a * 2; }`;
+    const changed = `export function f(a: number) { return a * 3; }`;
+    expect(hash(base)).not.toBe(hash(typed));
+    expect(hash(base, true)).toBe(hash(typed, true));
+    expect(hash(base, true)).not.toBe(hash(changed, true));
+  });
+
+  it("tells const from let for arrow functions", () => {
+    expect(hash(`export const f = () => 1;`)).not.toBe(hash(`export let f = () => 1;`));
+  });
+});
+
+describe("signatureOf", () => {
+  const sig = (code: string) => {
+    const units = indexed({ "src/a.ts": code });
+    return [...units.values()][0]!;
+  };
+
+  it("changes with parameter and return types, defaults and optionality, not with bodies or names", () => {
+    const base = sig(`export function f(a: number, b = 1): string { return String(a + b); }`).interfaceHash;
+    expect(sig(`export function f(x: number, y = 1): string { return "" + (x - y); }`).interfaceHash).toBe(base);
+    expect(sig(`export function f(a: string, b = 1): string { return a; }`).interfaceHash).not.toBe(base);
+    expect(sig(`export function f(a: number, b = 2): string { return ""; }`).interfaceHash).not.toBe(base);
+    expect(sig(`export function f(a: number, b = 1): number { return 1; }`).interfaceHash).not.toBe(base);
+    expect(sig(`export function f(a?: number, b = 1): string { return ""; }`).interfaceHash).not.toBe(base);
+  });
+
+  it("infers types the author left out", () => {
+    const unit = sig(`export const f = (a = 1) => ({ total: a });`);
+    expect(unit.signature).toMatchObject({
+      kind: "function",
+      overloads: [{ parameters: [{ optional: true, type: { inferred: "number" } }], returns: { inferred: "{ total: number; }" } }],
+    });
+  });
+
+  it("uses only the overloads callers can see", () => {
+    const unit = sig(`export function f(a: string): string;\nexport function f(a: number): number;\nexport function f(a: any) { return a; }`);
+    expect(unit.signature.kind === "function" && unit.signature.overloads).toHaveLength(2);
+  });
+
+  it("is the type's structure for types", () => {
+    const a = sig(`export interface P { a: number }`).interfaceHash;
+    expect(sig(`export interface P {\n  a: number;\n}`).interfaceHash).toBe(a);
+    expect(sig(`export interface P { a: string }`).interfaceHash).not.toBe(a);
+  });
+
+  it("matches the core hash of the signature", () => {
+    const root = makeProject({ "src/a.ts": `export function f(a: number) { return a; }` });
+    const program = ts.createProgram({ rootNames: [`${root}/src/a.ts`], options: { strict: true } });
+    const source = program.getSourceFile(`${root}/src/a.ts`)!;
+    const [unit] = detectUnits(source, "src/a.ts");
+    const unitIndexed = createTypeScriptIndexer({ root, files: ["src/a.ts"] }).index().units[0]!;
+    expect(unitIndexed.interfaceHash).toBe(interfaceHash(signatureOf(unit!, program.getTypeChecker())));
+  });
+});
+
+describe("edgesOf", () => {
+  it("resolves calls, hooks and types across files, through aliases, re-exports and shorthand", () => {
+    const units = indexed({
+      "src/price.ts": `export interface Price { cents: number }\nexport function formatPrice(p: Price) { return String(p.cents); }`,
+      "src/index.ts": `export { formatPrice as format } from "./price.ts";\nexport type { Price } from "./price.ts";`,
+      "src/cart.ts": [
+        `import { format, type Price } from "./index.ts";`,
+        `import * as price from "./price.ts";`,
+        `export function useCart(items: Price[]) { return items.map(format); }`,
+        `export function total(items: Price[]) { const { cart } = { cart: useCart(items) }; return { cart, again: price.formatPrice(items[0]!), formatPrice: format }; }`,
+        `export function sized(): typeof total { return total; }`,
+        `export function handlers() { return { format }; }`,
+      ].join("\n"),
+    });
+    expect(units.get("useCart")!.edges).toEqual([
+      { to: "src/price.ts#Price", kind: "references-type" },
+      { to: "src/price.ts#formatPrice", kind: "calls" },
+    ]);
+    expect(units.get("total")!.edges).toEqual([
+      { to: "src/cart.ts#useCart", kind: "uses-hook" },
+      { to: "src/price.ts#Price", kind: "references-type" },
+      { to: "src/price.ts#formatPrice", kind: "calls" },
+    ]);
+    expect(units.get("sized")!.edges).toEqual([
+      { to: "src/cart.ts#total", kind: "calls" },
+      { to: "src/cart.ts#total", kind: "references-type" },
+    ]);
+    expect(units.get("handlers")!.edges).toEqual([{ to: "src/price.ts#formatPrice", kind: "calls" }]);
+    expect(units.get("Price")!.edges).toEqual([]);
+  });
+
+  it("does not count recursion or untracked declarations as edges", () => {
+    const units = indexed({ "src/a.ts": `const helper = 1;\nexport function f(n: number): number { return n ? f(n - helper) : Math.max(0, n); }` });
+    expect(units.get("f")!.edges).toEqual([]);
+  });
+
+  it("records calls that resolve to nothing as unresolved, with their span", () => {
+    const code = `export function f() { return missing(1); }`;
+    const units = indexed({ "src/a.ts": code });
+    const [use] = units.get("f")!.unresolved;
+    expect(use).toMatchObject({ kind: "calls", reason: "missing does not resolve to a declaration" });
+    expect(code.slice(use!.span.start, use!.span.end)).toBe("missing(1)");
+  });
+});

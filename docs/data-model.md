@@ -42,6 +42,7 @@ only records the committer.
   notes/<id>.json       validated by schemas/note.schema.json
   poetics.lock          optional, validated by schemas/lock.schema.json
   cache/index.db        gitignored SQLite index
+  cache/typescript.json gitignored per-file cache of the TypeScript indexer
 ```
 
 The JSON files are the source of truth ([ADR 0002](decisions/0002-hybrid-json-sqlite-store.md)).
@@ -133,3 +134,24 @@ Guarantees, covered by tests in `packages/store/src/index-db.test.ts`:
 
 When you add a column or table, bump `INDEX_SCHEMA_VERSION` and add it to the
 `TABLES` list so `dumpIndex` compares it.
+
+## The TypeScript indexer's cache
+
+`@poetics/adapter-typescript` keeps what it found per file in a JSON cache
+(`cache/typescript.json` by convention; the caller passes the path). Each entry
+holds the file's units, with their hashes, signatures and edges, under a key:
+a Merkle hash of the file's path, its text and whether it is in scope, over
+every project file it imports, directly or not. Unchanged keys skip the
+checker. The whole cache is dropped when its environment changes: the cache
+format (`CACHE_VERSION` in `indexer.ts`), the TypeScript version, the compiler
+options or the lockfile. Like `index.db`, it is disposable.
+
+Each indexed unit carries three hashes, all `b3:`:
+
+| Hash | Over |
+| --- | --- |
+| `contentHash` | The normalised syntax tree of all the unit's declarations, its own name left out. Comments, formatting, quote style, redundant parentheses, numeric spelling, quoted keys, export style and JSX re-wrapping never change it. |
+| `runtimeHash` | The same tree with types, type-only declarations and TypeScript-only modifiers erased. Equal runtime hashes with different content hashes mean a types-only change. |
+| `interfaceHash` | The signature: for functions and hooks, the visible overloads' type parameters, parameters (rest, optional, type, default value; not names) and return type, with omitted types as the checker prints them; for types, their structure. |
+
+Global declarations reached without an import are not part of a file's key.

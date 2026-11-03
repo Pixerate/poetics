@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKW6AEE7KPXEF2VACF",
+  "kind": "type",
+  "framework": "none",
+  "name": "TypeScriptIndexer",
+  "location": {
+    "file": "packages/adapter-typescript/src/indexer.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:a0b2d61d58e527312b43977dc3f2341ac73fa117",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A single index method over a long-lived program, so a watch loop or the language server keeps parsed files and module resolution between runs.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "An indexer that reuses its program and cache from one index call to the next.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/indexer.test.ts",
+      "via": "static"
+    }
+  ]
+}
