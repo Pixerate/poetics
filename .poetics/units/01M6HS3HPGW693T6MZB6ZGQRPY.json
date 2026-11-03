@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HS3HPGW693T6MZB6ZGQRPY",
+  "kind": "type",
+  "framework": "none",
+  "name": "LineageDeclaration",
+  "location": {
+    "file": "packages/core/src/identity.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:a3c56e079114483a493cec5bdac6efa57eb840c1",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Declared lineage is the first matching stage (#20). The first part of a split keeps the uid and the first uid of a merge survives, following the poetics-refactor skill.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
+    }
+  ],
+  "docs": "A declared rename, move, split or merge: the uids involved and their targets.",
+  "tests": [
+    {
+      "file": "packages/core/src/identity.test.ts",
+      "via": "static"
+    }
+  ]
+}

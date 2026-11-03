@@ -5,7 +5,7 @@ import type { IndexedUnit, TypeScriptIndexerOptions } from "./indexer.ts";
 export type { IndexResult, IndexedUnit, TypeScriptIndexer, TypeScriptIndexerOptions } from "./indexer.ts";
 export { createTypeScriptIndexer } from "./indexer.ts";
 export type { NormalTree, NormaliseOptions } from "./normalise.ts";
-export { normaliseNode } from "./normalise.ts";
+export { fingerprint, normaliseNode } from "./normalise.ts";
 export type { CallSignature, DetectedUnit, IndexedEdge, ParameterSignature, Signature, TypeText, UnresolvedUse } from "./units.ts";
 export { contentTree, detectUnits, edgesOf, signatureOf } from "./units.ts";
 

@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HS3HPGSXQAH4Q34AQMPGVK",
+  "kind": "function",
+  "framework": "none",
+  "name": "similarity",
+  "location": {
+    "file": "packages/core/src/identity.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:f896c788a042993f30da783e707d85b0a123cf04",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Jaccard over fingerprint entries is simple, symmetric and bounded, so a single threshold means the same thing everywhere.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
+    }
+  ],
+  "docs": "Jaccard similarity of two fingerprints.",
+  "tests": [
+    {
+      "file": "packages/core/src/identity.test.ts",
+      "via": "static"
+    }
+  ]
+}

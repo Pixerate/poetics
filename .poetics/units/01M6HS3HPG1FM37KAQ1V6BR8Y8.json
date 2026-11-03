@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HS3HPG1FM37KAQ1V6BR8Y8",
+  "kind": "function",
+  "framework": "none",
+  "name": "trackedUnits",
+  "location": {
+    "file": "packages/core/src/identity.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:c02eb6bd60c66e24977417130da210645bf60d60",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Before matching, each live store unit is paired with the code at its recorded place, and units whose code is already missing are reported rather than dropped.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
+    }
+  ],
+  "docs": "Pairs live store units with the code at their recorded file and name.",
+  "tests": [
+    {
+      "file": "packages/core/src/identity.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-typescript/src/identity.test.ts",
+      "via": "static"
+    }
+  ]
+}

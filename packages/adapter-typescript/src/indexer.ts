@@ -5,6 +5,7 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import ts from "typescript";
 import { computeClosureHashes, contentHash, createGraph, gitBlobHash, interfaceHash } from "@poetics/core";
 import type { Edge, Hash, Span, UnitKind } from "@poetics/core";
+import { fingerprint } from "./normalise.ts";
 import { contentTree, detectUnits, edgesOf, signatureOf } from "./units.ts";
 import type { DetectedUnit, IndexedEdge, Signature, UnresolvedUse } from "./units.ts";
 
@@ -39,6 +40,8 @@ export interface IndexedUnit {
   /** The same tree with types erased. Equal runtime hashes with different content hashes mean a types-only change. */
   runtimeHash: Hash;
   interfaceHash: Hash;
+  /** Subtree hashes of the content tree, for matching a unit that was edited as it moved. */
+  fingerprint: string[];
   signature: Signature;
   edges: IndexedEdge[];
   unresolved: UnresolvedUse[];
@@ -56,7 +59,7 @@ export interface TypeScriptIndexer {
 }
 
 // Bump when the shape of cached units or the normalisation changes, so old caches are dropped.
-const CACHE_VERSION = 1;
+const CACHE_VERSION = 2;
 const LOCKFILES = ["pnpm-lock.yaml", "package-lock.json", "yarn.lock", "bun.lock"];
 
 const DEFAULT_OPTIONS: ts.CompilerOptions = {
@@ -134,6 +137,7 @@ export function createTypeScriptIndexer(options: TypeScriptIndexerOptions): Type
 function indexUnit(unit: DetectedUnit, source: ts.SourceFile, checker: ts.TypeChecker, unitAt: (d: ts.Declaration) => DetectedUnit | undefined): IndexedUnit {
   const signature = signatureOf(unit, checker);
   const { edges, unresolved } = edgesOf(unit, checker, unitAt);
+  const tree = contentTree(unit);
   const indexed: IndexedUnit = {
     key: unit.key,
     name: unit.name,
@@ -142,9 +146,10 @@ function indexUnit(unit: DetectedUnit, source: ts.SourceFile, checker: ts.TypeCh
     span: unit.span,
     startLine: source.getLineAndCharacterOfPosition(unit.span.start).line + 1,
     endLine: source.getLineAndCharacterOfPosition(unit.span.end).line + 1,
-    contentHash: contentHash(contentTree(unit)),
+    contentHash: contentHash(tree),
     runtimeHash: contentHash(contentTree(unit, true)),
     interfaceHash: interfaceHash(signature),
+    fingerprint: fingerprint(tree),
     signature,
     edges,
     unresolved,

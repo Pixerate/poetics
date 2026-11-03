@@ -26,12 +26,35 @@
           "ref": "#19"
         }
       ]
+    },
+    {
+      "contentHash": "git:15dbc0ed4c6b01b6de8ad43fc77acfd52edefdbc",
+      "provisional": true,
+      "parent": "git:c5a0dccb230823e3fb8cc8306852b234b6b2a912",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Adds a required fingerprint field, the subtree hashes identity matching compares, so code that builds IndexedUnit values must now supply one. Cached units of the old shape are dropped through CACHE_VERSION 2.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
     }
   ],
   "docs": "One unit as the indexer reports it: key, span, lines, docs, content, runtime and interface hashes, signature and edges.",
   "tests": [
     {
       "file": "packages/adapter-typescript/src/indexer.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-typescript/src/identity.test.ts",
       "via": "static"
     }
   ]

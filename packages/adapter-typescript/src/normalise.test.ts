@@ -1,7 +1,7 @@
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
-import { contentHash } from "@poetics/core";
-import { normaliseNode } from "./normalise.ts";
+import { contentHash, similarity } from "@poetics/core";
+import { fingerprint, normaliseNode } from "./normalise.ts";
 
 const hashOf = (code: string, eraseTypes = false, file = "a.tsx") =>
   contentHash(normaliseNode(ts.createSourceFile(file, code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX), { eraseTypes }));
@@ -73,4 +73,51 @@ describe("normaliseNode", () => {
     expect(normaliseNode(fn, { omit: new Set([fn.name!]) })).toEqual(normaliseNode(renamed, { omit: new Set([renamed.name!]) }));
     expect(normaliseNode(fn)).not.toEqual(normaliseNode(renamed));
   });
+});
+
+describe("fingerprint", () => {
+  const print = (code: string) => fingerprint(normaliseNode(ts.createSourceFile("a.ts", code, ts.ScriptTarget.Latest, true)));
+
+  it("is sorted, without duplicates, and the same for a reformat", () => {
+    const hashes = print(`function f(a) { return [a + 1, a + 1]; }`);
+    expect(hashes).toEqual([...new Set(hashes)].sort());
+    expect(print(`function f(a) {\n  return [a + 1, a + 1]\n}`)).toEqual(hashes);
+  });
+
+  it("keeps most subtrees through a small edit and few through a rewrite", () => {
+    const base = print(`function f(a, b) { const x = a * 2; const y = b * 3; if (x > y) return x - y; return y - x; }`);
+    const edited = print(`function f(a, b) { const x = a * 2; const y = b * 4; if (x > y) return x - y; return y - x; }`);
+    const rewritten = print(`function f(a, b) { return Math.abs(a * 2 - b * 3); }`);
+    const shared = (other: string[]) => other.filter((hash) => base.includes(hash)).length / base.length;
+    expect(shared(edited)).toBeGreaterThan(0.6);
+    expect(shared(rewritten)).toBeLessThan(0.4);
+  });
+
+  it("has one entry per internal node, numbering repeats so it counts like a multiset", () => {
+    // The source file and its one statement; the identifier and end-of-file token are leaves.
+    expect(print(`x`)).toHaveLength(2);
+    expect(fingerprint(["Identifier", "x"])).toEqual([]);
+    const repeated = print(`f(a); f(a);`);
+    expect(repeated.filter((hash) => hash.endsWith("#2"))).toHaveLength(2);
+  });
+
+  it("keeps a rename that touches every statement local enough to match (resolveUnit's move in a5da380)", () => {
+    const before = `async function resolveUnit(ctx: ReadContext, ref: string): Promise<Unit> {
+      if (getUnit(ctx.db, ref)) return readUnit(ctx.paths, ref);
+      const hashAt = ref.lastIndexOf("#");
+      const [file, name] = hashAt > 0 ? [ref.slice(0, hashAt), ref.slice(hashAt + 1)] : [undefined, ref];
+      const rows = findUnitsByName(ctx.db, name).filter((row) => file === undefined || row.file === file);
+      if (rows.length === 1) return readUnit(ctx.paths, rows[0]!.uid);
+      if (rows.length === 0) throw new Error(\`No unit matches \${ref}; try poetics_search\`);
+      const candidates = rows.map((row) => \`\${row.uid} (\${row.file}#\${row.name})\`).join(", ");
+      throw new Error(\`\${ref} is ambiguous: \${candidates}. Pass a uid or file#name\`);
+    }`;
+    const after = before
+      .replace("ctx: ReadContext, ref", "paths: StorePaths, db: DatabaseSync, ref")
+      .replaceAll("ctx.db", "db")
+      .replaceAll("ctx.paths", "paths")
+      .replace("try poetics_search", "search for it by name, docs or rationale");
+    expect(similarity(print(before), print(after))).toBeGreaterThan(0.65);
+  });
+
 });

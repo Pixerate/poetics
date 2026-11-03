@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HS3HPGM7XKCBTGKAJ8RCSH",
+  "kind": "function",
+  "framework": "none",
+  "name": "matchIdentities",
+  "location": {
+    "file": "packages/core/src/identity.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:6ada79b1aef432034b731578134988b8854d2e43",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Identity matching for #20, in a fixed order: declared lineage, then file and name, then content hash, then syntax-tree similarity. Anything with more than one candidate is queued. Without declarations it agrees with the hand-recorded store on commits 9cda7f2, a5da380 and 98015d7.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
+    }
+  ],
+  "docs": "Matches an earlier snapshot's tracked units to the units in the code now.",
+  "tests": [
+    {
+      "file": "packages/core/src/identity.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-typescript/src/identity.test.ts",
+      "via": "static"
+    }
+  ]
+}

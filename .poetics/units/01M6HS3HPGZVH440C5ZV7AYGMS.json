@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HS3HPGZVH440C5ZV7AYGMS",
+  "kind": "type",
+  "framework": "none",
+  "name": "CodeUnit",
+  "location": {
+    "file": "packages/core/src/identity.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:02a25d42cc9b22e5853f3003ef154a01c927ec25",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The matcher works on what any adapter can report (key, place, kind, content hash and fingerprint), so it stays framework-neutral in core.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
+    }
+  ],
+  "docs": "A unit as the indexer sees it in one snapshot: key, file, name, kind, content hash and fingerprint.",
+  "tests": [
+    {
+      "file": "packages/core/src/identity.test.ts",
+      "via": "static"
+    }
+  ]
+}

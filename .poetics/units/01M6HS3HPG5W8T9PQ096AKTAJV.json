@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HS3HPG5W8T9PQ096AKTAJV",
+  "kind": "type",
+  "framework": "none",
+  "name": "RejectedDeclaration",
+  "location": {
+    "file": "packages/core/src/identity.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:35e2630efe4d5cc252f351012d6c0e5a6b709dec",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The plan requires a lineage declaration that disagrees with the diff to be rejected. Each rejection keeps the declaration and a reason a person or agent can act on.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#20"
+        }
+      ]
+    }
+  ],
+  "docs": "A lineage declaration that disagrees with the snapshots, and why.",
+  "tests": [
+    {
+      "file": "packages/core/src/identity.test.ts",
+      "via": "static"
+    }
+  ]
+}
