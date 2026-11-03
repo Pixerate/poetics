@@ -26,6 +26,25 @@
           "ref": "#24"
         }
       ]
+    },
+    {
+      "contentHash": "b3:57dd35c301e502bdd7cf7becc832c94f8a42724465b0df4236ca8382bd72b4e9",
+      "interfaceHash": "b3:776bda0368b8aab979f014c3a88d67a7d5e1d4fc2e9310fdc0361187c57dd51f",
+      "parent": "git:aa0e9ef3199a552b01291cf79c4a0d05d8d9f715",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Renders poetics log: a unit's versions newest first with hash, commit, author, rationale and links.",

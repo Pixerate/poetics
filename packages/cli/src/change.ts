@@ -17,8 +17,8 @@ export type ChangeFindingKind =
   | "stale"
   | "orphaned"
   | "duplicate"
-  | "unverifiable"
   | "rewritten-history"
+  | "changed-rehash"
   | "deleted-unit"
   | "missing-lineage"
   | "no-links"
@@ -107,11 +107,38 @@ export async function checkChange(root: string, since: string, scope: Scope): Pr
   const dependents = (uid: string) => units.filter((u) => Object.hasOwn(u.versions.at(-1)?.deps ?? {}, uid));
   const versioned = new Set(newVersions.map(({ unit }) => unit.uid));
 
+  // Declarations of the files new rehash versions sit in, which need not be among the changed code files.
+  const declarationCache = new Map<string, Declaration[]>();
+  const declarationsOf = async (file: string) => {
+    if (!declarationCache.has(file)) {
+      const text = await readFile(join(root, file), "utf8").catch(() => undefined);
+      declarationCache.set(file, text === undefined ? [] : declarationsIn(file, text));
+    }
+    return declarationCache.get(file)!;
+  };
+
   for (const { unit, file, version } of newVersions) {
+    // A rehash claims the code did not change: it must sit on the code's own provisional hash (ADR 0014).
+    if (version.change === "rehash" && version === unit.versions.at(-1)) {
+      const name = unit.location.export ?? unit.name;
+      const decl = (await declarationsOf(unit.location.file)).find((d) => d.name === name && (d.kind === "type") === (unit.kind === "type"));
+      if (decl && (decl.hash !== version.parent || decl.contentHash !== version.contentHash)) {
+        findings.push({
+          severity: "error",
+          kind: "changed-rehash",
+          file,
+          message:
+            decl.hash !== version.parent
+              ? `${unit.name}: rehash recorded, but the code changed since ${version.parent ?? "its parent"}; record a behaviour, interface or cosmetic version instead`
+              : `${unit.name}: rehash contentHash ${version.contentHash} is not the code's ${decl.contentHash}`,
+        });
+      }
+    }
     if (!version.links || version.links.length === 0) {
       findings.push({ severity: "warning", kind: "no-links", file, message: `${unit.name}: new version cites no issue, task, decision or plan section` });
     }
-    if ((rationaleCounts.get(version.rationale) ?? 0) >= 3) {
+    // Rehash rationale is the same for every unit by design.
+    if (version.change !== "rehash" && (rationaleCounts.get(version.rationale) ?? 0) >= 3) {
       findings.push({
         severity: "warning",
         kind: "repeated-rationale",

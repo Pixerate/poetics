@@ -26,6 +26,25 @@
           "ref": "#20"
         }
       ]
+    },
+    {
+      "contentHash": "b3:a758a3287b7cca85cd56fe02fba2800684980f7cc5add38bc15e193ea8a406e2",
+      "interfaceHash": "b3:1f797a672408b36c5b9180ba3bd8ee39d15f274ef817083c81f0fd8735dc8b56",
+      "parent": "git:8ddd03ee725a0e57557bfe06acc673b5255ec452",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "A code unit in the earlier snapshot, with its store uid.",

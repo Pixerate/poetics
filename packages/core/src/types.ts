@@ -13,9 +13,10 @@ export type Framework = "react" | "svelte" | "none";
 
 /**
  * `created` marks a unit's first version and `removed` its last (ADR 0010);
- * the rest follow the plan's change classes.
+ * `rehash` re-records unchanged code under its indexer hash (ADR 0014); the
+ * rest follow the plan's change classes.
  */
-export type ChangeClass = "created" | "interface" | "behaviour" | "cosmetic" | "removed";
+export type ChangeClass = "created" | "interface" | "behaviour" | "cosmetic" | "rehash" | "removed";
 
 export type Actor =
   | { kind: "human" }

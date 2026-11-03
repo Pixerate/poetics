@@ -45,6 +45,25 @@
           "ref": "docs/decisions/0009-changes-between-refs.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:65febe07a26e4cad1193f904dbd6af6079b7a1c6039d1e60a2e0709d62d54a7b",
+      "interfaceHash": "b3:cd55991d7fce0c671963845c6bfc3f3b953b5f3993570725ebf8a23df65cac1b",
+      "parent": "git:0ad8f7ea74cf127420191c150ddf8e778bcb9553",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Every recorded change between two refs, with its rationale, grouped by commit, newest first. Merge commits are skipped: their changes arrive with the commits they merge. Commits are walked with git, so no `commit` backfill is needed.",

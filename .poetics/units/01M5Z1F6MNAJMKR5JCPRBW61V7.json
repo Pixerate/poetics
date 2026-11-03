@@ -26,6 +26,25 @@
           "ref": "docs/plan.md#react-ts-tsx"
         }
       ]
+    },
+    {
+      "contentHash": "b3:2b0e68e3349a3d76fbf48020cecb752ffd5494b458c75435279955b960c14b40",
+      "interfaceHash": "b3:b9bc935ac2d1d4597c0f7ba6f41d4edf33491d22b85aa909e3662aa1cdc99bbf",
+      "parent": "git:ad30b188be813af5206b8a5d3362b078e5a8c7f2",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "PascalCase names are component candidates; the adapter still checks they return JSX.",

@@ -45,6 +45,25 @@
           "ref": "#20"
         }
       ]
+    },
+    {
+      "contentHash": "b3:2705d70a51a6bcd2c92118fc8d371d655514a071aca6bb22e6334d3eb3ae31cb",
+      "interfaceHash": "b3:3204ceee4aa4f97169ab96eaf69fb40e94fe9da37dcaf6fbe8e908a07deaa43c",
+      "parent": "git:15dbc0ed4c6b01b6de8ad43fc77acfd52edefdbc",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "One unit as the indexer reports it: key, span, lines, docs, content, runtime and interface hashes, signature and edges.",

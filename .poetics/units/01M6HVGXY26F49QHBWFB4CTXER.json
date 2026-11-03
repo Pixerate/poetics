@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HVGXY26F49QHBWFB4CTXER",
+  "kind": "type",
+  "framework": "none",
+  "name": "RehashPlan",
+  "location": {
+    "file": "packages/cli/src/rehash.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:678db794eebb1a543045710dcb951c454b2e7113e72ee4be49ac4d485b4666f8",
+      "interfaceHash": "b3:f464d89e89862b7d300ea1367ae3798186786f56cc27b33ea7728ee1c2118179",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Separates what the rehash can write from what it must leave, with a reason for each skipped unit, so a dry run tells you what to record first.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Units to rehash, units skipped with why, and how many are already on b3:.",
+  "tests": [
+    {
+      "file": "packages/cli/src/rehash.test.ts",
+      "via": "static"
+    }
+  ]
+}

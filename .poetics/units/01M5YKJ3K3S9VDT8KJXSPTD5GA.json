@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0006-notes-replace-gotchas.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:c8c06a12f825087d86b206e89fae23fa314c3937684d63570cc24de8d7794c59",
+      "interfaceHash": "b3:c97492be3adf7c7e4cd1684823c54c6a885392504dc90fa572f5092dd5db5bcd",
+      "parent": "git:069435babe0026b4623026de3bef56a5ae8ffaf1",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "tests": [

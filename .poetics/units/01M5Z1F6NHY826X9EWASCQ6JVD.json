@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:823aef455055d45191ef735a2bed329603c7822b8546a8f4721261e0c937fed3",
+      "interfaceHash": "b3:df2fd5c0422d40358de3f0c89e94c02946b70f16e4e6a00dae2e46e2a33cfe5b",
+      "parent": "git:8a7b1c927afc51dbfad48ca9998617fd31f93eba",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Every tracked-shape declaration in scope.",

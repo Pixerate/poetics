@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0009-changes-between-refs.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:bce2617401278d843ad511afd4ae5fc4e1bcde3f281f675b6bd7fb76b4fb9ec6",
+      "interfaceHash": "b3:7e424057ad1008d8351e4de03ffe70a2d7e1dd4dbfc60ef0cb8e6936f67d81c7",
+      "parent": "git:2b94119684deb551ce10100907ad4a6a10465f7a",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "The range to report: from a ref (default: merge base with the default branch) to a ref (default: the working tree).",

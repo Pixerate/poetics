@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:629fb60c03c2dcca7cb3b0403a4babf0fe527310d8661be76e80eaad3b6b7ffc",
+      "interfaceHash": "b3:19f5fa01d972252339fac58d71b042dbdb45cfd977d107dc4a2ee57194720b7a",
+      "parent": "git:1b5f7af868d33cb2a71a0406cfafcb443e40f308",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "tests": [

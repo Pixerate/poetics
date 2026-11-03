@@ -18,6 +18,9 @@
     "**/dist/**",
     "**/node_modules/**"
   ],
+  "typescript": {
+    "tsconfig": "tsconfig.base.json"
+  },
   "store": {
     "layout": "flat"
   },
@@ -25,7 +28,7 @@
     "requireRationale": true,
     "agentRationaleNeedsReview": true,
     "humanSignOffOnAgentInterfaceChanges": true,
-    "allowProvisionalHashes": true,
+    "allowProvisionalHashes": false,
     "coverage": {
       "tracked": 1,
       "fresh": 1,

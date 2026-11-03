@@ -7,7 +7,7 @@
   provides the built-in `node:sqlite` module.
 - **pnpm 12.** The version is pinned in `package.json` (`packageManager`);
   `corepack enable` picks it up.
-- **git**, for provisional hashes and history.
+- **git**, for history and the change check.
 
 ## Install
 
@@ -38,7 +38,8 @@ pnpm install
 | `pnpm preflight` | Everything CI runs, in order |
 | `pnpm reindex [--fresh]` | Rebuild the local SQLite index at `.poetics/cache/index.db` |
 | `pnpm mint-uid [count]` | Print new unit uids for hand-written unit files |
-| `pnpm provisional-hash <file> <start> <end>` | Provisional hash of a declaration's lines |
+| `pnpm poetics hash <file>[#name] [--json]` | The indexer's `contentHash` and `interfaceHash` for a file's units, for a hand-written version |
+| `pnpm poetics rehash [--write] [--agent <tool> [--model <id>]]` | Append `rehash` versions replacing provisional `git:` hashes with `b3:` ones ([ADR 0014](decisions/0014-rehash-versions.md)); a dry run without `--write`, exit 1 if any unit has unrecorded changes |
 | `pnpm changeset` | Describe a change for the next release |
 
 Run the demo site (Poetics on this repository) in a browser:
@@ -65,7 +66,7 @@ GOTCHAS.md                pitfalls and workarounds (generated from notes)
   notes/                  one JSON file per gotcha, workaround or invariant
   cache/index.db          SQLite index (gitignored, rebuilt)
 schemas/                  JSON Schemas for unit files, config and lock
-scripts/                  validate, reindex, mint-uid, provisional-hash, gotchas, check, coverage
+scripts/                  validate, reindex, mint-uid, gotchas, site data
 packages/
   core/                   unit model, uids, hashes, graph (stubs)
   store/                  JSON store, validation, SQLite index

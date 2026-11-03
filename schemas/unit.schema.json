@@ -83,8 +83,8 @@
           "description": "contentHash of the previous version, or null for the first."
         },
         "change": {
-          "enum": ["created", "interface", "behaviour", "cosmetic", "removed"],
-          "description": "created is the first version and removed the last: the unit was deleted from the code and its file is kept (ADR 0010)."
+          "enum": ["created", "interface", "behaviour", "cosmetic", "rehash", "removed"],
+          "description": "created is the first version and removed the last: the unit was deleted from the code and its file is kept (ADR 0010). rehash re-records unchanged code under the indexer's b3: hash (ADR 0014)."
         },
         "commit": {
           "$ref": "#/$defs/commit",

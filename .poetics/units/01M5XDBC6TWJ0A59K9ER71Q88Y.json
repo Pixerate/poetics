@@ -49,6 +49,25 @@
           "ref": "docs/decisions/0004-provisional-hashes.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:19dd1d269306d1c7edc17d860a6674f7831d3d232ba7b067020f558ad0488a11",
+      "interfaceHash": "b3:7dda1f8142a321307dd50eedf4b7e63bf80d0fd520466a8cae0ea71f7ae5c4bf",
+      "parent": "git:3a1ccb55688c0438d73b4d070dfc3c9f7b1867d7",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "BLAKE3 of the unit's normalised syntax tree, comments and formatting stripped.",

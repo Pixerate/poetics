@@ -19,7 +19,7 @@
       }
     ]
   },
-  "status": "active",
+  "status": "resolved",
   "actor": {
     "kind": "agent",
     "tool": "claude-code",
@@ -31,5 +31,9 @@
       "kind": "decision",
       "ref": "docs/decisions/0004-provisional-hashes.md"
     }
-  ]
+  ],
+  "resolvedBy": {
+    "kind": "github-issue",
+    "ref": "#21"
+  }
 }

@@ -26,6 +26,25 @@
           "ref": "#19"
         }
       ]
+    },
+    {
+      "contentHash": "b3:24af3fc624b66ae3275a5810f020fa4f4ab10394c30a6db3a4c13161e9f10165",
+      "interfaceHash": "b3:74c1b4e6140fcb1716d63387a26cfab0fb2cc88b7792f0bad9054d1bb4dd0fa7",
+      "parent": "git:1b9fc913a53e779664d9f33946b361640aecb5ae",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "What callers depend on: call signatures for functions and hooks, the structure for types.",

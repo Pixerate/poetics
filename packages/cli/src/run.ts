@@ -10,6 +10,7 @@ import { COMMANDS } from "./commands.ts";
 import { readConfig } from "./config.ts";
 import { coverageFor, formatCoverage } from "./coverage.ts";
 import { formatLog, formatWhy } from "./history.ts";
+import { applyRehash, planRehash, unitHashes } from "./rehash.ts";
 
 export interface Io {
   out(text: string): void;
@@ -47,6 +48,8 @@ export async function run(argv: readonly string[], io: Io, root: string = proces
     if (command.name === "log" || command.name === "why") return await history(command.name, args.slice(1), io, json, root);
     if (command.name === "verify") return await verify(args.slice(1), io, json, root);
     if (command.name === "coverage") return await coverage(args.slice(1), io, json, root);
+    if (command.name === "hash") return await hash(args.slice(1), io, json, root);
+    if (command.name === "rehash") return await rehash(args.slice(1), io, json, root);
     throw new NotImplementedError(`poetics ${command.name}`);
   } catch (error) {
     if (error instanceof NotImplementedError) {
@@ -142,6 +145,54 @@ async function coverage(args: readonly string[], io: Io, json: boolean, root: st
   const result = await coverageFor(root);
   io.out(json ? JSON.stringify(result) : formatCoverage(result));
   return result.failures.length > 0 ? 1 : 0;
+}
+
+async function hash(args: readonly string[], io: Io, json: boolean, root: string): Promise<number> {
+  const [ref, ...extra] = args;
+  if (ref === undefined || extra.length > 0 || ref.startsWith("-")) {
+    report(io, json, { error: "usage", command: "hash", message: "Usage: poetics hash <file>[#name]" });
+    return 2;
+  }
+  const hashAt = ref.lastIndexOf("#");
+  const [file, name] = hashAt > 0 ? [ref.slice(0, hashAt), ref.slice(hashAt + 1)] : [ref, undefined];
+  const units = (await unitHashes(root, await readConfig(root), file)).filter((unit) => name === undefined || unit.name === name);
+  if (units.length === 0) {
+    report(io, json, { error: "invalid-argument", command: "hash", message: `No unit ${name ? `${name} ` : ""}in ${file}` });
+    return 2;
+  }
+  io.out(
+    json
+      ? JSON.stringify({ file, units })
+      : units.map((u) => `${u.name} (${u.kind}, lines ${u.startLine}-${u.endLine})\n  contentHash   ${u.contentHash}\n  interfaceHash ${u.interfaceHash}`).join("\n"),
+  );
+  return 0;
+}
+
+async function rehash(args: readonly string[], io: Io, json: boolean, root: string): Promise<number> {
+  const value = (flag: string) => {
+    const i = args.indexOf(flag);
+    return i === -1 ? undefined : args[i + 1];
+  };
+  const agent = value("--agent");
+  const model = value("--model");
+  const known = new Set(["--write", "--agent", "--model", agent, model]);
+  if (args.some((arg) => !known.has(arg)) || (args.includes("--agent") && (!agent || agent.startsWith("-"))) || (model !== undefined && !agent)) {
+    report(io, json, { error: "usage", command: "rehash", message: "Usage: poetics rehash [--write] [--agent <tool> [--model <id>]]" });
+    return 2;
+  }
+  const plan = await planRehash(root, await readConfig(root));
+  const written = args.includes("--write")
+    ? await applyRehash(root, plan, agent ? { kind: "agent", tool: agent, ...(model ? { model } : {}), reviewed: false } : { kind: "human" })
+    : 0;
+  if (json) {
+    io.out(JSON.stringify({ ...plan, written }));
+  } else {
+    const lines = plan.skipped.map((s) => `skipped: ${s.file}#${s.name} (${s.uid}): ${s.reason}`);
+    const verb = args.includes("--write") ? `Rehashed ${written}` : `Would rehash ${plan.rehash.length}`;
+    lines.push(`${verb} unit(s); ${plan.skipped.length} skipped; ${plan.alreadyIndexed} already on b3: hashes.`);
+    io.out(lines.join("\n"));
+  }
+  return plan.skipped.length > 0 ? 1 : 0;
 }
 
 function report(io: Io, json: boolean, payload: { error: string; message: string; command?: string }): void {

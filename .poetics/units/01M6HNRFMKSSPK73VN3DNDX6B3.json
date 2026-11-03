@@ -26,6 +26,25 @@
           "ref": "#19"
         }
       ]
+    },
+    {
+      "contentHash": "b3:c62f196cfa4c65bb74ce15db23e10457a1094cf5d835d5efff07d85a919984b4",
+      "interfaceHash": "b3:e74d98d3b2205f759b499ff9b07d4b00328ba5486c90aa86fa87fcd3b6d8eb99",
+      "parent": "git:2453633e2c88ee8f19a921e04ae1f885b2d215d9",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Exported functions, hooks, interfaces and type aliases declared in a source file, in source order.",

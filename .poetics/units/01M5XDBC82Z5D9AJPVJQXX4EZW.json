@@ -68,6 +68,25 @@
           "ref": "#23"
         }
       ]
+    },
+    {
+      "contentHash": "b3:a530422e1fe25359e3e533beeed1a87012d1f593887db932e658d94b0889c303",
+      "interfaceHash": "b3:0d760a296b76686244da09a62c0f1ce7ffbbb2b368e51c96788cd83ad95c2c73",
+      "parent": "git:0c07cece37138940ad71719296c01ed649db75ed",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Full-text search over names (and their camelCase parts), docs and rationale on SQLite FTS5, best match first; every word must match as a prefix unless match is any.",

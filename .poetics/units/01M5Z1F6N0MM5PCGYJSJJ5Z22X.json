@@ -45,6 +45,29 @@
           "ref": "docs/decisions/0010-removed-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:c0b988b3d6e7a6cd2836926420b6f9a06eddec0f08109860cd8df682f747064e",
+      "interfaceHash": "b3:60ae0801b00179eb028ebd3136f4b810bf19ae651b8224973c76a2e32dc04174",
+      "parent": "git:3fabfb42134e7e83e27aa2e0954223198413ad78",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Drops unverifiable, which can no longer occur now that b3: hashes are compared, and adds changed-rehash for a rehash version that would hide a code change.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "tests": [

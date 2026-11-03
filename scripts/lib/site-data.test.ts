@@ -23,7 +23,7 @@ describe("buildSiteData", () => {
     coverage: {} as SiteCoverage,
     units: [unit("01JB8K0000000000000000000B", "b", "scripts/s.ts"), unit("01JB8K0000000000000000000A", "a", "packages/core/src/a.ts")],
     notes: [],
-    declarations: [{ file: "packages/core/src/a.ts", name: "a", kind: "function", hash: `git:${"1".repeat(40)}`, startLine: 2, endLine: 3 }],
+    declarations: [{ file: "packages/core/src/a.ts", name: "a", kind: "function", hash: `git:${"1".repeat(40)}`, contentHash: `b3:${"1".repeat(64)}`, startLine: 2, endLine: 3 }],
     sources: new Map([["packages/core/src/a.ts", "// x\nexport function a() {\n}\n"]]),
     decisions: [
       { id: "0002", title: "B", status: "Accepted", path: "b.md" },

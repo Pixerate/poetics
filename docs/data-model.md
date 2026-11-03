@@ -20,10 +20,10 @@ closure version changes when any function it uses changes.
 
 | Field | Notes |
 | --- | --- |
-| `contentHash`, `interfaceHash`, `closureHash` | `b3:<64 hex>` from the indexer, or provisional `git:<40 hex>` ([ADR 0004](decisions/0004-provisional-hashes.md)) |
+| `contentHash`, `interfaceHash`, `closureHash` | `b3:<64 hex>` from the indexer, or provisional `git:<40 hex>` in history recorded before the rehash ([ADR 0004](decisions/0004-provisional-hashes.md), [ADR 0014](decisions/0014-rehash-versions.md)) |
 | `provisional` | Must be `true` exactly when any hash is `git:` |
 | `parent` | Previous version's `contentHash`, or `null` for the first |
-| `change` | `created` (first version only), `interface`, `behaviour`, `cosmetic`, or `removed` (last version only) |
+| `change` | `created` (first version only), `interface`, `behaviour`, `cosmetic`, `rehash` (the same code re-recorded under its `b3:` hash, straight after a `git:` version; ADR 0014), or `removed` (last version only) |
 | `commit` | Commit that introduced it; omitted in hand-written entries and backfilled from git |
 | `actor` | `{ kind: "human" }` or an agent with `tool`, `model`, `session`, `task`, `reviewed` |
 | `rationale` | Why this unit changed, citing its source |
@@ -56,7 +56,11 @@ validate as you type.
 - the filename matches the `uid`, and no uid appears twice;
 - each version's `parent` is the previous `contentHash`, hashes are not repeated,
   and only the first version is `created`;
-- `provisional` matches the hash family, and policy may forbid provisional hashes;
+- `provisional` matches the hash family, and `allowProvisionalHashes: false`
+  forbids a provisional hash in a live unit's latest version (history keeps
+  its `git:` hashes);
+- a `rehash` version has only `b3:` hashes and follows a `git:` version, and a
+  note anchored to a unit stays confirmed through rehash versions;
 - `location.file`, linked test files, `owner` and `deps` all point at things that
   exist (unknown lineage uids are warnings);
 - lock pins refer to known units;

@@ -14,3 +14,5 @@ export { DRIFT_SEVERITY, compareCodeWithStore } from "./drift.ts";
 export { formatLog, formatWhy } from "./history.ts";
 export type { Io } from "./run.ts";
 export { VERSION, run } from "./run.ts";
+export type { RehashEntry, RehashPlan } from "./rehash.ts";
+export { applyRehash, planRehash, unitHashes } from "./rehash.ts";

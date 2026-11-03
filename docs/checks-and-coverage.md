@@ -49,11 +49,13 @@ before you commit.
 | `repeated-rationale` | warning | Three or more new versions share one rationale. Say what changed for each unit. |
 | `unverified` | warning | A `behaviour` or `interface` version, but none of the unit's linked tests changed (or it has none). |
 | `callers-not-updated` | warning | An `interface` or `removed` version, but units depending on it got no version. |
-| `unverifiable` | warning | The latest hash is a `b3:` hash, which needs the indexer to compare. |
+| `changed-rehash` | error | A new `rehash` version, but the code changed since its parent, or its hash is not the code's. A rehash only re-records unchanged code ([ADR 0014](decisions/0014-rehash-versions.md)). |
 
-Exit code 1 on any error. Provisional hashes are hashes of raw text, so a
-formatting-only edit to an export shows as `stale`; run the formatter before
-the check, and the phase 1 indexer's syntax-tree hashes remove this.
+Exit code 1 on any error. A unit whose latest version has a `b3:` hash is
+compared with the hash of its normalised syntax tree, so formatting and
+comment-only edits never show as `stale`. A unit still on a provisional `git:`
+hash is compared with the hash of its raw text, as recorded before the rehash
+([ADR 0014](decisions/0014-rehash-versions.md)).
 
 ## `pnpm poetics:coverage`
 

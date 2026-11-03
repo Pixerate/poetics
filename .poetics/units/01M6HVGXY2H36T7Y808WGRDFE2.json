@@ -1,0 +1,46 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HVGXY2H36T7Y808WGRDFE2",
+  "kind": "function",
+  "framework": "none",
+  "name": "unitHashes",
+  "location": {
+    "file": "packages/cli/src/rehash.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:a0daa0b43a3ee5dc9d9d8fcf7388d5e51b96b9fa6eda5c71d280890246b05ac9",
+      "interfaceHash": "b3:6040e4a676d472e1a06c9461349899a3837bf5b54ff2ccb50565efe869c34c0c",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Gives hand-written versions the indexer's hashes for a file's units, replacing pnpm provisional-hash now that new versions must be b3:.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
+    }
+  ],
+  "docs": "The indexer's content and interface hashes for the units in one file.",
+  "tests": [
+    {
+      "file": "packages/cli/src/rehash.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import { isProvisional, isRemoved } from "@poetics/core";
 import type { Unit } from "@poetics/core";
 import type { Declaration } from "./declarations.ts";
 
-export type DriftKind = "untracked" | "stale" | "orphaned" | "duplicate" | "unverifiable";
+export type DriftKind = "untracked" | "stale" | "orphaned" | "duplicate";
 
 export interface DriftFinding {
   kind: DriftKind;
@@ -28,7 +28,6 @@ export const DRIFT_SEVERITY: Record<DriftKind, "error" | "warning"> = {
   stale: "error",
   orphaned: "error",
   duplicate: "error",
-  unverifiable: "warning",
 };
 
 const key = (file: string, name: string) => `${file}#${name}`;
@@ -76,24 +75,15 @@ export function compareCodeWithStore(
         kind: "untracked",
         file: decl.file,
         name: decl.name,
-        message: `${decl.name} has no unit; mint a uid and create one (lines ${decl.startLine}-${decl.endLine}, hash ${decl.hash})`,
+        message: `${decl.name} has no unit; mint a uid and create one (lines ${decl.startLine}-${decl.endLine}, contentHash ${decl.contentHash})`,
       });
       continue;
     }
     matched.add(k);
     tracked++;
+    // Compare like with like: history before the rehash recorded git: hashes of the text (ADR 0014).
     const latest = unit.versions.at(-1)!.contentHash;
-    if (!isProvisional(latest)) {
-      findings.push({
-        kind: "unverifiable",
-        file: decl.file,
-        name: decl.name,
-        uid: unit.uid,
-        message: `${decl.name}'s latest hash is not provisional, so it cannot be compared until the indexer lands`,
-      });
-      continue;
-    }
-    if (latest === decl.hash) {
+    if (latest === (isProvisional(latest) ? decl.hash : decl.contentHash)) {
       fresh++;
     } else {
       findings.push({
@@ -101,7 +91,7 @@ export function compareCodeWithStore(
         file: decl.file,
         name: decl.name,
         uid: unit.uid,
-        message: `${decl.name} changed but its unit has no version for it; append one with contentHash ${decl.hash} (lines ${decl.startLine}-${decl.endLine})`,
+        message: `${decl.name} changed but its unit has no version for it; append one with contentHash ${decl.contentHash} (lines ${decl.startLine}-${decl.endLine})`,
       });
     }
   }

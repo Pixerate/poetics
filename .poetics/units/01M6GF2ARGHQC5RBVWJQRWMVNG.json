@@ -26,6 +26,25 @@
           "ref": "#23"
         }
       ]
+    },
+    {
+      "contentHash": "b3:f7635eac8cd4575f538d2afcc10be6b766e74a1a6c42e55e43611758915efab2",
+      "interfaceHash": "b3:f90bb383418d738bb08fac5588685fd77f2faf3b2fa3628a45d6bb3b6a445313",
+      "parent": "git:004e55169fa856c45f2669c300245d5362317215",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Reads and parses one unit file by uid, in either layout.",

@@ -1,10 +1,12 @@
-// Finds the declarations Poetics tracks as units, the way the seed units were
-// made: exported functions and exported types or interfaces in .ts/.tsx files.
-// A day-one stand-in for the adapters' detectUnits.
+// Finds the declarations Poetics tracks as units, with both hashes a version may
+// carry: the provisional git: hash of the text, which history recorded before
+// the rehash, and the indexer's b3: content hash. Both are syntactic, so this
+// needs no type checker.
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import ts from "typescript";
-import { gitBlobHash } from "@poetics/core";
+import { contentTree, detectUnits } from "@poetics/adapter-typescript";
+import { contentHash, gitBlobHash } from "@poetics/core";
 import type { Hash, UnitKind } from "@poetics/core";
 import { createMatcher } from "./glob.ts";
 
@@ -15,6 +17,8 @@ export interface Declaration {
   kind: UnitKind;
   /** Provisional hash of the declaration text, from `export` to its end, without leading TSDoc. */
   hash: Hash;
+  /** The indexer's hash of the normalised syntax tree, which ignores formatting and comments (ADR 0014). */
+  contentHash: Hash;
   /** 1-based, inclusive. */
   startLine: number;
   endLine: number;
@@ -52,37 +56,18 @@ async function walk(root: string, dir: string): Promise<string[]> {
   return out.sort();
 }
 
-/** Exported function, interface and type-alias declarations in one source text. */
+/** The units the TypeScript indexer detects in one source text: exported functions, hooks and types. */
 export function declarationsIn(file: string, text: string): Declaration[] {
   const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
-  const found: Declaration[] = [];
-  for (const node of source.statements) {
-    if (!isExported(node)) continue;
-    let name: string | undefined;
-    let kind: UnitKind | undefined;
-    if (ts.isFunctionDeclaration(node)) {
-      name = node.name?.text ?? "default";
-      kind = /^use[A-Z0-9]/.test(name) ? "hook" : "function";
-    } else if (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node)) {
-      name = node.name.text;
-      kind = "type";
-    }
-    if (!name || !kind) continue;
-    const start = node.getStart(source);
-    found.push({
-      file,
-      name,
-      kind,
-      hash: gitBlobHash(text.slice(start, node.end)),
-      startLine: source.getLineAndCharacterOfPosition(start).line + 1,
-      endLine: source.getLineAndCharacterOfPosition(node.end).line + 1,
-    });
-  }
-  return found;
-}
-
-function isExported(node: ts.Statement): boolean {
-  return ts.canHaveModifiers(node) && (ts.getModifiers(node) ?? []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
+  return detectUnits(source, file).map((unit) => ({
+    file,
+    name: unit.name,
+    kind: unit.kind,
+    hash: gitBlobHash(text.slice(unit.span.start, unit.span.end)),
+    contentHash: contentHash(contentTree(unit)),
+    startLine: source.getLineAndCharacterOfPosition(unit.span.start).line + 1,
+    endLine: source.getLineAndCharacterOfPosition(unit.span.end).line + 1,
+  }));
 }
 
 /** Every tracked-shape declaration in scope. */

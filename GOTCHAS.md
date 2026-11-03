@@ -139,16 +139,9 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 - **See:** [docs/decisions/0004-provisional-hashes.md](docs/decisions/0004-provisional-hashes.md)
 - **Note:** `01M5YKKDBFX6D69ZPHJDYC70BZ`
 
-### Provisional hashes change when code is reformatted
-
-- **Cause:** A `git:` hash is a hash of the raw text, not the syntax tree.
-- **Fix:** Don't append versions for formatting-only edits; the phase 1 indexer replaces provisional hashes with syntax-tree hashes.
-- **Applies to:** `gitBlobHash`, `provisionalHash`
-- **See:** [docs/decisions/0004-provisional-hashes.md](docs/decisions/0004-provisional-hashes.md)
-- **Note:** `01M5YKKDBGV4R0MAVRD0TWAXVZ`
-
 ## Resolved and superseded
 
 | Note | Status |
 | --- | --- |
+| Provisional hashes change when code is reformatted (`01M5YKKDBGV4R0MAVRD0TWAXVZ`) | Resolved by github-issue `#21` |
 | Nothing is published to npm (`01M5YKKDBHB74W1K94RSHWGRXK`) | Resolved by [docs/ci-and-releases.md](docs/ci-and-releases.md) |

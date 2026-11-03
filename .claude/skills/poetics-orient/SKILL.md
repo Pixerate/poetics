@@ -25,9 +25,10 @@ When `poetics_context_pack` lands, steps 1–3 become one call to it.
    path, and the commands and dependencies you will use
    (`grep -l '<uid or path>' .poetics/notes/*.json`). Active notes are known
    pitfalls; read their `fix` before you start.
-6. **Check flags.** `provisional: true` means the hashes are git blob hashes,
-   which is normal for now. `reviewed: false` on an agent actor means a human has
-   not approved that rationale yet; weigh it accordingly.
+6. **Check flags.** `provisional: true` marks a `git:` hash recorded before the
+   indexer; a `rehash` version after it re-records the same code under a `b3:`
+   hash, so it is bookkeeping, not a change. `reviewed: false` on an agent actor
+   means a human has not approved that rationale yet; weigh it accordingly.
 
 To catch up on a whole branch or range rather than one unit, run
 `pnpm poetics changes [from] [to]` (or call `poetics_changes`): every recorded

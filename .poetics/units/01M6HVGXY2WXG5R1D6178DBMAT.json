@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HVGXY2WXG5R1D6178DBMAT",
+  "kind": "type",
+  "framework": "none",
+  "name": "RehashEntry",
+  "location": {
+    "file": "packages/cli/src/rehash.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:5dd91004263bbfff0de92bdc38d70e614058b1791ebd49def42d14bef388e565",
+      "interfaceHash": "b3:d5e5ef5471ae1aab1996b938f2793406d5537ae2940fc769184ee31095ed72f5",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "One unit the rehash will write: where it is, the provisional hash it follows, and its b3: content and interface hashes.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A unit the rehash will re-record: uid, place, parent and b3: hashes.",
+  "tests": [
+    {
+      "file": "packages/cli/src/rehash.test.ts",
+      "via": "static"
+    }
+  ]
+}

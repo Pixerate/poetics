@@ -53,7 +53,7 @@ export interface ChangesOptions {
 const WORKTREE = "worktree";
 const DECISION_RECORD = /^docs\/decisions\/\d{4}-[^/]+\.md$/;
 // Breaking changes first: a removal or interface change is what a reader must not miss.
-const RANK: Record<ChangeClass, number> = { removed: 0, interface: 1, behaviour: 2, created: 3, cosmetic: 4 };
+const RANK: Record<ChangeClass, number> = { removed: 0, interface: 1, behaviour: 2, created: 3, cosmetic: 4, rehash: 5 };
 
 interface FileChange {
   status: "A" | "M" | "D" | "R";

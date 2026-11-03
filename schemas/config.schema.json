@@ -42,6 +42,17 @@
         "type": "string"
       }
     },
+    "typescript": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tsconfig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "tsconfig whose compiler options the TypeScript indexer uses, relative to the repository root. Without one, the indexer uses strict nodenext defaults."
+        }
+      }
+    },
     "store": {
       "type": "object",
       "additionalProperties": false,

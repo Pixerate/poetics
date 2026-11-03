@@ -26,6 +26,25 @@
           "ref": "#19"
         }
       ]
+    },
+    {
+      "contentHash": "b3:ab7f41b1d4d8a9189c2e05028a7782cc52460e113bfe95fbbbee037c3d8d8dd6",
+      "interfaceHash": "b3:f95c906e4171e5c9d8ab6339eb92fc2a69001769a1d8e712c451b4bfe46c39f3",
+      "parent": "git:3a451503e77554d0ef29b81f45956f703ee15380",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "One parameter in a call signature: rest, optional, type and default value.",

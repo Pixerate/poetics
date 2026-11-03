@@ -26,6 +26,25 @@
           "ref": "#19"
         }
       ]
+    },
+    {
+      "contentHash": "b3:fc992be375ae4ab7093b68f206a8ad0a105c10b943bb37884244036e9634e3b0",
+      "interfaceHash": "b3:eceb49884edb18f4de61c657871f821296271da890d2203ad313b9be0378af0e",
+      "parent": "git:454a816829b8e8460ee1bf9cafff2a4d6ff25d91",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Creates an indexer whose program and per-file cache carry over between index calls.",

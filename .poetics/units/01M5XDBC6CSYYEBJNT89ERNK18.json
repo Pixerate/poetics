@@ -91,6 +91,29 @@
           "ref": "docs/plan.md#cli"
         }
       ]
+    },
+    {
+      "contentHash": "b3:14bca2802186f3572262d738572f55f4e433639710f4fcf1a9fcbbe2db9c726b",
+      "interfaceHash": "b3:2b936ea454e8c7cbabfa58cc1ed0887dfd73bd82e751b73fe26102853d7e9b1d",
+      "parent": "git:5942334dd97cb41689c79a8ffe39b79aa1229751",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Adds poetics hash, which prints a file's unit hashes for hand-written versions in place of pnpm provisional-hash, and poetics rehash, which plans the migration and appends rehash versions with --write.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Exit codes: 0 ok, 1 findings (e.g. verify), 2 usage or not-implemented. `root` is the repository root.",

@@ -26,6 +26,29 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:51a843603117083c6b9d6e7f425dc9e44d86f2bc8da7d2e8669dc27dde1945c2",
+      "interfaceHash": "b3:0109d63bfda219f2a83af581e660071ce7ace18fdf926e37fd0c34b0907327af",
+      "parent": "git:508b151e8333384f4eb034581c5faefa57de1560",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Adds typescript.tsconfig, so the indexer resolves types with the compiler options the repository builds with. This repository needs it for its workspace packages' poetics-source condition.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#21"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "tests": [
