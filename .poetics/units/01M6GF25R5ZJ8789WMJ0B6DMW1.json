@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6GF25R5ZJ8789WMJ0B6DMW1",
+  "kind": "function",
+  "framework": "none",
+  "name": "serveStdio",
+  "location": {
+    "file": "packages/mcp/src/stdio.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:94fc1dd2654e10b35b469cf55ba530fa3fb4f7ee",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A small newline-delimited JSON-RPC loop owned here rather than an SDK dependency, since only tools are served: negotiates the protocol version, lists tools, returns results as JSON text and tool failures as isError so the agent sees the message.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "Serves a tool host's tools as MCP over newline-delimited JSON-RPC until input ends.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/stdio.test.ts",
+      "via": "static"
+    }
+  ]
+}

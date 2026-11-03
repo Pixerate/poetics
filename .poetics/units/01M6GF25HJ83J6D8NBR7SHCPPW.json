@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6GF25HJ83J6D8NBR7SHCPPW",
+  "kind": "type",
+  "framework": "none",
+  "name": "StdioIo",
+  "location": {
+    "file": "packages/mcp/src/stdio.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:93ea2953a4fdff76430931d327425d02c329b326",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Lets tests and embedders drive the stdio transport with their own streams.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "The input and output streams the stdio transport reads and writes.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/stdio.test.ts",
+      "via": "static"
+    }
+  ]
+}

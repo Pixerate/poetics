@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6GF25MQC4DQHDEGN2MJAND6",
+  "kind": "type",
+  "framework": "none",
+  "name": "ToolHost",
+  "location": {
+    "file": "packages/mcp/src/stdio.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:d8d1d2697a8201abe89bad015540de7850cae0ae",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The part of the server the transport needs, so it can be tested without a store.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "What the stdio transport serves: a tool list and a call function.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/stdio.test.ts",
+      "via": "static"
+    }
+  ]
+}

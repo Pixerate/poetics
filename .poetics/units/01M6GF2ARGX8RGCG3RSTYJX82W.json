@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6GF2ARGX8RGCG3RSTYJX82W",
+  "kind": "type",
+  "framework": "none",
+  "name": "SearchOptions",
+  "location": {
+    "file": "packages/store/src/index-db.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:6d67cf3d4fbafedcc56366e3394122f2d01789d9",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Task descriptions are sentences, and requiring every word finds nothing; any-word matching lets the context pack rank units by a task.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ]
+    }
+  ],
+  "docs": "Whether a search needs every word (the default) or ranks units matching any word.",
+  "tests": [
+    {
+      "file": "packages/store/src/index-db.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
 import { NotImplementedError } from "@poetics/core";
 import { createServer } from "./server.ts";
@@ -53,11 +54,32 @@ describe("TOOLS", () => {
 });
 
 describe("createServer", () => {
-  it("rejects unknown tools and stubs known ones", async () => {
+  it("rejects unknown tools and stubs the ones it cannot answer yet", async () => {
     const server = createServer({ root: "." });
     await expect(server.callTool("nope", {})).rejects.toThrow("Unknown tool: nope");
-    await expect(server.callTool("poetics_unit", { unit: "x" })).rejects.toThrow(NotImplementedError);
-    await expect(server.listen()).rejects.toThrow(NotImplementedError);
+    await expect(server.callTool("poetics_impact", {})).rejects.toThrow(NotImplementedError);
+    await expect(server.callTool("poetics_record_rationale", { unit: "x", rationale: "why" })).rejects.toThrow(NotImplementedError);
+  });
+
+  it("advertises only the tools it answers", () => {
+    expect(
+      createServer({ root: "." })
+        .tools()
+        .map((tool) => tool.name),
+    ).toEqual(["poetics_context_pack", "poetics_search", "poetics_unit", "poetics_history", "poetics_changes", "poetics_tests_for", "poetics_notes"]);
+  });
+
+  it("answers read tools from this repository's own store over stdio", async () => {
+    const input = new PassThrough();
+    const output = new PassThrough();
+    let text = "";
+    output.on("data", (chunk: Buffer) => (text += chunk.toString()));
+    const done = createServer({ root: process.cwd() }).listen({ input, output });
+    input.end(`${JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "poetics_unit", arguments: { unit: "searchUnits" } } })}\n`);
+    await done;
+    const reply = JSON.parse(text) as { result: { content: Array<{ text: string }>; isError?: boolean } };
+    expect(reply.result.isError).toBeUndefined();
+    expect(JSON.parse(reply.result.content[0]!.text)).toMatchObject({ name: "searchUnits", location: { file: "packages/store/src/index-db.ts" } });
   });
 
   it("answers poetics_changes from the repository's git history", async () => {

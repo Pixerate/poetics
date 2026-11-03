@@ -3,7 +3,17 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { NotImplementedError, REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { Version } from "@poetics/core";
-import { appendVersion, declareLineage, linkTest, listUnitFiles, parseUnit, readUnitFiles, recordRationale, setDocs } from "./json-store.ts";
+import {
+  appendVersion,
+  declareLineage,
+  linkTest,
+  listUnitFiles,
+  parseUnit,
+  readUnit,
+  readUnitFiles,
+  recordRationale,
+  setDocs,
+} from "./json-store.ts";
 import { storePaths } from "./paths.ts";
 import { createValidator, loadSchemaSet } from "./schemas.ts";
 import { REPO_SCHEMAS, UID_A, UID_B, hash, makeRepo, makeUnit, writeUnit } from "./test-helpers.ts";
@@ -19,6 +29,14 @@ describe("reading unit files", () => {
     const files = await readUnitFiles(storePaths(root));
     expect(files.map((f) => f.relativePath)).toEqual([`.poetics/units/01/${UID_B}.json`, `.poetics/units/${UID_A}.json`]);
     expect(parseUnit(files[1]!).uid).toBe(UID_A);
+  });
+
+  it("reads one unit by uid in either layout, and names a missing one", async () => {
+    const root = await makeRepo([makeUnit(UID_A)]);
+    await writeUnit(root, makeUnit(UID_B), join(".poetics", "units", "01", `${UID_B}.json`));
+    expect((await readUnit(storePaths(root), UID_A)).uid).toBe(UID_A);
+    expect((await readUnit(storePaths(root), UID_B)).uid).toBe(UID_B);
+    await expect(readUnit(storePaths(root), "01JB8K0000000000000000000Z")).rejects.toThrow(/No unit file for/);
   });
 
   it("names the file when JSON is invalid", () => {

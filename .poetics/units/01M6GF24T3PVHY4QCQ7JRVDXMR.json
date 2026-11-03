@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6GF24T3PVHY4QCQ7JRVDXMR",
+  "kind": "type",
+  "framework": "none",
+  "name": "NoteQuery",
+  "location": {
+    "file": "packages/mcp/src/read-tools.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:83193e9f0bf3922e4e1f14023c26033a8007fd83",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The criteria poetics_notes accepts, after the unit reference has been resolved to a uid.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "Criteria for matching notes: error text, uid, path or command, optionally including retired notes.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/read-tools.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -57,6 +57,11 @@ async function readFiles(paths: StorePaths, files: string[]): Promise<UnitFile[]
   );
 }
 
+/** Reads and parses the unit file for `uid`, in whichever layout it was written. */
+export async function readUnit(paths: StorePaths, uid: string): Promise<Unit> {
+  return parseUnit(await readUnitFile(paths, uid));
+}
+
 export function parseUnit(file: UnitFile): Unit {
   try {
     return JSON.parse(file.raw) as Unit;

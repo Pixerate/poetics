@@ -248,20 +248,21 @@ export interface UnitRow {
   framework: string;
   name: string;
   file: string;
+  docs: string | null;
   latest_content_hash: string;
   version_count: number;
 }
 
 export function getUnit(db: DatabaseSync, uid: string): UnitRow | undefined {
   return db
-    .prepare("SELECT uid, kind, framework, name, file, latest_content_hash, version_count FROM units WHERE uid = ?")
+    .prepare("SELECT uid, kind, framework, name, file, docs, latest_content_hash, version_count FROM units WHERE uid = ?")
     .get(uid) as UnitRow | undefined;
 }
 
 export function findUnitsByName(db: DatabaseSync, name: string): UnitRow[] {
   return db
     .prepare(
-      "SELECT uid, kind, framework, name, file, latest_content_hash, version_count FROM units WHERE name = ? ORDER BY file, uid",
+      "SELECT uid, kind, framework, name, file, docs, latest_content_hash, version_count FROM units WHERE name = ? ORDER BY file, uid",
     )
     .all(name) as unknown as UnitRow[];
 }
@@ -273,19 +274,23 @@ export function dependentsOf(db: DatabaseSync, uid: string): string[] {
   );
 }
 
+export interface SearchOptions {
+  /** `all` (the default) needs every word to match; `any` ranks units matching any of them, for free-text task descriptions. */
+  match?: "all" | "any";
+}
+
 /**
- * Full-text search over names, docs and rationale, best match first. Every
- * word must match, as a prefix; FTS5 operators in the query are treated as
- * plain text.
+ * Full-text search over names, docs and rationale, best match first. Words
+ * match as prefixes; FTS5 operators in the query are treated as plain text.
  */
-export function searchUnits(db: DatabaseSync, query: string): UnitRow[] {
+export function searchUnits(db: DatabaseSync, query: string, options: SearchOptions = {}): UnitRow[] {
   const words = query.match(/[\p{L}\p{N}_]+/gu) ?? [];
   if (words.length === 0) return [];
-  const match = words.map((word) => `"${word}"*`).join(" ");
+  const match = words.map((word) => `"${word}"*`).join(options.match === "any" ? " OR " : " ");
   // bm25 weights favour a hit in the name over docs, and docs over rationale.
   return db
     .prepare(
-      `SELECT u.uid, u.kind, u.framework, u.name, u.file, u.latest_content_hash, u.version_count
+      `SELECT u.uid, u.kind, u.framework, u.name, u.file, u.docs, u.latest_content_hash, u.version_count
        FROM units_fts JOIN units u ON u.uid = units_fts.uid
        WHERE units_fts MATCH ?
        ORDER BY bm25(units_fts, 0, 10, 4, 1), u.uid`,

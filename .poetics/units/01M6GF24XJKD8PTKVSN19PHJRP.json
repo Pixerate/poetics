@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6GF24XJKD8PTKVSN19PHJRP",
+  "kind": "type",
+  "framework": "none",
+  "name": "NoteMatch",
+  "location": {
+    "file": "packages/mcp/src/read-tools.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:865620aca8b69551142e86a8f0955013402972b2",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A matched note with which criteria hit and which anchored units have moved on since it was observed, so an agent knows whether to trust it.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "A matched note, the criteria it matched, and anchored units that need re-checking.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/read-tools.test.ts",
+      "via": "static"
+    }
+  ]
+}

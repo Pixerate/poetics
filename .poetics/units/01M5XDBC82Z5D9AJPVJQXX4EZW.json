@@ -49,9 +49,28 @@
           "ref": "docs/plan.md#metadata-schema-and-storage"
         }
       ]
+    },
+    {
+      "contentHash": "git:0c07cece37138940ad71719296c01ed649db75ed",
+      "provisional": true,
+      "parent": "git:2c9759e7f31b0f3cdeecd80350fa1a87d9db72f7",
+      "change": "interface",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Takes optional SearchOptions; match: any ORs the words so poetics_context_pack can rank units against a free-text task. Rows now include docs.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ]
     }
   ],
-  "docs": "Full-text search over names (and their camelCase parts), docs and rationale on SQLite FTS5; every word must match as a prefix, best match first.",
+  "docs": "Full-text search over names (and their camelCase parts), docs and rationale on SQLite FTS5, best match first; every word must match as a prefix unless match is any.",
   "tests": [
     {
       "file": "packages/store/src/index-db.test.ts",

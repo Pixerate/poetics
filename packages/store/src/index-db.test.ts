@@ -128,6 +128,15 @@ describe("searchUnits", () => {
     expect(uids(searchUnits(db, "price nowhere"))).toEqual([]);
   });
 
+  it("ranks units matching any word when asked, for task descriptions", async () => {
+    const db = await searchable();
+    const hits = uids(searchUnits(db, "fix the slug and the price", { match: "any" }));
+    // Name hits (slugify, formatPrice) outrank cartTotal, which only mentions price in rationale.
+    expect(hits.slice(0, 2).sort()).toEqual([UID_A, UID_C]);
+    expect(hits[2]).toBe(UID_B);
+    expect(uids(searchUnits(db, "fix the slug and the price"))).toEqual([]);
+  });
+
   it("treats FTS syntax as text and returns nothing for an empty query", async () => {
     const db = await searchable();
     expect(uids(searchUnits(db, 'slug* OR "price" NEAR('))).toEqual([]);
