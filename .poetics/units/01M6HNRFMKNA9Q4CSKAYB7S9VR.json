@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKNA9Q4CSKAYB7S9VR",
+  "kind": "type",
+  "framework": "none",
+  "name": "TypeText",
+  "location": {
+    "file": "packages/adapter-typescript/src/units.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:713b9fe50167e77d5b3ceebe1ac74e3f86151fff",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Written types hash as normalised trees, so reformatting an annotation is not an interface change. Types the author left out hash as the checker prints them.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "A parameter or return type as written, or as the checker infers it.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    }
+  ]
+}

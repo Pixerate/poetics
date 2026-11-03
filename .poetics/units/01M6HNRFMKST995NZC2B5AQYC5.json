@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKST995NZC2B5AQYC5",
+  "kind": "type",
+  "framework": "none",
+  "name": "TypeScriptIndexerOptions",
+  "location": {
+    "file": "packages/adapter-typescript/src/indexer.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:fd4f581f61a0e8c1d9da71e2b719a1cd90fe8aa7",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Scope arrives as repo-relative files from the config's globs, compiler options from a tsconfig or directly, and the cache path from the caller, so the package does no store or config I/O of its own.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "Root, files in scope, compiler options or tsconfig, and the cache file for an indexer.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/indexer.test.ts",
+      "via": "static"
+    }
+  ]
+}

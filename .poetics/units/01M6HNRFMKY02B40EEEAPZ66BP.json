@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKY02B40EEEAPZ66BP",
+  "kind": "function",
+  "framework": "none",
+  "name": "normaliseNode",
+  "location": {
+    "file": "packages/adapter-typescript/src/normalise.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:b140942f51aab710ad40b4c8e75e9a7340c021d6",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Content hashes must ignore formatting. The tree drops comments, quote style, redundant parentheses, numeric spelling, quoted keys, export style and JSX re-wrapping. It keeps the facts that live outside child nodes: operators, declaration keywords and where an optional chain ends.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "The normalised tree of a node, independent of comments and formatting.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/normalise.test.ts",
+      "via": "static"
+    }
+  ]
+}

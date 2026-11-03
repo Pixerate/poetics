@@ -6,8 +6,8 @@ full design; this page describes what exists in the repository today.
 
 ```mermaid
 flowchart TD
-  src[".ts / .tsx / .svelte"] --> react["adapter-react"] & svelte["adapter-svelte"]
-  react & svelte -->|UnitCandidate, CandidateEdge| core["core"]
+  src[".ts / .tsx / .svelte"] --> ts["adapter-typescript"] & react["adapter-react"] & svelte["adapter-svelte"]
+  ts & react & svelte -->|UnitCandidate, CandidateEdge| core["core"]
   core -->|units, versions, edges| json[".poetics/units/*.json"]
   json -->|rebuildIndex| db[".poetics/cache/index.db"]
   db --> mcp["mcp"] & cli["cli"]
@@ -18,8 +18,9 @@ flowchart TD
 
 | Package | Built today | Stubbed (throws `NotImplementedError`) |
 | --- | --- | --- |
-| `@poetics/core` | Model types, `mintUid`, `isUid`, `uidTime`, `gitBlobHash`, `isHash`, `FrameworkAdapter` interface | `contentHash`, `interfaceHash`, `closureHash`, graph construction, SCCs, closure hashes, impact |
+| `@poetics/core` | Model types, `mintUid`, `isUid`, `uidTime`, `gitBlobHash`, `isHash`, BLAKE3 `contentHash`, `interfaceHash` and `closureHash`, graph construction, SCCs, closure hashes, impact, `FrameworkAdapter` interface | Nothing |
 | `@poetics/store` | Store paths and sharding layout, JSON Schema validation, `checkStore` (units and notes), reading unit and note files, `renderGotchas`, the incremental SQLite index with lookups, reverse dependencies and FTS search (`searchUnits`), `resolveUnit`, `readUnit`, `appendVersion` | Validated writes (`recordRationale`, `declareLineage`, `linkTest`, `setDocs`) |
+| `@poetics/adapter-typescript` | The indexer: detection of exported functions, hooks and types; normalised syntax trees with content, runtime and interface hashes; signatures; cross-file edges through the checker; program reuse and a per-file cache. `createTypeScriptAdapter` puts it behind `FrameworkAdapter` | Nothing stubbed; nothing calls it yet (`poetics index` is #20 and #24) |
 | `@poetics/adapter-react` | Hook and component naming rules | Detection, interfaces, edges |
 | `@poetics/adapter-svelte` | File-kind detection, component naming, Svelte 4/5 detection | Detection, interfaces, edges |
 | `@poetics/mcp` | Tool definitions with input schemas and access levels; a stdio server (`poetics-mcp`) answering `poetics_context_pack`, `poetics_search`, `poetics_unit`, `poetics_history`, `poetics_changes`, `poetics_tests_for` and `poetics_notes` | `poetics_impact`, `poetics_verify`, `poetics_signals`, code and signatures in context packs, and the write tools |

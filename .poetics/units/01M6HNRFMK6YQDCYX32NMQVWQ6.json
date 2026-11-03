@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMK6YQDCYX32NMQVWQ6",
+  "kind": "type",
+  "framework": "none",
+  "name": "DetectedUnit",
+  "location": {
+    "file": "packages/adapter-typescript/src/units.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:0f9f53df870161fece5a013f254ff6d4280b1c8c",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Detection is syntactic and keyed by file#name, so it can run on files answered from the cache and edges can point at units in them.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "A unit found in one source file before any checker work: key, name, kind, span, declarations and docs.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    }
+  ]
+}

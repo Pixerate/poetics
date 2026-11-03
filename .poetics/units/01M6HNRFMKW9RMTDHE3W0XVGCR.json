@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKW9RMTDHE3W0XVGCR",
+  "kind": "type",
+  "framework": "none",
+  "name": "CallSignature",
+  "location": {
+    "file": "packages/adapter-typescript/src/units.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:6a26fbe0714cba3be784a71636a6db59b63253a6",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "One callable shape (type parameters, parameters and return type), used as input to the interface hash.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "Type parameters, parameters and return type of one callable signature.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    }
+  ]
+}

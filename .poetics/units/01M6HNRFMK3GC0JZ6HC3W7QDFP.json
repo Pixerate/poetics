@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMK3GC0JZ6HC3W7QDFP",
+  "kind": "type",
+  "framework": "none",
+  "name": "IndexResult",
+  "location": {
+    "file": "packages/adapter-typescript/src/indexer.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:5e511d782e2ad9d49a289d6b2290bbc8acc51467",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Returns the units with cache statistics, so poetics index and the tests can tell how much work an incremental run did.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "Indexed units plus how many files came from the cache and how many the checker indexed.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/indexer.test.ts",
+      "via": "static"
+    }
+  ]
+}

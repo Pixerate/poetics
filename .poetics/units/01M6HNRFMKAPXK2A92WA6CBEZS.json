@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKAPXK2A92WA6CBEZS",
+  "kind": "function",
+  "framework": "none",
+  "name": "createTypeScriptAdapter",
+  "location": {
+    "file": "packages/adapter-typescript/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:97e18ba10eb827f35f98a3c696388301a19bbb92",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Puts the indexer behind the FrameworkAdapter interface with framework none, so the core can ask the TypeScript adapter the same four questions it will ask React and Svelte. It answers for one snapshot of the code.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "The indexer behind the FrameworkAdapter interface, for framework-neutral functions, hooks and types.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

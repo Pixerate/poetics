@@ -1,0 +1,265 @@
+// What a unit is in plain TypeScript, what callers depend on, and what it uses.
+// Detection is syntactic, so it can run on cached files; signatures and edges
+// need the checker.
+import ts from "typescript";
+import type { EdgeKind, Span, UnitKind } from "@poetics/core";
+import { normaliseNode } from "./normalise.ts";
+import type { NormalTree } from "./normalise.ts";
+
+type UnitDeclaration = ts.FunctionDeclaration | ts.VariableDeclaration | ts.InterfaceDeclaration | ts.TypeAliasDeclaration;
+
+/** A unit found in one source file, before any checker work. */
+export interface DetectedUnit {
+  /** `file#name`, unique within an index; a type sharing a function's name gets `file#name:type`. */
+  key: string;
+  name: string;
+  /** The name the module exports it as, when that differs from `name`. */
+  exportedAs?: string;
+  kind: UnitKind;
+  span: Span;
+  /** Overloads and merged interfaces give a unit more than one declaration. */
+  declarations: UnitDeclaration[];
+  /** The leading TSDoc comment, if any. */
+  docs?: string;
+}
+
+/** A parameter or return type as written, or as the checker infers it when nothing is written. */
+export type TypeText = { written: NormalTree } | { inferred: string };
+
+export interface ParameterSignature {
+  rest: boolean;
+  optional: boolean;
+  type: TypeText;
+  /** A default value is interface: callers that omit the argument get it. */
+  default?: NormalTree;
+}
+
+export interface CallSignature {
+  typeParameters: NormalTree[];
+  parameters: ParameterSignature[];
+  returns: TypeText;
+}
+
+/** What callers depend on: call signatures for functions and hooks, the structure for types. */
+export type Signature =
+  | { kind: "function"; declared?: NormalTree; overloads: CallSignature[] }
+  | { kind: "type"; declaration: NormalTree };
+
+/** A use of another unit, by its key. */
+export interface IndexedEdge {
+  to: string;
+  kind: EdgeKind;
+}
+
+/** A use the checker could not resolve. Shown, never guessed. */
+export interface UnresolvedUse {
+  kind: EdgeKind;
+  span: Span;
+  reason: string;
+}
+
+const TYPE_FORMAT = ts.TypeFormatFlags.NoTruncation;
+
+/** Exported functions, hooks, interfaces and type aliases declared in `source`, in source order. */
+export function detectUnits(source: ts.SourceFile, file: string): DetectedUnit[] {
+  const exported = exportedNames(source);
+  const groups = new Map<string, { name: string; kind: UnitKind; declarations: UnitDeclaration[]; statements: ts.Node[] }>();
+  const add = (name: string, kind: UnitKind, declaration: UnitDeclaration, statement: ts.Node) => {
+    // Values and types live in separate namespaces, so `type X` and `function X` are two units.
+    const space = kind === "type" ? "type" : "value";
+    const group = groups.get(`${space}:${name}`);
+    if (group) {
+      group.declarations.push(declaration);
+      group.statements.push(statement);
+    } else {
+      groups.set(`${space}:${name}`, { name, kind, declarations: [declaration], statements: [statement] });
+    }
+  };
+
+  for (const statement of source.statements) {
+    if (ts.isFunctionDeclaration(statement)) {
+      const name = statement.name?.text ?? "default";
+      if (hasExportModifier(statement) || exported.has(name)) add(name, functionKind(name), statement, statement);
+    } else if (ts.isVariableStatement(statement)) {
+      const list = statement.declarationList.declarations;
+      for (const declaration of list) {
+        if (!ts.isIdentifier(declaration.name) || !functionOf(declaration)) continue;
+        const name = declaration.name.text;
+        if (hasExportModifier(statement) || exported.has(name)) add(name, functionKind(name), declaration, list.length === 1 ? statement : declaration);
+      }
+    } else if (ts.isInterfaceDeclaration(statement) || ts.isTypeAliasDeclaration(statement)) {
+      const name = statement.name.text;
+      if (hasExportModifier(statement) || exported.has(name)) add(name, "type", statement, statement);
+    }
+  }
+
+  const values = new Set([...groups.values()].filter((g) => g.kind !== "type").map((g) => g.name));
+  return [...groups.values()].map((group) => {
+    const first = group.statements[0]!;
+    const last = group.statements.at(-1)!;
+    const exportedAs = exported.get(group.name) ?? (hasDefaultModifier(group.declarations[0]!) ? "default" : undefined);
+    const docs = docsOf(group.declarations[0]!);
+    const unit: DetectedUnit = {
+      key: `${file}#${group.name}${group.kind === "type" && values.has(group.name) ? ":type" : ""}`,
+      name: group.name,
+      kind: group.kind,
+      span: { file, start: first.getStart(source), end: last.end },
+      declarations: group.declarations,
+    };
+    if (exportedAs !== undefined && exportedAs !== group.name) unit.exportedAs = exportedAs;
+    if (docs) unit.docs = docs;
+    return unit;
+  });
+}
+
+/** The unit's whole tree, its own name left out so a rename alone keeps the hash. */
+export function contentTree(unit: DetectedUnit, eraseTypes = false): NormalTree {
+  return ["Unit", ...unit.declarations.map((declaration) => declarationTree(declaration, eraseTypes))];
+}
+
+function declarationTree(declaration: UnitDeclaration, eraseTypes: boolean): NormalTree {
+  const omit = new Set<ts.Node>(declaration.name ? [declaration.name] : []);
+  const tree = normaliseNode(declaration, { eraseTypes, omit });
+  if (!ts.isVariableDeclaration(declaration)) return tree;
+  // The keyword lives on the list, shared with any sibling declarations, so it is added here.
+  const list = declaration.parent;
+  const keyword = list.flags & ts.NodeFlags.Const ? "const" : list.flags & ts.NodeFlags.Let ? "let" : "var";
+  return ["Variable", keyword, tree];
+}
+
+/** The unit's public signature, with types the author left out inferred by `checker`. */
+export function signatureOf(unit: DetectedUnit, checker: ts.TypeChecker): Signature {
+  if (unit.kind === "type") return { kind: "type", declaration: contentTree(unit) };
+  const functions = unit.declarations.flatMap((declaration): Array<ts.FunctionLikeDeclaration> => {
+    if (ts.isFunctionDeclaration(declaration)) return [declaration];
+    const fn = ts.isVariableDeclaration(declaration) ? functionOf(declaration) : undefined;
+    return fn ? [fn] : [];
+  });
+  // With overloads, the implementation's own signature is not callable from outside.
+  const overloads = functions.length > 1 ? functions.filter((fn) => !fn.body) : functions;
+  const signature: Signature = { kind: "function", overloads: overloads.map((fn) => callSignature(fn, checker)) };
+  const declared = unit.declarations.find(ts.isVariableDeclaration)?.type;
+  if (declared) signature.declared = normaliseNode(declared);
+  return signature;
+}
+
+function callSignature(fn: ts.SignatureDeclaration, checker: ts.TypeChecker): CallSignature {
+  const parameters = fn.parameters.map((parameter): ParameterSignature => {
+    const out: ParameterSignature = {
+      rest: parameter.dotDotDotToken !== undefined,
+      optional: parameter.questionToken !== undefined || parameter.initializer !== undefined,
+      type: parameter.type ? { written: normaliseNode(parameter.type) } : { inferred: checker.typeToString(checker.getTypeAtLocation(parameter), fn, TYPE_FORMAT) },
+    };
+    if (parameter.initializer) out.default = normaliseNode(parameter.initializer);
+    return out;
+  });
+  let returns: TypeText;
+  if (fn.type) {
+    returns = { written: normaliseNode(fn.type) };
+  } else {
+    const resolved = checker.getSignatureFromDeclaration(fn);
+    returns = { inferred: resolved ? checker.typeToString(checker.getReturnTypeOfSignature(resolved), fn, TYPE_FORMAT) : "unknown" };
+  }
+  return { typeParameters: (fn.typeParameters ?? []).map((parameter) => normaliseNode(parameter)), parameters, returns };
+}
+
+/**
+ * The units `unit` uses, found by resolving every identifier in it through the
+ * checker, aliases followed. `unitAt` maps a declaration to the unit it belongs
+ * to, or `undefined` for declarations Poetics does not track.
+ */
+export function edgesOf(
+  unit: DetectedUnit,
+  checker: ts.TypeChecker,
+  unitAt: (declaration: ts.Declaration) => DetectedUnit | undefined,
+): { edges: IndexedEdge[]; unresolved: UnresolvedUse[] } {
+  const edges = new Map<string, IndexedEdge>();
+  const unresolved: UnresolvedUse[] = [];
+  const own = new Set(unit.declarations.map((declaration) => declaration.name).filter((name) => name !== undefined));
+
+  const visit = (node: ts.Node, root: ts.Node) => {
+    if (ts.isIdentifier(node) && !own.has(node)) {
+      const symbol = resolve(node, checker);
+      const targets = new Set((symbol?.declarations ?? []).map(unitAt).filter((target) => target !== undefined));
+      for (const target of targets) {
+        if (target === unit) continue;
+        const kind: EdgeKind =
+          target.kind === "type" || inTypePosition(node, root) ? "references-type" : target.kind === "hook" ? "uses-hook" : "calls";
+        edges.set(`${target.key}\0${kind}`, { to: target.key, kind });
+      }
+      const call = node.parent;
+      if (!symbol && ts.isCallExpression(call) && call.expression === node) {
+        const source = node.getSourceFile();
+        unresolved.push({
+          kind: "calls",
+          span: { file: unit.span.file, start: call.getStart(source), end: call.end },
+          reason: `${node.text} does not resolve to a declaration`,
+        });
+      }
+    }
+    node.forEachChild((child) => visit(child, root));
+  };
+  for (const declaration of unit.declarations) visit(declaration, declaration);
+
+  const sorted = [...edges.values()].sort((a, b) => (a.to === b.to ? a.kind.localeCompare(b.kind) : a.to < b.to ? -1 : 1));
+  return { edges: sorted, unresolved };
+}
+
+function resolve(node: ts.Identifier, checker: ts.TypeChecker): ts.Symbol | undefined {
+  // `{ formatPrice }` names the property; the value it copies is what is used.
+  const parent = node.parent;
+  let symbol = ts.isShorthandPropertyAssignment(parent) && parent.name === node ? checker.getShorthandAssignmentValueSymbol(parent) : checker.getSymbolAtLocation(node);
+  if (symbol && symbol.flags & ts.SymbolFlags.Alias) symbol = checker.getAliasedSymbol(symbol);
+  return symbol;
+}
+
+function inTypePosition(node: ts.Node, root: ts.Node): boolean {
+  for (let current = node.parent; current && current !== root; current = current.parent) {
+    if (ts.isTypeNode(current)) return true;
+  }
+  return false;
+}
+
+/** Local names the module exports through `export { a, b as c }` or `export default a`, mapped to the exported name. */
+function exportedNames(source: ts.SourceFile): Map<string, string> {
+  const names = new Map<string, string>();
+  for (const statement of source.statements) {
+    if (ts.isExportDeclaration(statement) && !statement.moduleSpecifier && statement.exportClause && ts.isNamedExports(statement.exportClause)) {
+      for (const specifier of statement.exportClause.elements) {
+        names.set((specifier.propertyName ?? specifier.name).text, specifier.name.text);
+      }
+    } else if (ts.isExportAssignment(statement) && !statement.isExportEquals && ts.isIdentifier(statement.expression)) {
+      names.set(statement.expression.text, "default");
+    }
+  }
+  return names;
+}
+
+function functionOf(declaration: ts.VariableDeclaration): ts.ArrowFunction | ts.FunctionExpression | undefined {
+  let initializer = declaration.initializer;
+  while (initializer && (ts.isParenthesizedExpression(initializer) || ts.isAsExpression(initializer) || ts.isSatisfiesExpression(initializer))) {
+    initializer = initializer.expression;
+  }
+  return initializer && (ts.isArrowFunction(initializer) || ts.isFunctionExpression(initializer)) ? initializer : undefined;
+}
+
+// The same rule the day-one declaration scan and the React adapter use.
+function functionKind(name: string): UnitKind {
+  return /^use[A-Z0-9]/.test(name) ? "hook" : "function";
+}
+
+function hasExportModifier(node: ts.Node): boolean {
+  return ts.canHaveModifiers(node) && (ts.getModifiers(node) ?? []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
+}
+
+function hasDefaultModifier(declaration: UnitDeclaration): boolean {
+  const node = ts.isVariableDeclaration(declaration) ? declaration.parent.parent : declaration;
+  return ts.canHaveModifiers(node) && (ts.getModifiers(node) ?? []).some((m) => m.kind === ts.SyntaxKind.DefaultKeyword);
+}
+
+function docsOf(declaration: UnitDeclaration): string | undefined {
+  const host = ts.isVariableDeclaration(declaration) ? declaration.parent.parent : declaration;
+  const doc = ts.getJSDocCommentsAndTags(host).find(ts.isJSDoc);
+  const text = doc ? ts.getTextOfJSDocComment(doc.comment) : undefined;
+  return text?.trim() || undefined;
+}

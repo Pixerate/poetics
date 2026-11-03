@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMK1WQP8F6MRK9FMJY0",
+  "kind": "function",
+  "framework": "none",
+  "name": "createTypeScriptIndexer",
+  "location": {
+    "file": "packages/adapter-typescript/src/indexer.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:454a816829b8e8460ee1bf9cafff2a4d6ff25d91",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The phase 1 indexer from ADR 0003. It builds one program over the files in scope and reuses it through oldProgram and a host that hands back unchanged SourceFiles. A per-file cache, keyed by a Merkle hash of each file's import closure, lets unchanged files skip the checker.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "Creates an indexer whose program and per-file cache carry over between index calls.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/indexer.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    }
+  ]
+}

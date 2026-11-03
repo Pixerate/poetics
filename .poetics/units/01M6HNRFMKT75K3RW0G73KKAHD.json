@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKT75K3RW0G73KKAHD",
+  "kind": "type",
+  "framework": "none",
+  "name": "UnresolvedUse",
+  "location": {
+    "file": "packages/adapter-typescript/src/units.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:6286ea9ef55c9487396b9864af5b8ba256693c81",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Keeps calls the checker cannot resolve, with a reason and a span, instead of guessing, as the plan requires for unresolved edges.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "A use the checker could not resolve, with its span and reason.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    }
+  ]
+}

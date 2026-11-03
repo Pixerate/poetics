@@ -82,7 +82,7 @@ Both adapters feed the same TypeScript type checker, so a Svelte component calli
 
 ### React (`.ts`, `.tsx`)
 
-- **Parsing:** the TypeScript compiler API via ts-morph, so types and symbol references resolve exactly as `tsc` sees them.
+- **Parsing:** the TypeScript compiler API, used directly rather than through ts-morph ([ADR 0013](decisions/0013-compiler-api-without-ts-morph.md), proposed), so types and symbol references resolve exactly as `tsc` sees them.
 - **Component detection:** a PascalCase function or arrow function that returns JSX; anything wrapped in `memo`, `forwardRef` or `lazy`; classes extending `Component`. Hooks are functions named `use` + capital letter.
 - **Interface:** the resolved props type from the first parameter, plus the ref type for `forwardRef`. Default prop values count as interface, since changing one changes behaviour for callers that omit it.
 - **Edges:** JSX elements resolve to component units; calls resolve to function and hook units; context providers and consumers are recorded as edges to the context object.

@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HNRFMKK4404JSPA7R8XBGE",
+  "kind": "type",
+  "framework": "none",
+  "name": "IndexedUnit",
+  "location": {
+    "file": "packages/adapter-typescript/src/indexer.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "git:c5a0dccb230823e3fb8cc8306852b234b6b2a912",
+      "provisional": true,
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Carries everything the store needs per unit from one pass: key, span and lines, docs, the content, runtime and interface hashes, the signature they come from, and resolved and unresolved edges.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#19"
+        }
+      ]
+    }
+  ],
+  "docs": "One unit as the indexer reports it: key, span, lines, docs, content, runtime and interface hashes, signature and edges.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/indexer.test.ts",
+      "via": "static"
+    }
+  ]
+}
