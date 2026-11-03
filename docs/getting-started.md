@@ -30,8 +30,8 @@ pnpm install
 | `pnpm validate` | Validate `.poetics/` (units and notes) against `schemas/` and the store rules |
 | `pnpm gotchas [--check]` | Generate `GOTCHAS.md` from `.poetics/notes/`, or check it is up to date |
 | `pnpm poetics changes [from] [to] [--json]` | What changed and why: every recorded unit change between two refs, grouped by commit (default: your branch since it forked, plus uncommitted work) |
-| `pnpm poetics:check [--since <ref>] [--json]` | Check a change recorded itself in `.poetics/` (default: working tree vs `HEAD`) |
-| `pnpm poetics:coverage [--json]` | Coverage of the code by `.poetics/`, failing below `policy.coverage` |
+| `pnpm poetics:check [--since <ref>] [--json]` | `poetics verify`: check a change recorded itself in `.poetics/` (default: working tree vs `HEAD`) |
+| `pnpm poetics:coverage [--json]` | `poetics coverage`: coverage of the code by `.poetics/`, failing below `policy.coverage` |
 | `pnpm build` | Build every package to `dist/` |
 | `pnpm preflight` | Everything CI runs, in order |
 | `pnpm reindex [--fresh]` | Rebuild the local SQLite index at `.poetics/cache/index.db` |

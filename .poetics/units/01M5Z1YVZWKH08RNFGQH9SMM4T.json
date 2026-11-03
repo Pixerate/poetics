@@ -26,6 +26,29 @@
           "ref": "docs/demo.md"
         }
       ]
+    },
+    {
+      "contentHash": "git:c18bade69f5e894aef5139ded7f69351daba262b",
+      "provisional": true,
+      "parent": "git:25b39ed2bb1037fd578203abd5bd37103f62a29a",
+      "change": "behaviour",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Imports readConfig, coverageFor and discoverDeclarations from @poetics/cli now that they live there, and runs git rev-parse itself rather than through the CLI's internal git helper.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0007-change-check-and-coverage.md"
+        }
+      ]
     }
   ],
   "tests": [

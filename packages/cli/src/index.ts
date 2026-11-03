@@ -1,5 +1,15 @@
+export type { ChangeFinding, ChangeFindingKind, ChangeReport } from "./change.ts";
+export { checkChange } from "./change.ts";
 export { formatChanges } from "./changes.ts";
 export type { CommandSpec } from "./commands.ts";
 export { COMMANDS } from "./commands.ts";
+export type { CoverageThresholds, PoeticsConfig } from "./config.ts";
+export { readConfig } from "./config.ts";
+export type { CoverageMetrics, CoverageReport, Ratio } from "./coverage.ts";
+export { METRICS, areaOf, computeCoverage, coverageFor, formatCoverage } from "./coverage.ts";
+export type { Declaration, Scope } from "./declarations.ts";
+export { declarationsIn, discoverDeclarations, filesInScope } from "./declarations.ts";
+export type { Drift, DriftFinding, DriftKind } from "./drift.ts";
+export { DRIFT_SEVERITY, compareCodeWithStore } from "./drift.ts";
 export type { Io } from "./run.ts";
 export { VERSION, run } from "./run.ts";

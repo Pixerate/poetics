@@ -5,8 +5,13 @@ commands check it against the code ([ADR 0007](decisions/0007-change-check-and-c
 
 | Command | Answers |
 | --- | --- |
-| `pnpm poetics:check` | Did this change record itself in `.poetics/` properly? |
-| `pnpm poetics:coverage` | How much of the codebase does `.poetics/` cover, and how well? |
+| `pnpm poetics:check` (`poetics verify`) | Did this change record itself in `.poetics/` properly? |
+| `pnpm poetics:coverage` (`poetics coverage`) | How much of the codebase does `.poetics/` cover, and how well? |
+
+Both are CLI commands in `@poetics/cli` (`packages/cli/src/change.ts` and
+`coverage.ts`); the `pnpm` scripts run them from source. `verify` exits 1 on
+errors and 2 on bad arguments or an unknown ref; `coverage` exits 1 below a
+threshold. Both take `--json`.
 
 Both read the scope from `.poetics/config.json` (`include` and `exclude`
 globs) and find trackable declarations the way the store expects: exported

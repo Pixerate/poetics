@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@poetics/core": "workspace:*",
-    "@poetics/store": "workspace:*"
+    "@poetics/store": "workspace:*",
+    "typescript": "^6.0.3"
   }
 }

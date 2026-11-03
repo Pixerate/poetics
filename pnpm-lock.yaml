@@ -172,6 +172,9 @@ importers:
       '@changesets/cli':
         specifier: ^3.0.3
         version: 3.0.3
+      '@poetics/cli':
+        specifier: workspace:*
+        version: link:packages/cli
       '@poetics/core':
         specifier: workspace:*
         version: link:packages/core
@@ -242,6 +245,9 @@ importers:
       '@poetics/store':
         specifier: workspace:*
         version: link:../store
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/core:
     dependencies:

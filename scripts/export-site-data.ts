@@ -1,13 +1,11 @@
 // Writes site/public/data.json from this repository's .poetics/, code and git
 // state, for the GitHub Pages demo: `pnpm site:data`.
+import { execFileSync } from "node:child_process";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { coverageFor, discoverDeclarations, readConfig } from "@poetics/cli";
 import { parseNote, parseUnit, readNoteFiles, readUnitFiles, storePaths } from "@poetics/store";
-import { readConfig } from "./lib/config.ts";
-import { coverageFor } from "./coverage.ts";
-import { discoverDeclarations } from "./lib/declarations.ts";
-import { git } from "./lib/git.ts";
 import { buildSiteData, parseDecision } from "./lib/site-data.ts";
 import type { SiteDecision } from "../site/src/lib/types.ts";
 
@@ -30,7 +28,7 @@ export async function exportSiteData(root: string, out: string): Promise<void> {
 
   const data = buildSiteData({
     repoUrl: REPO_URL,
-    commit: git(root, ["rev-parse", "HEAD"]).trim(),
+    commit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(),
     generatedAt: new Date().toISOString(),
     thresholds: config.policy?.coverage ?? {},
     coverage: await coverageFor(root),

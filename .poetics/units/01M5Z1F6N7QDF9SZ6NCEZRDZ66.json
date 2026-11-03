@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "Ratio",
   "location": {
-    "file": "scripts/lib/coverage.ts"
+    "file": "packages/cli/src/coverage.ts"
   },
   "versions": [
     {
@@ -30,8 +30,14 @@
   ],
   "tests": [
     {
-      "file": "scripts/lib/coverage.test.ts",
+      "file": "packages/cli/src/coverage.test.ts",
       "via": "static"
+    }
+  ],
+  "lineage": [
+    {
+      "kind": "move",
+      "from": "scripts/lib/coverage.ts"
     }
   ]
 }

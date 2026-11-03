@@ -1,8 +1,8 @@
 // Shapes the repository's own .poetics/ data for the GitHub Pages demo.
+import { areaOf } from "@poetics/cli";
+import type { Declaration } from "@poetics/cli";
 import type { Note, Unit } from "@poetics/core";
 import type { SiteCoverage, SiteData, SiteDecision, SiteUnit } from "../../site/src/lib/types.ts";
-import { areaOf } from "./coverage.ts";
-import type { Declaration } from "./declarations.ts";
 
 export interface SiteInputs {
   repoUrl: string;

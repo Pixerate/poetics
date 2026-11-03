@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "changesSince",
   "location": {
-    "file": "scripts/lib/git.ts"
+    "file": "packages/cli/src/git.ts"
   },
   "versions": [
     {
@@ -31,8 +31,14 @@
   "docs": "Files that differ between `base` and the working tree, including untracked files, with renames detected. `base` is resolved to its merge base with HEAD so a branch is compared with where it forked.",
   "tests": [
     {
-      "file": "scripts/lib/change.test.ts",
+      "file": "packages/cli/src/change.test.ts",
       "via": "static"
+    }
+  ],
+  "lineage": [
+    {
+      "kind": "move",
+      "from": "scripts/lib/git.ts"
     }
   ]
 }
