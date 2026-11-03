@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765",
+      "interfaceHash": "b3:509b6deabae23ab279875243a54f0baeb14d58deb3a014f80bf5ff61f1c9eea3",
+      "parent": "git:b09792d0e9e1714b9fe724a808b7978e92938d5f",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Repo-relative files in scope, sorted. Files the parser cannot read yet (e.g. .svelte) are listed separately.",

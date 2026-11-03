@@ -64,6 +64,25 @@
           "ref": "#23"
         }
       ]
+    },
+    {
+      "contentHash": "b3:b2f56bebb2089b49bef29d945f8ab37eb3f41dc81af05b39ddbeede87f72e3bc",
+      "interfaceHash": "b3:39e0fda46c0ffd44d37c4a421126f7203e84a892793843bdd555df7f69f84254",
+      "parent": "git:8a6fc65ecc26e77c76ba59461891e48ee921072c",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "The stdio MCP server. Tool calls are routed here as the store and indexer land.",

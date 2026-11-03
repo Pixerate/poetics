@@ -26,6 +26,25 @@
           "ref": "docs/demo.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:4a764426e7e52481d35426bb6bc4a2e801837b32dacaaf89f48b1dd8e80fbbcb",
+      "interfaceHash": "b3:2d4b1948c6c098fa4bc284f03d4d246df2c44a920ce92c66b26473de6b90a7dd",
+      "parent": "git:9504e6e23aa7f67cc88b58c77a2a36e284c8a3c9",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Active notes anchored to a unit by uid or by its file.",

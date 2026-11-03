@@ -26,6 +26,25 @@
           "ref": "docs/plan.md#metadata-schema-and-storage"
         }
       ]
+    },
+    {
+      "contentHash": "b3:c56fab3aaa9d426418d1a17c2287170dadd8cb01efce793410c2198ef3198fe4",
+      "interfaceHash": "b3:f64fe4763c82be397b9e0980284d52f221d29a99f73753f7972a207f67e403fd",
+      "parent": "git:e38448184c1f9c26976d570dfc6ce94835e17de0",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Units whose newest version depends directly on `uid`.",

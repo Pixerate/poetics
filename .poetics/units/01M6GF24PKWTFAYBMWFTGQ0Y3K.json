@@ -49,6 +49,25 @@
           "ref": "#24"
         }
       ]
+    },
+    {
+      "contentHash": "b3:6f80bc48bd14da0eba03366e7e4f8d58d72bc6e5f86056384bd1f3f31033bea8",
+      "interfaceHash": "b3:d5f19b086ec56d64a3eeb3a8518bed03175c6840e0fe25077c79f78aa41cf089",
+      "parent": "git:6856c2d9bdac4bfa2a9c243644e085d361f37f71",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Resolves a uid, unique name or file#name to a unit, given an up-to-date index; refuses ambiguous names with the candidates.",

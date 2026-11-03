@@ -26,6 +26,25 @@
           "ref": "#20"
         }
       ]
+    },
+    {
+      "contentHash": "b3:9fb130bfaced1e35289f7c67acd067440a54759e4bb45f305b8225d0eeb437ef",
+      "interfaceHash": "b3:db7a27b0bd3032b0e7f33b85e80034902dad8d6059700937086545fad5fb7a6a",
+      "parent": "git:a26236a555a11273601c788a0cccafccc53ec166",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "The similarity threshold and minimum fingerprint size for similarity matches.",

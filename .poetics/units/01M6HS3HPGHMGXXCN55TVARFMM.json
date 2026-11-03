@@ -26,6 +26,25 @@
           "ref": "#20"
         }
       ]
+    },
+    {
+      "contentHash": "b3:98d4420ffe6282f077f316207b0dbd8a966460dd8d6ea29dca68361060506e27",
+      "interfaceHash": "b3:272c2b30aeb316b7869e951f135e8088ae09ee602b34afc8f649ec92727da74a",
+      "parent": "git:6d2d194f99fedde862b7ecd65a03fc9aa6a1db6a",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "A new unit, with lineage when it is part of a declared split.",

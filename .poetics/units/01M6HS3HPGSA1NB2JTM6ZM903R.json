@@ -26,6 +26,25 @@
           "ref": "#20"
         }
       ]
+    },
+    {
+      "contentHash": "b3:dbb56abfafffa1a6af99b5f802532bed33a61a89ad8e7a7bbdb12c4f73443a5e",
+      "interfaceHash": "b3:316a45fcd33b1beb2803a0f0c8492a28725e4820ae262085dcc1816fafa2356e",
+      "parent": "git:00185ae0842a9724d1e29ca803a3664fa0093084",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Shingle hashes of a normalised tree, one per internal node, as a sorted multiset for similarity.",

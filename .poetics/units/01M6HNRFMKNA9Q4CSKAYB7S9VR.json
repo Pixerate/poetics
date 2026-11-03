@@ -26,6 +26,25 @@
           "ref": "#19"
         }
       ]
+    },
+    {
+      "contentHash": "b3:df2e28776262877ef98e352e7a88eadba44abf9f489471979213c51100b9f866",
+      "interfaceHash": "b3:18b1766ca5e1455d2e9e958a2e80e4bd40f3ca6d3c9fa8a62e349fcefafb4095",
+      "parent": "git:713b9fe50167e77d5b3ceebe1ac74e3f86151fff",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "A parameter or return type as written, or as the checker infers it.",

@@ -26,6 +26,25 @@
           "ref": "#19"
         }
       ]
+    },
+    {
+      "contentHash": "b3:ecfdb21c6438819b275c9c34a1cff5a8c048c53dff15559755da0b7dcda96933",
+      "interfaceHash": "b3:6e0873241caf17de4f478dc7f8f3992ff42df371435bb293a02c1945edfcad32",
+      "parent": "git:6286ea9ef55c9487396b9864af5b8ba256693c81",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "A use the checker could not resolve, with its span and reason.",

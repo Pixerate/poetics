@@ -26,6 +26,25 @@
           "ref": "#20"
         }
       ]
+    },
+    {
+      "contentHash": "b3:9cd4df3e6ee7292cfd2e53dfc32f56b827ec6eef6d8b9592b4b8c0b263bd7054",
+      "interfaceHash": "b3:31bb27ec990592f1c5a52e134dadb298dd9c57fb0fab77094afd7b34ed82f7a0",
+      "parent": "git:a3c56e079114483a493cec5bdac6efa57eb840c1",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "A declared rename, move, split or merge: the uids involved and their targets.",

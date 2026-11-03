@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:6f1bd4d062f93cf88e1b3e890edcadcbb79a8311e3f82efce3a6250f7308a575",
+      "interfaceHash": "b3:6bf126f9c6c37d4d30146e02901fd3bcb72116dfaff7ab561987864e6f89e7ab",
+      "parent": "git:6b82031de61b301cb09293d88e67fa6447fc046a",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Files that differ between `base` and the working tree, including untracked files, with renames detected. `base` is resolved to its merge base with HEAD so a branch is compared with where it forked.",

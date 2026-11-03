@@ -26,6 +26,25 @@
           "ref": "docs/demo.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:d997a8b6160dd2b81defba0089ed96d9681992bbfec25f9a8e7d695cd64ae84c",
+      "interfaceHash": "b3:d3dcd94c333d35a6892bcad19cf091ed2975b3c0d29884cada9b7063e2e3412f",
+      "parent": "git:dd3586fc3b1d2f6f99b9f3ab18c3d6bf6ef6d9f3",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Notes matching pasted error text: a sketch of the planned poetics_notes tool. Verbatim symptoms score highest, then commands and dependencies the text mentions, then title words.",

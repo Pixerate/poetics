@@ -26,6 +26,25 @@
           "ref": "#19"
         }
       ]
+    },
+    {
+      "contentHash": "b3:23b864d94ee768af7fa8ded1026587b1913a2313e7ca87086b5e1a723d46905e",
+      "interfaceHash": "b3:5ca2170e1e6df3fc2e3e6492cc27fcc372654de163f7f75cb645ff8b7a123a49",
+      "parent": "git:6a26fbe0714cba3be784a71636a6db59b63253a6",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Type parameters, parameters and return type of one callable signature.",

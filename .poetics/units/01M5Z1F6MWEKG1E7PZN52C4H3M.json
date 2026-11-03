@@ -26,6 +26,25 @@
           "ref": "docs/plan.md#svelte-svelte-sveltets"
         }
       ]
+    },
+    {
+      "contentHash": "b3:5142051319710080a96750ca8adb933d38a991de88c2cc1d1552e69e2a894745",
+      "interfaceHash": "b3:4872e36840f65226a90236928464d2b26b88cf9900d6f4335c90788df24f0f65",
+      "parent": "git:5d49536696326d4927d2231c0502eb3006f0a307",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Indexes svelte2tsx output with the shared TypeScript checker, mapping spans back to the `.svelte` file.",

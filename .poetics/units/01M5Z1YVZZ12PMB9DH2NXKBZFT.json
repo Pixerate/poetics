@@ -26,6 +26,25 @@
           "ref": "docs/demo.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:b0b00b0ac25cd4cf91e6c67fe1ed737c4b9bdd332fe2c33fbaa94479c826fccb",
+      "interfaceHash": "b3:2c850f57a6bdc482a1ffa81b21f0a5e23ba4854e83f643f47cad8006a73b2ccb",
+      "parent": "git:fbb0e4b3d0bde7f7f714f0c8d43d2613726d8afb",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Title and status from a decision record's first heading and `- Status:` line.",

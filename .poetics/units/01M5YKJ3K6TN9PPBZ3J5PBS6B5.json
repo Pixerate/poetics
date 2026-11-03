@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0006-notes-replace-gotchas.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:f762cee2310952d7541e69bcb7455cc0ce2f3850aaf3178667ccc6dccea85e84",
+      "interfaceHash": "b3:6b387983c502820516261becfe8411f00efd16da15b5fdbb78a4081cf1cfa586",
+      "parent": "git:f497311af981a4a2075ee2546cc4f1cb17c3aa54",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Returns true when GOTCHAS.md already matched (or, without check, was written).",

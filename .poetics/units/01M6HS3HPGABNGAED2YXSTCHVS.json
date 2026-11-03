@@ -26,6 +26,25 @@
           "ref": "#20"
         }
       ]
+    },
+    {
+      "contentHash": "b3:4cb2abf7687b4109aeac5c627b8e01b4fbb1a35e69a39b29d3348236324e68d9",
+      "interfaceHash": "b3:337906768e05d940b802ce46d33da08e4f02c298e3c019793e1ca3005bc86db3",
+      "parent": "git:4ea826a06eb224a735e87166c18e05a0fb1e8041",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "A tracked unit found again, with how, its score, and the lineage to append.",

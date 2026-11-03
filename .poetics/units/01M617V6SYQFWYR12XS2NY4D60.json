@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0010-removed-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+      "interfaceHash": "b3:fe2c02d846848e7e420bfb56b774bcc3c2aa3740595efd02119b6d9a14a0fe9a",
+      "parent": "git:9dc90008669ceaf9d3c8d7a11bf3fac2e3c0555b",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Whether a unit's latest version records its removal from the code.",

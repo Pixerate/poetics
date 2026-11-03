@@ -26,6 +26,25 @@
           "ref": "#19"
         }
       ]
+    },
+    {
+      "contentHash": "b3:2841c4e5bf4f0af40c0372b0015c857ada26c6755c2c1be2d7b5a8b9ace6af22",
+      "interfaceHash": "b3:18d2251dd462b101e328f7e1ae1331da6219aaecd658b3a290d0f73b91f13c06",
+      "parent": "git:0f9f53df870161fece5a013f254ff6d4280b1c8c",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "A unit found in one source file before any checker work: key, name, kind, span, declarations and docs.",

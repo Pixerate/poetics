@@ -45,6 +45,25 @@
           "ref": "docs/decisions/0006-notes-replace-gotchas.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:3be3aa6a121534b50b3d77b97089a60b6a89528bdf083436957a059c24ff039b",
+      "interfaceHash": "b3:c166fef4e819ee205d6cb8ce59313420f773a1884143a6f8453dc4a894646f00",
+      "parent": "git:d4ccce415e08ff06dab98530481265ae8e9c9b4f",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Every `*.json` under `.poetics/units/`, in either layout, sorted by path.",

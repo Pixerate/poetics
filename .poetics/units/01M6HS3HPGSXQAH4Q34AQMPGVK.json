@@ -26,6 +26,25 @@
           "ref": "#20"
         }
       ]
+    },
+    {
+      "contentHash": "b3:166336cf692fcd9a5ef0964fe8a644935aacb964e9af7ad5ff3b035ca63ac655",
+      "interfaceHash": "b3:ccf6e60d264dde8a0e9626d679905e9848612d586f85db3a5d5a98d19250e9eb",
+      "parent": "git:f896c788a042993f30da783e707d85b0a123cf04",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Jaccard similarity of two fingerprints.",

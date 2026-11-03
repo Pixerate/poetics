@@ -26,6 +26,25 @@
           "ref": "#24"
         }
       ]
+    },
+    {
+      "contentHash": "b3:c450f9e77ac05c440c7cf8275ff2eaa719ab410b50f9de66d2880fff41b613fd",
+      "interfaceHash": "b3:776bda0368b8aab979f014c3a88d67a7d5e1d4fc2e9310fdc0361187c57dd51f",
+      "parent": "git:c3555cee9ff732503bd0c82e4c5519a060920bdf",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Renders poetics why: the rationale chain that led to a unit's current version, oldest first.",

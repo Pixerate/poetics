@@ -49,6 +49,25 @@
           "ref": "docs/decisions/0010-removed-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:bb10dfa115153b6d7a5d29336ef34d2c2e35e6f3db93d18aab7cfb630c94b528",
+      "interfaceHash": "b3:b5561dfc9a8033b5dfd3c292fbacb08947bd970c3bd22df0f5396c2a195a80d5",
+      "parent": "git:906659794a6e24db365bc9894ad74b180abef8e5",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Appends a version to a unit file, append-only: the parent must be the latest version, created and removed keep their places, and the actor comes from the write context.",

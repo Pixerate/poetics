@@ -26,6 +26,25 @@
           "ref": "#19"
         }
       ]
+    },
+    {
+      "contentHash": "b3:f78e5940a4bec9b0123de4c6b2413437ea4a1a5c33936576f5a88b96783abe55",
+      "interfaceHash": "b3:ac5b45c1220dbd624c972ad9aab2740527e6e4ffef62878075c02703a4393c0a",
+      "parent": "git:fd4f581f61a0e8c1d9da71e2b719a1cd90fe8aa7",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Root, files in scope, compiler options or tsconfig, and the cache file for an indexer.",

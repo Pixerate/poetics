@@ -45,6 +45,25 @@
           "ref": "docs/decisions/0006-notes-replace-gotchas.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:bb174137e655cbdeb991aa4c6b5c4e093a9910d432f456823d64c7e376c23078",
+      "interfaceHash": "b3:7b06b3c35f864f17d1774ac188dac0c709b48c8eea063a50b5511214694bdff6",
+      "parent": "git:68388f065e2b6cbae8d3770ee10f74821fb3e78f",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Reads the unit, note, config and lock schemas from a directory.",

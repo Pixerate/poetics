@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0007-change-check-and-coverage.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:8d954b28e591da4706e3f063e6db1559af4779e4443ff445a1996f10b6d1168c",
+      "interfaceHash": "b3:0bf00d35c97270b4ac57448925b6c5f653b75ced269f60445ec6dc5cd30d0c05",
+      "parent": "git:b84edd69a8b8de10721f8b4b6d9891b6ed90e995",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Converts a POSIX glob to an anchored regular expression.",

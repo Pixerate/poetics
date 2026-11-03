@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0006-notes-replace-gotchas.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:e2848618c00a29394f542a91f88bf68d1854d6e0c5d3f64d331083eeb95041ba",
+      "interfaceHash": "b3:6f89f0d3e838820561cfe756097d785628b943f20fdf8875bfd1d6f58e8243fb",
+      "parent": "git:dbcab89eb09352b5ae870108f340f5c9065148b2",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Renders notes as GOTCHAS.md. Deterministic: the same notes always give the\nsame bytes, so CI can check the committed file is up to date.",

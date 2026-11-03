@@ -26,6 +26,25 @@
           "ref": "docs/demo.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:4db75d548cfbea47db504cee2df0b0224e4bb78997b9014385637a00c7afbc32",
+      "interfaceHash": "b3:db082632378d0cd322a74803a4fc82a142eb0ca12233dfeb8512dc8b5a213ecf",
+      "parent": "git:de942394b82e7e17a084c40912953e6cb210216d",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "A unit as the demo shows it: the stored record plus derived fields.",

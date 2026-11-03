@@ -26,6 +26,25 @@
           "ref": "docs/decisions/0009-changes-between-refs.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:1968fe0b3917e6f55733c451b8af7dc98732584d5964661b393cb409fb8a69c1",
+      "interfaceHash": "b3:20f11e1da06208635a9c5aad1f46130e988f599c97d9a4edd8155480d2dc3ade",
+      "parent": "git:c8b73f8615eafc2340854f5e6f57b2caac582c55",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "docs": "One unit's part in a commit: the versions it gained and any lineage declared.",

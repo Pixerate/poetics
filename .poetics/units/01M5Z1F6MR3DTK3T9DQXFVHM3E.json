@@ -26,6 +26,25 @@
           "ref": "docs/plan.md#svelte-svelte-sveltets"
         }
       ]
+    },
+    {
+      "contentHash": "b3:8f392187b2678114354e2623a28199ab1ddbd05f1ffa0f7396b10d7fb04b1a17",
+      "interfaceHash": "b3:c88189bfe938a36804cc0fa90f3621a8e4ead734b4eb17c56e8e885ec40fd77e",
+      "parent": "git:5916b8be2d1c2ce8598a2d104daebde439f1c65d",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "tests": [

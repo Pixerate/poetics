@@ -45,6 +45,25 @@
           "ref": "docs/plan.md#composition-and-version-propagation"
         }
       ]
+    },
+    {
+      "contentHash": "b3:85ec638d0ef9f019cb755dc43fc4ce408106c46ab8ada0021c35b95ecf188ae6",
+      "interfaceHash": "b3:21cf011a58ee9c5568da89dba4e31e66cb498b996a4543a5b9021e6560d5724b",
+      "parent": "git:c26faf9b0bc314cb7b285c52ded8107df4a5851e",
+      "change": "rehash",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rehashed by the indexer: the code is unchanged since the provisional hash, now recorded as the hash of its normalised syntax tree.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        }
+      ]
     }
   ],
   "tests": [
