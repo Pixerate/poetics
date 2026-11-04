@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M6JZZ0WZKRDBQHG52NHE3XVY",
+  "kind": "gotcha",
+  "area": "tooling",
+  "title": "Tests that run the indexer over a git workspace time out under the full suite",
+  "symptoms": ["Error: Test timed out in 5000ms."],
+  "cause": "runGate builds a git workspace and runs poetics index once per round. Alone the gate test takes about 3s, but when pnpm test runs every file in parallel it can pass Vitest's 5s default, so preflight fails at random while the test passes when run by itself.",
+  "fix": "Give such a test its own timeout as the last argument to it(), as scripts/lib/gate.test.ts does with GATE_TIMEOUT_MS, rather than raising the global testTimeout for fast tests too.",
+  "anchors": {
+    "units": [{ "uid": "01M6J0611SJTB4MRB2ME5KH5BH", "observedAt": "b3:aac7ac9c1ac106c9f6747bdd13db17e28b4d6e0f58a73e7376740f0e2a6b15c9" }],
+    "paths": ["scripts/lib/gate.test.ts"],
+    "dependencies": [{ "name": "vitest", "range": "^5" }],
+    "commands": ["pnpm test", "pnpm preflight"]
+  },
+  "check": { "kind": "test", "ref": "scripts/lib/gate.test.ts", "name": "applies every refactor and keeps every uid on code with room to match" },
+  "status": "active",
+  "actor": { "kind": "agent", "tool": "claude-code", "model": "claude-opus-5-5", "reviewed": false }
+}

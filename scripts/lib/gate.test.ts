@@ -45,6 +45,9 @@ async function corpus(): Promise<string> {
   return root;
 }
 
+// runGate indexes a real git workspace once per round: about 3s alone, past Vitest's 5s default when the full suite runs in parallel.
+const GATE_TIMEOUT_MS = 30_000;
+
 const ENTRY: CorpusEntry = { name: "synthetic", kind: "mixed", repo: "example/synthetic", commit: "0".repeat(40), include: ["src/**/*.{ts,svelte}"], exclude: [] };
 
 describe("seededRandom", () => {
@@ -80,7 +83,7 @@ describe("runGate", () => {
     expect(missed).toBe(0);
     expect(result.byKind.split.kept).toBe(2 * result.byKind.split.refactors);
     expect(result.timings.indexMs).toHaveLength(2);
-  });
+  }, GATE_TIMEOUT_MS);
 });
 
 describe("formatResults", () => {
@@ -93,5 +96,5 @@ describe("formatResults", () => {
     expect(text).toContain("| rename | ");
     expect(text).toMatch(/Uids kept: \*\*\d+ of \d+\*\*/);
     expect(text).toContain("- round 1 rename: X removed");
-  });
+  }, GATE_TIMEOUT_MS);
 });
