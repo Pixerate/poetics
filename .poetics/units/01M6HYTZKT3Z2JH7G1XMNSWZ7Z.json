@@ -1,0 +1,46 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HYTZKT3Z2JH7G1XMNSWZ7Z",
+  "kind": "function",
+  "framework": "none",
+  "name": "impactReport",
+  "location": {
+    "file": "packages/mcp/src/read-tools.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:89fdb094bfd1ef7352a10325b883f5e8e967e7186524fb54e15a36b57bad8ca2",
+      "interfaceHash": "b3:cceabfcb91ffa2b59ece9df53e116287f55d0332b1e1201fa357751f8f89b802",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Runs core's impactOf over the live composition graph from the indexer, for poetics_impact and poetics_changes with impact (#23).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ],
+      "deps": {
+        "01M5XDBC6PPE2GXKT3R7QTKP9X": "b3:56e92538088eafd46d4a5ef5af2844806adc80f8deb39622aa68d7c5fbea705a",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M6HYTZKT55NHNSV9KRKKHEDT": "b3:17fbe126f802ae948d5cbfe0f12c64645d621bc991a42f72c94868f4a2d385ed",
+        "01M6HYTZKT9D85QBV9GNSR44Y8": "b3:a08aae35969126911157e8756c0b1c0e111eb793d3bb9af683062be00bd19124",
+        "01M6GF24JVZVN1Q752CA2GEJQM": "b3:26f6d35747fc5db28ff82d83689a8b01bd75613a19eee74fbbe25fd3a002f875",
+        "01M5XDBC7ZDNZA3W91H4RPH0ER": "b3:e497791bc1a798eef6a53929e6ee9fe47fd708170e0eb6c8a0dfe4e700267074"
+      }
+    }
+  ],
+  "docs": "Ranked impact of changing `changed`, through the live composition graph.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/code.test.ts",
+      "via": "static"
+    }
+  ]
+}

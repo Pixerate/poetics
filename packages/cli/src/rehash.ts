@@ -7,10 +7,8 @@ import { createTypeScriptIndexer } from "@poetics/adapter-typescript";
 import type { IndexedUnit } from "@poetics/adapter-typescript";
 import { gitBlobHash, isProvisional, isRemoved } from "@poetics/core";
 import type { Actor, Hash, Link } from "@poetics/core";
-import { appendVersion, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
-import type { StoreValidator } from "@poetics/store";
-import type { PoeticsConfig } from "./config.ts";
-import { filesInScope } from "./declarations.ts";
+import { appendVersion, filesInScope, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
+import type { PoeticsConfig, StoreValidator } from "@poetics/store";
 
 export interface RehashEntry {
   uid: string;

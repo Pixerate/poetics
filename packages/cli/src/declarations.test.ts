@@ -3,7 +3,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { gitBlobHash } from "@poetics/core";
-import { declarationsIn, discoverDeclarations, filesInScope } from "./declarations.ts";
+import { filesInScope } from "@poetics/store";
+import { declarationsIn, discoverDeclarations } from "./declarations.ts";
 
 const SOURCE = `import x from "y";
 

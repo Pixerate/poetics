@@ -11,12 +11,9 @@ import { contentTree, createTypeScriptIndexer, detectUnits, fingerprint } from "
 import type { IndexedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
 import type { Actor, ChangeClass, CodeUnit, Hash, LineageEntry, Link, QueuedMatch, TrackedUnit, Unit, Version } from "@poetics/core";
-import { appendVersion, createUnit, parseUnit, readUnitFiles, relinkTests, relocateUnit, storePaths } from "@poetics/store";
-import type { StoreLayout } from "@poetics/store";
-import type { PoeticsConfig } from "./config.ts";
-import { filesInScope } from "./declarations.ts";
+import { appendVersion, createMatcher, createUnit, filesInScope, parseUnit, readUnitFiles, relinkTests, relocateUnit, storePaths } from "@poetics/store";
+import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { changesSince, git, showAt } from "./git.ts";
-import { createMatcher } from "./glob.ts";
 
 export interface IndexOptions {
   /** The ref whose code the store was last in step with. Default `HEAD`. */

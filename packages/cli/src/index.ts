@@ -3,12 +3,13 @@ export { checkChange } from "./change.ts";
 export { formatChanges } from "./changes.ts";
 export type { CommandSpec } from "./commands.ts";
 export { COMMANDS } from "./commands.ts";
-export type { CoverageThresholds, PoeticsConfig } from "./config.ts";
-export { readConfig } from "./config.ts";
+// Config and scope live in the store; re-exported so existing imports keep working.
+export type { CoverageThresholds, PoeticsConfig, Scope } from "@poetics/store";
+export { filesInScope, readConfig } from "@poetics/store";
 export type { CoverageMetrics, CoverageReport, Ratio } from "./coverage.ts";
 export { METRICS, areaOf, computeCoverage, coverageFor, formatCoverage } from "./coverage.ts";
-export type { Declaration, Scope } from "./declarations.ts";
-export { declarationsIn, discoverDeclarations, filesInScope } from "./declarations.ts";
+export type { Declaration } from "./declarations.ts";
+export { declarationsIn, discoverDeclarations } from "./declarations.ts";
 export type { Drift, DriftFinding, DriftKind } from "./drift.ts";
 export { DRIFT_SEVERITY, compareCodeWithStore } from "./drift.ts";
 export { formatLog, formatWhy } from "./history.ts";

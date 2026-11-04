@@ -1,13 +1,12 @@
 import { readFileSync } from "node:fs";
 import { NotImplementedError } from "@poetics/core";
 import type { Actor, Unit } from "@poetics/core";
-import { changesBetween, openIndex, rebuildIndex, resolveUnit, storePaths } from "@poetics/store";
+import { changesBetween, openIndex, readConfig, rebuildIndex, resolveUnit, storePaths } from "@poetics/store";
 import type { ChangeSet } from "@poetics/store";
 import { checkChange } from "./change.ts";
 import type { ChangeReport } from "./change.ts";
 import { formatChanges } from "./changes.ts";
 import { COMMANDS } from "./commands.ts";
-import { readConfig } from "./config.ts";
 import { coverageFor, formatCoverage } from "./coverage.ts";
 import { formatLog, formatWhy } from "./history.ts";
 import { applyIndex, formatIndexPlan, hasWrites, planIndex } from "./indexing.ts";

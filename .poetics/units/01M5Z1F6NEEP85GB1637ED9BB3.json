@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "Scope",
   "location": {
-    "file": "packages/cli/src/declarations.ts"
+    "file": "packages/store/src/scope.ts"
   },
   "versions": [
     {
@@ -57,6 +57,10 @@
     {
       "kind": "move",
       "from": "scripts/lib/declarations.ts"
+    },
+    {
+      "kind": "move",
+      "from": "packages/cli/src/declarations.ts"
     }
   ]
 }

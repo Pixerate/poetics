@@ -175,11 +175,13 @@ describe("callReadTool", () => {
     await expect(callReadTool(ctx, "poetics_notes", {})).rejects.toThrow("Pass an error, unit, path or command");
   });
 
-  it("leaves tools that need the indexer or integrations as stubs", async () => {
+  it("says when a tool needs the code and the context has none, and leaves signals as a stub", async () => {
     const ctx = await repo();
-    for (const name of ["poetics_impact", "poetics_verify", "poetics_signals"]) {
-      await expect(callReadTool(ctx, name, {})).rejects.toThrow(NotImplementedError);
-    }
+    await expect(callReadTool(ctx, "poetics_impact", { units: [UID_A] })).rejects.toThrow("poetics_impact needs the code");
+    await expect(callReadTool(ctx, "poetics_verify", {})).rejects.toThrow("poetics_verify needs the code");
+    await expect(callReadTool(ctx, "poetics_impact", {})).rejects.toThrow("Pass since, units, or both");
+    await expect(callReadTool(ctx, "poetics_impact", { units: "x" })).rejects.toThrow("units must be an array");
+    await expect(callReadTool(ctx, "poetics_signals", {})).rejects.toThrow(NotImplementedError);
   });
 });
 
@@ -196,7 +198,7 @@ describe("contextPack", () => {
     expect(pack.callers).toEqual([]);
     expect(pack.history).toEqual([{ contentHash: hash("1"), change: "created", rationale: "Seed formatPrice" }]);
     expect(pack.truncated).toEqual({});
-    expect(pack.missing).toEqual([expect.stringContaining("#19")]);
+    expect(pack.missing).toEqual(["code and signatures: this server has no code view"]);
     expect(pack.estimatedTokens).toBeLessThanOrEqual(4000);
   });
 

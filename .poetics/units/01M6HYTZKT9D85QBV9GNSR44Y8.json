@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HYTZKT9D85QBV9GNSR44Y8",
+  "kind": "type",
+  "framework": "none",
+  "name": "ImpactReport",
+  "location": {
+    "file": "packages/mcp/src/read-tools.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:a08aae35969126911157e8756c0b1c0e111eb793d3bb9af683062be00bd19124",
+      "interfaceHash": "b3:24c434317e995c9e5b01bc5a50a0768092220c51c45e1ed56f40de1e0495704d",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Names each impacted unit and lists the unresolved uses inside them, so an agent knows where the graph may be incomplete.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ],
+      "deps": {
+        "01M5XDBC6JJRRNDWFN9746DFXS": "b3:cb82680cda791ed3a170cb0dc6a5036d3a28361dd99538f39773fd552d0934b8",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce"
+      }
+    }
+  ],
+  "docs": "Units affected by a change, with enough to name them, and the unresolved edges that make the list incomplete.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/code.test.ts",
+      "via": "static"
+    }
+  ]
+}

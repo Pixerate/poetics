@@ -83,6 +83,43 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:68022ff386ef27db35141ef68581e1d0ef304558d6ec96727ad020eb576303e7",
+      "interfaceHash": "b3:39e0fda46c0ffd44d37c4a421126f7203e84a892793843bdd555df7f69f84254",
+      "parent": "b3:b2f56bebb2089b49bef29d945f8ab37eb3f41dc81af05b39ddbeede87f72e3bc",
+      "change": "behaviour",
+      "rationale": "Serves poetics_impact and poetics_verify, and poetics_changes with impact, building a code view at most once per call from the indexer's cache.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ],
+      "deps": {
+        "01M5XDBC6G1M0RK498KPNPTA6C": "b3:9182ff09570d0dbf4284cd2a0891ded16e325d51b7e3e36a76c1624ef10cf894",
+        "01M6HYTZKT55NHNSV9KRKKHEDT": "b3:17fbe126f802ae948d5cbfe0f12c64645d621bc991a42f72c94868f4a2d385ed",
+        "01M6HYTZKTX24TBXKE6J35TE0Y": "b3:fa312947fb4bba4453b70159320de4666259f7d5cadc2947a60507b6e9dcc296",
+        "01M6GF25DNVSB0YDEK04TDZ0CH": "b3:3427f53124f3bf8c8a5d9cd55e3d9f5204ceec7ae8ed378ed409b685c5b2b862",
+        "01M6HYTZKTF43YF7P3EK81A2DE": "b3:c3512128860846e68f40532ee42c29504b81ed073b3adc426977f1397e7b3298",
+        "01M6HYTZKT3Z2JH7G1XMNSWZ7Z": "b3:89fdb094bfd1ef7352a10325b883f5e8e967e7186524fb54e15a36b57bad8ca2",
+        "01M5XDBC7KEMBRC2D3WH0MKN0V": "b3:d2cef963b511b0324b6e91acba430bb3d99c83de3e9342b1549777995376cd65",
+        "01M5XDBC7JQ527715ZRVHNRCQZ": "b3:1547b40ea6fce013a46688762a1b075f8936d3a21ebf833b2e0933798654fc56",
+        "01M6GF25R5ZJ8789WMJ0B6DMW1": "b3:125cf41a5ccd4a06ed4a451993f1d3d115c28cdb555355fe6f8a880afafc2839",
+        "01M5XDBC7Q3XM2X6V9XFZWKTRE": "b3:c31253499b1a9b8054e7f22df55dd33aa9a109eaec66a33903ae14891705c885",
+        "01M617V6SZ6XMVAQ36MF6C7ZBB": "b3:65febe07a26e4cad1193f904dbd6af6079b7a1c6039d1e60a2e0709d62d54a7b",
+        "01M5XDBC7VGCSGJXZPVP5ZPWG7": "b3:84310788aa2e6ddf577bdd3b71a23607e6246e8709702f165ab8a19716c7dc43",
+        "01M5XDBC7XBXKJEG8FHJZGB77B": "b3:cb7aed0d7d23b89a53175102d540c2535be1b5aec38e7c2686290a645e106f3f",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "The stdio MCP server. Tool calls are routed here as the store and indexer land.",

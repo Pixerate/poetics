@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "globToRegExp",
   "location": {
-    "file": "packages/cli/src/glob.ts"
+    "file": "packages/store/src/glob.ts"
   },
   "versions": [
     {
@@ -50,7 +50,7 @@
   "docs": "Converts a POSIX glob to an anchored regular expression.",
   "tests": [
     {
-      "file": "packages/cli/src/glob.test.ts",
+      "file": "packages/store/src/glob.test.ts",
       "via": "static"
     }
   ],
@@ -58,6 +58,10 @@
     {
       "kind": "move",
       "from": "scripts/lib/glob.ts"
+    },
+    {
+      "kind": "move",
+      "from": "packages/cli/src/glob.ts"
     }
   ]
 }

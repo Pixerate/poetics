@@ -4,12 +4,12 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { isDeepStrictEqual } from "node:util";
-import { parseUnit, readUnitFiles, storePaths } from "@poetics/store";
+import { createMatcher, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
+import type { Scope } from "@poetics/store";
 import type { Unit } from "@poetics/core";
 import { declarationsIn } from "./declarations.ts";
-import type { Declaration, Scope } from "./declarations.ts";
+import type { Declaration } from "./declarations.ts";
 import { DRIFT_SEVERITY, compareCodeWithStore } from "./drift.ts";
-import { createMatcher } from "./glob.ts";
 import { changesSince, showAt } from "./git.ts";
 
 export type ChangeFindingKind =
