@@ -30,6 +30,33 @@
         "01M6HXEYDED92BHH3BZYQMFFK4": "b3:c714b6f2b4b0ae397bc2483dcc704a988464e8e661d4bf5719c7bff0371c8566",
         "01M6HXEYDECEQ5AZECX1E5A4BC": "b3:67536e5ead5f3accb284d40c29db4e7d2aac58e4aeb487e8466570f1be500511"
       }
+    },
+    {
+      "contentHash": "b3:010eba47ed25c919c3714bffd789c16023e78af088d959ecf5984f351c87da41",
+      "interfaceHash": "b3:5e8701ffd9efdde768e39d1fde3e27703d2db2e46bdcbe091e8c36c0255d3539",
+      "parent": "b3:8ca94b220e5e97f96113f32e60d5795aa0dc3366e28225e050c4d4bc0a47c517",
+      "change": "behaviour",
+      "rationale": "Shows each relink as `= <unit> tests: <from> -> <to>` and adds a relinked count to the summary, so a dry run says which test links will follow their files.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#linking-tests-to-units"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#cli"
+        }
+      ],
+      "deps": {
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:17c1536514b2b7ce5444895ec2c4c6652852620aaa1669e8616c57d028f0c2ba",
+        "01M6HXEYDECEQ5AZECX1E5A4BC": "b3:4bb2db2e749c0b83c23adb5e65fd678398dd19b5ca96409643925c8b339f0c56"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "The plan for people: one line per unit, then a summary. `written` is set after a write.",

@@ -1,0 +1,35 @@
+{
+  "uid": "01M6HZ4DBDVEJA4N2ZJYCX5X1N",
+  "kind": "type",
+  "framework": "none",
+  "name": "PlannedRelink",
+  "location": {
+    "file": "packages/cli/src/indexing.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:31b7206d7076f2d7d5878247a7a3785c9637f12c4c8a496e25987432304806f3",
+      "interfaceHash": "b3:9e5ab3b1d5e8e3f929c71cc3ef468cadc29e6d66df715136f699630a4ba64977",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A unit whose linked test files were renamed since --since, with each from/to pair, so poetics index can report and apply test-link updates instead of leaving stale paths for validate to reject.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#linking-tests-to-units"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#cli"
+        }
+      ]
+    }
+  ],
+  "docs": "A unit whose linked test files were renamed, and where each went."
+}

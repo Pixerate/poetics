@@ -13,6 +13,7 @@ import {
   readUnit,
   readUnitFiles,
   recordRationale,
+  relinkTests,
   relocateUnit,
   setDocs,
 } from "./json-store.ts";
@@ -177,5 +178,30 @@ describe("relocateUnit", () => {
     const ctx = { paths: storePaths(root), actor: human };
     await expect(relocateUnit(ctx, UID_A, { file: "src/b.ts", name: "fnA" }, [])).rejects.toThrow("no lineage entry says how it moved");
     await expect(relocateUnit(ctx, UID_B, { file: "src/b.ts", name: "x" }, [{ kind: "move", from: "src/a.ts" }])).rejects.toThrow("its latest version is removed");
+  });
+});
+
+describe("relinkTests", () => {
+  const human = { kind: "human" } as const;
+
+  it("rewrites only the files of the links that moved", async () => {
+    const tests = [
+      { file: "src/a.test.ts", name: "a", via: "static" as const, verifiedAgainst: hash("1") },
+      { file: "src/other.test.ts", via: "explicit" as const },
+    ];
+    const root = await makeRepo([makeUnit(UID_A, { tests })]);
+    await relinkTests({ paths: storePaths(root), actor: human }, UID_A, new Map([["src/a.test.ts", "lib/a.test.ts"]]));
+    const unit = await readUnit(storePaths(root), UID_A);
+    expect(unit.tests).toEqual([{ ...tests[0], file: "lib/a.test.ts" }, tests[1]]);
+    expect(unit.versions).toEqual(makeUnit(UID_A).versions);
+  });
+
+  it("refuses a rename of a file the unit does not link, or of a removed unit", async () => {
+    const removed = makeUnit(UID_B, { tests: [{ file: "src/b.test.ts", via: "static" }] });
+    removed.versions.push({ contentHash: REMOVED_CONTENT_HASH, provisional: true, parent: removed.versions[0]!.contentHash, change: "removed", actor: human, rationale: "Gone." });
+    const root = await makeRepo([makeUnit(UID_A), removed]);
+    const ctx = { paths: storePaths(root), actor: human };
+    await expect(relinkTests(ctx, UID_A, new Map([["src/a.test.ts", "lib/a.test.ts"]]))).rejects.toThrow("it links no test in src/a.test.ts");
+    await expect(relinkTests(ctx, UID_B, new Map([["src/b.test.ts", "lib/b.test.ts"]]))).rejects.toThrow("its latest version is removed");
   });
 });

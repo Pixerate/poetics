@@ -29,6 +29,32 @@
       "deps": {
         "01M6HXEYDED92BHH3BZYQMFFK4": "b3:c714b6f2b4b0ae397bc2483dcc704a988464e8e661d4bf5719c7bff0371c8566"
       }
+    },
+    {
+      "contentHash": "b3:4bb2db2e749c0b83c23adb5e65fd678398dd19b5ca96409643925c8b339f0c56",
+      "interfaceHash": "b3:4cdae39dc418b79521963541b45d1dcb10e91c4ce4f353c4212f0d59c6052232",
+      "parent": "b3:67536e5ead5f3accb284d40c29db4e7d2aac58e4aeb487e8466570f1be500511",
+      "change": "behaviour",
+      "rationale": "Counts relinks as writes, so a plan that only relinks tests is written and needs a rationale like any other write.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#linking-tests-to-units"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#cli"
+        }
+      ],
+      "deps": {
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:17c1536514b2b7ce5444895ec2c4c6652852620aaa1669e8616c57d028f0c2ba"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "Whether applying the plan would write anything.",

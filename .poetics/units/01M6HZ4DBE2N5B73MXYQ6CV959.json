@@ -1,0 +1,46 @@
+{
+  "uid": "01M6HZ4DBE2N5B73MXYQ6CV959",
+  "kind": "function",
+  "framework": "none",
+  "name": "relinkTests",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:af0018ad445c70217e5f2bef708286cef7b499c3804adc0f830585fbefdab90f",
+      "interfaceHash": "b3:6f0f02b80fdd30f7fdebc561d46ddf8a4f5aa3a2803b3a2c59dccd1478d49e58",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Rewrites only tests[].file of a unit, the narrowest writer that can replace a link (linkTest is an append stub). Refuses a rename of a file the unit does not link, so a stale plan fails loudly, and refuses removed units like the other writers.",
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#linking-tests-to-units"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#cli"
+        }
+      ],
+      "deps": {
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC898NK9SFW67483HRZP": "b3:e7700ce887b5ee465cedbcd55a226dbc989c7aad2a73e4e5bfb5545b86880520",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981"
+      }
+    }
+  ],
+  "docs": "Points a unit's test links at the files their tests moved to. Only\n`tests[].file` changes; a rename must name a file the unit links, so a stale\nplan fails instead of silently doing nothing.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    }
+  ]
+}

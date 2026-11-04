@@ -7,7 +7,7 @@ export interface CommandSpec {
 /** The CLI surface from docs/plan.md, "Developer workflow and tooling". */
 export const COMMANDS: readonly CommandSpec[] = [
   { name: "init", usage: "poetics init [--agents]", summary: "Detect React and Svelte, write config, index the repo and backfill history from git" },
-  { name: "index", usage: "poetics index [--since <ref>] [--write] [--rationale <text>] [--agent <tool> [--model <id>]]", summary: "Record what changed in the code since a ref: versions, moves and renames with lineage, new and removed units; a dry run without --write" },
+  { name: "index", usage: "poetics index [--since <ref>] [--write] [--rationale <text>] [--agent <tool> [--model <id>]]", summary: "Record what changed in the code since a ref: versions, moves and renames with lineage, new and removed units, test links to renamed test files; a dry run without --write" },
   { name: "log", usage: "poetics log <unit>", summary: "Version history of one unit, with rationale and commits" },
   { name: "why", usage: "poetics why <unit>", summary: "The rationale chain that led to the current version" },
   { name: "changes", usage: "poetics changes [from] [to] [--impact]", summary: "Every recorded change between two refs and why, grouped by commit, removals included" },
