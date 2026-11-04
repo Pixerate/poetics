@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HYTZKTF43YF7P3EK81A2DE",
+  "kind": "function",
+  "framework": "none",
+  "name": "changedUnits",
+  "location": {
+    "file": "packages/mcp/src/read-tools.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:c3512128860846e68f40532ee42c29504b81ed073b3adc426977f1397e7b3298",
+      "interfaceHash": "b3:684a5bb0015ea4b1f0d957d7cfbd352fa37d4576f26c0c6366387f7470c30eea",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Turns a change set into the units it touched, treating interface changes and removals alike, since both break callers.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ],
+      "deps": {
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M617V6SZ3FADWGRAAV12WAZD": "b3:8875731742a53d4577d3f71d00ee3c9e190b8a799f97fbc99aac05644ac79806"
+      }
+    }
+  ],
+  "docs": "The units a change set touched, and those whose interface changed or that were removed.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/code.test.ts",
+      "via": "static"
+    }
+  ]
+}

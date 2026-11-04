@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "readConfig",
   "location": {
-    "file": "packages/cli/src/config.ts"
+    "file": "packages/store/src/config.ts"
   },
   "versions": [
     {
@@ -57,6 +57,10 @@
     {
       "kind": "move",
       "from": "scripts/lib/config.ts"
+    },
+    {
+      "kind": "move",
+      "from": "packages/cli/src/config.ts"
     }
   ]
 }

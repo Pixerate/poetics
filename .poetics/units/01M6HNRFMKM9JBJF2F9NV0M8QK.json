@@ -45,6 +45,31 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:3f7316c0b1f66c513ec0c25f105cc8eaa6350f27b1c8fdbd79c83de2babd031f",
+      "interfaceHash": "b3:c56fb9972e6e1c5e02b46886cadfd15e1a4b46410d5820e45edde0d2a051be70",
+      "parent": "b3:f5e47f4b2562c2c09ea8ed25c7d552b0aa71da9a4e88056985cc26e6f6fa1379",
+      "change": "behaviour",
+      "rationale": "Walks into non-exported module-level helpers in the same file, so what a helper uses counts as used by the exported unit that calls it. Without this, poetics_impact missed dependents such as the CLI's run, which reaches resolveUnit through a private function.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ],
+      "deps": {
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:2841c4e5bf4f0af40c0372b0015c857ada26c6755c2c1be2d7b5a8b9ace6af22",
+        "01M6HNRFMKVCXNZ72C4W9CNVSF": "b3:7ea74bf87301cf8b6beea360d678c2572220bea3320659f0c09dc5db4e4cbada",
+        "01M6HNRFMKT75K3RW0G73KKAHD": "b3:ecfdb21c6438819b275c9c34a1cff5a8c048c53dff15559755da0b7dcda96933",
+        "01M5XDBC7C6GPPYBAPA9EC570N": "b3:92fca5cec93473b7ed775dc834989d4a8e5930ef90f21df9a871a24cc99af249"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "The units a unit uses, resolved through the checker with aliases followed, plus unresolved calls.",

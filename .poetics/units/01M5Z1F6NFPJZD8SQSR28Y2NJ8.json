@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "filesInScope",
   "location": {
-    "file": "packages/cli/src/declarations.ts"
+    "file": "packages/store/src/scope.ts"
   },
   "versions": [
     {
@@ -52,12 +52,20 @@
     {
       "file": "packages/cli/src/declarations.test.ts",
       "via": "static"
+    },
+    {
+      "file": "packages/store/src/scope.test.ts",
+      "via": "static"
     }
   ],
   "lineage": [
     {
       "kind": "move",
       "from": "scripts/lib/declarations.ts"
+    },
+    {
+      "kind": "move",
+      "from": "packages/cli/src/declarations.ts"
     }
   ]
 }

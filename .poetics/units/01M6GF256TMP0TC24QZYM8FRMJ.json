@@ -49,12 +49,41 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:1f5a881b6c3799662f600f0db492398efbbc2bab4f070d2c5c3e53bd88767be2",
+      "interfaceHash": "b3:3a14a4d83c13bdfabe4be01f245d00613fc51c15e3431d6f0a28f0880d3cbdf0",
+      "parent": "b3:d5e238dad59bdff3d587fdf3474029010fcde5d263996a8f1debd2fd86709b34",
+      "change": "interface",
+      "rationale": "Adds the unit's code, and a signature on the unit and on each caller and dependency.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ],
+      "deps": {
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5YKJ3JZM095NT4VJR6HMH42": "b3:a0ad133514cf410878d3ce938ccde3df7ed7a15cda710fb50b81460217eb3828",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:28f022ab2eeb35e0920e0410a86408c5c80409994a18a62a92cdc58f4914366e"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "A unit's summary, notes, tests, dependencies, callers and earlier rationale, with what was cut or is missing.",
   "tests": [
     {
       "file": "packages/mcp/src/read-tools.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/mcp/src/code.test.ts",
       "via": "static"
     }
   ]

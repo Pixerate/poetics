@@ -1,7 +1,9 @@
 import type { DatabaseSync } from "node:sqlite";
 import { notImplemented } from "@poetics/core";
-import { changesBetween, openIndex, rebuildIndex, storePaths } from "@poetics/store";
-import { callReadTool } from "./read-tools.ts";
+import { changesBetween, openIndex, parseUnit, readUnitFiles, rebuildIndex, storePaths } from "@poetics/store";
+import { codeView } from "./code.ts";
+import type { CodeView } from "./code.ts";
+import { callReadTool, changedUnits, impactReport } from "./read-tools.ts";
 import { serveStdio } from "./stdio.ts";
 import type { StdioIo } from "./stdio.ts";
 import { TOOLS, findTool } from "./tools.ts";
@@ -22,13 +24,12 @@ export interface PoeticsServer {
   listen(io?: StdioIo): Promise<void>;
 }
 
-/**
- * Tools answered from the store. Impact needs the composition graph, verify the
- * indexer, signals the integrations, and the writes wait for phase 2.
- */
+/** Tools answered from the store and the code. Signals need the integrations, and the writes wait for phase 2. */
 const SERVED = new Set([
   "poetics_changes",
   "poetics_context_pack",
+  "poetics_impact",
+  "poetics_verify",
   "poetics_search",
   "poetics_unit",
   "poetics_history",
@@ -40,6 +41,8 @@ const SERVED = new Set([
 export function createServer(options: ServerOptions): PoeticsServer {
   const paths = storePaths(options.root);
   let db: DatabaseSync | undefined;
+  // One view per tool call at most: the indexer's cache keeps it cheap, and each call sees the code as it is now.
+  const code = async (): Promise<CodeView> => codeView(options.root, (await readUnitFiles(paths)).map(parseUnit));
   const server: PoeticsServer = {
     tools() {
       return TOOLS.filter((tool) => SERVED.has(tool.name));
@@ -47,16 +50,19 @@ export function createServer(options: ServerOptions): PoeticsServer {
     async callTool(name, args) {
       if (!findTool(name)) throw new Error(`Unknown tool: ${name}`);
       if (!SERVED.has(name)) return notImplemented(name);
-      if (name === "poetics_changes") {
-        // impact needs the composition graph, which arrives with the indexer.
-        if (args["impact"] === true) return notImplemented("poetics_changes impact");
-        const { from, to } = args as { from?: string; to?: string };
-        return changesBetween(paths, { ...(from ? { from } : {}), ...(to ? { to } : {}) });
-      }
       // Incremental, so each call sees edits made since the last one at the cost of a directory read.
       db ??= openIndex(paths.indexDb);
       await rebuildIndex(paths, db);
-      return callReadTool({ paths, db }, name, args);
+      let view: Promise<CodeView> | undefined;
+      const ctx = { paths, db, code: () => (view ??= code()) };
+      if (name === "poetics_changes") {
+        const { from, to } = args as { from?: string; to?: string };
+        const set = await changesBetween(paths, { ...(from ? { from } : {}), ...(to ? { to } : {}) });
+        if (args["impact"] !== true) return set;
+        const { changed, interfaceChanged } = changedUnits(set);
+        return { ...set, impact: impactReport(ctx, await ctx.code(), changed, interfaceChanged) };
+      }
+      return callReadTool(ctx, name, args);
     },
     async listen(io = { input: process.stdin, output: process.stdout }) {
       return serveStdio(server, io);

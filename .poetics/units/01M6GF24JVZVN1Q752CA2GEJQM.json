@@ -49,12 +49,39 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:26f6d35747fc5db28ff82d83689a8b01bd75613a19eee74fbbe25fd3a002f875",
+      "interfaceHash": "b3:c4641a2ad59944c390faafe7e6f5a8d672ce356e1f0a15e820c9083e8aa375d8",
+      "parent": "b3:9c7891d76112e2051c802a43871f158b2fb953447789d4f5e230890e08ba1a5a",
+      "change": "interface",
+      "rationale": "Adds an optional code view provider. Tools that need code ask for it lazily, and say what they cannot show when a context has none.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ],
+      "deps": {
+        "01M6HYTZKT55NHNSV9KRKKHEDT": "b3:17fbe126f802ae948d5cbfe0f12c64645d621bc991a42f72c94868f4a2d385ed",
+        "01M5XDBC8GZ5WSS0KJMF08SPJ9": "b3:d8ec2c1af3288dbe92e7066f79bba2940e4e914ce93c32d1dfe17df754df2c36"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "Store paths and an up-to-date index, passed to every read-only tool handler.",
   "tests": [
     {
       "file": "packages/mcp/src/read-tools.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/mcp/src/code.test.ts",
       "via": "static"
     }
   ]

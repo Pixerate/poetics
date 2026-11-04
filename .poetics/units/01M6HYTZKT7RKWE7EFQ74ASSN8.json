@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HYTZKT7RKWE7EFQ74ASSN8",
+  "kind": "function",
+  "framework": "none",
+  "name": "signatureText",
+  "location": {
+    "file": "packages/adapter-typescript/src/units.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:7a17a9c531aee621007613a1bbac77c2e7e827c122851b261d2938c6588e1aac",
+      "interfaceHash": "b3:9981cb30fb9ba18fcff7a1593cd15bb22cfc59b4106c5c16de65a15c141acaf4",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Gives agents the cheapest readable form of an interface: each declaration up to its body, a type's whole declaration, or only the overloads.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ],
+      "deps": {
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:2841c4e5bf4f0af40c0372b0015c857ada26c6755c2c1be2d7b5a8b9ace6af22"
+      }
+    }
+  ],
+  "docs": "What a caller reads: each declaration up to its body, as written. Types are\ntheir whole declaration, since their structure is the interface; with\noverloads, only the overload signatures.",
+  "tests": [
+    {
+      "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    }
+  ]
+}
