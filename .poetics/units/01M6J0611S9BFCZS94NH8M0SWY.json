@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6J0611S9BFCZS94NH8M0SWY",
+  "kind": "function",
+  "framework": "none",
+  "name": "prepareWorkspace",
+  "location": {
+    "file": "scripts/lib/gate.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:78eb72c5750c80d543a72a25bb226bf91755c45705fd8bc815f306e3d3dad837",
+      "interfaceHash": "b3:4dc9dec998c5b2a49a8afb798b605031eb93dde6d1d34c181290557a9bc925f4",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Copies only the in-scope files into a throwaway git repository, so the gate never writes into the downloaded tree and commits each round like a real project.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#26"
+        }
+      ],
+      "deps": {
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:7fa6f7e9a68d3bcff563fe389ae879b1cc5be75dcb1946fd3f1dddab03baa1e1",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765",
+        "01M6J0611RWR0GXQFD30AW6JBG": "b3:d5d15670919f5df64a04333e473474d96648fd034a7a3ad1c5a4c02189b3c830"
+      }
+    }
+  ],
+  "docs": "Copies the corpus's in-scope files into a throwaway git repository with a\nconfig for the same scope, so the gate never writes into the downloaded tree.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate.test.ts",
+      "via": "static"
+    }
+  ]
+}

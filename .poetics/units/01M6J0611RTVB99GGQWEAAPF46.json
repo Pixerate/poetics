@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6J0611RTVB99GGQWEAAPF46",
+  "kind": "type",
+  "framework": "none",
+  "name": "GateResult",
+  "location": {
+    "file": "scripts/lib/gate.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:8efe6d7aa8c6eb81d22b8a2be4f9911ff8d4ff31f97152862b3a94172aa3272b",
+      "interfaceHash": "b3:2577c09402750900365c380a5c6c5395bc87189a583c7eaabfc057d9b68999fd",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Reports per kind of refactor how many uids were kept, lost, misplaced or queued, with timings and each miss, so results.md can show where identity holds and where it does not.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#26"
+        }
+      ],
+      "deps": {
+        "01M6J0611RWR0GXQFD30AW6JBG": "b3:d5d15670919f5df64a04333e473474d96648fd034a7a3ad1c5a4c02189b3c830",
+        "01M6J0611RJRBW8VKQT9E7MFTW": "b3:7bb9caf454c26b73be0b5e6487eae48357bd574e99076936c1d4c2f6beb6e3a1",
+        "01M6J0611RXDG1J0DGPDSS1GZS": "b3:afd0d32a14fd9d18d07da68caf35d1fc6077f9b9d2a0be9dd279a3cb49b942c1"
+      }
+    }
+  ],
+  "docs": "One corpus's gate outcome: per-refactor tallies, spurious units, timings and misses.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate.test.ts",
+      "via": "static"
+    }
+  ]
+}

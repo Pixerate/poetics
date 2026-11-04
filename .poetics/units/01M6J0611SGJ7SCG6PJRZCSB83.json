@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6J0611SGJ7SCG6PJRZCSB83",
+  "kind": "function",
+  "framework": "none",
+  "name": "formatResults",
+  "location": {
+    "file": "scripts/lib/gate.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:1631286249da8c813d1e1fd3e98166a7a00c59ad01253fd7d70c96e8076fea49",
+      "interfaceHash": "b3:570ca4e1a16eca23e2c873facd40049035a7c9f3bca2ecd7e40e362cd447cbc6",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Writes the gate's measurements to evals/gate/results.md as one table per corpus, with misses and their unit sizes, so the numbers are reviewable in the repository.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#26"
+        }
+      ],
+      "deps": {
+        "01M6J0611RTVB99GGQWEAAPF46": "b3:8efe6d7aa8c6eb81d22b8a2be4f9911ff8d4ff31f97152862b3a94172aa3272b"
+      }
+    }
+  ],
+  "docs": "The gate's results as a Markdown report, one table per corpus.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -12,3 +12,5 @@ They are workspace packages so `pnpm check` type-checks them.
 Both apps mirror the plan's running example: changing `formatPrice` should bump
 the closure versions of `PriceTag`, the cart and the checkout page, and nothing
 else.
+
+The phase 1 gate runs on real repositories instead; see [`../gate`](../gate/README.md).

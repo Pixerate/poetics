@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6J0611RWR0GXQFD30AW6JBG",
+  "kind": "type",
+  "framework": "none",
+  "name": "CorpusEntry",
+  "location": {
+    "file": "scripts/lib/gate.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:d5d15670919f5df64a04333e473474d96648fd034a7a3ad1c5a4c02189b3c830",
+      "interfaceHash": "b3:eebab01dc42eb690a8792bdce53b2c667be780add4effebbb0aaa031685b2dbe",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A corpus entry pins a real repository to a commit and limits it to its source files, so the gate's numbers are tied to fixed code.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#26"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "scripts/lib/gate.test.ts",
+      "via": "static"
+    }
+  ],
+  "docs": "A gate corpus repository: name, kind, repo, pinned commit and scope globs."
+}

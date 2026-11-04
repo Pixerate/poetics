@@ -1,0 +1,296 @@
+{
+  "date": "2026-11-04",
+  "rounds": 10,
+  "seed": 26,
+  "results": [
+    {
+      "corpus": {
+        "name": "taxonomy",
+        "kind": "react",
+        "repo": "shadcn-ui/taxonomy",
+        "commit": "298a8857c7128a0d121e7f699dfd729f23b3966d",
+        "include": [
+          "app/**/*.{ts,tsx}",
+          "components/**/*.{ts,tsx}",
+          "lib/**/*.ts",
+          "config/**/*.ts",
+          "hooks/**/*.ts",
+          "types/**/*.ts",
+          "pages/**/*.ts",
+          "middleware.ts"
+        ],
+        "exclude": [
+          "**/*.test.*",
+          "**/*.d.ts"
+        ]
+      },
+      "files": {
+        "indexed": 123,
+        "notIndexed": 0
+      },
+      "units": 113,
+      "rounds": 10,
+      "byKind": {
+        "rename": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "move-file": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "move-unit": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "rename-edit": {
+          "refactors": 10,
+          "kept": 9,
+          "lost": 1,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "split": {
+          "refactors": 10,
+          "kept": 20,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "merge": {
+          "refactors": 8,
+          "kept": 16,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 2
+        }
+      },
+      "spuriousCreated": 1,
+      "timings": {
+        "seedMs": 583,
+        "indexMs": [
+          355,
+          399,
+          385,
+          417,
+          314,
+          338,
+          498,
+          374,
+          374,
+          377
+        ]
+      },
+      "failures": [
+        "round 4 rename-edit: 01M6J037ESWKFQ43WSC0WB1WG8 removed, should be at app/(dashboard)/dashboard/billing/loading.tsx#DashboardBillingLoadingGate (1 statement(s), 17 fingerprint entries)"
+      ]
+    },
+    {
+      "corpus": {
+        "name": "shadcn-svelte",
+        "kind": "svelte",
+        "repo": "huntabyte/shadcn-svelte",
+        "commit": "3c4152d7d3904e76f6f756ec8ffca7c9ec72f977",
+        "include": [
+          "docs/src/**/*.{ts,svelte}",
+          "packages/*/src/**/*.{ts,svelte}"
+        ],
+        "exclude": [
+          "**/*.test.*",
+          "**/*.spec.*",
+          "**/__tests__/**",
+          "**/*.d.ts"
+        ]
+      },
+      "files": {
+        "indexed": 1099,
+        "notIndexed": 2128
+      },
+      "units": 512,
+      "rounds": 10,
+      "byKind": {
+        "rename": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "move-file": {
+          "refactors": 10,
+          "kept": 24,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "move-unit": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "rename-edit": {
+          "refactors": 10,
+          "kept": 6,
+          "lost": 4,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "split": {
+          "refactors": 10,
+          "kept": 20,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "merge": {
+          "refactors": 10,
+          "kept": 20,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        }
+      },
+      "spuriousCreated": 4,
+      "timings": {
+        "seedMs": 1422,
+        "indexMs": [
+          919,
+          828,
+          796,
+          808,
+          805,
+          849,
+          825,
+          774,
+          733,
+          672
+        ]
+      },
+      "failures": [
+        "round 1 rename-edit: 01M6J03KZMHSSYXGF0N8B066RQ removed, should be at packages/primitives/src/lib/questionnaire/fixtures/questionnaire-ssr-vite.ts#closeQuestionnaireSsrViteGate (3 statement(s), 11 fingerprint entries)",
+        "round 4 rename-edit: 01M6J03KZKMP88RT1NNX8C43RB removed, should be at packages/cli/src/utils/prompt-helpers.ts#cancelGate (2 statement(s), 10 fingerprint entries)",
+        "round 8 rename-edit: 01M6J03KZJ4R9EWHHVZ5KXEBER removed, should be at docs/src/lib/registry/ui/carousel/context.ts#setEmblaContextGate (2 statement(s), 9 fingerprint entries)",
+        "round 10 rename-edit: 01M6J03KZM9ZW5M6ABPNZ5D3X2 removed, should be at packages/primitives/src/lib/questionnaire/fixtures/questionnaire-test-utils.ts#unmountAppGate (3 statement(s), 9 fingerprint entries)"
+      ]
+    },
+    {
+      "corpus": {
+        "name": "tanstack-query",
+        "kind": "mixed",
+        "repo": "TanStack/query",
+        "commit": "b1243facc8b88c4cfe5ea9d7f3b4e1ea550bc91f",
+        "include": [
+          "packages/query-core/src/**/*.ts",
+          "packages/react-query/src/**/*.{ts,tsx}",
+          "packages/svelte-query/src/**/*.{ts,svelte}"
+        ],
+        "exclude": [
+          "**/__tests__/**",
+          "**/*.test.*",
+          "**/*.test-d.*",
+          "**/*.d.ts"
+        ]
+      },
+      "files": {
+        "indexed": 65,
+        "notIndexed": 2
+      },
+      "units": 284,
+      "rounds": 10,
+      "byKind": {
+        "rename": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "move-file": {
+          "refactors": 10,
+          "kept": 13,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "move-unit": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "rename-edit": {
+          "refactors": 10,
+          "kept": 7,
+          "lost": 3,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "split": {
+          "refactors": 9,
+          "kept": 18,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 1
+        },
+        "merge": {
+          "refactors": 7,
+          "kept": 14,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 3
+        }
+      },
+      "spuriousCreated": 3,
+      "timings": {
+        "seedMs": 555,
+        "indexMs": [
+          358,
+          363,
+          322,
+          466,
+          335,
+          417,
+          386,
+          368,
+          408,
+          335
+        ]
+      },
+      "failures": [
+        "round 1 rename-edit: 01M6J04EWA54RYBHDBZ80WBNKX removed, should be at packages/query-core/src/utils.ts#timeUntilStaleGate (1 statement(s), 13 fingerprint entries)",
+        "round 2 rename-edit: 01M6J04EWA5XT23AA97TTYBAY7 removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateMutationGate (1 statement(s), 8 fingerprint entries)",
+        "round 10 rename-edit: 01M6J04EWANQHNQTJVR6K46P10 removed, should be at packages/query-core/src/utils.ts#keepPreviousDataGate (1 statement(s), 10 fingerprint entries)"
+      ]
+    }
+  ]
+}

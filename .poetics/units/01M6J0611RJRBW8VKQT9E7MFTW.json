@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6J0611RJRBW8VKQT9E7MFTW",
+  "kind": "type",
+  "framework": "none",
+  "name": "KindResult",
+  "location": {
+    "file": "scripts/lib/gate.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:7bb9caf454c26b73be0b5e6487eae48357bd574e99076936c1d4c2f6beb6e3a1",
+      "interfaceHash": "b3:c4abf6de1e18d4ae7e6f70405d5dc10415598ed9558aa70291f2bf576e1012c9",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Separates lost (removed though the code exists), misplaced and queued uids, because each points at a different weakness in matching.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#26"
+        }
+      ]
+    }
+  ],
+  "docs": "How one kind of refactor fared. A refactor counts once per uid it should have kept.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate.test.ts",
+      "via": "static"
+    }
+  ]
+}

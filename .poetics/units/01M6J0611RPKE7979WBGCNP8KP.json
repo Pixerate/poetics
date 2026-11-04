@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6J0611RPKE7979WBGCNP8KP",
+  "kind": "function",
+  "framework": "none",
+  "name": "seededRandom",
+  "location": {
+    "file": "scripts/lib/gate.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:910b6ab7b3b21f59d79b194a248ba02a405791d441d5a8cf75a63882251b46fb",
+      "interfaceHash": "b3:96f337757138966bd0e297f9ced3131afe926e06c8966b8fd708f9126199a4f6",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Gate runs must be repeatable, so refactors are picked with a seeded generator rather than Math.random.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#26"
+        }
+      ]
+    }
+  ],
+  "docs": "A small, seeded generator, so a gate run is repeatable.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate.test.ts",
+      "via": "static"
+    }
+  ]
+}
