@@ -2,10 +2,9 @@
 // of what is recorded about them.
 import { isRemoved } from "@poetics/core";
 import type { Note, Unit } from "@poetics/core";
-import { parseNote, parseUnit, readNoteFiles, readUnitFiles, storePaths } from "@poetics/store";
-import { readConfig } from "./config.ts";
-import type { CoverageThresholds } from "./config.ts";
-import { discoverDeclarations, filesInScope } from "./declarations.ts";
+import { filesInScope, parseNote, parseUnit, readConfig, readNoteFiles, readUnitFiles, storePaths } from "@poetics/store";
+import type { CoverageThresholds } from "@poetics/store";
+import { discoverDeclarations } from "./declarations.ts";
 import type { Declaration } from "./declarations.ts";
 import { compareCodeWithStore } from "./drift.ts";
 

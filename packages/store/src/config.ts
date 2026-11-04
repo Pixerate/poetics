@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { Scope } from "./declarations.ts";
+import type { Scope } from "./scope.ts";
 
 export interface CoverageThresholds {
   tracked?: number;
