@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6M2KNYMS281FJ4K4PHSSCJJ",
+  "kind": "type",
+  "framework": "none",
+  "name": "Adapter",
+  "location": {
+    "file": "packages/cli/src/init.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:63e816beacd1cf2ebee5d66ccdab089b8f81c15605a2aa26fb65d0c7d4f9cb8b",
+      "interfaceHash": "b3:389295214aae769787ab88b5de52d6121a756bb872e3c2bb17973400a5bb8f12",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Names the adapters a config may list, matching the config schema's enum.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ]
+    }
+  ],
+  "docs": "An adapter a Poetics config can list: typescript, react or svelte.",
+  "tests": [
+    {
+      "file": "packages/cli/src/init.test.ts",
+      "via": "static"
+    }
+  ]
+}

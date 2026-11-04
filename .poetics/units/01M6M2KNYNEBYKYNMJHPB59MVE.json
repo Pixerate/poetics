@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6M2KNYNEBYKYNMJHPB59MVE",
+  "kind": "type",
+  "framework": "none",
+  "name": "InitConfig",
+  "location": {
+    "file": "packages/cli/src/init.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:d56be5dd5f37d882b19aa8d35df710c53e98a925e339c2fd470e7f6a2d02f3a3",
+      "interfaceHash": "b3:c901ba67605d451fb4d2139a245607f4a217a77af94a24722fc7565d732c16ec",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The config init writes: the schema's required fields plus a policy that forbids provisional hashes from the start, since an adopting repository never needs them (ADR 0014).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M6M2KNYMS281FJ4K4PHSSCJJ": "b3:63e816beacd1cf2ebee5d66ccdab089b8f81c15605a2aa26fb65d0c7d4f9cb8b",
+        "01M5Z1F6N42D94MR75JZ15KF7K": "b3:d295d2a951e88c108030e57fbd4b7642daf0e7ec96d4604ea38b8d8bdc84366f",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:7fa6f7e9a68d3bcff563fe389ae879b1cc5be75dcb1946fd3f1dddab03baa1e1"
+      }
+    }
+  ],
+  "docs": "The config `poetics init` writes, in the shape of `schemas/config.schema.json`.",
+  "tests": [
+    {
+      "file": "packages/cli/src/init.test.ts",
+      "via": "static"
+    }
+  ]
+}

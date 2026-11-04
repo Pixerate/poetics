@@ -1,0 +1,47 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6M2KNYNKD0BQ1JBJPFT4M4N",
+  "kind": "function",
+  "framework": "none",
+  "name": "applyInit",
+  "location": {
+    "file": "packages/cli/src/init.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:efdddf29ce6530d88a45f532f4be107e5814b72d8b1477d8469b91c46b5d1060",
+      "interfaceHash": "b3:4b339089b79401db58d5368f3b25f617a14e9ba0a4c6184d8a3945a71afec316",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Writes the config, adds .poetics/cache/ to .gitignore when it is missing, and creates the units through the snapshot backfill. It refuses a repository that already has a config, which belongs to poetics index and backfill.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M6KA0K778RFNVAQG8WWE4VGF": "b3:dd9a80a8d4bbf0862d3f7c5f567e0a2e3af02baf23a62857b471a9eff5606da5",
+        "01M6M2KNYNMW1DQYADDCNVK8AM": "b3:df3dc5d2621a0bee2f105dcb96fb465156602ceb466dbc4cea60edcd9040c2b0",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6"
+      }
+    }
+  ],
+  "docs": "Writes the config, ignores the cache and runs the snapshot backfill. Refuses a repository that has a config.",
+  "tests": [
+    {
+      "file": "packages/cli/src/init.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6M2KNYN5EEBBE5QJ7E1RAEM",
+  "kind": "function",
+  "framework": "none",
+  "name": "formatInitPlan",
+  "location": {
+    "file": "packages/cli/src/init.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:d08f736350c0a1688a6e8e01fbb47c95bdadb9c1ef5ba2aa8addc36771218a89",
+      "interfaceHash": "b3:cd7db63c096d9173933e3b612d2c3f5de5162fdfb95491ed9bebccfd7f938c0c",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Prints the detected adapters, the include globs, the tsconfig and the backfill's confidence counts, so a person can check the scope before writing anything.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M6M2KNYNMW1DQYADDCNVK8AM": "b3:df3dc5d2621a0bee2f105dcb96fb465156602ceb466dbc4cea60edcd9040c2b0"
+      }
+    }
+  ],
+  "docs": "The plan for people: what was detected, the config, and the backfill summary.",
+  "tests": [
+    {
+      "file": "packages/cli/src/init.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    }
+  ]
+}

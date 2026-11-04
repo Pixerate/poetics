@@ -1,0 +1,50 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6M2KNYN1A2MK6H0NJF56BTT",
+  "kind": "function",
+  "framework": "none",
+  "name": "planInit",
+  "location": {
+    "file": "packages/cli/src/init.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:619c4333cf586329564a6e775556ff2e41f40cc0190554a7d80e656b2edf1c13",
+      "interfaceHash": "b3:59ea623d6b4afb81f7d5fbf46c8b61ba65d42a59d8b099712a5055afeb4372bd",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "poetics init (#24), as the plan describes. It detects React and Svelte from the dependencies of the root and every workspace package (pnpm-workspace.yaml or package.json workspaces), falling back to .tsx and .svelte files. It scopes the config to each package's src/ and excludes tests and build output, uses a tsconfig only if it has compiler options, and plans the snapshot backfill (ADR 0011). Tried on taxonomy, shadcn-svelte and TanStack Query.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M6KA0K772CHR6J5B39TCRDNW": "b3:f242b0a08bec1c53bb44e6f8f13013fa902652993cccb866db7ef72396d511ea",
+        "01M6M2KNYMS281FJ4K4PHSSCJJ": "b3:63e816beacd1cf2ebee5d66ccdab089b8f81c15605a2aa26fb65d0c7d4f9cb8b",
+        "01M6M2KNYNEBYKYNMJHPB59MVE": "b3:d56be5dd5f37d882b19aa8d35df710c53e98a925e339c2fd470e7f6a2d02f3a3",
+        "01M6M2KNYNMW1DQYADDCNVK8AM": "b3:df3dc5d2621a0bee2f105dcb96fb465156602ceb466dbc4cea60edcd9040c2b0",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765"
+      }
+    }
+  ],
+  "docs": "What `poetics init` would write. Nothing is written until `applyInit`.",
+  "tests": [
+    {
+      "file": "packages/cli/src/init.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    }
+  ]
+}
