@@ -222,7 +222,7 @@ Humans and agents share the same surfaces: the CLI, git hooks and CI below serve
 | Command | What it does |
 | --- | --- |
 | `poetics init` | Detects React and Svelte, writes `config.json`, indexes the repo and captures its current state with `poetics backfill --snapshot` |
-| `poetics backfill` | `--snapshot` creates units for the current code with rationale drawn from commits, changesets, comments, tests and docs, linking the PRs and issues behind them without copying their text; `--history` follows units back through past commits into `prehistory`; inferred entries are labelled with their confidence ([ADR 0011](decisions/0011-backfill.md), proposed) |
+| `poetics backfill` | `--snapshot` creates units for the current code with rationale drawn from commits, changesets, comments, tests and docs, linking the PRs and issues behind them without copying their text; `--history` follows units back through past commits into `prehistory`; inferred entries are labelled with their confidence ([ADR 0011](decisions/0011-backfill.md)) |
 | `poetics index` | Incremental re-index of changed files; run by the git hook |
 | `poetics log <unit>` | Version history of one function or component, with rationale and commits |
 | `poetics why <unit>` | The rationale chain that led to the current version |
@@ -238,7 +238,7 @@ Humans and agents share the same surfaces: the CLI, git hooks and CI below serve
 
 - A **post-commit hook** runs `poetics index` and appends new versions.
 - A **prepare-commit-msg hook** lists changed units so the developer can give per-unit rationale where the commit message isn't enough. An optional LLM step drafts rationale from the diff and linked ticket for the developer to accept or edit.
-- **Backfill:** `poetics init` captures the current state, and `poetics backfill --history` walks past commits, so units start with real history, not a blank slate. Inferred rationale is marked as such ([ADR 0011](decisions/0011-backfill.md), proposed).
+- **Backfill:** `poetics init` captures the current state, and `poetics backfill --history` walks past commits, so units start with real history, not a blank slate. Inferred rationale is marked as such ([ADR 0011](decisions/0011-backfill.md)).
 
 ### Editor
 

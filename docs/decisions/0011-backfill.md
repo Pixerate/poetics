@@ -1,6 +1,6 @@
 # 0011. Backfill: capture the current state, then the history behind it
 
-- Status: Proposed
+- Status: Accepted (2026-11-04)
 - Date: 2026-10-28
 - Revised: 2026-11-04, after the indexer (#19), identity matching (#20), the
   rehash ([ADR 0014](0014-rehash-versions.md)) and `poetics index` (#24) landed.

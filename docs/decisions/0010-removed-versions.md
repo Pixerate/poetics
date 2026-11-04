@@ -1,6 +1,6 @@
 # 0010. Removal is a version; unit files are never deleted
 
-- Status: Accepted
+- Status: Accepted; amended by [0011](0011-backfill.md): with a `prehistory` array, `created` is the first version of each list
 - Date: 2026-10-28
 
 ## Context
