@@ -195,6 +195,11 @@ are either up to date or get a version, and units someone already moved by hand
 are up to date. Queued matches are reported on every run until someone declares
 them; nothing is stored for them, since the next run finds them again.
 
+Test links follow their files: when git reports a file in a live unit's
+`tests` as renamed since `--since`, the link's `file` is rewritten to the new
+path, whether or not the unit itself moved. A test file moved without git
+seeing the rename (deleted and re-added unstaged) is not followed.
+
 Whatever is left over is created or removed. Matches carry the lineage entries
 (`move`, `rename`, `merge`) their unit files should gain. Splits and merges are
 only ever applied when declared, never inferred.

@@ -2,7 +2,8 @@
 // left alone; units edited in place get a version; units that left their
 // recorded place are matched to the code that appeared (moves and renames keep
 // their uid), and whatever is left is created or removed. Ambiguous matches are
-// reported, never guessed, and nothing is written for them.
+// reported, never guessed, and nothing is written for them. Test links follow
+// test files that git saw renamed.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import ts from "typescript";
@@ -10,7 +11,7 @@ import { contentTree, createTypeScriptIndexer, detectUnits, fingerprint } from "
 import type { IndexedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
 import type { Actor, ChangeClass, CodeUnit, Hash, LineageEntry, Link, QueuedMatch, TrackedUnit, Unit, Version } from "@poetics/core";
-import { appendVersion, createUnit, parseUnit, readUnitFiles, relocateUnit, storePaths } from "@poetics/store";
+import { appendVersion, createUnit, parseUnit, readUnitFiles, relinkTests, relocateUnit, storePaths } from "@poetics/store";
 import type { StoreLayout } from "@poetics/store";
 import type { PoeticsConfig } from "./config.ts";
 import { filesInScope } from "./declarations.ts";
@@ -42,6 +43,13 @@ export interface PlannedMove {
   score?: number;
 }
 
+/** A unit whose linked test files were renamed, and where each went. */
+export interface PlannedRelink {
+  uid: string;
+  key: string;
+  tests: Array<{ from: string; to: string }>;
+}
+
 export interface IndexPlan {
   /** The commit the code was compared with; null in a repository with no commits yet. */
   base: string | null;
@@ -53,6 +61,7 @@ export interface IndexPlan {
   versions: PlannedVersion[];
   created: Unit[];
   removed: PlannedVersion[];
+  relinks: PlannedRelink[];
   queued: QueuedMatch[];
 }
 
@@ -60,7 +69,8 @@ const CACHE = "typescript.json";
 
 /** What poetics index would record: nothing is written until `applyIndex`. */
 export async function planIndex(root: string, config: PoeticsConfig, options: IndexOptions = {}): Promise<IndexPlan> {
-  const base = baseCommit(root, options.since ?? "HEAD");
+  const since = changesFromBase(root, options.since ?? "HEAD");
+  const base = since?.base ?? null;
   const rationale = options.rationale?.trim() || (base ? commitMessages(root, base) : "") || undefined;
   const { parseable } = await filesInScope(root, config);
   const tsconfig = config.typescript?.tsconfig;
@@ -69,12 +79,13 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   // By scope, not by what exists now: a unit whose file was deleted or moved is exactly what matching is for.
   const inScope = createMatcher(config.include, config.exclude ?? []);
   const indexable = (file: string) => inScope(file) && /\.(ts|tsx|mts|cts)$/.test(file) && !file.endsWith(".d.ts");
-  const units = (await readUnitFiles(paths))
+  const live = (await readUnitFiles(paths))
     .map(parseUnit)
-    .filter((unit) => !isRemoved(unit) && unit.owner === undefined && indexable(unit.location.file))
+    .filter((unit) => !isRemoved(unit))
     .sort((a, b) => (a.uid < b.uid ? -1 : 1));
+  const units = live.filter((unit) => unit.owner === undefined && indexable(unit.location.file));
 
-  const plan: IndexPlan = { base, rationale, fresh: 0, moves: [], versions: [], created: [], removed: [], queued: [] };
+  const plan: IndexPlan = { base, rationale, fresh: 0, moves: [], versions: [], created: [], removed: [], relinks: [], queued: [] };
   const baseCode = baseSnapshot(root, base);
   const codeByPlace = new Map(code.map((unit) => [place(unit.span.file, unit.name, unit.kind), unit]));
   const uidOfKey = new Map<string, string>();
@@ -165,10 +176,20 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     if (links.length > 0) version.links = links;
     plan.removed.push({ uid, key: `${unit.location.file}#${unit.name}`, version });
   }
+  // 4. Test links, for every live unit (moved or not, in scope or not): a renamed test file would leave them dangling.
+  const renamed = new Map((since?.changes ?? []).filter((change) => change.status === "R").map((change) => [change.from!, change.path]));
+  const movedTo = new Map(plan.moves.map((move) => [move.uid, move.key]));
+  for (const unit of live) {
+    const files = [...new Set((unit.tests ?? []).map((test) => test.file))].filter((file) => renamed.has(file));
+    if (files.length === 0) continue;
+    const key = movedTo.get(unit.uid) ?? `${unit.location.file}#${unit.name}`;
+    plan.relinks.push({ uid: unit.uid, key, tests: files.map((from) => ({ from, to: renamed.get(from)! })) });
+  }
   const byKey = (a: { key: string }, b: { key: string }) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
   plan.moves.sort(byKey);
   plan.versions.sort(byKey);
   plan.removed.sort(byKey);
+  plan.relinks.sort(byKey);
   plan.created.sort((a, b) => byKey({ key: `${a.location.file}#${a.name}` }, { key: `${b.location.file}#${b.name}` }));
   return plan;
 }
@@ -180,7 +201,8 @@ export async function applyIndex(root: string, plan: IndexPlan, actor: Actor, la
   for (const move of plan.moves) await relocateUnit(ctx, move.uid, move.to, move.lineage);
   for (const { uid, version } of [...plan.versions, ...plan.removed]) await appendVersion(ctx, uid, { ...version, actor });
   for (const unit of plan.created) await createUnit(ctx, unit, layout);
-  return new Set([...plan.moves, ...plan.versions, ...plan.removed].map((entry) => entry.uid)).size + plan.created.length;
+  for (const { uid, tests } of plan.relinks) await relinkTests(ctx, uid, new Map(tests.map(({ from, to }) => [from, to])));
+  return new Set([...plan.moves, ...plan.versions, ...plan.removed, ...plan.relinks].map((entry) => entry.uid)).size + plan.created.length;
 }
 
 /** The plan for people: one line per unit, then a summary. `written` is set after a write. */
@@ -192,16 +214,17 @@ export function formatIndexPlan(plan: IndexPlan, written?: number): string {
   for (const { key, version } of plan.versions) lines.push(`~ ${key} ${version.change}`);
   for (const unit of plan.created) lines.push(`+ ${unit.location.file}#${unit.name} (${unit.kind}, new uid ${unit.uid})`);
   for (const { key } of plan.removed) lines.push(`- ${key} removed`);
+  for (const { key, tests } of plan.relinks) lines.push(`= ${key} tests: ${tests.map(({ from, to }) => `${from} -> ${to}`).join(", ")}`);
   for (const q of plan.queued) lines.push(`? ${q.reason}: ${q.uids.join(", ")} -> ${q.keys.join(", ")}; declare which is which with lineage (poetics-refactor)`);
   if (plan.rationale === undefined && hasWrites(plan)) lines.push("No rationale yet: pass --rationale, or commit with a message first.");
-  const counts = `${plan.moves.length} moved, ${plan.versions.length} changed, ${plan.created.length} new, ${plan.removed.length} removed, ${plan.queued.length} queued, ${plan.fresh} up to date`;
+  const counts = `${plan.moves.length} moved, ${plan.versions.length} changed, ${plan.created.length} new, ${plan.removed.length} removed, ${plan.relinks.length} relinked, ${plan.queued.length} queued, ${plan.fresh} up to date`;
   lines.push(written === undefined ? `Would record: ${counts}. Run with --write to record it.` : `Recorded ${written} unit file(s): ${counts}.`);
   return lines.join("\n");
 }
 
 /** Whether applying the plan would write anything. */
 export function hasWrites(plan: IndexPlan): boolean {
-  return plan.moves.length + plan.versions.length + plan.created.length + plan.removed.length > 0;
+  return plan.moves.length + plan.versions.length + plan.created.length + plan.removed.length + plan.relinks.length > 0;
 }
 
 /**
@@ -233,8 +256,8 @@ function newUnit(root: string, uid: string, at: IndexedUnit): Unit {
   return unit;
 }
 
-/** `since` resolved to a commit, or null when it is `HEAD` and nothing is committed yet. */
-function baseCommit(root: string, since: string): string | null {
+/** `since` resolved to a commit with the files changed from it, or null when it is `HEAD` and nothing is committed yet. */
+function changesFromBase(root: string, since: string): ReturnType<typeof changesSince> | null {
   if (since === "HEAD") {
     try {
       git(root, ["rev-parse", "--verify", "--quiet", "HEAD"]);
@@ -242,7 +265,7 @@ function baseCommit(root: string, since: string): string | null {
       return null;
     }
   }
-  return changesSince(root, since).base;
+  return changesSince(root, since);
 }
 
 /** The units of a file as it was at `base`, read syntactically: enough for content hashes and fingerprints. */

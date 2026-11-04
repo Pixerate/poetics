@@ -154,6 +154,25 @@ export async function relocateUnit(
   await writeUnit(ctx, file.path, { ...unit, name: to.name, location, lineage: [...(unit.lineage ?? []), ...lineage] }, fail);
 }
 
+/**
+ * Points a unit's test links at the files their tests moved to. Only
+ * `tests[].file` changes; a rename must name a file the unit links, so a stale
+ * plan fails instead of silently doing nothing.
+ */
+export async function relinkTests(ctx: WriteContext, uid: string, renames: ReadonlyMap<string, string>): Promise<void> {
+  const file = await readUnitFile(ctx.paths, uid);
+  const unit = parseUnit(file);
+  const fail = (reason: string): never => {
+    throw new Error(`Cannot relink the tests of ${uid}: ${reason}`);
+  };
+  if (isRemoved(unit)) fail("its latest version is removed");
+  const tests = unit.tests ?? [];
+  for (const from of renames.keys()) {
+    if (!tests.some((test) => test.file === from)) fail(`it links no test in ${from}`);
+  }
+  await writeUnit(ctx, file.path, { ...unit, tests: tests.map((test) => ({ ...test, file: renames.get(test.file) ?? test.file })) }, fail);
+}
+
 async function writeUnit(ctx: WriteContext, path: string, unit: Unit, fail: (reason: string) => never): Promise<void> {
   if (ctx.validator) {
     const result = ctx.validator.unit(unit);
