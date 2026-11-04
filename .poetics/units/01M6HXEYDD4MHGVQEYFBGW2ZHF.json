@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HXEYDD4MHGVQEYFBGW2ZHF",
+  "kind": "type",
+  "framework": "none",
+  "name": "IndexOptions",
+  "location": {
+    "file": "packages/cli/src/indexing.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:96fd98ea6a20b4916fb4d88ff73c8ce7c059b46d69c1481f608ab8c2929f5f00",
+      "interfaceHash": "b3:3273488c51dd904da0f3ae3dd69b77fa1d9d5ee0973797dd613fa972376110f9",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Lets the caller choose the ref the store was last in step with and the rationale to record. Both have defaults that suit the post-commit hook.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ]
+    }
+  ],
+  "docs": "The base ref and rationale for poetics index.",
+  "tests": [
+    {
+      "file": "packages/cli/src/indexing.test.ts",
+      "via": "static"
+    }
+  ]
+}

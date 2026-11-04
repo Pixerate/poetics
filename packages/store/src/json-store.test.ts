@@ -5,6 +5,7 @@ import { NotImplementedError, REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { Version } from "@poetics/core";
 import {
   appendVersion,
+  createUnit,
   declareLineage,
   linkTest,
   listUnitFiles,
@@ -12,6 +13,7 @@ import {
   readUnit,
   readUnitFiles,
   recordRationale,
+  relocateUnit,
   setDocs,
 } from "./json-store.ts";
 import { storePaths } from "./paths.ts";
@@ -123,5 +125,57 @@ describe("validated writes", () => {
     expect(() => declareLineage(ctx, UID_A, { kind: "rename" })).toThrow(NotImplementedError);
     expect(() => linkTest(ctx, UID_A, { file: "a.test.ts", via: "explicit" })).toThrow(NotImplementedError);
     expect(() => setDocs(ctx, UID_A, "docs", hash("1"))).toThrow(NotImplementedError);
+  });
+});
+
+describe("createUnit", () => {
+  const agent = { kind: "agent", tool: "claude-code", reviewed: false } as const;
+
+  it("writes a new unit as the writer, in the flat or sharded layout", async () => {
+    const root = await makeRepo([]);
+    await createUnit({ paths: storePaths(root), actor: agent }, makeUnit(UID_A));
+    await createUnit({ paths: storePaths(root), actor: agent }, makeUnit(UID_B), "sharded");
+    expect((await readUnit(storePaths(root), UID_A)).versions[0]!.actor).toEqual(agent);
+    expect(await readdir(join(root, ".poetics", "units", UID_B.slice(0, 2)))).toEqual([`${UID_B}.json`]);
+  });
+
+  it("refuses an existing uid and anything but a single created version", async () => {
+    const root = await makeRepo([makeUnit(UID_A)]);
+    const ctx = { paths: storePaths(root), actor: agent };
+    await expect(createUnit(ctx, makeUnit(UID_A))).rejects.toThrow(`Cannot create unit ${UID_A}: .poetics/units/${UID_A}.json already exists`);
+    const twice = makeUnit(UID_B);
+    twice.versions.push({ ...twice.versions[0]!, change: "behaviour", parent: twice.versions[0]!.contentHash, contentHash: hash("2") });
+    await expect(createUnit(ctx, twice)).rejects.toThrow("exactly one version");
+  });
+});
+
+describe("relocateUnit", () => {
+  const human = { kind: "human" } as const;
+
+  it("moves the unit and appends its lineage, leaving versions alone", async () => {
+    const root = await makeRepo([makeUnit(UID_A)]);
+    await relocateUnit({ paths: storePaths(root), actor: human }, UID_A, { file: "src/b.ts", name: "fnB", export: "default" }, [
+      { kind: "move", from: "src/a.ts" },
+      { kind: "rename", from: "fnA" },
+    ]);
+    const unit = await readUnit(storePaths(root), UID_A);
+    expect([unit.name, unit.location, unit.lineage]).toEqual([
+      "fnB",
+      { file: "src/b.ts", export: "default" },
+      [
+        { kind: "move", from: "src/a.ts" },
+        { kind: "rename", from: "fnA" },
+      ],
+    ]);
+    expect(unit.versions).toEqual(makeUnit(UID_A).versions);
+  });
+
+  it("refuses a move without lineage, or of a removed unit", async () => {
+    const removed = makeUnit(UID_B);
+    removed.versions.push({ contentHash: REMOVED_CONTENT_HASH, provisional: true, parent: removed.versions[0]!.contentHash, change: "removed", actor: human, rationale: "Gone." });
+    const root = await makeRepo([makeUnit(UID_A), removed]);
+    const ctx = { paths: storePaths(root), actor: human };
+    await expect(relocateUnit(ctx, UID_A, { file: "src/b.ts", name: "fnA" }, [])).rejects.toThrow("no lineage entry says how it moved");
+    await expect(relocateUnit(ctx, UID_B, { file: "src/b.ts", name: "x" }, [{ kind: "move", from: "src/a.ts" }])).rejects.toThrow("its latest version is removed");
   });
 });

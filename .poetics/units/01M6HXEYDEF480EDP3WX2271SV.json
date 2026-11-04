@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HXEYDEF480EDP3WX2271SV",
+  "kind": "type",
+  "framework": "none",
+  "name": "PlannedMove",
+  "location": {
+    "file": "packages/cli/src/indexing.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:2626760e870c99f3d56ec520929eeeba2367441ee532e62daeceec10d5c73c70",
+      "interfaceHash": "b3:0b7dd1dab08e8fa8666e9d839898b54656078ef0edd114360b1caae67db74c08",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Gives a move or rename its lineage and the matching stage that found it, so a reviewer can weigh a similarity match.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M5XDBC777RN8YV0NBHRBXR3Y": "b3:c728ec79ae2af36596a032d15eca00fa56ff655bde1dfe678b1717b84a191eef"
+      }
+    }
+  ],
+  "docs": "A unit that moved or was renamed, and the lineage that says so.",
+  "tests": [
+    {
+      "file": "packages/cli/src/indexing.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HXEYDEZ9Z7E3V1R9FWEZ91",
+  "kind": "function",
+  "framework": "none",
+  "name": "planIndex",
+  "location": {
+    "file": "packages/cli/src/indexing.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:942217ef0c0292e88ff693d0b88e1dfcd26d0ab584068154e8a78a9b0779419f",
+      "interfaceHash": "b3:a04df6aa2c2960b718e71b9ae318240cd7d023cd673a7777305e8402ba650d57",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The reconcile step of poetics index (#24). Units at their recorded place are fresh or get a version classified from their hashes. Units that left their place go through matchIdentities against the code at --since, so moves and renames keep their uid. What remains is created or removed, and ambiguous matches are only reported. On its first run it recorded this very change.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:2705d70a51a6bcd2c92118fc8d371d655514a071aca6bb22e6334d3eb3ae31cb",
+        "01M6HNRFMK1WQP8F6MRK9FMJY0": "b3:fc992be375ae4ab7093b68f206a8ad0a105c10b943bb37884244036e9634e3b0",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:7fa6f7e9a68d3bcff563fe389ae879b1cc5be75dcb1946fd3f1dddab03baa1e1",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765",
+        "01M5Z1F6NV9Q4BF2C1KBZD09MQ": "b3:73bb120c04ff81df07603ebd00c8a7b85a52b560589afe2ec8b7691c4be3c18a",
+        "01M6HXEYDD4MHGVQEYFBGW2ZHF": "b3:96fd98ea6a20b4916fb4d88ff73c8ce7c059b46d69c1481f608ab8c2929f5f00",
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:c714b6f2b4b0ae397bc2483dcc704a988464e8e661d4bf5719c7bff0371c8566",
+        "01M6HXEYDEF480EDP3WX2271SV": "b3:2626760e870c99f3d56ec520929eeeba2367441ee532e62daeceec10d5c73c70",
+        "01M6HS3HPGWQSVQ3NJ5VJ8WEVV": "b3:a758a3287b7cca85cd56fe02fba2800684980f7cc5add38bc15e193ea8a406e2",
+        "01M6HS3HPGM7XKCBTGKAJ8RCSH": "b3:a8be2a1254b37843e5c66268ede92743b2389cd10ae516755fef228ec00911de",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC6YYK0M5RPS3YMPYSPM": "b3:a9d8f9922d57a2b242a17ff15b364a707eb1b721d5ced5d96e4ec2f62342087d",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:28f022ab2eeb35e0920e0410a86408c5c80409994a18a62a92cdc58f4914366e",
+        "01M5XDBC7FTZ5GY3BX711BWGN6": "b3:3cf0225787144e59edd01ec041de70443d024e2b9e55b22dfceabec9025b44b7",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6"
+      }
+    }
+  ],
+  "docs": "What poetics index would record: nothing is written until `applyIndex`.",
+  "tests": [
+    {
+      "file": "packages/cli/src/indexing.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    }
+  ]
+}

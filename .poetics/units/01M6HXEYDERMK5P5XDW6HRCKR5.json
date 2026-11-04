@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HXEYDERMK5P5XDW6HRCKR5",
+  "kind": "function",
+  "framework": "none",
+  "name": "formatIndexPlan",
+  "location": {
+    "file": "packages/cli/src/indexing.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:8ca94b220e5e97f96113f32e60d5795aa0dc3366e28225e050c4d4bc0a47c517",
+      "interfaceHash": "b3:5e8701ffd9efdde768e39d1fde3e27703d2db2e46bdcbe091e8c36c0255d3539",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Prints one line per unit (moved, changed, new, removed or queued) and a summary, so a person can check a dry run at a glance.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#24"
+        }
+      ],
+      "deps": {
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:c714b6f2b4b0ae397bc2483dcc704a988464e8e661d4bf5719c7bff0371c8566",
+        "01M6HXEYDECEQ5AZECX1E5A4BC": "b3:67536e5ead5f3accb284d40c29db4e7d2aac58e4aeb487e8466570f1be500511"
+      }
+    }
+  ],
+  "docs": "The plan for people: one line per unit, then a summary. `written` is set after a write.",
+  "tests": [
+    {
+      "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    }
+  ]
+}
