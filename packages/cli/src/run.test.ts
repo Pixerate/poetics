@@ -102,9 +102,9 @@ describe("poetics CLI", () => {
   });
 
   it("exits 2 with a structured error for planned commands", async () => {
-    const { code, err } = await exec("init", "--json");
+    const { code, err } = await exec("impact", "--json");
     expect(code).toBe(2);
-    expect(JSON.parse(err)).toMatchObject({ error: "not-implemented", command: "init" });
+    expect(JSON.parse(err)).toMatchObject({ error: "not-implemented", command: "impact" });
   });
 
   describe("log and why", () => {
@@ -292,6 +292,22 @@ describe("poetics CLI", () => {
       expect([dry.code, dry.out]).toEqual([0, "+ src/a.ts#a [low] Adds one.\nWould create 1 new unit(s) (0 high, 0 medium, 1 low confidence). Run with --write to write them."]);
       expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "--write", "--json")).out)).toMatchObject({ written: 1 });
       expect((await readdir(join(root, ".poetics/units"))).length).toBe(1);
+    });
+  });
+
+  describe("init", () => {
+    it("plans by default, writes with --write, then refuses a second run, and leaves --agents as a stub", async () => {
+      const root = await mkdtemp(join(tmpdir(), "poetics-cli-init-"));
+      execFileSync("git", ["init", "-q", "-b", "main"], { cwd: root });
+      await write(root, "src/a.ts", "export function a(n: number) {\n  return n + 1;\n}\n");
+      expect(JSON.parse((await execIn(root, "init", "--agents", "--json")).err)).toMatchObject({ error: "not-implemented" });
+      const dry = await execIn(root, "init");
+      expect(dry.code).toBe(0);
+      expect(dry.out).toContain("Include: src/**/*.ts");
+      expect(dry.out).toContain("Would write .poetics/config.json and 1 unit(s)");
+      expect((await execIn(root, "init", "--write")).code).toBe(0);
+      expect((await readdir(join(root, ".poetics/units"))).length).toBe(1);
+      expect((await execIn(root, "init", "--write")).code).toBe(1);
     });
   });
 });

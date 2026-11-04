@@ -69,6 +69,7 @@ export async function planBackfill(root: string, config: PoeticsConfig): Promise
     candidateNotes: [],
   };
   const docsMentioning = docMentions(root);
+  const changesets = changesetReader(root);
 
   for (const unit of index.created) {
     const sha = introducedBy.get(unit.uid);
@@ -78,7 +79,7 @@ export async function planBackfill(root: string, config: PoeticsConfig): Promise
     let rationale: string | undefined;
     let confidence: Inferred["confidence"] = "low";
 
-    const changeset = commit ? changesetFor(root, commit.sha, packageOf(root, unit.location.file)) : undefined;
+    const changeset = commit ? changesets(commit.sha, packageOf(root, unit.location.file)) : undefined;
     if (changeset) {
       evidence.push({ source: "changeset", ref: changeset.path, text: changeset.text });
       links.push({ kind: "changeset", ref: changeset.path });
@@ -228,19 +229,28 @@ function commitReader(root: string): (sha: string) => CommitInfo {
   };
 }
 
-/** A changeset added in `sha` that names the unit's package: the most specific "why" the repository keeps. */
-function changesetFor(root: string, sha: string, pkg: string | undefined): { path: string; text: string } | undefined {
-  if (!pkg) return undefined;
-  const files = git(root, ["show", "--name-only", "--diff-filter=A", "--format=", sha]).split("\n");
-  for (const path of files.filter((f) => /^\.changeset\/[^/]+\.md$/.test(f))) {
-    const text = showAt(root, sha, path);
-    if (!text) continue;
-    const [, front = "", body = ""] = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/.exec(text) ?? [];
-    if (front.includes(`"${pkg}"`) || front.includes(`'${pkg}'`) || new RegExp(`^${pkg}:`, "m").test(front)) {
-      return { path, text: body.trim().split(/\n\s*\n/)[0]!.replace(/\s+/g, " ") };
+/**
+ * The changesets each commit added, read once per commit since many units share
+ * one. A changeset naming the unit's package is the most specific "why" the
+ * repository keeps.
+ */
+function changesetReader(root: string): (sha: string, pkg: string | undefined) => { path: string; text: string } | undefined {
+  const byCommit = new Map<string, Array<{ path: string; front: string; text: string }>>();
+  return (sha, pkg) => {
+    if (!pkg) return undefined;
+    if (!byCommit.has(sha)) {
+      const added = git(root, ["show", "--name-only", "--diff-filter=A", "--format=", sha]).split("\n").filter((f) => /^\.changeset\/[^/]+\.md$/.test(f));
+      byCommit.set(
+        sha,
+        added.flatMap((path) => {
+          const [, front = "", body = ""] = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/.exec(showAt(root, sha, path) ?? "") ?? [];
+          return front ? [{ path, front, text: body.trim().split(/\n\s*\n/)[0]!.replace(/\s+/g, " ") }] : [];
+        }),
+      );
     }
-  }
-  return undefined;
+    const found = byCommit.get(sha)!.find(({ front }) => front.includes(`"${pkg}"`) || front.includes(`'${pkg}'`) || new RegExp(`^${pkg}:`, "m").test(front));
+    return found && { path: found.path, text: found.text };
+  };
 }
 
 /** The name in the nearest package.json above `file`. */
@@ -252,15 +262,23 @@ function packageOf(root: string, file: string): string | undefined {
   }
 }
 
-/** Markdown files under docs/ and READMEs that mention a name in code style. */
+/** Markdown files under docs/ and READMEs that mention a name in code style, indexed once by name. */
 function docMentions(root: string): (name: string) => string[] {
-  let docs: Array<{ path: string; text: string }> | undefined;
+  let byName: Map<string, string[]> | undefined;
   return (name) => {
-    docs ??= git(root, ["ls-files", "--", "*.md"])
-      .split("\n")
-      .filter((path) => path && (path.startsWith("docs/") || /(^|\/)README\.md$/.test(path)))
-      .map((path) => ({ path, text: readFileSync(join(root, path), "utf8") }));
-    return docs.filter((doc) => doc.text.includes(`\`${name}\``)).map((doc) => doc.path);
+    if (!byName) {
+      byName = new Map();
+      const docs = git(root, ["ls-files", "--", "*.md"])
+        .split("\n")
+        .filter((path) => path && (path.startsWith("docs/") || /(^|\/)README\.md$/.test(path)));
+      for (const path of docs) {
+        for (const [, code] of readFileSync(join(root, path), "utf8").matchAll(/`([^`\n]+)`/g)) {
+          const paths = byName.get(code!) ?? [];
+          if (!paths.includes(path)) byName.set(code!, [...paths, path]);
+        }
+      }
+    }
+    return byName.get(name) ?? [];
   };
 }
 

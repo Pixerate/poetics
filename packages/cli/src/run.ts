@@ -11,6 +11,7 @@ import { coverageFor, formatCoverage } from "./coverage.ts";
 import { formatLog, formatWhy } from "./history.ts";
 import { applyBackfill, formatBackfillPlan, planBackfill } from "./backfill.ts";
 import { applyIndex, formatIndexPlan, hasWrites, planIndex } from "./indexing.ts";
+import { applyInit, formatInitPlan, planInit } from "./init.ts";
 import type { IndexPlan } from "./indexing.ts";
 import { applyRehash, planRehash, unitHashes } from "./rehash.ts";
 
@@ -54,6 +55,7 @@ export async function run(argv: readonly string[], io: Io, root: string = proces
     if (command.name === "rehash") return await rehash(args.slice(1), io, json, root);
     if (command.name === "index") return await index(args.slice(1), io, json, root);
     if (command.name === "backfill") return await backfill(args.slice(1), io, json, root);
+    if (command.name === "init") return await init(args.slice(1), io, json, root);
     throw new NotImplementedError(`poetics ${command.name}`);
   } catch (error) {
     if (error instanceof NotImplementedError) {
@@ -216,6 +218,20 @@ async function index(args: readonly string[], io: Io, json: boolean, root: strin
   const written = write ? await applyIndex(root, plan, actorOf(parsed.values), config.store?.layout) : 0;
   io.out(json ? JSON.stringify({ ...plan, written }) : formatIndexPlan(plan, write ? written : undefined));
   return plan.queued.length > 0 ? 1 : 0;
+}
+
+async function init(args: readonly string[], io: Io, json: boolean, root: string): Promise<number> {
+  // Installing skills, an AGENTS.md pointer and the MCP server needs the skills published as a package.
+  if (args.includes("--agents")) throw new NotImplementedError("poetics init --agents");
+  const parsed = parseFlags(args, ["--write"], []);
+  if (!parsed) {
+    report(io, json, { error: "usage", command: "init", message: "Usage: poetics init [--write]" });
+    return 2;
+  }
+  const plan = await planInit(root);
+  const written = parsed.flags.has("--write") && !plan.existing ? await applyInit(root, plan) : undefined;
+  io.out(json ? JSON.stringify({ ...plan, written: written ?? 0 }) : formatInitPlan(plan, written));
+  return plan.existing ? 1 : 0;
 }
 
 async function backfill(args: readonly string[], io: Io, json: boolean, root: string): Promise<number> {
