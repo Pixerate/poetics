@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6KA0K7605CEA11BACFR4NG7",
+  "kind": "type",
+  "framework": "none",
+  "name": "BackfillPlan",
+  "location": {
+    "file": "packages/cli/src/backfill.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:a4bdf86922ac2ce5656dc3f7ec898867dfd4be9db85a4e81cb51600d9fdce0ef",
+      "interfaceHash": "b3:2ca24429118d7373ec95662d5a78fcd15f2d1869991e51ba459476bc864e203c",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Keeps what backfill writes (new units) apart from what it only reports (gaps in existing units, unrecorded changes, candidate notes), since ADR 0011 never lets it write to an existing unit.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        }
+      ],
+      "deps": {
+        "01M6KA0K76FC45D9BH7SCY6TN4": "b3:db95265239831d56ce2a9186e2c62c6a0a0e3f8f809d58099420a14180162421",
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e"
+      }
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    }
+  ],
+  "docs": "What a snapshot backfill would write, and what it only lists."
+}

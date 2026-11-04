@@ -93,12 +93,33 @@
         "actor": { "$ref": "#/$defs/actor" },
         "rationale": { "type": "string", "minLength": 1 },
         "links": { "type": "array", "items": { "$ref": "#/$defs/link" } },
+        "inferred": { "$ref": "#/$defs/inferred" },
         "deps": {
           "type": "object",
           "description": "uid -> contentHash of each dependency when this version was captured.",
           "propertyNames": { "$ref": "#/$defs/uid" },
           "additionalProperties": { "$ref": "#/$defs/hash" }
         }
+      }
+    },
+    "inferred": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["by", "confidence", "sources", "drafted", "reviewed"],
+      "description": "Set when backfill inferred this version's rationale from evidence instead of anyone recording it (ADR 0011).",
+      "properties": {
+        "by": { "type": "string", "minLength": 1 },
+        "confidence": {
+          "enum": ["high", "medium", "low"],
+          "description": "Computed from the evidence: high when it speaks to this unit or its package in this change, medium when it speaks to the whole change, low when only the code was available."
+        },
+        "sources": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["commit", "changeset", "comment", "test", "doc", "pull-request", "issue", "diff"] }
+        },
+        "drafted": { "type": "boolean", "description": "Synthesised by a model (--draft) rather than extracted." },
+        "reviewed": { "type": "boolean" }
       }
     },
     "actor": {

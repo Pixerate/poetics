@@ -38,6 +38,15 @@ export interface Reference {
 
 export type Link = string | Reference;
 
+/** How backfill inferred a version's rationale, so it is never mistaken for a recorded one (ADR 0011). */
+export interface Inferred {
+  by: string;
+  confidence: "high" | "medium" | "low";
+  sources: Array<"commit" | "changeset" | "comment" | "test" | "doc" | "pull-request" | "issue" | "diff">;
+  drafted: boolean;
+  reviewed: boolean;
+}
+
 export interface Version {
   contentHash: Hash;
   interfaceHash?: Hash;
@@ -49,6 +58,8 @@ export interface Version {
   actor: Actor;
   rationale: string;
   links?: Link[];
+  /** Present when the rationale was inferred by backfill rather than recorded. */
+  inferred?: Inferred;
   deps?: Record<Uid, Hash>;
 }
 

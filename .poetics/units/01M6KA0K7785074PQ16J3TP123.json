@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6KA0K7785074PQ16J3TP123",
+  "kind": "function",
+  "framework": "none",
+  "name": "hasBackfill",
+  "location": {
+    "file": "packages/cli/src/backfill.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:431a61d2655680d4edbe317b6458d67df64aec996852da6319d6aa8043a33265",
+      "interfaceHash": "b3:670b1f8e5013752fa2e72953905415e0a22b38e23d163272fe9a490036c3a651",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Lets callers such as poetics init tell whether a snapshot would write anything.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        }
+      ],
+      "deps": {
+        "01M6KA0K7605CEA11BACFR4NG7": "b3:a4bdf86922ac2ce5656dc3f7ec898867dfd4be9db85a4e81cb51600d9fdce0ef"
+      }
+    }
+  ],
+  "docs": "Whether there is anything to write.",
+  "tests": [
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    }
+  ]
+}

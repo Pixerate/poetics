@@ -19,3 +19,5 @@ export type { RehashEntry, RehashPlan } from "./rehash.ts";
 export { applyRehash, planRehash, unitHashes } from "./rehash.ts";
 export type { IndexOptions, IndexPlan, PlannedMove, PlannedRelink, PlannedVersion } from "./indexing.ts";
 export { applyIndex, formatIndexPlan, hasWrites, planIndex } from "./indexing.ts";
+export type { BackfillPlan, Evidence } from "./backfill.ts";
+export { applyBackfill, formatBackfillPlan, hasBackfill, planBackfill } from "./backfill.ts";

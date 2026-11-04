@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6KA0K77B6H3RTACRAN4FFTZ",
+  "kind": "type",
+  "framework": "none",
+  "name": "Inferred",
+  "location": {
+    "file": "packages/core/src/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582",
+      "interfaceHash": "b3:2398b8b73f5c8cf4cdecb3050cc637abc98f5ac0ec72a6c64cd5da977509f95a",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Records who inferred a rationale, how sure the evidence makes it (computed, not self-reported), which sources it used, and whether a model drafted it or a person reviewed it, as ADR 0011 specifies.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        }
+      ]
+    }
+  ],
+  "docs": "How backfill inferred a version's rationale, so it is never mistaken for a recorded one (ADR 0011).",
+  "tests": [
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/store/src/index-db.test.ts",
+      "via": "static"
+    }
+  ]
+}

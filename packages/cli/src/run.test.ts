@@ -279,4 +279,19 @@ describe("poetics CLI", () => {
       expect(queued.out).toMatch(/^\? 4 units share the same content: /);
     });
   });
+
+  describe("backfill", () => {
+    it("needs --snapshot, plans by default, and leaves --history as a stub", async () => {
+      const root = await mkdtemp(join(tmpdir(), "poetics-cli-backfill-"));
+      execFileSync("git", ["init", "-q", "-b", "main"], { cwd: root });
+      await write(root, ".poetics/config.json", JSON.stringify({ version: 1, adapters: ["typescript"], include: ["src/**/*.ts"] }));
+      await write(root, "src/a.ts", "/** Adds one. */\nexport function a(n: number) {\n  return n + 1;\n}\n");
+      expect(JSON.parse((await execIn(root, "backfill", "--json")).err)).toMatchObject({ error: "usage", command: "backfill" });
+      expect(JSON.parse((await execIn(root, "backfill", "--history", "--json")).err)).toMatchObject({ error: "not-implemented" });
+      const dry = await execIn(root, "backfill", "--snapshot");
+      expect([dry.code, dry.out]).toEqual([0, "+ src/a.ts#a [low] Adds one.\nWould create 1 new unit(s) (0 high, 0 medium, 1 low confidence). Run with --write to write them."]);
+      expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "--write", "--json")).out)).toMatchObject({ written: 1 });
+      expect((await readdir(join(root, ".poetics/units"))).length).toBe(1);
+    });
+  });
 });

@@ -29,6 +29,7 @@ closure version changes when any function it uses changes.
 | `rationale` | Why this unit changed, citing its source |
 | `links` | URLs or typed references `{ kind, ref, url? }` — never issue content |
 | `deps` | `uid → contentHash` of each dependency when this version was captured |
+| `inferred` | Set only when `poetics backfill` inferred the rationale from evidence instead of anyone recording it: `{ by, confidence, sources, drafted, reviewed }`. `confidence` (`high`, `medium`, `low`) is computed from how specifically the evidence speaks to this unit ([ADR 0011](decisions/0011-backfill.md)) |
 
 Human authorship and dates come from git. Agent provenance is stored because git
 only records the committer.
@@ -121,7 +122,7 @@ full, grouped by area and ordered by id, then a table of retired notes. CI runs
 | --- | --- |
 | `unit_files` | Path, SHA-256 of the file bytes, uid — drives incremental rebuilds |
 | `units` | One row per unit with its latest content hash and version count |
-| `versions` | Every version, flattened |
+| `versions` | Every version, flattened, with `inferred_confidence` for backfilled ones |
 | `deps` | The newest version's dependencies; indexed by `to_uid` for reverse lookups |
 | `test_links`, `lineage` | Flattened from the unit file |
 | `units_fts` | FTS5 table of each unit's name (with its camelCase parts), docs and every version's rationale, for `searchUnits` |
