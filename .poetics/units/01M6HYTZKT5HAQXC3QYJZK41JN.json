@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HYTZKT5HAQXC3QYJZK41JN",
+  "kind": "type",
+  "framework": "none",
+  "name": "VerifyReport",
+  "location": {
+    "file": "packages/mcp/src/read-tools.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:e2e6ecb5ab0658b60d7e85aa8971377a305f7128199593005664a11c63981f8e",
+      "interfaceHash": "b3:29cc90751f25dbb59873701255fa6f3da6c18dab7daa37ad3571b8adbcaeff2f",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Separates what poetics index must record (stale, untracked, missing) from what an agent should weigh (stale docs and notes, untested units, unresolved uses).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ],
+      "deps": {
+        "01M5XDBC6YYK0M5RPS3YMPYSPM": "b3:a9d8f9922d57a2b242a17ff15b364a707eb1b721d5ced5d96e4ec2f62342087d",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M6HYTZKT9D85QBV9GNSR44Y8": "b3:a08aae35969126911157e8756c0b1c0e111eb793d3bb9af683062be00bd19124"
+      }
+    }
+  ],
+  "docs": "What is behind in a scope: code with no version, units with no code, stale docs and notes, unresolved uses.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/code.test.ts",
+      "via": "static"
+    }
+  ]
+}

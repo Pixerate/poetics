@@ -164,6 +164,25 @@ function callSignature(fn: ts.SignatureDeclaration, checker: ts.TypeChecker): Ca
 }
 
 /**
+ * What a caller reads: each declaration up to its body, as written. Types are
+ * their whole declaration, since their structure is the interface; with
+ * overloads, only the overload signatures.
+ */
+export function signatureText(unit: DetectedUnit, source: ts.SourceFile): string {
+  const texts = unit.declarations.flatMap((declaration) => {
+    const list = ts.isVariableDeclaration(declaration) ? declaration.parent : undefined;
+    const statement = list && ts.isVariableDeclarationList(list) && list.declarations.length === 1 ? list.parent : declaration;
+    const start = statement.getStart(source);
+    if (unit.kind === "type") return [source.text.slice(start, statement.end)];
+    const fn = ts.isFunctionDeclaration(declaration) ? declaration : functionOf(declaration as ts.VariableDeclaration);
+    if (!fn?.body) return [source.text.slice(start, statement.end)];
+    if (ts.isFunctionDeclaration(fn) && unit.declarations.length > 1) return [];
+    return [source.text.slice(start, fn.body.getStart(source)).trimEnd()];
+  });
+  return texts.join("\n");
+}
+
+/**
  * The units `unit` uses, found by resolving every identifier in it through the
  * checker, aliases followed. `unitAt` maps a declaration to the unit it belongs
  * to, or `undefined` for declarations Poetics does not track.
@@ -177,6 +196,8 @@ export function edgesOf(
   const unresolved: UnresolvedUse[] = [];
   const own = new Set(unit.declarations.map((declaration) => declaration.name).filter((name) => name !== undefined));
 
+  const source = unit.declarations[0]!.getSourceFile();
+  const helpers = new Set<ts.Node>();
   const visit = (node: ts.Node, root: ts.Node) => {
     if (ts.isIdentifier(node) && !own.has(node)) {
       const symbol = resolve(node, checker);
@@ -187,9 +208,18 @@ export function edgesOf(
           target.kind === "type" || inTypePosition(node, root) ? "references-type" : target.kind === "hook" ? "uses-hook" : "calls";
         edges.set(`${target.key}\0${kind}`, { to: target.key, kind });
       }
+      // A private helper in the same file is not a unit, so what it uses is used by whoever calls it.
+      if (targets.size === 0) {
+        for (const declaration of symbol?.declarations ?? []) {
+          const helper = privateHelper(declaration, source);
+          if (helper && !helpers.has(helper)) {
+            helpers.add(helper);
+            visit(helper, helper);
+          }
+        }
+      }
       const call = node.parent;
       if (!symbol && ts.isCallExpression(call) && call.expression === node) {
-        const source = node.getSourceFile();
         unresolved.push({
           kind: "calls",
           span: { file: unit.span.file, start: call.getStart(source), end: call.end },
@@ -203,6 +233,14 @@ export function edgesOf(
 
   const sorted = [...edges.values()].sort((a, b) => (a.to === b.to ? a.kind.localeCompare(b.kind) : a.to < b.to ? -1 : 1));
   return { edges: sorted, unresolved };
+}
+
+/** A module-level function in `source` that is not exported: its body, to walk as part of its caller's. */
+function privateHelper(declaration: ts.Declaration, source: ts.SourceFile): ts.Node | undefined {
+  if (declaration.getSourceFile() !== source) return undefined;
+  if (ts.isFunctionDeclaration(declaration) && declaration.body && ts.isSourceFile(declaration.parent)) return declaration;
+  if (ts.isVariableDeclaration(declaration) && functionOf(declaration) && ts.isSourceFile(declaration.parent.parent.parent)) return declaration;
+  return undefined;
 }
 
 function resolve(node: ts.Identifier, checker: ts.TypeChecker): ts.Symbol | undefined {

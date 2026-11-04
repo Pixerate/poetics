@@ -6,7 +6,7 @@ import ts from "typescript";
 import { computeClosureHashes, contentHash, createGraph, gitBlobHash, interfaceHash } from "@poetics/core";
 import type { Edge, Hash, Span, UnitKind } from "@poetics/core";
 import { fingerprint } from "./normalise.ts";
-import { contentTree, detectUnits, edgesOf, signatureOf } from "./units.ts";
+import { contentTree, detectUnits, edgesOf, signatureOf, signatureText } from "./units.ts";
 import type { DetectedUnit, IndexedEdge, Signature, UnresolvedUse } from "./units.ts";
 
 export interface TypeScriptIndexerOptions {
@@ -43,6 +43,8 @@ export interface IndexedUnit {
   /** Subtree hashes of the content tree, for matching a unit that was edited as it moved. */
   fingerprint: string[];
   signature: Signature;
+  /** The declaration up to its body, as written: the cheapest way to show a caller what it calls. */
+  signatureText: string;
   edges: IndexedEdge[];
   unresolved: UnresolvedUse[];
 }
@@ -59,7 +61,7 @@ export interface TypeScriptIndexer {
 }
 
 // Bump when the shape of cached units or the normalisation changes, so old caches are dropped.
-const CACHE_VERSION = 2;
+const CACHE_VERSION = 4;
 const LOCKFILES = ["pnpm-lock.yaml", "package-lock.json", "yarn.lock", "bun.lock"];
 
 const DEFAULT_OPTIONS: ts.CompilerOptions = {
@@ -151,6 +153,7 @@ function indexUnit(unit: DetectedUnit, source: ts.SourceFile, checker: ts.TypeCh
     interfaceHash: interfaceHash(signature),
     fingerprint: fingerprint(tree),
     signature,
+    signatureText: signatureText(unit, source),
     edges,
     unresolved,
   };

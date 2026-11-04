@@ -47,21 +47,39 @@ in; `tools/list` advertises only the tools it answers. Rules every tool follows:
 `poetics_changes` answers "what changed, and why" between two refs: each
 commit's unit versions with rationale, removals included, plus commits that
 recorded nothing ([ADR 0009](decisions/0009-changes-between-refs.md)). Agents
-call it to catch up at the start of a task. `impact: true` waits for the
-indexer.
+call it to catch up at the start of a task. With `impact: true` it also ranks
+the units those changes reach, as `poetics_impact` does.
 
 The read-only tools answered today are `poetics_context_pack`,
 `poetics_search`, `poetics_unit`, `poetics_history`, `poetics_changes`,
-`poetics_tests_for` and `poetics_notes`. Each call brings the SQLite index up
-to date first, so edits between calls are seen. Units are referenced by uid,
-name, or `file#name` when a name is shared; an ambiguous name is refused with
-its candidates. `poetics_context_pack` fills the unit, its notes, tests,
-dependencies, callers and earlier rationale in that order until the token budget
-(default 4000) is spent, and reports what it cut in `truncated`. Code and
-signatures are listed under `missing` until the indexer (#19) records spans.
-`poetics_tests_for` reports `verified` when a test was recorded against the
-current version; pass or fail needs a test-runner integration. `poetics_impact`,
-`poetics_verify`, `poetics_signals` and the writes are still stubs.
+`poetics_impact`, `poetics_tests_for`, `poetics_verify` and `poetics_notes`.
+Each call brings the SQLite index up to date first, so edits between calls are
+seen, and the tools that read code index it through the TypeScript indexer's
+cache. Units are referenced by uid, name, or `file#name` when a name is shared;
+an ambiguous name is refused with its candidates.
+
+- `poetics_context_pack` fills the unit (with its signature), its code, notes,
+  tests, dependencies and callers (each with its signature) and earlier
+  rationale, in that order, until the token budget (default 4000) is spent.
+  It reports what it cut in `truncated`, keeping the first lines of code that
+  does not fit, and lists under `missing` what it cannot show, such as code the
+  indexer cannot read yet.
+- `poetics_impact` takes `units`, `since` (the units the store recorded as
+  changed since that ref), or both, and ranks every unit they reach through the
+  composition graph by distance: `own`, `closure`, or `interface-caller` for
+  direct callers of an interface change or removal. It lists the unresolved
+  uses inside those units, where the graph may be incomplete.
+- `poetics_verify` checks a path `scope` (default: everything). `ok` is false
+  when code has changed without a version (`stale`), has no unit
+  (`untracked`), or a unit's code is gone (`missing`): run `poetics index`.
+  It also lists stored docs that differ from the code's TSDoc, notes whose
+  units changed since they were confirmed, units with no linked tests, and
+  unresolved uses.
+- `poetics_tests_for` reports `verified` when a test was recorded against the
+  current version; pass or fail needs a test-runner integration.
+
+Uses inside a non-exported helper count as uses by the exported unit that calls
+it. `poetics_signals` and the writes are still stubs.
 
 To try it from a checkout, register it with your MCP client:
 

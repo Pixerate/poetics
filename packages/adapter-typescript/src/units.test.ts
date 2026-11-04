@@ -1,7 +1,7 @@
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
 import { contentHash, interfaceHash } from "@poetics/core";
-import { contentTree, detectUnits, signatureOf } from "./units.ts";
+import { contentTree, detectUnits, signatureOf, signatureText } from "./units.ts";
 import { createTypeScriptIndexer } from "./indexer.ts";
 import { makeProject } from "./test-helpers.ts";
 
@@ -137,6 +137,26 @@ describe("signatureOf", () => {
   });
 });
 
+describe("signatureText", () => {
+  const text = (code: string) => {
+    const source = ts.createSourceFile("src/a.ts", code, ts.ScriptTarget.Latest, true);
+    return detectUnits(source, "src/a.ts").map((unit) => signatureText(unit, source));
+  };
+
+  it("is each declaration up to its body, as written, without docs", () => {
+    expect(
+      text(`/** Docs. */\nexport function f(a: number, b = { x: 1 }): string {\n  return "";\n}\nexport const g = async (n: number): Promise<void> => {};\nexport const h = (n: number) => n * 2;`),
+    ).toEqual(["export function f(a: number, b = { x: 1 }): string", "export const g = async (n: number): Promise<void> =>", "export const h = (n: number) =>"]);
+  });
+
+  it("is the whole declaration for types, and only the overloads for an overloaded function", () => {
+    expect(text(`export interface P {\n  a: number;\n}\nexport type Q = P | null;`)).toEqual(["export interface P {\n  a: number;\n}", "export type Q = P | null;"]);
+    expect(text(`export function f(a: string): string;\nexport function f(a: number): number;\nexport function f(a: any) { return a; }`)).toEqual([
+      "export function f(a: string): string;\nexport function f(a: number): number;",
+    ]);
+  });
+});
+
 describe("edgesOf", () => {
   it("resolves calls, hooks and types across files, through aliases, re-exports and shorthand", () => {
     const units = indexed({
@@ -166,6 +186,20 @@ describe("edgesOf", () => {
     ]);
     expect(units.get("handlers")!.edges).toEqual([{ to: "src/price.ts#formatPrice", kind: "calls" }]);
     expect(units.get("Price")!.edges).toEqual([]);
+  });
+
+  it("counts what a private helper in the same file uses as used by its caller", () => {
+    const units = indexed({
+      "src/price.ts": `export function formatPrice(n: number) { return String(n); }`,
+      "src/cart.ts": [
+        `import { formatPrice } from "./price.ts";`,
+        `function render(n: number) { return wrap(formatPrice(n)); }`,
+        `const wrap = (s: string) => \`[\${s}]\`;`,
+        `function loop(): number { return loop(); }`,
+        `export function total(n: number) { return render(n) + loop(); }`,
+      ].join("\n"),
+    });
+    expect(units.get("total")!.edges).toEqual([{ to: "src/price.ts#formatPrice", kind: "calls" }]);
   });
 
   it("does not count recursion or untracked declarations as edges", () => {

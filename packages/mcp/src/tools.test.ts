@@ -57,7 +57,7 @@ describe("createServer", () => {
   it("rejects unknown tools and stubs the ones it cannot answer yet", async () => {
     const server = createServer({ root: "." });
     await expect(server.callTool("nope", {})).rejects.toThrow("Unknown tool: nope");
-    await expect(server.callTool("poetics_impact", {})).rejects.toThrow(NotImplementedError);
+    await expect(server.callTool("poetics_signals", { unit: "x" })).rejects.toThrow(NotImplementedError);
     await expect(server.callTool("poetics_record_rationale", { unit: "x", rationale: "why" })).rejects.toThrow(NotImplementedError);
   });
 
@@ -66,7 +66,17 @@ describe("createServer", () => {
       createServer({ root: "." })
         .tools()
         .map((tool) => tool.name),
-    ).toEqual(["poetics_context_pack", "poetics_search", "poetics_unit", "poetics_history", "poetics_changes", "poetics_tests_for", "poetics_notes"]);
+    ).toEqual([
+      "poetics_context_pack",
+      "poetics_search",
+      "poetics_unit",
+      "poetics_history",
+      "poetics_changes",
+      "poetics_impact",
+      "poetics_tests_for",
+      "poetics_verify",
+      "poetics_notes",
+    ]);
   });
 
   it("answers read tools from this repository's own store over stdio", async () => {
@@ -91,7 +101,10 @@ describe("createServer", () => {
       decisions: [],
       notes: [],
     });
-    await expect(server.callTool("poetics_changes", { impact: true })).rejects.toThrow(NotImplementedError);
+    await expect(server.callTool("poetics_changes", { from: "HEAD", to: "HEAD", impact: true })).resolves.toMatchObject({
+      commits: [],
+      impact: { changed: [], impact: [] },
+    });
     await expect(server.callTool("poetics_changes", { from: "nope", to: "HEAD" })).rejects.toThrow("Unknown git ref: nope");
   });
 });

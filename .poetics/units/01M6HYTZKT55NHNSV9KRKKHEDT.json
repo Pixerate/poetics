@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6HYTZKT55NHNSV9KRKKHEDT",
+  "kind": "type",
+  "framework": "none",
+  "name": "CodeView",
+  "location": {
+    "file": "packages/mcp/src/code.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:17fbe126f802ae948d5cbfe0f12c64645d621bc991a42f72c94868f4a2d385ed",
+      "interfaceHash": "b3:748aa2e22a0db31bababda2751c8ff67bc9b391e79e4ac615cde134634409788",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The code as the read tools see it: indexed units joined to store uids, a uid composition graph, untracked code and units whose code is missing.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        }
+      ],
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:82454da986acde43e1fb3e589d52a271d80e197ecc5ffd53e384e22036b51e27",
+        "01M5XDBC6HVMJWYFKK186EKB7F": "b3:e4a9b9957f43a652cdbb457103579606bb032196fa54611cc28d5fbe91e9c1a5",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce"
+      }
+    }
+  ],
+  "docs": "Indexed code joined to the store: units by uid, the graph, untracked code and missing units.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/code.test.ts",
+      "via": "static"
+    }
+  ]
+}
