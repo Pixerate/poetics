@@ -2,6 +2,9 @@
 
 - Status: Proposed
 - Date: 2026-10-28
+- Revised: 2026-11-04, after the indexer (#19), identity matching (#20), the
+  rehash ([ADR 0014](0014-rehash-versions.md)) and `poetics index` (#24) landed.
+  See [Revisions](#revisions).
 
 ## Context
 
@@ -38,14 +41,14 @@ about one unit's change:
 
 Two existing rules constrain the design:
 
-- **`versions` is append-only** and `poetics:check` fails on edited history.
+- **`versions` is append-only** and `poetics verify` fails on edited history.
   Units this repository already records start at a `created` version with
   `parent: null`; history from before adoption cannot be prepended without
-  rewriting that version.
+  rewriting that version, and no exception is made for it.
 - **Links are references, never content**
-  ([plan: issue trackers](../plan.md#issue-trackers)). Private issue and PR
-  text must not be copied into git, and it reaches agents as data, never as
-  instructions.
+  ([plan: issue trackers](../plan.md#issue-trackers)). Issue and pull request
+  text must not be copied into git, in a link or in a rationale, and it reaches
+  agents as data, never as instructions.
 
 Options considered for where inferred history goes:
 
@@ -58,22 +61,26 @@ Options considered for where inferred history goes:
 
 ## Decision
 
-One command, `poetics backfill`, with two modes, built on the phase 1 indexer
-for unit discovery and hashing. `poetics init` runs the snapshot mode.
+One command, `poetics backfill`, with two modes, built on the phase 1 indexer,
+identity matching and `poetics index`. `poetics init` runs the snapshot mode.
 
 ### Mode 1: `poetics backfill --snapshot`
 
-For each exported unit in the working tree:
+Snapshot mode is `poetics index` with a different rationale: it shares
+`planIndex`'s detection, hashing, docs and test linking, so the two cannot
+drift apart, and replaces the run's single rationale with one per unit drawn
+from the evidence below.
 
-- **Units with no file** get one: a minted uid, real hashes, location, `docs`
-  from its TSDoc or `@component` comment, static test links, and a `created`
-  version. That version's `commit` is the last commit that touched the unit's
-  span, and its rationale says why the unit exists, from the commit and PR
-  that introduced it, its comments, its tests and the docs that mention it.
-- **Units with a file** only gain what is missing: an omitted `commit` is set
-  to the commit that added the entry (the rule the schema already states, made
-  explicit), and missing test links or docs are proposed. Recorded versions
-  are otherwise never touched.
+- **Units with no file** get one, as `poetics index` creates them: a minted
+  uid, `b3:` hashes, location, `docs` from TSDoc or `@component`, and static
+  test links. The `created` version's `commit` is the commit that introduced
+  the unit's code (the last commit that touched its span when that cannot be
+  told), and its rationale says why the unit exists.
+- **Units with a file are never written to.** Their recorded versions stay as
+  they are, and so do omitted `commit` fields: the commit that added a version
+  is already known from the unit file's git history, which is how
+  `poetics changes` finds it, so filling it in would edit history for no gain.
+  Missing test links or docs are listed in the report for someone to add.
 - **Notes are proposed, not written:** `HACK` and `workaround` comments and
   review comments that state a rule are listed in the report as candidate
   `workaround` and `invariant` notes for a human or agent to record.
@@ -84,15 +91,30 @@ Walks the range (default: the repository's root to the oldest recorded
 version, or `HEAD` for a fresh store) on the first-parent line, so each step
 is one merged change:
 
-- For each unit, follow its file back with git's rename detection, re-parse
-  the unit at every commit that touched the file, and emit a version whenever
-  its content hash changes, with `change` classified from the hashes as the
-  indexer does. Exports deleted before adoption are recovered with `removed`
-  versions when `--include-removed` is given.
-- Versions go into a new `prehistory` array, oldest first, whose last entry is
-  the parent of the first recorded version. `prehistory` is write-once:
-  `poetics:check` lets a commit add it or extend it further back, and fails on
-  any other edit.
+- At each step, the units of the changed files are read from the commit
+  syntactically (content hash, runtime hash, fingerprint and signature text,
+  which need no type checker) and matched to the step before with
+  `matchIdentities`, the same matcher `poetics index` uses. Units are followed
+  through renames and moves between files, not only through renamed files.
+- A version is emitted whenever a unit's content hash changes. Its `change` is
+  classified as `poetics index` does, except that an interface change is told
+  from the signature text: the checker's interface hash needs each historic
+  commit's dependencies, which are rarely available. `inferred` records this.
+- Where matching would only queue a unit (look-alikes, or a small function
+  renamed and edited in one commit, the case the phase 1 gate measured), that
+  unit's prehistory stops there, and the report says where and why. History is
+  never guessed.
+- Exports deleted before adoption are recovered with `removed` versions when
+  `--include-removed` is given.
+- Versions go into a new `prehistory` array, oldest first. `prehistory` and
+  `versions` are joined by commit, not by hash: `prehistory` ends at or before
+  the commit where `versions[0]` was recorded. `versions[0]` keeps its
+  `parent: null` and, in a store recorded before the rehash, its `git:` hash,
+  so nothing recorded changes. `prehistory` is write-once: `poetics verify`
+  lets a commit add it or extend it further back, and fails on any other edit.
+- `prehistory[0]` is `created`, and `versions[0]` stays `created`: ADR 0010's
+  rule becomes "`created` is the first version of each list". `removed` stays
+  last in `versions` only.
 - Each commit is mapped to its pull request offline first (`Merge pull
   request #N`, a squash subject ending `(#N)`), and through the GitHub API
   only when that fails.
@@ -105,16 +127,28 @@ source, a reference, and the text it found. Collectors for git, changesets,
 comments, tests and docs are local and always run. GitHub collectors run only
 with a token.
 
+Evidence falls in two groups, and only one of them is ever written down:
+
+- **In the repository:** commits, changesets, changelog entries, comments,
+  tests, docs and decision records. These are already in git, so quoting them
+  in a rationale exposes nothing new.
+- **Outside it:** pull request descriptions, review comments and issues. Their
+  text is never written to `.poetics/`, in any tier. They contribute links,
+  raise or lower `confidence`, and feed `--draft` only as described below.
+
 Rationale is written in two tiers:
 
 1. **Extracted** (default, deterministic, offline): the most specific evidence
-   available, quoted or lightly trimmed. A changeset or PR description that
-   names the package beats a commit body, which beats a subject. With nothing
-   better, the rationale is the commit message, as the plan already says.
+   from the repository, quoted or lightly trimmed. A changeset that names the
+   package beats a commit body, which beats a subject. With nothing better, the
+   rationale is the commit message, as the plan already says. A pull request
+   that gives the reason is linked, not quoted.
 2. **Drafted** (`--draft`, optional model call): a per-unit rationale
-   synthesised from the evidence items, which must cite them, must say when
-   the only evidence is the diff, and must not quote private issue or PR text.
-   Evidence text is passed to the model as data.
+   synthesised from the evidence items, which must cite them and must say when
+   the only evidence is the diff. Evidence text is passed to the model as data.
+   Pull request and issue text is passed only for public repositories, or when
+   the user opts in with `--draft-private`, and even then the draft must not
+   quote it.
 
 Every backfilled version, in either mode, carries a new `inferred` field:
 
@@ -134,8 +168,10 @@ Every backfilled version, in either mode, carries a new `inferred` field:
   `medium` when it speaks to the whole change (commit or PR text shared by
   many units); `low` when only the code and diff were available.
 - **`actor` keeps its meaning**: who made the change, not who wrote the
-  rationale. It comes from git, and becomes an agent when a `Co-Authored-By`
-  trailer names one (with `reviewed: false`).
+  rationale. Only its kind comes from git: `human`, or an agent when a
+  `Co-Authored-By` trailer names one (with `reviewed: false`). Author names and
+  emails are never written to `.poetics/`; as the plan says, human authorship
+  comes from git through the version's commit.
 - **The evidence goes in `links`**: the commit, PR, issues, changeset and
   decision records, as typed references. Issue and PR text is never stored.
 - Policy can treat inferred, unreviewed rationale like unreviewed agent
@@ -152,8 +188,9 @@ collectors:
   description and labels; review comments whose lines fall inside the unit's
   span at that commit.
 - **Issues:** closing references on the PR and `Fixes`/`Refs` in commits,
-  stored as `github-issue` links; issue text is fetched only to draft
-  rationale and to set confidence, never written to `.poetics/`.
+  stored as `github-issue` links; issue text is fetched only to set confidence
+  and, under the `--draft` rule above, to draft rationale. It is never written
+  to `.poetics/`.
 - **Credentials** come from `GITHUB_TOKEN` or `gh auth token`, never from
   `.poetics/`. Responses are cached under `.poetics/cache/` so a re-run makes
   no repeat calls and a long walk can resume after a rate limit.
@@ -181,19 +218,40 @@ hash, so nothing is duplicated.
   drafting prompt before anyone else relies on them.
 - Schema and model changes follow acceptance: `prehistory` and `inferred` in
   `schemas/unit.schema.json`, `packages/core/src/types.ts` and
-  `docs/data-model.md`; `prehistory` and the `commit` fill-in in
-  `poetics:check`'s history rules; `inferred` in the index. `poetics backfill`
-  joins `packages/cli/src/commands.ts` and `docs/getting-started.md` as a
-  stub, and a `poetics-backfill` skill tells agents how to review the report.
-- Snapshot mode with local collectors lands with the indexer in phase 1;
-  history mode and the GitHub collectors land with the issue tracker
-  integration in phase 2.
+  `docs/data-model.md`; the write-once `prehistory` rule and ADR 0010's amended
+  `created` rule in `checkStore` and `poetics verify`; `inferred` in the index.
+  `poetics backfill` joins `packages/cli/src/commands.ts` and
+  `docs/getting-started.md`, and a `poetics-backfill` skill tells agents how to
+  review the report.
+- Snapshot mode with the local collectors lands first, on top of
+  `poetics index`, and lets `poetics init` (#24) finish. History mode and the
+  GitHub collectors land with the issue tracker integration in phase 2.
 - Open questions, to be filed as issues:
   - Is the first-parent walk enough, or do long-lived branches merged without
     squashing need their own commits attributed?
-  - Should `--draft` be allowed to read private repositories' PR and issue
-    text at all, or only public ones, by default?
   - Should candidate notes ever be written automatically when evidence is
     `high` (for example a reviewer's "never do X")?
   - Does re-parsing every historic revision scale to large repositories, or
     does history mode need a sampling or `--paths` limit by default?
+
+## Revisions
+
+2026-11-04, before acceptance, to fit what phase 1 built and two rules the
+first draft broke:
+
+- Extracted rationale quotes only evidence already in the repository; pull
+  request and issue text is linked, never quoted, and reaches `--draft` only
+  for public repositories or with `--draft-private`. The first draft quoted PR
+  descriptions, which would have put their text in git.
+- Units that already have a file are never written to. The first draft filled
+  in omitted `commit` fields, which edits recorded versions; the commit is
+  already known from the unit file's history.
+- Snapshot mode is `poetics index` with per-unit rationale, sharing its code.
+- History mode follows units with `matchIdentities` between commits, stops a
+  unit's prehistory where matching would only queue it, and classifies
+  interface changes from signature text.
+- `prehistory` and `versions` are joined by commit rather than by `parent`,
+  since `versions[0]` cannot change; ADR 0010's `created` rule applies to each
+  list.
+- `actor` takes only its kind from git; author names and emails are never
+  stored.
