@@ -1,9 +1,9 @@
-import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { Unit } from "@poetics/core";
-import { applyIndex, planIndex } from "./indexing.ts";
+import { applyIndex, formatIndexPlan, planIndex } from "./indexing.ts";
 import { runGit, write } from "./test-helpers.ts";
 
 const CONFIG = { include: ["src/**/*.ts"], exclude: ["**/*.test.ts"] };
@@ -103,6 +103,39 @@ describe("planIndex and applyIndex", () => {
     expect(after.get("formatPrice")!.versions).toEqual(before.get("formatPrice")!.versions);
     expect(after.get("gone")!.versions.at(-1)).toMatchObject({ change: "removed", rationale: "Reorganise" });
     expect(await planIndex(root, CONFIG)).toMatchObject({ moves: [], versions: [], created: [], removed: [], queued: [] });
+  });
+
+  it("follows test files git saw renamed, for moved and unmoved units alike", async () => {
+    const root = await seeded({
+      "src/price.ts": PRICE,
+      "src/price.test.ts": `// tests formatPrice\n`,
+      "src/cart.ts": TOTAL,
+      "src/cart.test.ts": `// tests total\n`,
+    });
+    const before = await store(root);
+    expect(before.get("formatPrice")!.tests).toEqual([{ file: "src/price.test.ts", via: "static" }]);
+    // formatPrice and its test move together; total stays put while its test moves away.
+    await Promise.all(["src/format", "test"].map((dir) => mkdir(join(root, dir))));
+    runGit(root, "mv", "src/price.ts", "src/format/price.ts");
+    runGit(root, "mv", "src/price.test.ts", "src/format/price.test.ts");
+    runGit(root, "mv", "src/cart.test.ts", "test/cart.test.ts");
+    const plan = await planIndex(root, CONFIG, { rationale: "Reorganise" });
+    expect(plan.moves.map((m) => m.uid)).toEqual([before.get("formatPrice")!.uid]);
+    expect(plan.relinks).toEqual([
+      { uid: before.get("total")!.uid, key: "src/cart.ts#total", tests: [{ from: "src/cart.test.ts", to: "test/cart.test.ts" }] },
+      { uid: before.get("formatPrice")!.uid, key: "src/format/price.ts#formatPrice", tests: [{ from: "src/price.test.ts", to: "src/format/price.test.ts" }] },
+    ]);
+    expect(plan.fresh).toBe(1);
+    expect(formatIndexPlan(plan)).toContain("= src/cart.ts#total tests: src/cart.test.ts -> test/cart.test.ts");
+    expect(formatIndexPlan(plan)).toContain("1 moved, 0 changed, 0 new, 0 removed, 2 relinked");
+
+    expect(await applyIndex(root, plan, human)).toBe(2);
+    const after = await store(root);
+    expect(after.get("formatPrice")).toMatchObject({ location: { file: "src/format/price.ts" }, tests: [{ file: "src/format/price.test.ts", via: "static" }] });
+    expect(after.get("total")!.tests).toEqual([{ file: "test/cart.test.ts", via: "static" }]);
+    expect(after.get("total")!.versions).toEqual(before.get("total")!.versions);
+    // Recorded, so a second run against the same base relinks nothing.
+    expect((await planIndex(root, CONFIG)).relinks).toEqual([]);
   });
 
   it("leaves units a person already recorded alone", async () => {

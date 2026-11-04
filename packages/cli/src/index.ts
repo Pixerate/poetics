@@ -17,5 +17,5 @@ export type { Io } from "./run.ts";
 export { VERSION, run } from "./run.ts";
 export type { RehashEntry, RehashPlan } from "./rehash.ts";
 export { applyRehash, planRehash, unitHashes } from "./rehash.ts";
-export type { IndexOptions, IndexPlan, PlannedMove, PlannedVersion } from "./indexing.ts";
+export type { IndexOptions, IndexPlan, PlannedMove, PlannedRelink, PlannedVersion } from "./indexing.ts";
 export { applyIndex, formatIndexPlan, hasWrites, planIndex } from "./indexing.ts";

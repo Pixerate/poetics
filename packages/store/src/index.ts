@@ -32,6 +32,7 @@ export {
   readUnit,
   readUnitFiles,
   recordRationale,
+  relinkTests,
   relocateUnit,
   setDocs,
 } from "./json-store.ts";
