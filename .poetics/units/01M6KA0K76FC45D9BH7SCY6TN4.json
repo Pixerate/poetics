@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6KA0K76FC45D9BH7SCY6TN4",
+  "kind": "type",
+  "framework": "none",
+  "name": "Evidence",
+  "location": {
+    "file": "packages/cli/src/backfill.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:db95265239831d56ce2a9186e2c62c6a0a0e3f8f809d58099420a14180162421",
+      "interfaceHash": "b3:0e50d9906068e1059ecf58be1fd9697b9ecbd229b6f6a964b763d330e82cae83",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Each piece of evidence names its source and where it came from, so a rationale and its confidence can be traced back to them.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        }
+      ],
+      "deps": {
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582"
+      }
+    }
+  ],
+  "docs": "One piece of evidence about why a unit exists.",
+  "tests": [
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    }
+  ]
+}

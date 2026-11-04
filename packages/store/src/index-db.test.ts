@@ -156,4 +156,18 @@ describe("searchUnits", () => {
     expect(uids(searchUnits(db, "cost"))).toEqual([UID_A]);
     expect(uids(searchUnits(db, "cart"))).toEqual([]);
   });
+
+describe("inferred versions", () => {
+  it("records a backfilled version's confidence, and null for recorded ones", async () => {
+    const inferred = makeUnit(UID_A);
+    inferred.versions[0] = { ...inferred.versions[0]!, inferred: { by: "poetics-backfill", confidence: "medium", sources: ["commit"], drafted: false, reviewed: false } };
+    const paths = storePaths(await makeRepo([inferred, makeUnit(UID_B)]));
+    const db = openIndex(paths.indexDb);
+    await rebuildIndex(paths, db);
+    expect(db.prepare("SELECT uid, inferred_confidence FROM versions ORDER BY uid").all()).toEqual([
+      { uid: UID_A, inferred_confidence: "medium" },
+      { uid: UID_B, inferred_confidence: null },
+    ]);
+  });
+});
 });

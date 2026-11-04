@@ -10,7 +10,7 @@ import type { StorePaths } from "./paths.ts";
  * The local SQLite index at `.poetics/cache/index.db`. It is derived data:
  * gitignored, rebuilt from `.poetics/units/*.json`, and safe to delete.
  */
-export const INDEX_SCHEMA_VERSION = 2;
+export const INDEX_SCHEMA_VERSION = 3;
 
 const DDL = `
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS versions (
   actor_model TEXT,
   reviewed INTEGER,
   rationale TEXT NOT NULL,
+  inferred_confidence TEXT,
   PRIMARY KEY (uid, seq)
 );
 CREATE TABLE IF NOT EXISTS deps (
@@ -196,8 +197,8 @@ function insertUnit(db: DatabaseSync, unit: Unit): void {
 
   const insertVersion = db.prepare(
     `INSERT INTO versions (uid, seq, content_hash, interface_hash, closure_hash, parent, change, commit_sha,
-                           actor_kind, actor_tool, actor_model, reviewed, rationale)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                           actor_kind, actor_tool, actor_model, reviewed, rationale, inferred_confidence)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
   unit.versions.forEach((version, seq) => {
     const agent = version.actor.kind === "agent" ? version.actor : undefined;
@@ -215,6 +216,7 @@ function insertUnit(db: DatabaseSync, unit: Unit): void {
       agent?.model ?? null,
       agent ? Number(agent.reviewed) : null,
       version.rationale,
+      version.inferred?.confidence ?? null,
     );
   });
 
