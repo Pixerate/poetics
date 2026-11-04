@@ -1,0 +1,62 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6J0611SJTB4MRB2ME5KH5BH",
+  "kind": "function",
+  "framework": "none",
+  "name": "runGate",
+  "location": {
+    "file": "scripts/lib/gate.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:aac7ac9c1ac106c9f6747bdd13db17e28b4d6e0f58a73e7376740f0e2a6b15c9",
+      "interfaceHash": "b3:c2bb3744370dae57e60af018b8f87bfa5425c5ec24af7b0d5fe2dc3006e7df64",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The phase 1 gate (#26). It seeds the store with poetics index, then runs rounds of scripted refactors, each recorded by poetics index --write and checked uid by uid. Splits and merges are declared by hand, as the refactor skill says; queued matches are resolved as a person would.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#26"
+        }
+      ],
+      "deps": {
+        "01M6HS3HPGSA1NB2JTM6ZM903R": "b3:dbb56abfafffa1a6af99b5f802532bed33a61a89ad8e7a7bbdb12c4f73443a5e",
+        "01M6HNRFMKW8GXW0YMCVY67N4A": "b3:588fed85ac85cda89945b814917f1b7a4fcec907b605bd56053915157ead9ecb",
+        "01M6HNRFMKSSPK73VN3DNDX6B3": "b3:c62f196cfa4c65bb74ce15db23e10457a1094cf5d835d5efff07d85a919984b4",
+        "01M6HXEYDE1M8H5FYVN16JC6C2": "b3:b5faa4fd81648a656c327f13a25f9e72a40fa8e90ed3ae6bb3cce1d45adc4f85",
+        "01M6HXEYDEZ9Z7E3V1R9FWEZ91": "b3:942217ef0c0292e88ff693d0b88e1dfcd26d0ab584068154e8a78a9b0779419f",
+        "01M6HVGXY2H36T7Y808WGRDFE2": "b3:a0daa0b43a3ee5dc9d9d8fcf7388d5e51b96b9fa6eda5c71d280890246b05ac9",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e",
+        "01M5XDBC7FTZ5GY3BX711BWGN6": "b3:3cf0225787144e59edd01ec041de70443d024e2b9e55b22dfceabec9025b44b7",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:7fa6f7e9a68d3bcff563fe389ae879b1cc5be75dcb1946fd3f1dddab03baa1e1",
+        "01M5XDBC8AHR2H46K5QP50Q2KF": "b3:5e969e449753e15d4f3b6c002d64d33563529f661d39de0d75aca22a99128ff2",
+        "01M6HXEYDEHEF6JER5T7XB6K4Y": "b3:4d194b8a3592eb2bf128175d15179e25845cb0f2e8700d2e4d01bff705b61087",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M6HXEYDEEHFMA6N5AKHBQFVV": "b3:c84e0bd900761ef7ebbbbee9b23a2b3b4d4efbdfc0112ef955ffd9ee7ca6e618",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765",
+        "01M6J0611RWR0GXQFD30AW6JBG": "b3:d5d15670919f5df64a04333e473474d96648fd034a7a3ad1c5a4c02189b3c830",
+        "01M6J0611RTVB99GGQWEAAPF46": "b3:8efe6d7aa8c6eb81d22b8a2be4f9911ff8d4ff31f97152862b3a94172aa3272b",
+        "01M6J0611RXDG1J0DGPDSS1GZS": "b3:afd0d32a14fd9d18d07da68caf35d1fc6077f9b9d2a0be9dd279a3cb49b942c1",
+        "01M6J0611S9BFCZS94NH8M0SWY": "b3:78eb72c5750c80d543a72a25bb226bf91755c45705fd8bc815f306e3d3dad837",
+        "01M6J0611RPKE7979WBGCNP8KP": "b3:910b6ab7b3b21f59d79b194a248ba02a405791d441d5a8cf75a63882251b46fb"
+      }
+    }
+  ],
+  "docs": "Runs the gate on one prepared corpus: seed the store, then `rounds` rounds of one refactor of each kind.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate.test.ts",
+      "via": "static"
+    }
+  ]
+}

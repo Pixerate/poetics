@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6J0611RXDG1J0DGPDSS1GZS",
+  "kind": "type",
+  "framework": "none",
+  "name": "RefactorKind",
+  "location": {
+    "file": "scripts/lib/gate.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:afd0d32a14fd9d18d07da68caf35d1fc6077f9b9d2a0be9dd279a3cb49b942c1",
+      "interfaceHash": "b3:29572c12055a5087a685b300b1bca1cf861283a395de17b6e2e28bf19c4ddb4c",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Names the six scripted refactors the gate applies: the renames, moves, splits and merges #26 asks for, plus a rename with an edit for similarity.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#26"
+        }
+      ]
+    }
+  ],
+  "docs": "The refactors the phase 1 gate applies.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate.test.ts",
+      "via": "static"
+    }
+  ]
+}

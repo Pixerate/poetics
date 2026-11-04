@@ -41,6 +41,7 @@ pnpm install
 | `pnpm poetics index [--since <ref>] [--write] [--rationale <text>] [--agent <tool> [--model <id>]] [--json]` | Record what changed since a ref (default `HEAD`): versions classified from their hashes, moves and renames with lineage, new units with fresh uids and removed ones. A dry run without `--write`; the rationale defaults to the commit messages since the ref. Exit 1 while look-alike matches are queued for you to declare |
 | `pnpm poetics hash <file>[#name] [--json]` | The indexer's `contentHash` and `interfaceHash` for a file's units, for a hand-written version |
 | `pnpm poetics rehash [--write] [--agent <tool> [--model <id>]]` | Append `rehash` versions replacing provisional `git:` hashes with `b3:` ones ([ADR 0014](decisions/0014-rehash-versions.md)); a dry run without `--write`, exit 1 if any unit has unrecorded changes |
+| `pnpm gate [--fetch] [--rounds N] [--seed N] [--only name]` | The phase 1 gate: scripted refactors on pinned real repositories, recorded by `poetics index` and checked uid by uid; writes `evals/gate/results.md` ([evals/gate](../evals/gate/README.md)). `--fetch` downloads the corpus first |
 | `pnpm changeset` | Describe a change for the next release |
 
 Run the demo site (Poetics on this repository) in a browser:

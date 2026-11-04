@@ -172,6 +172,9 @@ importers:
       '@changesets/cli':
         specifier: ^3.0.3
         version: 3.0.3
+      '@poetics/adapter-typescript':
+        specifier: workspace:*
+        version: link:packages/adapter-typescript
       '@poetics/cli':
         specifier: workspace:*
         version: link:packages/cli

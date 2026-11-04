@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6J0611RSE02M5BGGFC22646",
+  "kind": "function",
+  "framework": "none",
+  "name": "fetchCorpus",
+  "location": {
+    "file": "scripts/gate.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:56f84ea7b9975630043a83d39765469b535174d69e5c8e4a5e9f2fe639c99717",
+      "interfaceHash": "b3:931ba769bc2afdeb37beff257923e3c0bdbd91b50d3ee8a0a1cdbb3b339bbcf1",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The corpus is fetched only when asked (pnpm gate --fetch), shallow at the pinned commit and source only, so the gate measures fixed code and never installs or runs it.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#26"
+        }
+      ],
+      "deps": {
+        "01M6J0611RWR0GXQFD30AW6JBG": "b3:d5d15670919f5df64a04333e473474d96648fd034a7a3ad1c5a4c02189b3c830"
+      }
+    }
+  ],
+  "docs": "Fetches one pinned commit, shallow, unless the cache already has it.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate.test.ts",
+      "via": "static"
+    }
+  ]
+}
