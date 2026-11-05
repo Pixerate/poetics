@@ -173,7 +173,13 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
 
   // 3. Versions, now that every key has its uid for deps.
   const words = rationale ?? "";
-  const links = issueLinks(words);
+  // An explicit rationale speaks for the whole run; a commit's references belong to the units in the files it touched.
+  const explicit = options.rationale?.trim() ? issueLinks(options.rationale) : [];
+  const commits = base ? commitReferences(root, base) : [];
+  const linksFor = (...files: string[]): Link[] => {
+    const found = [...explicit, ...commits.filter((c) => files.some((file) => c.files.has(file))).flatMap((c) => c.links)];
+    return found.filter((link, i) => found.findIndex((other) => linkKey(other) === linkKey(link)) === i);
+  };
   const depsOf = (at: IndexedUnit) => {
     const deps: Record<string, Hash> = {};
     for (const edge of at.edges) {
@@ -193,6 +199,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
       change: classify(previous, at, was?.contentHash === previous.contentHash ? was.runtimeHash : undefined),
       rationale: words,
     };
+    const links = linksFor(at.span.file, unit.location.file);
     if (links.length > 0) version.links = links;
     const deps = depsOf(at);
     if (deps) version.deps = deps;
@@ -202,6 +209,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     const first = unit.versions[0]!;
     // A declared split says where the part came from; that is its reason to exist.
     first.rationale = splitFrom ? `Split out of ${splitFrom.name} (${splitFrom.uid}).` : words;
+    const links = linksFor(at.span.file);
     if (links.length > 0) first.links = links;
     const deps = depsOf(at);
     if (deps) first.deps = deps;
@@ -211,6 +219,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     const survivor = mergedInto ? unitByUid.get(mergedInto) : undefined;
     const reason = survivor ? `Merged into ${survivor.name} (${survivor.uid}).` : words;
     const version: Omit<Version, "actor"> = { contentHash: REMOVED_CONTENT_HASH, provisional: true, parent: unit.versions.at(-1)!.contentHash, change: "removed", rationale: reason };
+    const links = linksFor(unit.location.file);
     if (links.length > 0) version.links = links;
     plan.removed.push({ uid, key: `${unit.location.file}#${unit.name}`, version, ...(mergedInto ? { mergedInto } : {}) });
   }
@@ -391,10 +400,26 @@ function commitMessages(root: string, base: string): string {
     .trim();
 }
 
-/** `#123` references in the rationale, as issue links, so the version cites its source. */
+/** `#123` and `owner/repo#123` references in text, as issue links, so a version cites its source. */
 function issueLinks(text: string): Link[] {
-  const refs = [...new Set([...text.matchAll(/(?:^|[\s(])#(\d+)\b/g)].map((m) => `#${m[1]}`))];
+  const refs = [...new Set([...text.matchAll(/(?:^|[\s(])((?:[\w.-]+\/[\w.-]+)?#\d+)\b/g)].map((m) => m[1]!))];
   return refs.map((ref) => ({ kind: "github-issue", ref }));
+}
+
+/** Each commit from `base` to HEAD: the files it touched and the issues its message references. */
+function commitReferences(root: string, base: string): Array<{ files: Set<string>; links: Link[] }> {
+  return git(root, ["log", "--name-only", "--format=%x1e%B%x1f", `${base}..HEAD`])
+    .split("\x1e")
+    .filter((record) => record.trim() !== "")
+    .map((record) => {
+      const [message = "", files = ""] = record.split("\x1f");
+      return { files: new Set(files.split("\n").filter(Boolean)), links: issueLinks(message) };
+    })
+    .filter((commit) => commit.links.length > 0);
+}
+
+function linkKey(link: Link): string {
+  return typeof link === "string" ? link : `${link.kind}:${link.ref}`;
 }
 
 // Types and values live in separate namespaces.
