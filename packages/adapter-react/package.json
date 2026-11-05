@@ -38,6 +38,8 @@
     }
   },
   "dependencies": {
-    "@poetics/core": "workspace:*"
+    "@poetics/adapter-typescript": "workspace:*",
+    "@poetics/core": "workspace:*",
+    "typescript": "^6.0.3"
   }
 }

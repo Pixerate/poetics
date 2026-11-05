@@ -8,6 +8,7 @@ import { createMatcher, parseUnit, readUnitFiles, storePaths } from "@poetics/st
 import type { Scope } from "@poetics/store";
 import type { Unit } from "@poetics/core";
 import { declarationsIn } from "./declarations.ts";
+import { pluginsFor } from "./frameworks.ts";
 import type { Declaration } from "./declarations.ts";
 import { DRIFT_SEVERITY, compareCodeWithStore } from "./drift.ts";
 import { changesSince, showAt } from "./git.ts";
@@ -42,7 +43,8 @@ export interface ChangeReport {
 
 const PARSEABLE = /\.(ts|tsx|mts|cts)$/;
 
-export async function checkChange(root: string, since: string, scope: Scope): Promise<ChangeReport> {
+export async function checkChange(root: string, since: string, scope: Scope & { adapters?: readonly string[] }): Promise<ChangeReport> {
+  const plugins = pluginsFor(scope);
   const { base, changes } = changesSince(root, since);
   const inScope = createMatcher(scope.include, scope.exclude ?? []);
   const changedPaths = new Set(changes.flatMap((c) => (c.from ? [c.path, c.from] : [c.path])));
@@ -53,7 +55,7 @@ export async function checkChange(root: string, since: string, scope: Scope): Pr
   const declarations: Declaration[] = [];
   for (const file of codeFiles) {
     const text = await readFile(join(root, file), "utf8").catch(() => undefined);
-    if (text !== undefined) declarations.push(...declarationsIn(file, text));
+    if (text !== undefined) declarations.push(...declarationsIn(file, text, plugins));
   }
   const paths = storePaths(root);
   const units = (await readUnitFiles(paths)).map(parseUnit);
@@ -112,7 +114,7 @@ export async function checkChange(root: string, since: string, scope: Scope): Pr
   const declarationsOf = async (file: string) => {
     if (!declarationCache.has(file)) {
       const text = await readFile(join(root, file), "utf8").catch(() => undefined);
-      declarationCache.set(file, text === undefined ? [] : declarationsIn(file, text));
+      declarationCache.set(file, text === undefined ? [] : declarationsIn(file, text, plugins));
     }
     return declarationCache.get(file)!;
   };

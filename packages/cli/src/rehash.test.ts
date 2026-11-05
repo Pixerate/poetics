@@ -50,4 +50,18 @@ describe("planRehash and applyRehash", () => {
     const plan = await planRehash(root, config);
     expect(hashes).toEqual({ name: "a", kind: "function", startLine: 1, endLine: 3, contentHash: plan.rehash[0]!.contentHash, interfaceHash: plan.rehash[0]!.interfaceHash });
   });
+
+  it("hashes a component's props as its interface when the config lists react", async () => {
+    const root = await makeGitRepo(UID);
+    const tag = (unit: string) => `export function Tag({ unit = "${unit}" }: { unit?: string }) {\n  return <b>{unit}</b>;\n}\n`;
+    const react = { include: ["src/**/*.{ts,tsx}"], adapters: ["react"] };
+    await write(root, "src/Tag.tsx", tag("GBP"));
+    const [gbp] = await unitHashes(root, react, "src/Tag.tsx");
+    expect(gbp).toMatchObject({ name: "Tag", kind: "component" });
+    await write(root, "src/Tag.tsx", tag("EUR"));
+    const [eur] = await unitHashes(root, react, "src/Tag.tsx");
+    expect(eur!.interfaceHash).not.toBe(gbp!.interfaceHash);
+    expect((await unitHashes(root, { include: ["src/**/*.{ts,tsx}"] }, "src/Tag.tsx"))[0]!.kind).toBe("function");
+    expect((await planRehash(root, react)).rehash.map((e) => e.name)).toEqual(["a"]);
+  });
 });

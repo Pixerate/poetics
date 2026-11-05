@@ -68,6 +68,41 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:81ccf5ff2dc2abe31f19182a85a38ac8c22294968c85d11af71909f849e8ebca",
+      "interfaceHash": "b3:0fcfb7d75bfc1ddbd251b4d4f8f868d1a77605502d94296ca835b6267928adc9",
+      "parent": "b3:626a1bcbab69040e31141608c5b7b626651f8be2d435594e2b66ff363ed0ed58",
+      "change": "interface",
+      "rationale": "Detects units with the plugins the config's adapters call for, so the change check sees memo components. The scope may now carry adapters. It is additive: the new parameter is optional and defaults to no plugins, so existing callers behave as before.",
+      "deps": {
+        "01M5Z1F6N1FTYYAR23HPRTR5EE": "b3:b9ace4b4528f8bd168f1d5cf1ea5d00310d85703aea9f5bbf024d8ed830b703e",
+        "01M5Z1F6N2W72KV89NHZA85J1J": "b3:629fb60c03c2dcca7cb3b0403a4babf0fe527310d8661be76e80eaad3b6b7ffc",
+        "01M5Z1F6ND8XM1DD3V2T49XSGD": "b3:61e0decd4f3c2ee8c2bcbeec36371a6dc4c9aab4ba968f52b7976fc60d6af2b5",
+        "01M5Z1F6NGAYZ9D3QGFH01DC93": "b3:5c2af0e3df7dd74b7ec3883cd385d251097c0d3a3941ab1f8d8b1b1978022317",
+        "01M5Z1F6NNZ764QBAJ2DY8QTQY": "b3:8328cff2c93ae3c1c1b94d67d654b156f548f918557a96b6047f05d74b42f9cd",
+        "01M6ME83DBRXTEJAFTHD4TY1R0": "b3:2bced8d96434b3d623f644cf2e834e591c115073faaf9b19d4572022f25e6cf6",
+        "01M5Z1F6NSEZG78RH31S5GZANP": "b3:6f1bd4d062f93cf88e1b3e890edcadcbb79a8311e3f82efce3a6250f7308a575",
+        "01M5Z1F6NQR9T376HTSH2ZYP8C": "b3:85859a81a9f157d7de29c1cfe6fed88d978006bd3ed9ea8645bd87f785770203",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e",
+        "01M5Z1F6NV9Q4BF2C1KBZD09MQ": "b3:73bb120c04ff81df07603ebd00c8a7b85a52b560589afe2ec8b7691c4be3c18a",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M5Z1F6NEEP85GB1637ED9BB3": "b3:f8367fa172fac624fe8134b84bb4d8a768b6823428e6ef392789dbc505e1f5a4"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "tests": [

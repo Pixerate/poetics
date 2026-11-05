@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6ME83DBRXTEJAFTHD4TY1R0",
+  "kind": "function",
+  "framework": "none",
+  "name": "pluginsFor",
+  "location": {
+    "file": "packages/cli/src/frameworks.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:2bced8d96434b3d623f644cf2e834e591c115073faaf9b19d4572022f25e6cf6",
+      "interfaceHash": "b3:20cd0e1e8e3aabb28204c25dfc8a9dda65550bc67e2b235ed3580093d19c14f6",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Maps the config's adapters to framework plugins in one place, so poetics index, backfill, rehash, hash and the change check all run the same ones.",
+      "deps": {
+        "01M6ME83DB7CZMB7TW8W4YE6PZ": "b3:887c54152de0d1b3050b4a76972cf53aa8a534c5d26d92bc829146dbf6a3f554",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:c0d8e0d42482a337df58d377a39417534e79f08a0fcbba50561cd6b1611a57e5"
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
+    }
+  ],
+  "docs": "The plugins for `config.adapters`: React's when `react` is listed. Svelte's arrives with its adapter.",
+  "tests": [
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

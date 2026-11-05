@@ -45,12 +45,38 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:54d36aaebcca5644c0bd267d34330889c5fd37627f44a70a8a648d5bb85a2635",
+      "interfaceHash": "b3:9bbcdb20971ec75222636218663528acff88074bbf225dafec25aa969bf52fc5",
+      "parent": "b3:f78e5940a4bec9b0123de4c6b2413437ea4a1a5c33936576f5a88b96783abe55",
+      "change": "interface",
+      "rationale": "Adds plugins, the framework adapters the indexer consults in order. It is additive: the new parameter is optional and defaults to no plugins, so existing callers behave as before.",
+      "deps": {
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:c0d8e0d42482a337df58d377a39417534e79f08a0fcbba50561cd6b1611a57e5"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "Root, files in scope, compiler options or tsconfig, and the cache file for an indexer.",
   "tests": [
     {
       "file": "packages/adapter-typescript/src/indexer.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
       "via": "static"
     }
   ]

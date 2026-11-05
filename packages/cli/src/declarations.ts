@@ -10,6 +10,8 @@ import { contentHash, gitBlobHash } from "@poetics/core";
 import type { Hash, UnitKind } from "@poetics/core";
 import { filesInScope } from "@poetics/store";
 import type { Scope } from "@poetics/store";
+import type { FrameworkPlugin } from "@poetics/adapter-typescript";
+import { pluginsFor } from "./frameworks.ts";
 
 export interface Declaration {
   /** Repo-relative POSIX path. */
@@ -26,9 +28,9 @@ export interface Declaration {
 }
 
 /** The units the TypeScript indexer detects in one source text: exported functions, hooks and types. */
-export function declarationsIn(file: string, text: string): Declaration[] {
+export function declarationsIn(file: string, text: string, plugins: readonly FrameworkPlugin[] = []): Declaration[] {
   const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
-  return detectUnits(source, file).map((unit) => ({
+  return detectUnits(source, file, plugins).map((unit) => ({
     file,
     name: unit.name,
     kind: unit.kind,
@@ -40,9 +42,10 @@ export function declarationsIn(file: string, text: string): Declaration[] {
 }
 
 /** Every tracked-shape declaration in scope. */
-export async function discoverDeclarations(root: string, scope: Scope): Promise<{ declarations: Declaration[]; unsupported: string[] }> {
+export async function discoverDeclarations(root: string, scope: Scope & { adapters?: readonly string[] }): Promise<{ declarations: Declaration[]; unsupported: string[] }> {
   const { parseable, unsupported } = await filesInScope(root, scope);
   const declarations: Declaration[] = [];
-  for (const file of parseable) declarations.push(...declarationsIn(file, await readFile(join(root, file), "utf8")));
+  const plugins = pluginsFor(scope);
+  for (const file of parseable) declarations.push(...declarationsIn(file, await readFile(join(root, file), "utf8"), plugins));
   return { declarations, unsupported };
 }

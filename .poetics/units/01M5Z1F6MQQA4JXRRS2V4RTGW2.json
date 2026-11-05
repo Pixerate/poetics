@@ -45,6 +45,31 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:aaa530d7262bc755b0feb297250400b27e403d323a6083e20812b35667f29b4b",
+      "interfaceHash": "b3:de54bf7df078f1c60aa80dae4ab97e518a2ca04909389a2efdd42fdb5cfec5a7",
+      "parent": "b3:33e8175376937f2775dbc2e1fa7ba97dfab355093bfce15e64a878c78934deee",
+      "change": "interface",
+      "rationale": "Implements the React adapter on the TypeScript indexer with React's plugin, instead of a stub. It now takes the indexer's options (root, files, tsconfig) rather than a tsconfig alone, since the indexer owns the program.",
+      "deps": {
+        "01M6ME83DB7CZMB7TW8W4YE6PZ": "b3:887c54152de0d1b3050b4a76972cf53aa8a534c5d26d92bc829146dbf6a3f554",
+        "01M6HNRFMKAPXK2A92WA6CBEZS": "b3:b2896c345664715eefc0f9724313b30c9611bf25daa5b6317c3b215d49defc99",
+        "01M6HNRFMKST995NZC2B5AQYC5": "b3:54d36aaebcca5644c0bd267d34330889c5fd37627f44a70a8a648d5bb85a2635",
+        "01M5XDBC6FN0EZ8VSKNJTW4AK6": "b3:a78948e25c788b8194c9f3c87ec3fc2f8e67f172a66894171a8920553a96fe21"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "Detects components, hooks and functions in `.ts` and `.tsx` via ts-morph.",

@@ -158,3 +158,23 @@ describe("poetics_verify", () => {
     expect([scoped.ok, scoped.stale, scoped.untested]).toEqual([true, [], []]);
   });
 });
+
+describe("codeView with React", () => {
+  it("sees components and renders edges when the config lists react", async () => {
+    const root = await mkdtemp(join(tmpdir(), "poetics-mcp-react-"));
+    await write(root, ".poetics/config.json", JSON.stringify({ version: 1, adapters: ["typescript", "react"], include: ["src/**/*.tsx"] }));
+    await write(root, "src/Tag.tsx", "export function Tag() {\n  return <b />;\n}\n");
+    await write(root, "src/Page.tsx", 'import { Tag } from "./Tag.tsx";\nexport function Page() {\n  return <Tag />;\n}\n');
+    const units = ["Tag", "Page"].map((name, i): Unit => ({
+      uid: `01JB8K000000000000000000R${i}`,
+      kind: "component",
+      framework: "react",
+      name,
+      location: { file: `src/${name}.tsx` },
+      versions: [{ contentHash: `b3:${String(i).repeat(64)}`, parent: null, change: "created", actor: { kind: "human" }, rationale: name }],
+    }));
+    const view = await codeView(root, units);
+    expect(view.byUid.get(units[0]!.uid)).toMatchObject({ kind: "component", framework: "react" });
+    expect(view.graph.edges).toEqual([{ from: units[1]!.uid, to: units[0]!.uid, kind: "renders" }]);
+  });
+});

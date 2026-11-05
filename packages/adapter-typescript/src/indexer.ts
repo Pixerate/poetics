@@ -4,10 +4,10 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import ts from "typescript";
 import { computeClosureHashes, contentHash, createGraph, gitBlobHash, interfaceHash } from "@poetics/core";
-import type { Edge, Hash, Span, UnitKind } from "@poetics/core";
+import type { Edge, Framework, Hash, Span, UnitKind } from "@poetics/core";
 import { fingerprint } from "./normalise.ts";
 import { contentTree, detectUnits, edgesOf, signatureOf, signatureText } from "./units.ts";
-import type { DetectedUnit, IndexedEdge, Signature, UnresolvedUse } from "./units.ts";
+import type { DetectedUnit, FrameworkPlugin, IndexedEdge, Signature, UnresolvedUse } from "./units.ts";
 
 export interface TypeScriptIndexerOptions {
   /** Repository root: files, spans and keys are relative to it. */
@@ -20,6 +20,8 @@ export interface TypeScriptIndexerOptions {
   compilerOptions?: ts.CompilerOptions;
   /** Where the per-file cache lives, e.g. `.poetics/cache/typescript.json`. Without one, nothing is kept between indexers. */
   cacheFile?: string;
+  /** Framework adapters to consult, such as React's, in order. */
+  plugins?: readonly FrameworkPlugin[];
 }
 
 /** One unit with everything the store needs from the indexer. */
@@ -29,7 +31,7 @@ export interface IndexedUnit {
   name: string;
   exportedAs?: string;
   kind: UnitKind;
-  framework: "none";
+  framework: Framework;
   span: Span;
   /** 1-based and inclusive, for people. */
   startLine: number;
@@ -61,7 +63,7 @@ export interface TypeScriptIndexer {
 }
 
 // Bump when the shape of cached units or the normalisation changes, so old caches are dropped.
-const CACHE_VERSION = 4;
+const CACHE_VERSION = 5;
 const LOCKFILES = ["pnpm-lock.yaml", "package-lock.json", "yarn.lock", "bun.lock"];
 
 const DEFAULT_OPTIONS: ts.CompilerOptions = {
@@ -91,7 +93,9 @@ export function createTypeScriptIndexer(options: TypeScriptIndexerOptions): Type
   const compilerOptions: ts.CompilerOptions = { ...compilerOptionsFor(root, options), noEmit: true };
   const resolutionCache = ts.createModuleResolutionCache(root, (name) => name, compilerOptions);
   const host = reusingHost(compilerOptions);
-  const environment = gitBlobHash(JSON.stringify([CACHE_VERSION, ts.version, compilerOptions, lockfileHash(root)]));
+  const plugins = options.plugins ?? [];
+  // A plugin changes what units are and what they use, so the frameworks are part of what cached units depend on.
+  const environment = gitBlobHash(JSON.stringify([CACHE_VERSION, ts.version, compilerOptions, lockfileHash(root), plugins.map((p) => p.framework)]));
   let cache = readCache(options.cacheFile, environment);
   let program: ts.Program | undefined;
 
@@ -113,14 +117,14 @@ export function createTypeScriptIndexer(options: TypeScriptIndexerOptions): Type
         for (const file of scope) {
           const source = program.getSourceFile(absolute(file));
           if (!source) continue;
-          const units = detectUnits(source, file);
+          const units = detectUnits(source, file, plugins);
           detected.set(file, { source, units });
           for (const unit of units) for (const declaration of unit.declarations) byDeclaration.set(declaration, unit);
         }
         const unitAt = (declaration: ts.Declaration) => byDeclaration.get(declaration);
         for (const file of misses) {
           const found = detected.get(file);
-          const units = found ? found.units.map((unit) => indexUnit(unit, found.source, checker, unitAt)) : [];
+          const units = found ? found.units.map((unit) => indexUnit(unit, found.source, checker, unitAt, plugins)) : [];
           next[file] = { key: keys.get(file)!, units };
         }
       }
@@ -136,15 +140,21 @@ export function createTypeScriptIndexer(options: TypeScriptIndexerOptions): Type
   };
 }
 
-function indexUnit(unit: DetectedUnit, source: ts.SourceFile, checker: ts.TypeChecker, unitAt: (d: ts.Declaration) => DetectedUnit | undefined): IndexedUnit {
-  const signature = signatureOf(unit, checker);
-  const { edges, unresolved } = edgesOf(unit, checker, unitAt);
+function indexUnit(
+  unit: DetectedUnit,
+  source: ts.SourceFile,
+  checker: ts.TypeChecker,
+  unitAt: (d: ts.Declaration) => DetectedUnit | undefined,
+  plugins: readonly FrameworkPlugin[],
+): IndexedUnit {
+  const signature = signatureOf(unit, checker, plugins);
+  const { edges, unresolved } = edgesOf(unit, checker, unitAt, plugins);
   const tree = contentTree(unit);
   const indexed: IndexedUnit = {
     key: unit.key,
     name: unit.name,
     kind: unit.kind,
-    framework: "none",
+    framework: unit.framework,
     span: unit.span,
     startLine: source.getLineAndCharacterOfPosition(unit.span.start).line + 1,
     endLine: source.getLineAndCharacterOfPosition(unit.span.end).line + 1,
@@ -153,7 +163,7 @@ function indexUnit(unit: DetectedUnit, source: ts.SourceFile, checker: ts.TypeCh
     interfaceHash: interfaceHash(signature),
     fingerprint: fingerprint(tree),
     signature,
-    signatureText: signatureText(unit, source),
+    signatureText: signatureText(unit, source, plugins),
     edges,
     unresolved,
   };

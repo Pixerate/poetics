@@ -45,6 +45,25 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "git:e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "provisional": true,
+      "parent": "b3:2a554958ccadde1e8fe99c6918a91f01e968dcffc0c63da4b4fd9f6be7bf7faf",
+      "change": "removed",
+      "rationale": "Removed: createReactAdapter takes the TypeScript indexer's options now, since the indexer owns the program a tsconfig configures.",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "tests": [

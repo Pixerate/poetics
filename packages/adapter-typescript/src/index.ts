@@ -6,8 +6,8 @@ export type { IndexResult, IndexedUnit, TypeScriptIndexer, TypeScriptIndexerOpti
 export { createTypeScriptIndexer } from "./indexer.ts";
 export type { NormalTree, NormaliseOptions } from "./normalise.ts";
 export { fingerprint, normaliseNode } from "./normalise.ts";
-export type { CallSignature, DetectedUnit, IndexedEdge, ParameterSignature, Signature, TypeText, UnresolvedUse } from "./units.ts";
-export { contentTree, detectUnits, edgesOf, signatureOf, signatureText } from "./units.ts";
+export type { CallSignature, DetectedUnit, FrameworkPlugin, IndexedEdge, ParameterSignature, Signature, TypeText, UnresolvedUse } from "./units.ts";
+export { contentTree, detectUnits, edgesOf, signatureOf, signatureText, typeText } from "./units.ts";
 
 /**
  * The indexer behind the `FrameworkAdapter` interface, for framework-neutral

@@ -20,7 +20,8 @@ describe("planInit", () => {
   it("detects React from dependencies and scopes the config to src/", async () => {
     const root = await repo({
       "package.json": JSON.stringify({ name: "app", dependencies: { react: "^19.0.0" } }),
-      "tsconfig.json": '{\n  // Comments are allowed here.\n  "compilerOptions": { "strict": true, },\n}\n',
+      // A comment, a trailing comma, and `/*` inside strings, as real tsconfig files have.
+      "tsconfig.json": '{\n  // Comments are allowed here.\n  "compilerOptions": { "strict": true, "paths": { "@/*": ["./*"] }, },\n}\n',
       "src/a.ts": FN,
       "src/App.tsx": "export function App() {\n  return null;\n}\n",
       "src/App.test.tsx": "export function t() {}\n",

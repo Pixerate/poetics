@@ -8,11 +8,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import ts from "typescript";
 import { contentTree, createTypeScriptIndexer, detectUnits, fingerprint } from "@poetics/adapter-typescript";
-import type { IndexedUnit } from "@poetics/adapter-typescript";
+import type { FrameworkPlugin, IndexedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
 import type { Actor, ChangeClass, CodeUnit, Hash, LineageEntry, Link, QueuedMatch, TrackedUnit, Unit, Version } from "@poetics/core";
 import { appendVersion, createMatcher, createUnit, filesInScope, parseUnit, readUnitFiles, relinkTests, relocateUnit, storePaths } from "@poetics/store";
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
+import { pluginsFor } from "./frameworks.ts";
 import { changesSince, git, showAt } from "./git.ts";
 
 export interface IndexOptions {
@@ -72,7 +73,8 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   const { parseable } = await filesInScope(root, config);
   const tsconfig = config.typescript?.tsconfig;
   const paths = storePaths(root);
-  const code = createTypeScriptIndexer({ root, files: parseable, cacheFile: join(paths.cache, CACHE), ...(tsconfig ? { tsconfig } : {}) }).index().units;
+  const plugins = pluginsFor(config);
+  const code = createTypeScriptIndexer({ root, files: parseable, cacheFile: join(paths.cache, CACHE), plugins, ...(tsconfig ? { tsconfig } : {}) }).index().units;
   // By scope, not by what exists now: a unit whose file was deleted or moved is exactly what matching is for.
   const inScope = createMatcher(config.include, config.exclude ?? []);
   const indexable = (file: string) => inScope(file) && /\.(ts|tsx|mts|cts)$/.test(file) && !file.endsWith(".d.ts");
@@ -83,7 +85,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   const units = live.filter((unit) => unit.owner === undefined && indexable(unit.location.file));
 
   const plan: IndexPlan = { base, rationale, fresh: 0, moves: [], versions: [], created: [], removed: [], relinks: [], queued: [] };
-  const baseCode = baseSnapshot(root, base);
+  const baseCode = baseSnapshot(root, base, plugins);
   const codeByPlace = new Map(code.map((unit) => [place(unit.span.file, unit.name, unit.kind), unit]));
   const uidOfKey = new Map<string, string>();
   const claimed = new Set<string>();
@@ -266,14 +268,14 @@ function changesFromBase(root: string, since: string): ReturnType<typeof changes
 }
 
 /** The units of a file as it was at `base`, read syntactically: enough for content hashes and fingerprints. */
-function baseSnapshot(root: string, base: string | null) {
+function baseSnapshot(root: string, base: string | null, plugins: readonly FrameworkPlugin[]) {
   const files = new Map<string, Map<string, CodeUnit & { runtimeHash: Hash }>>();
   return (file: string, name: string, kind: Unit["kind"]) => {
     if (!files.has(file)) {
       const found = new Map<string, CodeUnit & { runtimeHash: Hash }>();
       const text = base === null ? undefined : showAt(root, base, file);
       if (text !== undefined) {
-        for (const unit of detectUnits(ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true), file)) {
+        for (const unit of detectUnits(ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true), file, plugins)) {
           const tree = contentTree(unit);
           found.set(place(file, unit.name, unit.kind), {
             key: unit.key,

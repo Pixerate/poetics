@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6ME83DBQ587PPY9D0A4T6M3",
+  "kind": "function",
+  "framework": "none",
+  "name": "typeText",
+  "location": {
+    "file": "packages/adapter-typescript/src/units.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:ce113f0c9f1166b5261da3b08b781439dc518d14c3fefab1b573426cb57b0cf6",
+      "interfaceHash": "b3:79774f359d68298950f0158536f77ff30c56019536f80a86da3f3ed7426a199c",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Shares how a type is recorded (written as a normalised tree, or inferred by the checker) with framework plugins that build their own signatures.",
+      "deps": {
+        "01M6HNRFMKY02B40EEEAPZ66BP": "b3:30556d396c90f369fc9496e82b92c4e327d78359c0bda51c36d33639523c8d2d",
+        "01M6HNRFMKNA9Q4CSKAYB7S9VR": "b3:df2e28776262877ef98e352e7a88eadba44abf9f489471979213c51100b9f866"
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
+    }
+  ],
+  "docs": "A type as written at `node`, or as the checker infers it there when nothing is written.",
+  "tests": [
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}
