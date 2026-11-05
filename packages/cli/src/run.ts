@@ -10,7 +10,7 @@ import { COMMANDS } from "./commands.ts";
 import { coverageFor, formatCoverage } from "./coverage.ts";
 import { formatLog, formatWhy } from "./history.ts";
 import { applyBackfill, formatBackfillPlan, planBackfill } from "./backfill.ts";
-import { applyIndex, formatIndexPlan, hasWrites, planIndex } from "./indexing.ts";
+import { applyIndex, formatIndexPlan, needsRationale, planIndex } from "./indexing.ts";
 import { applyInit, formatInitPlan, planInit } from "./init.ts";
 import type { IndexPlan } from "./indexing.ts";
 import { applyRehash, planRehash, unitHashes } from "./rehash.ts";
@@ -211,7 +211,7 @@ async function index(args: readonly string[], io: Io, json: boolean, root: strin
     return 2;
   }
   const write = parsed.flags.has("--write");
-  if (write && plan.rationale === undefined && hasWrites(plan)) {
+  if (write && plan.rationale === undefined && needsRationale(plan)) {
     report(io, json, { error: "usage", command: "index", message: "No rationale: pass --rationale, or commit with a message first" });
     return 2;
   }

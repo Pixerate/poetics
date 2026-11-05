@@ -31,6 +31,7 @@ export {
   readNoteFiles,
   readUnit,
   readUnitFiles,
+  reclassifyUnit,
   recordRationale,
   relinkTests,
   relocateUnit,

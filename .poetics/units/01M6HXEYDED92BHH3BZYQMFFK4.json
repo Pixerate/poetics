@@ -62,6 +62,33 @@
         "model": "claude-opus-5-5",
         "reviewed": false
       }
+    },
+    {
+      "contentHash": "b3:3a5e578619ec595e8cece19f99faaeb5b9abe34d32b83debc3ec957055c02a8d",
+      "interfaceHash": "b3:b31098f559d7d487a78e1d4052c99b0f71238fdd884f83524511e6dd3b26be2c",
+      "parent": "b3:17c1536514b2b7ce5444895ec2c4c6652852620aaa1669e8616c57d028f0c2ba",
+      "change": "interface",
+      "rationale": "Adds reclassified: units whose code the adapters now see as a different kind or framework, such as functions the React adapter claims as components in a store recorded before it (the gap #45 left).",
+      "deps": {
+        "01M6HXEYDEF480EDP3WX2271SV": "b3:2626760e870c99f3d56ec520929eeeba2367441ee532e62daeceec10d5c73c70",
+        "01M6NQZ6JW8HM11W9KRMJH13TN": "b3:fab640d2bd82a3d4943f7f3c23bd2202113dcd2c67a72629a08aff922427bc53",
+        "01M6HZ4DBDVEJA4N2ZJYCX5X1N": "b3:31b7206d7076f2d7d5878247a7a3785c9637f12c4c8a496e25987432304806f3",
+        "01M6HXEYDDNG0KFMNFYRAH0DBY": "b3:2dcfd2ff21f0d716b631e7363cf944c01033f78c07a05ff9dd5d77021e995d79",
+        "01M6HS3HPGYWMWK3G2C5QGX42V": "b3:b01c420143755699106604d3591dec24f8d811280b57bc85787783b2fead310a",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-pull-request",
+          "ref": "#45"
+        }
+      ]
     }
   ],
   "docs": "Everything poetics index would record, plus the matches it leaves queued.",

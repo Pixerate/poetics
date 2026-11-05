@@ -248,14 +248,14 @@ describe("poetics CLI", () => {
       const dry = await execIn(root, "index");
       expect(dry.code).toBe(0);
       expect(dry.out).toMatch(/^\+ src\/a\.ts#a \(function, new uid [0-9A-Z]{26}\)\nNo rationale yet/);
-      expect(dry.out).toContain("Would record: 0 moved, 0 changed, 1 new, 0 removed, 0 relinked, 0 queued, 0 up to date.");
+      expect(dry.out).toContain("Would record: 0 moved, 0 changed, 1 new, 0 removed, 0 relinked, 0 reclassified, 0 queued, 0 up to date.");
 
       const written = await execIn(root, "index", "--write", "--rationale", "Seed", "--agent", "claude-code", "--json");
       expect(JSON.parse(written.out)).toMatchObject({ written: 1, created: [{ name: "a" }] });
       const units = await readdir(join(root, ".poetics/units"));
       const unit = JSON.parse(await readFile(join(root, ".poetics/units", units[0]!), "utf8")) as { versions: Array<{ actor: unknown }> };
       expect(unit.versions[0]!.actor).toEqual({ kind: "agent", tool: "claude-code", reviewed: false });
-      expect((await execIn(root, "index")).out).toBe("Would record: 0 moved, 0 changed, 0 new, 0 removed, 0 relinked, 0 queued, 1 up to date. Run with --write to record it.");
+      expect((await execIn(root, "index")).out).toBe("Would record: 0 moved, 0 changed, 0 new, 0 removed, 0 relinked, 0 reclassified, 0 queued, 1 up to date. Run with --write to record it.");
     });
 
     it("exits 2 for bad flags, an unknown ref or a write with no rationale, and 1 when matches are queued", async () => {

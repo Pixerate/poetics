@@ -12,6 +12,7 @@ import {
   parseUnit,
   readUnit,
   readUnitFiles,
+  reclassifyUnit,
   recordRationale,
   relinkTests,
   relocateUnit,
@@ -203,5 +204,26 @@ describe("relinkTests", () => {
     const ctx = { paths: storePaths(root), actor: human };
     await expect(relinkTests(ctx, UID_A, new Map([["src/a.test.ts", "lib/a.test.ts"]]))).rejects.toThrow("it links no test in src/a.test.ts");
     await expect(relinkTests(ctx, UID_B, new Map([["src/b.test.ts", "lib/b.test.ts"]]))).rejects.toThrow("its latest version is removed");
+  });
+});
+
+describe("reclassifyUnit", () => {
+  const human = { kind: "human" } as const;
+
+  it("changes only the kind and framework", async () => {
+    const root = await makeRepo([makeUnit(UID_A)]);
+    await reclassifyUnit({ paths: storePaths(root), actor: human }, UID_A, { kind: "component", framework: "react" });
+    const unit = await readUnit(storePaths(root), UID_A);
+    expect([unit.kind, unit.framework]).toEqual(["component", "react"]);
+    expect({ ...unit, kind: "function", framework: "none" }).toEqual(makeUnit(UID_A));
+  });
+
+  it("refuses to cross between types and values, or to touch a removed unit", async () => {
+    const removed = makeUnit(UID_B);
+    removed.versions.push({ contentHash: REMOVED_CONTENT_HASH, provisional: true, parent: removed.versions[0]!.contentHash, change: "removed", actor: human, rationale: "Gone." });
+    const root = await makeRepo([makeUnit(UID_A), removed]);
+    const ctx = { paths: storePaths(root), actor: human };
+    await expect(reclassifyUnit(ctx, UID_A, { kind: "type", framework: "none" })).rejects.toThrow("a function cannot become a type");
+    await expect(reclassifyUnit(ctx, UID_B, { kind: "component", framework: "react" })).rejects.toThrow("its latest version is removed");
   });
 });
