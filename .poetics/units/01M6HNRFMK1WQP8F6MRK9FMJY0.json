@@ -45,6 +45,45 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:1a7870af0a68169489f98a309965d342312673fe353cdbc51cf4e12b98d60742",
+      "interfaceHash": "b3:eceb49884edb18f4de61c657871f821296271da890d2203ad313b9be0378af0e",
+      "parent": "b3:fc992be375ae4ab7093b68f206a8ad0a105c10b943bb37884244036e9634e3b0",
+      "change": "behaviour",
+      "rationale": "Passes plugins to detection, signatures and edges. The frameworks join the cache's environment (CACHE_VERSION 5), so units cached without React's plugin are not reused with it.",
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:6004f5b9e3d8b29e1e73aad0e532e809cb147948d3e8052121d4daf2f309c7d7",
+        "01M6HNRFMKW6AEE7KPXEF2VACF": "b3:0468d58588d85ea30303bf0f598fc1690cca96835a9ae6788927cff2ecb67e6b",
+        "01M6HNRFMKST995NZC2B5AQYC5": "b3:54d36aaebcca5644c0bd267d34330889c5fd37627f44a70a8a648d5bb85a2635",
+        "01M6HS3HPGSA1NB2JTM6ZM903R": "b3:dbb56abfafffa1a6af99b5f802532bed33a61a89ad8e7a7bbdb12c4f73443a5e",
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:9f75b78c92b3d14a08c17793a2138144f9ec807b8a930ccbea497edb96f4ac2a",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:c0d8e0d42482a337df58d377a39417534e79f08a0fcbba50561cd6b1611a57e5",
+        "01M6HNRFMKW8GXW0YMCVY67N4A": "b3:588fed85ac85cda89945b814917f1b7a4fcec907b605bd56053915157ead9ecb",
+        "01M6HNRFMKSSPK73VN3DNDX6B3": "b3:4791c4a21120ac45a24334f83277a4f8f8071a863395250159d72803671d3c99",
+        "01M6HNRFMKM9JBJF2F9NV0M8QK": "b3:41d71a0d5779e0cb6154fedd23c16c1c8775e44a543711d7aa114bfbd151af09",
+        "01M6HNRFMKE4EY0HQ21A8WP27D": "b3:e062a09bfd4c3fe0797308b9291c1a28c60ec75bbd08a886bc2a278dd1e1549f",
+        "01M6HYTZKT7RKWE7EFQ74ASSN8": "b3:9048587b45f1b18210edbcbe4cd52163e9d0697740a0503bd5be28c6cbd9580b",
+        "01M5XDBC6N4YPDVMQM3397PTQ1": "b3:326b61818da569802f71a34ba91ea4bd3c87e3b7220b684323d4d14030c95a1a",
+        "01M5XDBC6KV4WZMBADBFYS66YD": "b3:85ec638d0ef9f019cb755dc43fc4ce408106c46ab8ada0021c35b95ecf188ae6",
+        "01M5XDBC6TWJ0A59K9ER71Q88Y": "b3:19dd1d269306d1c7edc17d860a6674f7831d3d232ba7b067020f558ad0488a11",
+        "01M5XDBC6ST4ATSSPWGG8KZ6B5": "b3:a48813ec198e0ea8ddd7b390ce748d6b531cee916cfc3b1ecacca3a3d95feea4",
+        "01M5XDBC6VVRT6FWJ8QRBQWQ32": "b3:e9d0421c5d682f98f1c699024be71be14c04103ad1ef9abac83e9569f7944d2b",
+        "01M5XDBC7D919DJAQFQC6GE30F": "b3:a0ff25e3efd4a20759df67077af40f211c5513827c9a229ebc565a9738344831",
+        "01M5XDBC6YYK0M5RPS3YMPYSPM": "b3:a9d8f9922d57a2b242a17ff15b364a707eb1b721d5ced5d96e4ec2f62342087d"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "Creates an indexer whose program and per-file cache carry over between index calls.",
@@ -55,6 +94,10 @@
     },
     {
       "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
       "via": "static"
     }
   ]

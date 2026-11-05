@@ -119,4 +119,11 @@ describe("formatBackfillPlan", () => {
     expect(text).toContain("+ src/price.ts#formatPrice [high] Invoices need two decimals (#12).");
     expect(text).toMatch(/Would create 6 new unit\(s\) \(2 high, 2 medium, 2 low confidence\)\. Run with --write to write them\.$/);
   });
+
+  it("backfills React components as components when the config lists react", async () => {
+    const root = await adopted();
+    await write(root, "src/Badge.tsx", "export function Badge() {\n  return <b />;\n}\n");
+    const units = byName(await planBackfill(root, { ...CONFIG, include: ["src/**/*.{ts,tsx}"], adapters: ["typescript", "react"] }));
+    expect(units.get("Badge")).toMatchObject({ kind: "component", framework: "react" });
+  });
 });

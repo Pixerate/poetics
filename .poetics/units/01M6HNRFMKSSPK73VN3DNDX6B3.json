@@ -45,12 +45,40 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:4791c4a21120ac45a24334f83277a4f8f8071a863395250159d72803671d3c99",
+      "interfaceHash": "b3:46382b7702fbd8dc243f4497240eb3b49d0d16b012ba9cc8adf3f411c0501cef",
+      "parent": "b3:c62f196cfa4c65bb74ce15db23e10457a1094cf5d835d5efff07d85a919984b4",
+      "change": "interface",
+      "rationale": "Sees through wrapper calls a plugin knows, so `export const PriceTag = memo(function \u2026)` is a unit, and lets the first plugin that claims a unit set its kind and framework. It is additive: the new parameter is optional and defaults to no plugins, so existing callers behave as before.",
+      "deps": {
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:9f75b78c92b3d14a08c17793a2138144f9ec807b8a930ccbea497edb96f4ac2a",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:c0d8e0d42482a337df58d377a39417534e79f08a0fcbba50561cd6b1611a57e5",
+        "01M5XDBC6Z8PGANPEC147TCK3S": "b3:4c3726650f8e2221205ac1514448a07cd31203d53a90a8324d689b3ca2031781"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "Exported functions, hooks, interfaces and type aliases declared in a source file, in source order.",
   "tests": [
     {
       "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
       "via": "static"
     }
   ]

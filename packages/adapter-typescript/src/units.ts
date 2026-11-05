@@ -2,7 +2,7 @@
 // Detection is syntactic, so it can run on cached files; signatures and edges
 // need the checker.
 import ts from "typescript";
-import type { EdgeKind, Span, UnitKind } from "@poetics/core";
+import type { EdgeKind, Framework, Span, UnitKind } from "@poetics/core";
 import { normaliseNode } from "./normalise.ts";
 import type { NormalTree } from "./normalise.ts";
 
@@ -21,6 +21,27 @@ export interface DetectedUnit {
   declarations: UnitDeclaration[];
   /** The leading TSDoc comment, if any. */
   docs?: string;
+  /** `none` for plain TypeScript, or the framework whose plugin claimed the unit. */
+  framework: Framework;
+  /** Wrapper calls the unit's function was found inside, such as `memo`, outermost first. */
+  wrappers?: string[];
+}
+
+/**
+ * What a framework adapter adds to this indexer, so React and Svelte units
+ * resolve through the same checker as plain TypeScript: wrappers to see
+ * through, units to claim as its own kinds, their interfaces, and edge kinds.
+ */
+export interface FrameworkPlugin {
+  framework: Framework;
+  /** The function a call such as `memo(fn)` wraps, when this framework knows the wrapper. */
+  unwrap?(call: ts.CallExpression): ts.Expression | undefined;
+  /** The kind this framework gives a unit, or undefined to leave it as plain TypeScript. */
+  claim?(unit: DetectedUnit, fn: ts.SignatureDeclaration | undefined): UnitKind | undefined;
+  /** The interface of a unit it claimed, or undefined for the plain function signature. */
+  signature?(unit: DetectedUnit, fn: ts.SignatureDeclaration, checker: ts.TypeChecker): Signature | undefined;
+  /** The kind of a use of `target` at `node`, when the framework knows better (JSX renders a component). */
+  edgeKind?(node: ts.Identifier, target: DetectedUnit): EdgeKind | undefined;
 }
 
 /** A parameter or return type as written, or as the checker infers it when nothing is written. */
@@ -43,7 +64,16 @@ export interface CallSignature {
 /** What callers depend on: call signatures for functions and hooks, the structure for types. */
 export type Signature =
   | { kind: "function"; declared?: NormalTree; overloads: CallSignature[] }
-  | { kind: "type"; declaration: NormalTree };
+  | { kind: "type"; declaration: NormalTree }
+  | {
+      kind: "component";
+      /** The props type, or null for a component that takes none. */
+      props: TypeText | null;
+      /** Default prop values: callers that omit a prop get them, so they are interface. */
+      defaults: Array<{ name: string; value: NormalTree }>;
+      /** The ref type, for components that forward one. */
+      ref?: TypeText;
+    };
 
 /** A use of another unit, by its key. */
 export interface IndexedEdge {
@@ -60,8 +90,11 @@ export interface UnresolvedUse {
 
 const TYPE_FORMAT = ts.TypeFormatFlags.NoTruncation;
 
-/** Exported functions, hooks, interfaces and type aliases declared in `source`, in source order. */
-export function detectUnits(source: ts.SourceFile, file: string): DetectedUnit[] {
+/**
+ * Exported functions, hooks, interfaces and type aliases declared in `source`,
+ * in source order. `plugins` see through their wrappers and claim their units.
+ */
+export function detectUnits(source: ts.SourceFile, file: string, plugins: readonly FrameworkPlugin[] = []): DetectedUnit[] {
   const exported = exportedNames(source);
   const groups = new Map<string, { name: string; kind: UnitKind; declarations: UnitDeclaration[]; statements: ts.Node[] }>();
   const add = (name: string, kind: UnitKind, declaration: UnitDeclaration, statement: ts.Node) => {
@@ -83,7 +116,7 @@ export function detectUnits(source: ts.SourceFile, file: string): DetectedUnit[]
     } else if (ts.isVariableStatement(statement)) {
       const list = statement.declarationList.declarations;
       for (const declaration of list) {
-        if (!ts.isIdentifier(declaration.name) || !functionOf(declaration)) continue;
+        if (!ts.isIdentifier(declaration.name) || !functionOf(declaration, plugins)) continue;
         const name = declaration.name.text;
         if (hasExportModifier(statement) || exported.has(name)) add(name, functionKind(name), declaration, list.length === 1 ? statement : declaration);
       }
@@ -105,9 +138,21 @@ export function detectUnits(source: ts.SourceFile, file: string): DetectedUnit[]
       kind: group.kind,
       span: { file, start: first.getStart(source), end: last.end },
       declarations: group.declarations,
+      framework: "none",
     };
     if (exportedAs !== undefined && exportedAs !== group.name) unit.exportedAs = exportedAs;
     if (docs) unit.docs = docs;
+    const declaration = group.declarations[0]!;
+    const wrappers: string[] = [];
+    const fn = ts.isFunctionDeclaration(declaration) ? declaration : ts.isVariableDeclaration(declaration) ? functionOf(declaration, plugins, wrappers) : undefined;
+    if (wrappers.length > 0) unit.wrappers = wrappers;
+    for (const plugin of plugins) {
+      const kind = plugin.claim?.(unit, fn);
+      if (kind === undefined) continue;
+      unit.kind = kind;
+      unit.framework = plugin.framework;
+      break;
+    }
     return unit;
   });
 }
@@ -128,13 +173,16 @@ function declarationTree(declaration: UnitDeclaration, eraseTypes: boolean): Nor
 }
 
 /** The unit's public signature, with types the author left out inferred by `checker`. */
-export function signatureOf(unit: DetectedUnit, checker: ts.TypeChecker): Signature {
+export function signatureOf(unit: DetectedUnit, checker: ts.TypeChecker, plugins: readonly FrameworkPlugin[] = []): Signature {
   if (unit.kind === "type") return { kind: "type", declaration: contentTree(unit) };
   const functions = unit.declarations.flatMap((declaration): Array<ts.FunctionLikeDeclaration> => {
     if (ts.isFunctionDeclaration(declaration)) return [declaration];
-    const fn = ts.isVariableDeclaration(declaration) ? functionOf(declaration) : undefined;
+    const fn = ts.isVariableDeclaration(declaration) ? functionOf(declaration, plugins) : undefined;
     return fn ? [fn] : [];
   });
+  const plugin = plugins.find((p) => p.framework === unit.framework);
+  const own = plugin?.signature && functions[0] ? plugin.signature(unit, functions[0], checker) : undefined;
+  if (own) return own;
   // With overloads, the implementation's own signature is not callable from outside.
   const overloads = functions.length > 1 ? functions.filter((fn) => !fn.body) : functions;
   const signature: Signature = { kind: "function", overloads: overloads.map((fn) => callSignature(fn, checker)) };
@@ -143,12 +191,17 @@ export function signatureOf(unit: DetectedUnit, checker: ts.TypeChecker): Signat
   return signature;
 }
 
+/** A type as written at `node`, or as the checker infers it there when nothing is written. */
+export function typeText(written: ts.TypeNode | undefined, node: ts.Node, checker: ts.TypeChecker): TypeText {
+  return written ? { written: normaliseNode(written) } : { inferred: checker.typeToString(checker.getTypeAtLocation(node), node, TYPE_FORMAT) };
+}
+
 function callSignature(fn: ts.SignatureDeclaration, checker: ts.TypeChecker): CallSignature {
   const parameters = fn.parameters.map((parameter): ParameterSignature => {
     const out: ParameterSignature = {
       rest: parameter.dotDotDotToken !== undefined,
       optional: parameter.questionToken !== undefined || parameter.initializer !== undefined,
-      type: parameter.type ? { written: normaliseNode(parameter.type) } : { inferred: checker.typeToString(checker.getTypeAtLocation(parameter), fn, TYPE_FORMAT) },
+      type: typeText(parameter.type, parameter, checker),
     };
     if (parameter.initializer) out.default = normaliseNode(parameter.initializer);
     return out;
@@ -168,13 +221,13 @@ function callSignature(fn: ts.SignatureDeclaration, checker: ts.TypeChecker): Ca
  * their whole declaration, since their structure is the interface; with
  * overloads, only the overload signatures.
  */
-export function signatureText(unit: DetectedUnit, source: ts.SourceFile): string {
+export function signatureText(unit: DetectedUnit, source: ts.SourceFile, plugins: readonly FrameworkPlugin[] = []): string {
   const texts = unit.declarations.flatMap((declaration) => {
     const list = ts.isVariableDeclaration(declaration) ? declaration.parent : undefined;
     const statement = list && ts.isVariableDeclarationList(list) && list.declarations.length === 1 ? list.parent : declaration;
     const start = statement.getStart(source);
     if (unit.kind === "type") return [source.text.slice(start, statement.end)];
-    const fn = ts.isFunctionDeclaration(declaration) ? declaration : functionOf(declaration as ts.VariableDeclaration);
+    const fn = ts.isFunctionDeclaration(declaration) ? declaration : functionOf(declaration as ts.VariableDeclaration, plugins);
     if (!fn?.body) return [source.text.slice(start, statement.end)];
     if (ts.isFunctionDeclaration(fn) && unit.declarations.length > 1) return [];
     return [source.text.slice(start, fn.body.getStart(source)).trimEnd()];
@@ -191,6 +244,7 @@ export function edgesOf(
   unit: DetectedUnit,
   checker: ts.TypeChecker,
   unitAt: (declaration: ts.Declaration) => DetectedUnit | undefined,
+  plugins: readonly FrameworkPlugin[] = [],
 ): { edges: IndexedEdge[]; unresolved: UnresolvedUse[] } {
   const edges = new Map<string, IndexedEdge>();
   const unresolved: UnresolvedUse[] = [];
@@ -204,14 +258,15 @@ export function edgesOf(
       const targets = new Set((symbol?.declarations ?? []).map(unitAt).filter((target) => target !== undefined));
       for (const target of targets) {
         if (target === unit) continue;
+        const framework = plugins.map((plugin) => plugin.edgeKind?.(node, target)).find((kind) => kind !== undefined);
         const kind: EdgeKind =
-          target.kind === "type" || inTypePosition(node, root) ? "references-type" : target.kind === "hook" ? "uses-hook" : "calls";
+          framework ?? (target.kind === "type" || inTypePosition(node, root) ? "references-type" : target.kind === "hook" ? "uses-hook" : "calls");
         edges.set(`${target.key}\0${kind}`, { to: target.key, kind });
       }
       // A private helper in the same file is not a unit, so what it uses is used by whoever calls it.
       if (targets.size === 0) {
         for (const declaration of symbol?.declarations ?? []) {
-          const helper = privateHelper(declaration, source);
+          const helper = privateHelper(declaration, source, plugins);
           if (helper && !helpers.has(helper)) {
             helpers.add(helper);
             visit(helper, helper);
@@ -236,10 +291,10 @@ export function edgesOf(
 }
 
 /** A module-level function in `source` that is not exported: its body, to walk as part of its caller's. */
-function privateHelper(declaration: ts.Declaration, source: ts.SourceFile): ts.Node | undefined {
+function privateHelper(declaration: ts.Declaration, source: ts.SourceFile, plugins: readonly FrameworkPlugin[]): ts.Node | undefined {
   if (declaration.getSourceFile() !== source) return undefined;
   if (ts.isFunctionDeclaration(declaration) && declaration.body && ts.isSourceFile(declaration.parent)) return declaration;
-  if (ts.isVariableDeclaration(declaration) && functionOf(declaration) && ts.isSourceFile(declaration.parent.parent.parent)) return declaration;
+  if (ts.isVariableDeclaration(declaration) && functionOf(declaration, plugins) && ts.isSourceFile(declaration.parent.parent.parent)) return declaration;
   return undefined;
 }
 
@@ -273,10 +328,23 @@ function exportedNames(source: ts.SourceFile): Map<string, string> {
   return names;
 }
 
-function functionOf(declaration: ts.VariableDeclaration): ts.ArrowFunction | ts.FunctionExpression | undefined {
+/** The function a variable holds, seeing through parentheses, casts and any wrapper call a plugin knows. Wrapper names go into `wrappers`. */
+function functionOf(declaration: ts.VariableDeclaration, plugins: readonly FrameworkPlugin[] = [], wrappers: string[] = []): ts.ArrowFunction | ts.FunctionExpression | undefined {
   let initializer = declaration.initializer;
-  while (initializer && (ts.isParenthesizedExpression(initializer) || ts.isAsExpression(initializer) || ts.isSatisfiesExpression(initializer))) {
-    initializer = initializer.expression;
+  while (initializer) {
+    if (ts.isParenthesizedExpression(initializer) || ts.isAsExpression(initializer) || ts.isSatisfiesExpression(initializer)) {
+      initializer = initializer.expression;
+      continue;
+    }
+    if (ts.isCallExpression(initializer)) {
+      const call = initializer;
+      const inner = plugins.map((plugin) => plugin.unwrap?.(call)).find((expression) => expression !== undefined);
+      if (!inner) break;
+      wrappers.push(call.expression.getText());
+      initializer = inner;
+      continue;
+    }
+    break;
   }
   return initializer && (ts.isArrowFunction(initializer) || ts.isFunctionExpression(initializer)) ? initializer : undefined;
 }

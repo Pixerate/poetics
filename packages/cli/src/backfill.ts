@@ -11,6 +11,7 @@ import type { Actor, Inferred, Link, Unit } from "@poetics/core";
 import { createUnit, filesInScope, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { git, showAt } from "./git.ts";
+import { pluginsFor } from "./frameworks.ts";
 import { planIndex } from "./indexing.ts";
 
 /** One piece of evidence about why a unit exists. */
@@ -44,7 +45,7 @@ export async function planBackfill(root: string, config: PoeticsConfig): Promise
   // The same index planIndex just built, from its cache: spans for blame, docs for the gaps.
   const { parseable } = await filesInScope(root, config);
   const tsconfig = config.typescript?.tsconfig;
-  const code = createTypeScriptIndexer({ root, files: parseable, cacheFile: join(storePaths(root).cache, "typescript.json"), ...(tsconfig ? { tsconfig } : {}) }).index().units;
+  const code = createTypeScriptIndexer({ root, files: parseable, cacheFile: join(storePaths(root).cache, "typescript.json"), plugins: pluginsFor(config), ...(tsconfig ? { tsconfig } : {}) }).index().units;
   const place = (file: string, name: string, kind: string) => `${file}#${name}#${kind === "type"}`;
   const codeAt = new Map(code.map((unit) => [place(unit.span.file, unit.name, unit.kind), unit]));
   const blame = blameLines(root);

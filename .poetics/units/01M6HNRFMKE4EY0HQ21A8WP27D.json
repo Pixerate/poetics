@@ -45,6 +45,36 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:e062a09bfd4c3fe0797308b9291c1a28c60ec75bbd08a886bc2a278dd1e1549f",
+      "interfaceHash": "b3:98086c6198f7236749f8ce5901845bf063d780b12da19d523f27f32707a92f7d",
+      "parent": "b3:441a781e20305e83edd290db6575050827bdc5322e35a085d7e44e64a9f5ab03",
+      "change": "interface",
+      "rationale": "Uses the claiming plugin's signature when it gives one (a component's props), falling back to the call signature. It is additive: the new parameter is optional and defaults to no plugins, so existing callers behave as before.",
+      "deps": {
+        "01M6HNRFMKY02B40EEEAPZ66BP": "b3:30556d396c90f369fc9496e82b92c4e327d78359c0bda51c36d33639523c8d2d",
+        "01M6HNRFMKW9RMTDHE3W0XVGCR": "b3:23b864d94ee768af7fa8ded1026587b1913a2313e7ca87086b5e1a723d46905e",
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:9f75b78c92b3d14a08c17793a2138144f9ec807b8a930ccbea497edb96f4ac2a",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:c0d8e0d42482a337df58d377a39417534e79f08a0fcbba50561cd6b1611a57e5",
+        "01M6HNRFMK1ZS9WE55SK63ZYPB": "b3:ab7f41b1d4d8a9189c2e05028a7782cc52460e113bfe95fbbbee037c3d8d8dd6",
+        "01M6HNRFMKWZ43X614N1PYFS0S": "b3:e01e1cd4c9a1183568f3cc96e3b3d5317f6c6470bb703787bd2739f376b28b53",
+        "01M6HNRFMKNA9Q4CSKAYB7S9VR": "b3:df2e28776262877ef98e352e7a88eadba44abf9f489471979213c51100b9f866",
+        "01M6HNRFMKW8GXW0YMCVY67N4A": "b3:588fed85ac85cda89945b814917f1b7a4fcec907b605bd56053915157ead9ecb",
+        "01M6ME83DBQ587PPY9D0A4T6M3": "b3:ce113f0c9f1166b5261da3b08b781439dc518d14c3fefab1b573426cb57b0cf6"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "A unit's public signature, with omitted types inferred by the checker.",
@@ -55,6 +85,10 @@
     },
     {
       "file": "packages/adapter-typescript/src/indexer.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
       "via": "static"
     }
   ]

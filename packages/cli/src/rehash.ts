@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { createTypeScriptIndexer } from "@poetics/adapter-typescript";
 import type { IndexedUnit } from "@poetics/adapter-typescript";
+import { pluginsFor } from "./frameworks.ts";
 import { gitBlobHash, isProvisional, isRemoved } from "@poetics/core";
 import type { Actor, Hash, Link } from "@poetics/core";
 import { appendVersion, filesInScope, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
@@ -34,7 +35,7 @@ const LINKS: Link[] = [{ kind: "decision", ref: "docs/decisions/0014-rehash-vers
 export async function planRehash(root: string, config: PoeticsConfig): Promise<RehashPlan> {
   const { parseable } = await filesInScope(root, config);
   const tsconfig = config.typescript?.tsconfig;
-  const indexed = createTypeScriptIndexer({ root, files: parseable, ...(tsconfig ? { tsconfig } : {}) }).index().units;
+  const indexed = createTypeScriptIndexer({ root, files: parseable, plugins: pluginsFor(config), ...(tsconfig ? { tsconfig } : {}) }).index().units;
   const byPlace = new Map(indexed.map((unit) => [place(unit.span.file, unit.name, unit.kind === "type"), unit]));
   const texts = new Map<string, string>();
   const textOf = async (file: string) => {
@@ -87,7 +88,7 @@ export async function applyRehash(root: string, plan: RehashPlan, actor: Actor, 
 /** The indexer's hashes for the units in one file, for writing a version by hand. */
 export async function unitHashes(root: string, config: PoeticsConfig, file: string): Promise<Array<Pick<IndexedUnit, "name" | "kind" | "startLine" | "endLine" | "contentHash" | "interfaceHash">>> {
   const tsconfig = config.typescript?.tsconfig;
-  const { units } = createTypeScriptIndexer({ root, files: [file], ...(tsconfig ? { tsconfig } : {}) }).index();
+  const { units } = createTypeScriptIndexer({ root, files: [file], plugins: pluginsFor(config), ...(tsconfig ? { tsconfig } : {}) }).index();
   return units.map(({ name, kind, startLine, endLine, contentHash, interfaceHash }) => ({ name, kind, startLine, endLine, contentHash, interfaceHash }));
 }
 

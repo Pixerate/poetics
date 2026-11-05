@@ -1,6 +1,29 @@
+import { mkdtempSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { NotImplementedError } from "@poetics/core";
-import { createReactAdapter, isComponentName, isHookName } from "./index.ts";
+import { createTypeScriptIndexer } from "@poetics/adapter-typescript";
+import type { IndexedUnit } from "@poetics/adapter-typescript";
+import { createReactAdapter, isComponentName, isHookName, reactPlugin } from "./index.ts";
+
+const FIXTURE = resolve(dirname(fileURLToPath(import.meta.url)), "../../../evals/fixtures/react-app");
+const FIXTURE_FILES = ["src/format-price.ts", "src/use-cart.ts", "src/PriceTag.tsx", "src/CheckoutPage.tsx"];
+
+const byName = (units: IndexedUnit[]) => new Map(units.map((unit) => [unit.name, unit]));
+const indexFixture = () => byName(createTypeScriptIndexer({ root: FIXTURE, files: FIXTURE_FILES, tsconfig: "tsconfig.json", plugins: [reactPlugin()] }).index().units);
+
+/** A project with React's types from the fixture, and `files` written under its root. */
+function project(files: Record<string, string>): Map<string, IndexedUnit> {
+  const root = mkdtempSync(join(tmpdir(), "poetics-react-"));
+  for (const [file, text] of Object.entries(files)) {
+    mkdirSync(dirname(join(root, file)), { recursive: true });
+    writeFileSync(join(root, file), text);
+  }
+  symlinkSync(join(FIXTURE, "node_modules"), join(root, "node_modules"));
+  writeFileSync(join(root, "tsconfig.json"), JSON.stringify({ compilerOptions: { jsx: "react-jsx", strict: true, module: "esnext", moduleResolution: "bundler", allowImportingTsExtensions: true, noEmit: true } }));
+  return byName(createTypeScriptIndexer({ root, files: Object.keys(files), tsconfig: "tsconfig.json", plugins: [reactPlugin()] }).index().units);
+}
 
 describe("naming rules", () => {
   it("recognises hooks", () => {
@@ -17,13 +40,84 @@ describe("naming rules", () => {
   });
 });
 
+describe("reactPlugin on the React fixture", () => {
+  it("claims components and hooks, and leaves utilities and types as plain TypeScript", () => {
+    const units = indexFixture();
+    expect([...units.values()].map((u) => [u.name, u.kind, u.framework])).toEqual([
+      ["formatPrice", "function", "none"],
+      ["CartLine", "type", "none"],
+      ["useCart", "hook", "react"],
+      ["PriceTagProps", "type", "none"],
+      ["PriceTag", "component", "react"],
+      ["CheckoutPage", "component", "react"],
+    ]);
+  });
+
+  it("gives a memo component its props and default prop values as its interface", () => {
+    const tag = indexFixture().get("PriceTag")!;
+    expect(tag.signature).toEqual({
+      kind: "component",
+      props: { written: ["TypeReference", ["Identifier", "PriceTagProps"]] },
+      defaults: [{ name: "currency", value: ["StringLiteral", "GBP"] }],
+    });
+    expect(tag.signatureText).toBe("export const PriceTag = memo(function PriceTag({ amountMinor, saleAmountMinor, currency = \"GBP\" }: PriceTagProps)");
+  });
+
+  it("records JSX tags as renders and hook calls as uses-hook", () => {
+    const units = indexFixture();
+    expect(units.get("CheckoutPage")!.edges).toEqual([
+      { to: "src/PriceTag.tsx#PriceTag", kind: "renders" },
+      { to: "src/use-cart.ts#useCart", kind: "uses-hook" },
+    ]);
+    expect(units.get("PriceTag")!.edges).toEqual([
+      { to: "src/PriceTag.tsx#PriceTagProps", kind: "references-type" },
+      { to: "src/format-price.ts#formatPrice", kind: "calls" },
+    ]);
+  });
+});
+
+describe("reactPlugin on other shapes", () => {
+  it("sees through React.memo, forwardRef and lazy, and keeps a forwarded ref in the interface", () => {
+    const units = project({
+      "src/a.tsx": [
+        `import * as React from "react";`,
+        `import { forwardRef, lazy } from "react";`,
+        `export const Card = React.memo(() => <div />);`,
+        `export const Input = forwardRef<HTMLInputElement, { label: string }>(function Input({ label }, ref) { return <input ref={ref} aria-label={label} />; });`,
+        `export const Lazy = lazy(() => import("./b.tsx"));`,
+        `export function Helper() { return 42; }`,
+        `export const Plain = (n: number) => n;`,
+      ].join("\n"),
+      "src/b.tsx": `export default function B() { return <p />; }`,
+    });
+    expect([...units.values()].map((u) => [u.name, u.kind, u.framework])).toEqual([
+      ["Card", "component", "react"],
+      ["Input", "component", "react"],
+      ["Lazy", "component", "react"],
+      // PascalCase but no JSX and no wrapper: a plain function.
+      ["Helper", "function", "none"],
+      ["Plain", "function", "none"],
+      ["B", "component", "react"],
+    ]);
+    expect(units.get("Input")!.signature).toMatchObject({ kind: "component", props: { inferred: "{ label: string; }" }, ref: { inferred: "React.ForwardedRef<HTMLInputElement>" } });
+    expect(units.get("Card")!.signature).toEqual({ kind: "component", props: null, defaults: [] });
+  });
+
+  it("changes the interface hash with a default prop value, not with the body", () => {
+    const hash = (fallback: string, text: string) =>
+      project({ "src/a.tsx": `export function Badge({ tone = "${fallback}" }: { tone?: string }) { return <b>${text}</b>; }` }).get("Badge")!.interfaceHash;
+    const base = hash("info", "a");
+    expect(hash("info", "b")).toBe(base);
+    expect(hash("warn", "a")).not.toBe(base);
+  });
+});
+
 describe("createReactAdapter", () => {
-  it("declares its framework and extensions, with detection still stubbed", () => {
-    const adapter = createReactAdapter({ tsconfig: "tsconfig.json" });
-    expect(adapter.framework).toBe("react");
-    expect(adapter.extensions).toEqual([".ts", ".tsx"]);
-    expect(() => adapter.detectUnits("src/App.tsx")).toThrow(NotImplementedError);
-    expect(() => adapter.interfaceOf({} as never)).toThrow(NotImplementedError);
-    expect(() => adapter.edgesOf({} as never)).toThrow(NotImplementedError);
+  it("answers the adapter's questions for React code", () => {
+    const adapter = createReactAdapter({ root: FIXTURE, files: FIXTURE_FILES, tsconfig: "tsconfig.json" });
+    expect([adapter.framework, adapter.extensions]).toEqual(["react", [".ts", ".tsx"]]);
+    const [page] = adapter.detectUnits("src/CheckoutPage.tsx");
+    expect(page).toMatchObject({ name: "CheckoutPage", kind: "component", framework: "react" });
+    expect(adapter.edgesOf(page!).edges.map((edge) => edge.kind)).toEqual(["renders", "uses-hook"]);
   });
 });

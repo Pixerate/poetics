@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { gitBlobHash } from "@poetics/core";
 import { filesInScope } from "@poetics/store";
+import { reactPlugin } from "@poetics/adapter-react";
 import { declarationsIn, discoverDeclarations } from "./declarations.ts";
 
 const SOURCE = `import x from "y";
@@ -71,5 +72,11 @@ describe("discoverDeclarations", () => {
     const { declarations, unsupported } = await discoverDeclarations(root, scope);
     expect(declarations.map((d) => `${d.file}#${d.name}`)).toEqual(["src/a.ts#a", "src/deep/b.tsx#B"]);
     expect(unsupported).toEqual(["src/C.svelte", "src/types.d.ts"]);
+  });
+
+  it("sees memo components as declarations with React's plugin, and only with it", () => {
+    const code = 'import { memo } from "react";\nexport const Tag = memo(function Tag() {\n  return <b />;\n});\n';
+    expect(declarationsIn("src/Tag.tsx", code).map((d) => d.name)).toEqual([]);
+    expect(declarationsIn("src/Tag.tsx", code, [reactPlugin()]).map((d) => [d.name, d.kind])).toEqual([["Tag", "component"]]);
   });
 });

@@ -49,6 +49,33 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:5c2af0e3df7dd74b7ec3883cd385d251097c0d3a3941ab1f8d8b1b1978022317",
+      "interfaceHash": "b3:187c81e31a727ed1ac39c7c3a22c1d62a2b61433b2bf5ec1f7a8c02b1a653220",
+      "parent": "b3:d6e7d65e75d53eb9181e64f9547325ed2152fdacdc9424e4fd13be3c739408bf",
+      "change": "interface",
+      "rationale": "Takes plugins, so memo-wrapped components are declarations too. It is additive: the new parameter is optional and defaults to no plugins, so existing callers behave as before.",
+      "deps": {
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:c0d8e0d42482a337df58d377a39417534e79f08a0fcbba50561cd6b1611a57e5",
+        "01M6HNRFMKW8GXW0YMCVY67N4A": "b3:588fed85ac85cda89945b814917f1b7a4fcec907b605bd56053915157ead9ecb",
+        "01M6HNRFMKSSPK73VN3DNDX6B3": "b3:4791c4a21120ac45a24334f83277a4f8f8071a863395250159d72803671d3c99",
+        "01M5Z1F6ND8XM1DD3V2T49XSGD": "b3:61e0decd4f3c2ee8c2bcbeec36371a6dc4c9aab4ba968f52b7976fc60d6af2b5",
+        "01M5XDBC6TWJ0A59K9ER71Q88Y": "b3:19dd1d269306d1c7edc17d860a6674f7831d3d232ba7b067020f558ad0488a11",
+        "01M5XDBC6ST4ATSSPWGG8KZ6B5": "b3:a48813ec198e0ea8ddd7b390ce748d6b531cee916cfc3b1ecacca3a3d95feea4"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "Exported function, interface and type-alias declarations in one source text.",

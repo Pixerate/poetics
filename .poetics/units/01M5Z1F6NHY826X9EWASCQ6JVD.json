@@ -45,6 +45,32 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:531754f45a373f094b42af51a1945591f333ff7274080238212a9b1935b221c3",
+      "interfaceHash": "b3:77ef2905802b2a490013e63ad9dd0923114864ffb16d9430f9ad9c1584f35171",
+      "parent": "b3:823aef455055d45191ef735a2bed329603c7822b8546a8f4721261e0c937fed3",
+      "change": "interface",
+      "rationale": "Uses the plugins the scope's adapters call for. The scope may now carry adapters; without them, detection is plain TypeScript as before.",
+      "deps": {
+        "01M5Z1F6ND8XM1DD3V2T49XSGD": "b3:61e0decd4f3c2ee8c2bcbeec36371a6dc4c9aab4ba968f52b7976fc60d6af2b5",
+        "01M5Z1F6NGAYZ9D3QGFH01DC93": "b3:5c2af0e3df7dd74b7ec3883cd385d251097c0d3a3941ab1f8d8b1b1978022317",
+        "01M6ME83DBRXTEJAFTHD4TY1R0": "b3:2bced8d96434b3d623f644cf2e834e591c115073faaf9b19d4572022f25e6cf6",
+        "01M5Z1F6NEEP85GB1637ED9BB3": "b3:f8367fa172fac624fe8134b84bb4d8a768b6823428e6ef392789dbc505e1f5a4",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "Every tracked-shape declaration in scope.",

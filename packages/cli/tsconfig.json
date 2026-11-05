@@ -21,6 +21,9 @@
       "path": "../adapter-typescript"
     },
     {
+      "path": "../adapter-react"
+    },
+    {
       "path": "../store"
     }
   ]

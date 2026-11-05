@@ -206,4 +206,12 @@ describe("checkChange", () => {
       expect((await checkChange(root, "HEAD", SCOPE)).findings).toMatchObject([{ kind: "changed-rehash", message: expect.stringMatching(/is not the code's/) }]);
     });
   });
+
+  it("sees an unrecorded memo component when the scope lists react", async () => {
+    const root = await makeGitRepo(UID);
+    await write(root, "src/Tag.tsx", 'import { memo } from "react";\nexport const Tag = memo(function Tag() {\n  return <b />;\n});\n');
+    const react = { include: ["src/**/*.{ts,tsx}"], exclude: ["**/*.test.ts"], adapters: ["react"] };
+    expect((await checkChange(root, "HEAD", react)).findings).toMatchObject([{ kind: "untracked", message: expect.stringMatching(/^Tag has no unit/) }]);
+    expect((await checkChange(root, "HEAD", { ...react, adapters: [] })).findings).toEqual([]);
+  });
 });

@@ -30,6 +30,39 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:2e632b16597531990f409492a9e50743d0c1e0194c8bd706a6651d176e8cdc15",
+      "interfaceHash": "b3:c1af4691214155a56fc6dbc2a4a8b499ef69cdb0caaaadbd0466c97620e8a182",
+      "parent": "b3:c714293f4324c96dbab1312236285555c11fbbc86ebbc884fceadbea33dd9cc6",
+      "change": "behaviour",
+      "rationale": "Uses the config's plugins, so rehash hashes are those poetics index computes.",
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:6004f5b9e3d8b29e1e73aad0e532e809cb147948d3e8052121d4daf2f309c7d7",
+        "01M6HNRFMK1WQP8F6MRK9FMJY0": "b3:1a7870af0a68169489f98a309965d342312673fe353cdbc51cf4e12b98d60742",
+        "01M6ME83DBRXTEJAFTHD4TY1R0": "b3:2bced8d96434b3d623f644cf2e834e591c115073faaf9b19d4572022f25e6cf6",
+        "01M6HVGXY26F49QHBWFB4CTXER": "b3:678db794eebb1a543045710dcb951c454b2e7113e72ee4be49ac4d485b4666f8",
+        "01M5XDBC6ST4ATSSPWGG8KZ6B5": "b3:a48813ec198e0ea8ddd7b390ce748d6b531cee916cfc3b1ecacca3a3d95feea4",
+        "01M5XDBC6R15PA0T08670RYQVW": "b3:c7034313ef971387c011fbcdcf06bfe2f467ae890db397d3a5de9836190a5313",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:194f0d956019c1f2ce35c3ba6df7bb35285b4ee68753a4bd5206339f0454aa62",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "Which units the rehash would touch, and which it must leave until their code is recorded.",

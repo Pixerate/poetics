@@ -23,3 +23,4 @@ export type { BackfillPlan, Evidence } from "./backfill.ts";
 export { applyBackfill, formatBackfillPlan, hasBackfill, planBackfill } from "./backfill.ts";
 export type { Adapter, InitConfig, InitPlan } from "./init.ts";
 export { applyInit, formatInitPlan, planInit } from "./init.ts";
+export { pluginsFor } from "./frameworks.ts";

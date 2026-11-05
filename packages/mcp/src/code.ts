@@ -3,6 +3,7 @@
 // as a composition graph over uids.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { reactPlugin } from "@poetics/adapter-react";
 import { createTypeScriptIndexer } from "@poetics/adapter-typescript";
 import type { IndexedUnit } from "@poetics/adapter-typescript";
 import { createGraph, isRemoved } from "@poetics/core";
@@ -31,6 +32,8 @@ export async function codeView(root: string, units: readonly Unit[]): Promise<Co
     root,
     files: parseable,
     cacheFile: join(storePaths(root).cache, "typescript.json"),
+    // The same plugins poetics index runs, so packs and impact see components as it records them.
+    plugins: config.adapters?.includes("react") ? [reactPlugin()] : [],
     ...(tsconfig ? { tsconfig } : {}),
   }).index().units;
   // By scope, not existence: a unit whose file was deleted is missing, not out of scope.

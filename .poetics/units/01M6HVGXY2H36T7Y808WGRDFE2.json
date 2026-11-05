@@ -30,6 +30,31 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:17595042fafd2edb8b565063a501893813aee2b10434a9d60c3136885f546e80",
+      "interfaceHash": "b3:6040e4a676d472e1a06c9461349899a3837bf5b54ff2ccb50565efe869c34c0c",
+      "parent": "b3:a0daa0b43a3ee5dc9d9d8fcf7388d5e51b96b9fa6eda5c71d280890246b05ac9",
+      "change": "behaviour",
+      "rationale": "Uses the config's plugins, so poetics hash prints the interface hash poetics index records for a component.",
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:6004f5b9e3d8b29e1e73aad0e532e809cb147948d3e8052121d4daf2f309c7d7",
+        "01M6HNRFMK1WQP8F6MRK9FMJY0": "b3:1a7870af0a68169489f98a309965d342312673fe353cdbc51cf4e12b98d60742",
+        "01M6ME83DBRXTEJAFTHD4TY1R0": "b3:2bced8d96434b3d623f644cf2e834e591c115073faaf9b19d4572022f25e6cf6",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:194f0d956019c1f2ce35c3ba6df7bb35285b4ee68753a4bd5206339f0454aa62"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "The indexer's content and interface hashes for the units in one file.",

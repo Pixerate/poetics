@@ -157,7 +157,7 @@ Each indexed unit carries three hashes, all `b3:`:
 | --- | --- |
 | `contentHash` | The normalised syntax tree of all the unit's declarations, its own name left out. Comments, formatting, quote style, redundant parentheses, numeric spelling, quoted keys, export style and JSX re-wrapping never change it. |
 | `runtimeHash` | The same tree with types, type-only declarations and TypeScript-only modifiers erased. Equal runtime hashes with different content hashes mean a types-only change. |
-| `interfaceHash` | The signature: for functions and hooks, the visible overloads' type parameters, parameters (rest, optional, type, default value; not names) and return type, with omitted types as the checker prints them; for types, their structure. |
+| `interfaceHash` | The signature: for functions and hooks, the visible overloads' type parameters, parameters (rest, optional, type, default value; not names) and return type, with omitted types as the checker prints them; for components, the props type, default prop values from the props destructuring and a forwarded ref type; for types, their structure. |
 
 Each unit also carries a `fingerprint` for identity matching: one 16-hex hash
 per internal node of the content tree, over that node and the two levels below

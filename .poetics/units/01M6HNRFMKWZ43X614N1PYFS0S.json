@@ -45,12 +45,40 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:e01e1cd4c9a1183568f3cc96e3b3d5317f6c6470bb703787bd2739f376b28b53",
+      "interfaceHash": "b3:b842c83070befcc9e09dd004e150368633667fb2a38f08298ee35d413f5cc25f",
+      "parent": "b3:24af3fc624b66ae3275a5810f020fa4f4ab10394c30a6db3a4c13161e9f10165",
+      "change": "interface",
+      "rationale": "Adds a component variant: the props type, default prop values from the props destructuring, and a forwarded ref type. The plan counts all three as a component's interface.",
+      "deps": {
+        "01M6HNRFMKJGK18JKH37PPJ711": "b3:167f4daf6b6b849a3c90172c988aefdaead3e1e3835dad2d4aa7da4a1159f537",
+        "01M6HNRFMKW9RMTDHE3W0XVGCR": "b3:23b864d94ee768af7fa8ded1026587b1913a2313e7ca87086b5e1a723d46905e",
+        "01M6HNRFMKNA9Q4CSKAYB7S9VR": "b3:df2e28776262877ef98e352e7a88eadba44abf9f489471979213c51100b9f866"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "What callers depend on: call signatures for functions and hooks, the structure for types.",
   "tests": [
     {
       "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
       "via": "static"
     }
   ]

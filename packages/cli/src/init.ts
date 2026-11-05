@@ -4,6 +4,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { appendFile, mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import ts from "typescript";
 import { filesInScope, storePaths } from "@poetics/store";
 import type { CoverageThresholds, PoeticsConfig } from "@poetics/store";
 import { applyBackfill, planBackfill } from "./backfill.ts";
@@ -176,7 +177,10 @@ function dependenciesOf(root: string, dir: string): Set<string> {
 /** A tsconfig whose compiler options apply to the source: one that is only project references would give none. */
 function tsconfigOf(root: string): string | undefined {
   for (const name of ["tsconfig.json", "tsconfig.base.json"]) {
-    const config = readJson(join(root, name), true) as { compilerOptions?: object } | undefined;
+    const path = join(root, name);
+    if (!existsSync(path)) continue;
+    // TypeScript's own reader: comments, trailing commas, and `/*` inside strings such as `"@/*"`.
+    const config = ts.parseConfigFileTextToJson(path, readFileSync(path, "utf8")).config as { compilerOptions?: object } | undefined;
     if (config?.compilerOptions && Object.keys(config.compilerOptions).length > 0) return name;
   }
   return undefined;
@@ -190,12 +194,10 @@ function ignoresCache(root: string): boolean {
     .some((line) => [".poetics/cache", ".poetics/cache/", "/.poetics/cache/", ".poetics/"].includes(line.trim()));
 }
 
-function readJson(path: string, allowComments = false): unknown {
+function readJson(path: string): unknown {
   if (!existsSync(path)) return undefined;
   try {
-    const text = readFileSync(path, "utf8");
-    // tsconfig files may carry comments and trailing commas.
-    return JSON.parse(allowComments ? text.replace(/\/\*[\s\S]*?\*\/|(?<!:)\/\/.*$/gm, "").replace(/,(\s*[}\]])/g, "$1") : text);
+    return JSON.parse(readFileSync(path, "utf8"));
   } catch {
     return undefined;
   }

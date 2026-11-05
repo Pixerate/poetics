@@ -170,4 +170,20 @@ describe("planIndex and applyIndex", () => {
     expect(fromCommits.rationale).toBe("Use mills (#9)");
     expect(fromCommits.versions[0]!.version.links).toEqual([{ kind: "github-issue", ref: "#9" }]);
   });
+
+  it("records React components with their props interface and renders deps when the config lists react", async () => {
+    const config = { ...CONFIG, include: ["src/**/*.{ts,tsx}"], adapters: ["typescript", "react"] };
+    const root = await seeded({});
+    await write(root, "src/price.ts", "export function formatPrice(n: number) {\n  return n.toFixed(2);\n}\n");
+    await write(root, "src/PriceTag.tsx", 'import { memo } from "react";\nimport { formatPrice } from "./price.ts";\nexport const PriceTag = memo(function PriceTag({ n, unit = "GBP" }: { n: number; unit?: string }) {\n  return <span>{formatPrice(n)} {unit}</span>;\n});\n');
+    await write(root, "src/Page.tsx", 'import { PriceTag } from "./PriceTag.tsx";\nexport function Page() {\n  return <main><PriceTag n={1} /></main>;\n}\n');
+    const plan = await planIndex(root, config, { rationale: "Add pages" });
+    const made = new Map(plan.created.map((unit) => [unit.name, unit]));
+    expect([...made.values()].map((u) => [u.name, u.kind, u.framework])).toEqual([
+      ["Page", "component", "react"],
+      ["PriceTag", "component", "react"],
+      ["formatPrice", "function", "none"],
+    ]);
+    expect(Object.keys(made.get("Page")!.versions[0]!.deps ?? {})).toEqual([made.get("PriceTag")!.uid]);
+  });
 });

@@ -81,6 +81,44 @@
         "model": "claude-opus-5-5",
         "reviewed": false
       }
+    },
+    {
+      "contentHash": "b3:08b3892390c2f30831cbc67266f1c5790f6978cc3b10fe262cdc2dbd7110d365",
+      "interfaceHash": "b3:47df49598499c64a64774d4ac6cbb2b2755da41919fb6adc8c35de0ec72628d0",
+      "parent": "b3:f242b0a08bec1c53bb44e6f8f13013fa902652993cccb866db7ef72396d511ea",
+      "change": "behaviour",
+      "rationale": "Runs the indexer with the plugins the config's adapters call for, so a React repository's components are backfilled as components.",
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:6004f5b9e3d8b29e1e73aad0e532e809cb147948d3e8052121d4daf2f309c7d7",
+        "01M6HNRFMK1WQP8F6MRK9FMJY0": "b3:1a7870af0a68169489f98a309965d342312673fe353cdbc51cf4e12b98d60742",
+        "01M6KA0K7605CEA11BACFR4NG7": "b3:a4bdf86922ac2ce5656dc3f7ec898867dfd4be9db85a4e81cb51600d9fdce0ef",
+        "01M6KA0K76FC45D9BH7SCY6TN4": "b3:db95265239831d56ce2a9186e2c62c6a0a0e3f8f809d58099420a14180162421",
+        "01M6ME83DBRXTEJAFTHD4TY1R0": "b3:2bced8d96434b3d623f644cf2e834e591c115073faaf9b19d4572022f25e6cf6",
+        "01M5Z1F6NP3C1KG9NNND31TPSJ": "b3:dd4eb578ac15dbcb0dcf9645b932f78a8a124faebe26255799f186266636ddbb",
+        "01M5Z1F6NQR9T376HTSH2ZYP8C": "b3:85859a81a9f157d7de29c1cfe6fed88d978006bd3ed9ea8645bd87f785770203",
+        "01M6HXEYDEZ9Z7E3V1R9FWEZ91": "b3:349b58589c3528cae5cc72fb673ddbbcfb660994bd13fc66126f9ee95373c31a",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582",
+        "01M5XDBC74RY8DRPAXNTM7KM0W": "b3:2256d971b742e8b5a6ad40714f082f993c4521518fb083ae3238e8e5edc1f79b",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:194f0d956019c1f2ce35c3ba6df7bb35285b4ee68753a4bd5206339f0454aa62",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#react-ts-tsx"
+        }
+      ]
     }
   ],
   "docs": "What a snapshot backfill would write. Nothing is written until `applyBackfill`.",
