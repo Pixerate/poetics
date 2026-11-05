@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6NQZ6JW6JEKZQ5TV3QH8WM6",
+  "kind": "function",
+  "framework": "none",
+  "name": "reclassifyUnit",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:251a9b6b3dab27525f08403891208b930a1ce39b3085eb9a2f042463b5a0de6f",
+      "interfaceHash": "b3:c6727453b01aec40a5d1caab7f484d9fa4c3678f7d0d0a71f406d1039a308861",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Records what an adapter now says a unit is, without touching versions. It refuses to cross between types and values, which would be a different unit, not a new view of the same one.",
+      "deps": {
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e",
+        "01M5XDBC8407QXDZJZG6GGWVT1": "b3:63f5e0e2ddcc3214d18ad97176b1affad1db318f2344faf5df2b085f48ae9246",
+        "01M5XDBC898NK9SFW67483HRZP": "b3:e7700ce887b5ee465cedbcd55a226dbc989c7aad2a73e4e5bfb5545b86880520",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC88CMF854R75G7BYSSG": "b3:627d4c9245f05b016bc0b027245ee463a6644f23fdf8b4876bd559ac71b44709",
+        "01M5XDBC8GZ5WSS0KJMF08SPJ9": "b3:d8ec2c1af3288dbe92e7066f79bba2940e4e914ce93c32d1dfe17df754df2c36",
+        "01M5XDBC8J6X886TQM2BP73D20": "b3:d920fe27bfd4b3709078fdbc9efa589ffb45a4f4857d0461be9e1ab26f6c8603"
+      },
+      "links": [
+        {
+          "kind": "github-pull-request",
+          "ref": "#45"
+        }
+      ]
+    }
+  ],
+  "docs": "Records what an adapter now says a unit is (a `component` of `react`, say)\nwhen the code itself has not changed. Versions are untouched. A unit never\ncrosses between types and values: that would be a different unit.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/indexing.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -55,6 +55,29 @@
         "model": "claude-opus-5-5",
         "reviewed": false
       }
+    },
+    {
+      "contentHash": "b3:f017800f29a5b0bf59d6e517668a22d10df78b3a77ed1bc37d0cef5969e2a73c",
+      "interfaceHash": "b3:4cdae39dc418b79521963541b45d1dcb10e91c4ce4f353c4212f0d59c6052232",
+      "parent": "b3:4bb2db2e749c0b83c23adb5e65fd678398dd19b5ca96409643925c8b339f0c56",
+      "change": "behaviour",
+      "rationale": "Counts reclassifications as writes, while needsRationale keeps the rationale rule for the rest.",
+      "deps": {
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:3a5e578619ec595e8cece19f99faaeb5b9abe34d32b83debc3ec957055c02a8d",
+        "01M6NQZ6JW3B0N2SP8YF9M6YF2": "b3:4bb2db2e749c0b83c23adb5e65fd678398dd19b5ca96409643925c8b339f0c56"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-pull-request",
+          "ref": "#45"
+        }
+      ]
     }
   ],
   "docs": "Whether applying the plan would write anything.",

@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6NQZ6JW8HM11W9KRMJH13TN",
+  "kind": "type",
+  "framework": "none",
+  "name": "PlannedReclassification",
+  "location": {
+    "file": "packages/cli/src/indexing.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:fab640d2bd82a3d4943f7f3c23bd2202113dcd2c67a72629a08aff922427bc53",
+      "interfaceHash": "b3:979b6ebe6067f2110d981382d3979563ebf0b598df39e8f9dfcfb95cb0d4bb5f",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Names a unit's old and new kind and framework, so a dry run shows exactly what an adapter changed.",
+      "deps": {
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e"
+      },
+      "links": [
+        {
+          "kind": "github-pull-request",
+          "ref": "#45"
+        }
+      ]
+    }
+  ],
+  "docs": "A unit whose code the adapters now see as a different kind or framework, such as a function React claims as a component.",
+  "tests": [
+    {
+      "file": "packages/cli/src/indexing.test.ts",
+      "via": "static"
+    }
+  ]
+}

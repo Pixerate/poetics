@@ -11,7 +11,7 @@ import { contentTree, createTypeScriptIndexer, detectUnits, fingerprint } from "
 import type { FrameworkPlugin, IndexedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
 import type { Actor, ChangeClass, CodeUnit, Hash, LineageEntry, Link, QueuedMatch, TrackedUnit, Unit, Version } from "@poetics/core";
-import { appendVersion, createMatcher, createUnit, filesInScope, parseUnit, readUnitFiles, relinkTests, relocateUnit, storePaths } from "@poetics/store";
+import { appendVersion, createMatcher, createUnit, filesInScope, parseUnit, readUnitFiles, reclassifyUnit, relinkTests, relocateUnit, storePaths } from "@poetics/store";
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { pluginsFor } from "./frameworks.ts";
 import { changesSince, git, showAt } from "./git.ts";
@@ -41,6 +41,14 @@ export interface PlannedMove {
   score?: number;
 }
 
+/** A unit whose code the adapters now see as a different kind or framework, such as a function React claims as a component. */
+export interface PlannedReclassification {
+  uid: string;
+  key: string;
+  from: Pick<Unit, "kind" | "framework">;
+  to: Pick<Unit, "kind" | "framework">;
+}
+
 /** A unit whose linked test files were renamed, and where each went. */
 export interface PlannedRelink {
   uid: string;
@@ -60,6 +68,7 @@ export interface IndexPlan {
   created: Unit[];
   removed: PlannedVersion[];
   relinks: PlannedRelink[];
+  reclassified: PlannedReclassification[];
   queued: QueuedMatch[];
 }
 
@@ -84,7 +93,12 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     .sort((a, b) => (a.uid < b.uid ? -1 : 1));
   const units = live.filter((unit) => unit.owner === undefined && indexable(unit.location.file));
 
-  const plan: IndexPlan = { base, rationale, fresh: 0, moves: [], versions: [], created: [], removed: [], relinks: [], queued: [] };
+  const plan: IndexPlan = { base, rationale, fresh: 0, moves: [], versions: [], created: [], removed: [], relinks: [], reclassified: [], queued: [] };
+  // A store recorded before an adapter existed calls its components functions; the code now says otherwise.
+  const reclassify = (unit: Unit, at: IndexedUnit) => {
+    if (unit.kind === at.kind && unit.framework === at.framework) return;
+    plan.reclassified.push({ uid: unit.uid, key: at.key, from: { kind: unit.kind, framework: unit.framework }, to: { kind: at.kind, framework: at.framework } });
+  };
   const baseCode = baseSnapshot(root, base, plugins);
   const codeByPlace = new Map(code.map((unit) => [place(unit.span.file, unit.name, unit.kind), unit]));
   const uidOfKey = new Map<string, string>();
@@ -101,6 +115,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     }
     claimed.add(at.key);
     uidOfKey.set(at.key, unit.uid);
+    reclassify(unit, at);
     if (unit.versions.at(-1)!.contentHash === at.contentHash) plan.fresh++;
     else pending.push({ unit, at });
   }
@@ -123,6 +138,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     const move: PlannedMove = { uid: unit.uid, from: `${unit.location.file}#${unit.name}`, key: at.key, to, lineage: match.lineage, via: match.via };
     if (match.score !== undefined) move.score = match.score;
     plan.moves.push(move);
+    reclassify(unit, at);
     if (unit.versions.at(-1)!.contentHash !== at.contentHash) pending.push({ unit, at });
   }
   const createdFrom: Array<{ unit: Unit; at: IndexedUnit }> = [];
@@ -189,19 +205,21 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   plan.versions.sort(byKey);
   plan.removed.sort(byKey);
   plan.relinks.sort(byKey);
+  plan.reclassified.sort(byKey);
   plan.created.sort((a, b) => byKey({ key: `${a.location.file}#${a.name}` }, { key: `${b.location.file}#${b.name}` }));
   return plan;
 }
 
 /** Writes the plan as `actor`. Queued units are left as they are. Returns how many unit files changed. */
 export async function applyIndex(root: string, plan: IndexPlan, actor: Actor, layout: StoreLayout = "flat"): Promise<number> {
-  if (plan.rationale === undefined && hasWrites(plan)) throw new Error("No rationale: pass --rationale, or commit with a message first");
+  if (plan.rationale === undefined && needsRationale(plan)) throw new Error("No rationale: pass --rationale, or commit with a message first");
   const ctx = { paths: storePaths(root), actor };
   for (const move of plan.moves) await relocateUnit(ctx, move.uid, move.to, move.lineage);
   for (const { uid, version } of [...plan.versions, ...plan.removed]) await appendVersion(ctx, uid, { ...version, actor });
   for (const unit of plan.created) await createUnit(ctx, unit, layout);
   for (const { uid, tests } of plan.relinks) await relinkTests(ctx, uid, new Map(tests.map(({ from, to }) => [from, to])));
-  return new Set([...plan.moves, ...plan.versions, ...plan.removed, ...plan.relinks].map((entry) => entry.uid)).size + plan.created.length;
+  for (const { uid, to } of plan.reclassified) await reclassifyUnit(ctx, uid, to);
+  return new Set([...plan.moves, ...plan.versions, ...plan.removed, ...plan.relinks, ...plan.reclassified].map((entry) => entry.uid)).size + plan.created.length;
 }
 
 /** The plan for people: one line per unit, then a summary. `written` is set after a write. */
@@ -214,15 +232,21 @@ export function formatIndexPlan(plan: IndexPlan, written?: number): string {
   for (const unit of plan.created) lines.push(`+ ${unit.location.file}#${unit.name} (${unit.kind}, new uid ${unit.uid})`);
   for (const { key } of plan.removed) lines.push(`- ${key} removed`);
   for (const { key, tests } of plan.relinks) lines.push(`= ${key} tests: ${tests.map(({ from, to }) => `${from} -> ${to}`).join(", ")}`);
+  for (const { key, from, to } of plan.reclassified) lines.push(`* ${key} ${from.kind} (${from.framework}) -> ${to.kind} (${to.framework})`);
   for (const q of plan.queued) lines.push(`? ${q.reason}: ${q.uids.join(", ")} -> ${q.keys.join(", ")}; declare which is which with lineage (poetics-refactor)`);
-  if (plan.rationale === undefined && hasWrites(plan)) lines.push("No rationale yet: pass --rationale, or commit with a message first.");
-  const counts = `${plan.moves.length} moved, ${plan.versions.length} changed, ${plan.created.length} new, ${plan.removed.length} removed, ${plan.relinks.length} relinked, ${plan.queued.length} queued, ${plan.fresh} up to date`;
+  if (plan.rationale === undefined && needsRationale(plan)) lines.push("No rationale yet: pass --rationale, or commit with a message first.");
+  const counts = `${plan.moves.length} moved, ${plan.versions.length} changed, ${plan.created.length} new, ${plan.removed.length} removed, ${plan.relinks.length} relinked, ${plan.reclassified.length} reclassified, ${plan.queued.length} queued, ${plan.fresh} up to date`;
   lines.push(written === undefined ? `Would record: ${counts}. Run with --write to record it.` : `Recorded ${written} unit file(s): ${counts}.`);
   return lines.join("\n");
 }
 
 /** Whether applying the plan would write anything. */
 export function hasWrites(plan: IndexPlan): boolean {
+  return needsRationale(plan) || plan.reclassified.length > 0;
+}
+
+/** Whether the plan records anything a rationale is asked for; a reclassification alone changes no code, so it needs none. */
+export function needsRationale(plan: IndexPlan): boolean {
   return plan.moves.length + plan.versions.length + plan.created.length + plan.removed.length + plan.relinks.length > 0;
 }
 

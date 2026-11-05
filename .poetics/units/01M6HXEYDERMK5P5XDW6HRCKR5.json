@@ -57,12 +57,39 @@
         "model": "claude-opus-5-5",
         "reviewed": false
       }
+    },
+    {
+      "contentHash": "b3:439c6ca3bd90f016a4b46ee8b769fb1459e6751b4a6196bc0f38a21298745d88",
+      "interfaceHash": "b3:5e8701ffd9efdde768e39d1fde3e27703d2db2e46bdcbe091e8c36c0255d3539",
+      "parent": "b3:010eba47ed25c919c3714bffd789c16023e78af088d959ecf5984f351c87da41",
+      "change": "behaviour",
+      "rationale": "Prints a * line per reclassified unit, with its old and new kind and framework, and counts them in the summary.",
+      "deps": {
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:3a5e578619ec595e8cece19f99faaeb5b9abe34d32b83debc3ec957055c02a8d",
+        "01M6NQZ6JW3B0N2SP8YF9M6YF2": "b3:4bb2db2e749c0b83c23adb5e65fd678398dd19b5ca96409643925c8b339f0c56"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-pull-request",
+          "ref": "#45"
+        }
+      ]
     }
   ],
   "docs": "The plan for people: one line per unit, then a summary. `written` is set after a write.",
   "tests": [
     {
       "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/indexing.test.ts",
       "via": "static"
     }
   ]

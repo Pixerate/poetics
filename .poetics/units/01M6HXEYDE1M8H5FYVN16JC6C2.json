@@ -70,6 +70,37 @@
         "model": "claude-opus-5-5",
         "reviewed": false
       }
+    },
+    {
+      "contentHash": "b3:6dfe143c1727cad43a9898cae7e6c0551fba324c61a4da0b16b7cffa99c481a4",
+      "interfaceHash": "b3:4ff59d8cecaad15cee428aba6830bbdd2d5e46a195b570de3c773ba934a6441d",
+      "parent": "b3:217e2bd467de1554703a2c4ac8321fe94ce8e1635e821888c21d2473a38276af",
+      "change": "behaviour",
+      "rationale": "Writes reclassifications through reclassifyUnit. It asks for a rationale only when the plan records something that carries one, since a reclassification changes no code.",
+      "deps": {
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:3a5e578619ec595e8cece19f99faaeb5b9abe34d32b83debc3ec957055c02a8d",
+        "01M6NQZ6JW3B0N2SP8YF9M6YF2": "b3:4bb2db2e749c0b83c23adb5e65fd678398dd19b5ca96409643925c8b339f0c56",
+        "01M5XDBC7242S6J91S3VHFFY98": "b3:6132ad1bb03eda44a4092b8d11be5fe787dd79eca9d7ecba4b13f7c15a0ac702",
+        "01M5XDBC8AHR2H46K5QP50Q2KF": "b3:5e969e449753e15d4f3b6c002d64d33563529f661d39de0d75aca22a99128ff2",
+        "01M6HXEYDEHEF6JER5T7XB6K4Y": "b3:4d194b8a3592eb2bf128175d15179e25845cb0f2e8700d2e4d01bff705b61087",
+        "01M6NQZ6JW6JEKZQ5TV3QH8WM6": "b3:251a9b6b3dab27525f08403891208b930a1ce39b3085eb9a2f042463b5a0de6f",
+        "01M6HZ4DBE2N5B73MXYQ6CV959": "b3:af0018ad445c70217e5f2bef708286cef7b499c3804adc0f830585fbefdab90f",
+        "01M6HXEYDEEHFMA6N5AKHBQFVV": "b3:c84e0bd900761ef7ebbbbee9b23a2b3b4d4efbdfc0112ef955ffd9ee7ca6e618",
+        "01M5XDBC8F5TCR82AMFQY7887B": "b3:4b77b80d7c475adf67fb1a140b6473be9f5969533ffac8eee96d8adc3ed3b64d",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-pull-request",
+          "ref": "#45"
+        }
+      ]
     }
   ],
   "docs": "Writes the plan as `actor`. Queued units are left as they are. Returns how many unit files changed.",

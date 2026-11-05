@@ -186,4 +186,29 @@ describe("planIndex and applyIndex", () => {
     ]);
     expect(Object.keys(made.get("Page")!.versions[0]!.deps ?? {})).toEqual([made.get("PriceTag")!.uid]);
   });
+
+  it("reclassifies units an adapter now claims, without a rationale or a version", async () => {
+    const plain = { ...CONFIG, include: ["src/**/*.{ts,tsx}"] };
+    const root = await mkdtemp(join(tmpdir(), "poetics-index-reclassify-"));
+    runGit(root, "init", "-q", "-b", "main");
+    await write(root, "src/Page.tsx", "export function Page() {\n  return <main />;\n}\n");
+    await write(root, "src/price.ts", PRICE);
+    // Recorded before the React adapter: the component is a plain function.
+    await applyIndex(root, await planIndex(root, plain, { rationale: "Seed" }), human);
+    runGit(root, "add", "-A");
+    runGit(root, "commit", "-q", "-m", "Seed");
+    expect((await store(root)).get("Page")).toMatchObject({ kind: "function", framework: "none" });
+
+    const react = { ...plain, adapters: ["typescript", "react"] };
+    const plan = await planIndex(root, react);
+    expect(plan.reclassified).toEqual([
+      { uid: (await store(root)).get("Page")!.uid, key: "src/Page.tsx#Page", from: { kind: "function", framework: "none" }, to: { kind: "component", framework: "react" } },
+    ]);
+    expect(plan).toMatchObject({ fresh: 2, versions: [], moves: [], created: [], rationale: undefined });
+    expect(formatIndexPlan(plan)).toContain("* src/Page.tsx#Page function (none) -> component (react)");
+    expect(await applyIndex(root, plan, human)).toBe(1);
+    const page = (await store(root)).get("Page")!;
+    expect([page.kind, page.framework, page.versions.length]).toEqual(["component", "react", 1]);
+    expect((await planIndex(root, react)).reclassified).toEqual([]);
+  });
 });

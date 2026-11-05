@@ -173,6 +173,22 @@ export async function relinkTests(ctx: WriteContext, uid: string, renames: Reado
   await writeUnit(ctx, file.path, { ...unit, tests: tests.map((test) => ({ ...test, file: renames.get(test.file) ?? test.file })) }, fail);
 }
 
+/**
+ * Records what an adapter now says a unit is (a `component` of `react`, say)
+ * when the code itself has not changed. Versions are untouched. A unit never
+ * crosses between types and values: that would be a different unit.
+ */
+export async function reclassifyUnit(ctx: WriteContext, uid: string, to: Pick<Unit, "kind" | "framework">): Promise<void> {
+  const file = await readUnitFile(ctx.paths, uid);
+  const unit = parseUnit(file);
+  const fail = (reason: string): never => {
+    throw new Error(`Cannot reclassify ${uid}: ${reason}`);
+  };
+  if (isRemoved(unit)) fail("its latest version is removed");
+  if ((unit.kind === "type") !== (to.kind === "type")) fail(`a ${unit.kind} cannot become a ${to.kind}`);
+  await writeUnit(ctx, file.path, { ...unit, kind: to.kind, framework: to.framework }, fail);
+}
+
 async function writeUnit(ctx: WriteContext, path: string, unit: Unit, fail: (reason: string) => never): Promise<void> {
   if (ctx.validator) {
     const result = ctx.validator.unit(unit);
