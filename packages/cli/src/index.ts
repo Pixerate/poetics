@@ -18,7 +18,7 @@ export { VERSION, run } from "./run.ts";
 export type { RehashEntry, RehashPlan } from "./rehash.ts";
 export { applyRehash, planRehash, unitHashes } from "./rehash.ts";
 export type { IndexOptions, IndexPlan, PlannedMove, PlannedReclassification, PlannedRelink, PlannedVersion } from "./indexing.ts";
-export { applyIndex, formatIndexPlan, hasWrites, needsRationale, planIndex } from "./indexing.ts";
+export { applyIndex, declareLineage, formatIndexPlan, hasWrites, needsRationale, planIndex } from "./indexing.ts";
 export type { BackfillPlan, Evidence } from "./backfill.ts";
 export { applyBackfill, formatBackfillPlan, hasBackfill, planBackfill } from "./backfill.ts";
 export type { Adapter, InitConfig, InitPlan } from "./init.ts";

@@ -43,6 +43,7 @@
   "dependencies": {
     "@poetics/adapter-react": "workspace:*",
     "@poetics/adapter-typescript": "workspace:*",
+    "@poetics/cli": "workspace:*",
     "@poetics/core": "workspace:*",
     "@poetics/store": "workspace:*"
   }

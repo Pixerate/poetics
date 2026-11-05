@@ -18,6 +18,8 @@ export interface StdioIo {
 export interface ToolHost {
   tools(): readonly ToolDefinition[];
   callTool(name: string, args: Record<string, unknown>): Promise<unknown>;
+  /** Told who connected, from `initialize`'s `clientInfo`. */
+  connect?(client: { name: string; version?: string }): void;
 }
 
 interface Request {
@@ -72,6 +74,8 @@ async function answer(host: ToolHost, request: Request): Promise<object> {
   const params = request.params ?? {};
   switch (request.method) {
     case "initialize": {
+      const info = params["clientInfo"] as { name?: unknown; version?: unknown } | undefined;
+      if (typeof info?.name === "string" && info.name.length > 0) host.connect?.({ name: info.name, ...(typeof info.version === "string" ? { version: info.version } : {}) });
       const asked = params["protocolVersion"];
       const protocolVersion = PROTOCOL_VERSIONS.find((version) => version === asked) ?? PROTOCOL_VERSIONS[0];
       return { protocolVersion, capabilities: { tools: {} }, serverInfo: { name: "poetics", version: VERSION } };

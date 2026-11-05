@@ -13,10 +13,10 @@ describe.
 | Check the store | `pnpm validate` in CI | `poetics verify` | 1 |
 | Check a change was recorded | `pnpm poetics:check` in preflight and on pull requests | `poetics verify --since`, GitHub Action | 1, 5 |
 | Measure coverage | `pnpm poetics:coverage` with `policy.coverage` | `poetics coverage` | 1 |
-| Record rationale | Append a version entry | `poetics_record_rationale` | 2 |
-| Record lineage | Add a `lineage` entry | `poetics_declare_lineage` | 2 |
+| Record rationale | `pnpm poetics index --write`, then `poetics_record_rationale` per unit (or edit the version) | Done | 2 |
+| Record lineage | `pnpm poetics index`; `poetics_declare_lineage` for what it queues, splits and merges | Done | 2 |
 | Link tests | `tests` entries in the unit file | Coverage-based linking | 4 |
-| Record gotchas | A note file per `poetics-gotcha`; `pnpm gotchas` | `poetics_record_note`, failure hook | 2 |
+| Record gotchas | `poetics_record_note` (or a note file and `pnpm gotchas`) | Failure hook | 2 |
 
 ## What gets a unit
 

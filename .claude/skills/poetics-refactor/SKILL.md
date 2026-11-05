@@ -6,9 +6,12 @@ description: Use before renaming, moving, splitting or merging any function, hoo
 # Refactor without losing identity
 
 A unit's `uid` never changes. Renames and moves keep the same unit file; you
-record what happened so history carries over. Day-one version: you edit unit
-files by hand. When `poetics_declare_lineage` lands, step 3 becomes a call to
-it, checked against the diff.
+record what happened so history carries over. `pnpm poetics index` infers
+renames and moves; for what it queues, and for every split and merge, call
+`poetics_declare_lineage` with the kind, the old units (`from`) and the new
+places as `file#name` (`to`). It is checked against the code: a declaration
+the code disagrees with is rejected with the reason, and nothing is written.
+Without an MCP server, step 3 below is the same thing by hand.
 
 1. **Before touching code**, find every unit you will rename, move, split or
    merge (`poetics-orient`) and note each uid.

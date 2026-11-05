@@ -6,7 +6,7 @@ export { readConfig } from "./config.ts";
 export { createMatcher, globToRegExp } from "./glob.ts";
 export { checkStore } from "./check.ts";
 export type { RenderOptions } from "./gotchas.ts";
-export { AREA_TITLES, renderGotchas } from "./gotchas.ts";
+export { AREA_TITLES, buildGotchas, renderGotchas } from "./gotchas.ts";
 export type { RebuildStats, SearchOptions, UnitRow } from "./index-db.ts";
 export {
   INDEX_SCHEMA_VERSION,
@@ -21,8 +21,9 @@ export {
 export type { UnitFile, WriteContext } from "./json-store.ts";
 export {
   appendVersion,
+  confirmNote,
+  createNote,
   createUnit,
-  declareLineage,
   linkTest,
   listNoteFiles,
   listUnitFiles,

@@ -89,6 +89,34 @@
           "ref": "#45"
         }
       ]
+    },
+    {
+      "contentHash": "b3:5c0aec475867a9db35ef70a70161f9506aa95580da3ee4bfa8ebf3ccfd433c7e",
+      "interfaceHash": "b3:fdf0a758e6c687905748a9ed384499740a242620664743c299790709dbcdc1dd",
+      "parent": "b3:3a5e578619ec595e8cece19f99faaeb5b9abe34d32b83debc3ec957055c02a8d",
+      "change": "interface",
+      "rationale": "Adds rejected: declarations the code disagrees with, and why, so nothing is written for them and the agent can fix the declaration.",
+      "deps": {
+        "01M6HXEYDEF480EDP3WX2271SV": "b3:2626760e870c99f3d56ec520929eeeba2367441ee532e62daeceec10d5c73c70",
+        "01M6NQZ6JW8HM11W9KRMJH13TN": "b3:fab640d2bd82a3d4943f7f3c23bd2202113dcd2c67a72629a08aff922427bc53",
+        "01M6HZ4DBDVEJA4N2ZJYCX5X1N": "b3:31b7206d7076f2d7d5878247a7a3785c9637f12c4c8a496e25987432304806f3",
+        "01M6HXEYDDNG0KFMNFYRAH0DBY": "b3:7fba29621de90f7be07b7125696d94321e7040cfc35b51dfa9e135182ed844f1",
+        "01M6HS3HPGYWMWK3G2C5QGX42V": "b3:b01c420143755699106604d3591dec24f8d811280b57bc85787783b2fead310a",
+        "01M6HS3HPG5W8T9PQ096AKTAJV": "b3:466355f301d2bad0a3d75b1c6c9bf41934839f117d37e8e554871060099aeaec",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
     }
   ],
   "docs": "Everything poetics index would record, plus the matches it leaves queued.",

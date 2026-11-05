@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { mkdir, readdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, join, relative, sep } from "node:path";
 import { isRemoved, notImplemented } from "@poetics/core";
@@ -212,14 +213,83 @@ async function readUnitFile(paths: StorePaths, uid: string): Promise<UnitFile> {
   throw new Error(`No unit file for ${uid} under ${toPosix(relative(paths.root, paths.units))}`);
 }
 
-/** Attaches rationale and links to the newest version of a unit. */
-export function recordRationale(_ctx: WriteContext, _uid: string, _rationale: string, _links?: Link[]): Promise<void> {
-  return notImplemented("recordRationale");
+/**
+ * Gives the newest version of a unit its rationale, and adds links. History is
+ * append-only, so only a version not yet committed may be changed: one that
+ * `poetics index` just wrote with a run-wide rationale, say. A rationale someone
+ * writes is no longer inferred.
+ */
+export async function recordRationale(ctx: WriteContext, uid: string, rationale: string, links: readonly Link[] = []): Promise<void> {
+  const file = await readUnitFile(ctx.paths, uid);
+  const unit = parseUnit(file);
+  const fail = (reason: string): never => {
+    throw new Error(`Cannot record a rationale for ${uid}: ${reason}`);
+  };
+  if (rationale.trim() === "") fail("the rationale is empty");
+  const newest = unit.versions.length - 1;
+  if (newest < committedVersions(ctx.paths.root, file.relativePath)) {
+    fail(`its newest version (versions[${newest}]) is committed, and history is append-only; give the reason in the next version you record`);
+  }
+  const version = { ...unit.versions[newest]!, rationale: rationale.trim() };
+  delete version.inferred;
+  const merged = [...(version.links ?? []), ...links];
+  const key = (link: Link) => (typeof link === "string" ? link : `${link.kind}:${link.ref}`);
+  if (merged.length > 0) version.links = merged.filter((link, i) => merged.findIndex((other) => key(other) === key(link)) === i);
+  await writeUnit(ctx, file.path, { ...unit, versions: [...unit.versions.slice(0, newest), version] }, fail);
 }
 
-/** Records a rename, move, split or merge; rejected if the diff disagrees. */
-export function declareLineage(_ctx: WriteContext, _uid: string, _entry: LineageEntry): Promise<void> {
-  return notImplemented("declareLineage");
+/** Writes a new note file. Its id must be new, and it is attributed to `ctx.actor`. */
+export async function createNote(ctx: WriteContext, note: Note): Promise<void> {
+  const path = join(ctx.paths.notes, `${note.id}.json`);
+  const fail = (reason: string): never => {
+    throw new Error(`Cannot record note ${note.id}: ${reason}`);
+  };
+  const existing = await readFile(path, "utf8").catch(() => undefined);
+  if (existing !== undefined) fail("a note with that id exists");
+  const written: Note = { ...note, actor: ctx.actor };
+  if (ctx.validator) {
+    const result = ctx.validator.note(written);
+    if (!result.valid) fail(result.errors.join("; "));
+  }
+  await mkdir(ctx.paths.notes, { recursive: true });
+  const temp = `${path}.${process.pid}.tmp`;
+  await writeFile(temp, `${JSON.stringify(written, null, 2)}\n`);
+  await rename(temp, path);
+}
+
+/**
+ * Confirms an active note against the code as it is: each anchored unit's
+ * `observedAt` becomes its latest content hash, so the note is no longer
+ * flagged for re-checking.
+ */
+export async function confirmNote(ctx: WriteContext, id: string): Promise<Note> {
+  const path = join(ctx.paths.notes, `${id}.json`);
+  const raw = await readFile(path, "utf8").catch(() => undefined);
+  if (raw === undefined) throw new Error(`Cannot confirm note ${id}: there is no such note`);
+  const note = parseNote({ path, relativePath: toPosix(relative(ctx.paths.root, path)), raw });
+  if (note.status !== "active") throw new Error(`Cannot confirm note ${id}: it is ${note.status}, not active`);
+  const units = note.anchors.units ?? [];
+  for (const anchor of units) {
+    const unit = parseUnit(await readUnitFile(ctx.paths, anchor.uid));
+    if (isRemoved(unit)) throw new Error(`Cannot confirm note ${id}: anchored unit ${unit.name} (${unit.uid}) has been removed; retire the note or move its anchor`);
+    anchor.observedAt = unit.versions.at(-1)!.contentHash;
+  }
+  const temp = `${path}.${process.pid}.tmp`;
+  await writeFile(temp, `${JSON.stringify(note, null, 2)}\n`);
+  await rename(temp, path);
+  return note;
+}
+
+/** How many versions the unit file had at HEAD: those are history. Zero for a file not committed yet. */
+function committedVersions(root: string, relativePath: string): number {
+  let raw: string;
+  try {
+    raw = execFileSync("git", ["show", `HEAD:${relativePath}`], { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+  } catch {
+    // Not committed (or no repository): nothing about the file is history yet.
+    return 0;
+  }
+  return (JSON.parse(raw) as Unit).versions.length;
 }
 
 export function linkTest(_ctx: WriteContext, _uid: string, _link: TestLink): Promise<void> {

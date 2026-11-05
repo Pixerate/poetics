@@ -1,0 +1,53 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6P0XZQPNKEA9PZ88BJTFG5M",
+  "kind": "function",
+  "framework": "none",
+  "name": "confirmNote",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:1ee841351925c99f58e824a414ee7f23a3022d8d77c109cbc4e53a5c0bb8816b",
+      "interfaceHash": "b3:9f3c0405cf15b0e67a8e48e56d938a152248396f3e1a8fbb9de96dadc7dfb548",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Re-confirms an active note: each anchored unit's observedAt becomes its latest hash, so validate stops flagging it. It refuses retired notes and removed units.",
+      "deps": {
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5YKJ3JZM095NT4VJR6HMH42": "b3:a0ad133514cf410878d3ce938ccde3df7ed7a15cda710fb50b81460217eb3828",
+        "01M5XDBC8407QXDZJZG6GGWVT1": "b3:63f5e0e2ddcc3214d18ad97176b1affad1db318f2344faf5df2b085f48ae9246",
+        "01M5XDBC898NK9SFW67483HRZP": "b3:e7700ce887b5ee465cedbcd55a226dbc989c7aad2a73e4e5bfb5545b86880520",
+        "01M5YKJ3K4JGM3F2JMZCKGF0S6": "b3:2a80e27214dbceeea2c451d8b7edd66262977008ecd8b8840a233be48f100387",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC88CMF854R75G7BYSSG": "b3:627d4c9245f05b016bc0b027245ee463a6644f23fdf8b4876bd559ac71b44709",
+        "01M5XDBC8GZ5WSS0KJMF08SPJ9": "b3:d8ec2c1af3288dbe92e7066f79bba2940e4e914ce93c32d1dfe17df754df2c36",
+        "01M5XDBC8J6X886TQM2BP73D20": "b3:d920fe27bfd4b3709078fdbc9efa589ffb45a4f4857d0461be9e1ab26f6c8603"
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "Confirms an active note against the code as it is: each anchored unit's\n`observedAt` becomes its latest content hash, so the note is no longer\nflagged for re-checking.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/mcp/src/write-tools.test.ts",
+      "via": "static"
+    }
+  ]
+}

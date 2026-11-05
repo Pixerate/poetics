@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -5,8 +6,9 @@ import { NotImplementedError, REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { Version } from "@poetics/core";
 import {
   appendVersion,
+  confirmNote,
+  createNote,
   createUnit,
-  declareLineage,
   linkTest,
   listUnitFiles,
   parseUnit,
@@ -20,7 +22,7 @@ import {
 } from "./json-store.ts";
 import { storePaths } from "./paths.ts";
 import { createValidator, loadSchemaSet } from "./schemas.ts";
-import { REPO_SCHEMAS, UID_A, UID_B, hash, makeRepo, makeUnit, writeUnit } from "./test-helpers.ts";
+import { NOTE_ID, REPO_SCHEMAS, UID_A, UID_B, hash, makeNote, makeRepo, makeUnit, writeUnit } from "./test-helpers.ts";
 
 describe("reading unit files", () => {
   it("returns nothing when there is no store", async () => {
@@ -123,8 +125,6 @@ describe("appendVersion", () => {
 describe("validated writes", () => {
   it("are stubs until phase 2", () => {
     const ctx = { paths: storePaths("/repo"), actor: { kind: "human" } as const };
-    expect(() => recordRationale(ctx, UID_A, "why")).toThrow(NotImplementedError);
-    expect(() => declareLineage(ctx, UID_A, { kind: "rename" })).toThrow(NotImplementedError);
     expect(() => linkTest(ctx, UID_A, { file: "a.test.ts", via: "explicit" })).toThrow(NotImplementedError);
     expect(() => setDocs(ctx, UID_A, "docs", hash("1"))).toThrow(NotImplementedError);
   });
@@ -225,5 +225,60 @@ describe("reclassifyUnit", () => {
     const ctx = { paths: storePaths(root), actor: human };
     await expect(reclassifyUnit(ctx, UID_A, { kind: "type", framework: "none" })).rejects.toThrow("a function cannot become a type");
     await expect(reclassifyUnit(ctx, UID_B, { kind: "component", framework: "react" })).rejects.toThrow("its latest version is removed");
+  });
+});
+
+describe("recordRationale", () => {
+  const agent = { kind: "agent", tool: "claude-code", reviewed: false } as const;
+  const gitIn = (root: string, ...args: string[]) =>
+    execFileSync("git", ["-c", "user.name=T", "-c", "user.email=t@example.com", "-c", "commit.gpgsign=false", ...args], { cwd: root, stdio: "ignore" });
+
+  it("rewrites an uncommitted newest version's rationale, merges links, and drops inferred", async () => {
+    const unit = makeUnit(UID_A);
+    unit.versions[0] = { ...unit.versions[0]!, links: ["#1"], inferred: { by: "poetics-backfill", confidence: "low", sources: [], drafted: false, reviewed: false } };
+    const root = await makeRepo([unit]);
+    await recordRationale({ paths: storePaths(root), actor: agent }, UID_A, "  Rounds half up for invoices.  ", ["#1", { kind: "github-issue", ref: "#2" }]);
+    const version = (await readUnit(storePaths(root), UID_A)).versions[0]!;
+    expect(version.rationale).toBe("Rounds half up for invoices.");
+    expect(version.links).toEqual(["#1", { kind: "github-issue", ref: "#2" }]);
+    expect(version.inferred).toBeUndefined();
+  });
+
+  it("refuses a committed version, so history stays append-only, and an empty rationale", async () => {
+    const root = await makeRepo([makeUnit(UID_A)]);
+    gitIn(root, "init", "-q", "-b", "main");
+    gitIn(root, "add", "-A");
+    gitIn(root, "commit", "-q", "-m", "Seed");
+    const ctx = { paths: storePaths(root), actor: agent };
+    await expect(recordRationale(ctx, UID_A, "Later reason.")).rejects.toThrow("its newest version (versions[0]) is committed");
+    await expect(recordRationale(ctx, UID_A, "   ")).rejects.toThrow("the rationale is empty");
+
+    // A version appended since the commit is still open.
+    await appendVersion(ctx, UID_A, { contentHash: hash("2"), provisional: true, parent: hash("1"), change: "behaviour", actor: agent, rationale: "Run-wide." });
+    await recordRationale(ctx, UID_A, "Only this unit's reason.");
+    expect((await readUnit(storePaths(root), UID_A)).versions[1]!.rationale).toBe("Only this unit's reason.");
+  });
+});
+
+describe("createNote and confirmNote", () => {
+  const agent = { kind: "agent", tool: "claude-code", reviewed: false } as const;
+
+  it("writes a new note as the writer, valid against the schema, refusing a second with the same id", async () => {
+    const root = await makeRepo([makeUnit(UID_A)]);
+    const ctx = { paths: storePaths(root), actor: agent, validator: createValidator(await loadSchemaSet(REPO_SCHEMAS)) };
+    await createNote(ctx, makeNote({ anchors: { units: [{ uid: UID_A, observedAt: hash("1") }] } }));
+    const written = JSON.parse(await readFile(join(root, ".poetics", "notes", `${NOTE_ID}.json`), "utf8")) as { actor: unknown };
+    expect(written.actor).toEqual(agent);
+    await expect(createNote(ctx, makeNote())).rejects.toThrow("a note with that id exists");
+  });
+
+  it("confirms a note against each anchored unit's latest hash, and refuses retired notes and removed units", async () => {
+    const unit = makeUnit(UID_A);
+    unit.versions.push({ contentHash: hash("2"), provisional: true, parent: hash("1"), change: "behaviour", actor: agent, rationale: "Changed." });
+    const root = await makeRepo([unit, makeUnit(UID_B)]);
+    const ctx = { paths: storePaths(root), actor: agent };
+    await createNote(ctx, makeNote({ anchors: { units: [{ uid: UID_A, observedAt: hash("1") }] } }));
+    expect((await confirmNote(ctx, NOTE_ID)).anchors.units).toEqual([{ uid: UID_A, observedAt: hash("2") }]);
+    await expect(confirmNote(ctx, "01JB8N0000000000000000000Z")).rejects.toThrow("there is no such note");
   });
 });

@@ -287,6 +287,9 @@ importers:
       '@poetics/adapter-typescript':
         specifier: workspace:*
         version: link:../adapter-typescript
+      '@poetics/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@poetics/core':
         specifier: workspace:*
         version: link:../core

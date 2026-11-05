@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { Unit } from "@poetics/core";
-import { applyIndex, formatIndexPlan, planIndex } from "./indexing.ts";
+import { applyIndex, declareLineage, formatIndexPlan, planIndex } from "./indexing.ts";
 import { runGit, write } from "./test-helpers.ts";
 
 const CONFIG = { include: ["src/**/*.ts"], exclude: ["**/*.test.ts"] };
@@ -210,5 +210,44 @@ describe("planIndex and applyIndex", () => {
     const page = (await store(root)).get("Page")!;
     expect([page.kind, page.framework, page.versions.length]).toEqual(["component", "react", 1]);
     expect((await planIndex(root, react)).reclassified).toEqual([]);
+  });
+
+  describe("declareLineage", () => {
+    const ref = (file: string, name: string) => ({ file, name, kind: "function" as const });
+
+    it("settles look-alikes poetics index would only queue, and refuses what the code disagrees with", async () => {
+      const pair = TOTAL + TOTAL.replace("function total(", "function totalWithTax(");
+      const root = await seeded({ "src/cart.ts": pair });
+      const before = await store(root);
+      await rm(join(root, "src/cart.ts"));
+      await write(root, "src/sums.ts", pair.replace("function total(", "function sum(").replace("totalWithTax", "sumWithTax"));
+      expect((await planIndex(root, CONFIG, { rationale: "x" })).queued).toHaveLength(1);
+
+      await expect(declareLineage(root, CONFIG, { kind: "move", uids: [before.get("total")!.uid], to: [ref("src/nowhere.ts", "sum")] }, human)).rejects.toThrow(
+        "Declaration rejected: there is no function sum in src/nowhere.ts",
+      );
+      const moved = await declareLineage(root, CONFIG, { kind: "move", uids: [before.get("total")!.uid], to: [ref("src/sums.ts", "sum")] }, human);
+      expect(moved.moved.map((m) => [m.key, m.lineage])).toEqual([["src/sums.ts#sum", [{ kind: "move", from: "src/cart.ts" }, { kind: "rename", from: "total" }]]]);
+      await declareLineage(root, CONFIG, { kind: "move", uids: [before.get("totalWithTax")!.uid], to: [ref("src/sums.ts", "sumWithTax")] }, human);
+      expect(await planIndex(root, CONFIG)).toMatchObject({ fresh: 2, moves: [], created: [], removed: [], queued: [], rejected: [] });
+    });
+
+    it("writes a declared split's part with lineage both ways, and a merge's removal, each with its own reason", async () => {
+      const root = await seeded({ "src/cart.ts": TOTAL, "src/price.ts": PRICE + PRICE.replace("formatPrice", "formatCents") });
+      const before = await store(root);
+      await write(root, "src/cart.ts", `${TOTAL}export function subtotal(items: number[]) {\n  return items.length;\n}\n`);
+      const split = await declareLineage(root, CONFIG, { kind: "split", uids: [before.get("total")!.uid], to: [ref("src/cart.ts", "total"), ref("src/cart.ts", "subtotal")] }, human);
+      expect(split.created.map((u) => [u.name, u.lineage, u.versions[0]!.rationale])).toEqual([
+        ["subtotal", [{ kind: "split", uids: [before.get("total")!.uid] }], `Split out of total (${before.get("total")!.uid}).`],
+      ]);
+      expect((await store(root)).get("total")!.lineage).toEqual([{ kind: "split", uids: [split.created[0]!.uid] }]);
+
+      await write(root, "src/price.ts", PRICE);
+      const merge = await declareLineage(root, CONFIG, { kind: "merge", uids: [before.get("formatPrice")!.uid, before.get("formatCents")!.uid], to: [ref("src/price.ts", "formatPrice")] }, human);
+      expect(merge.removed.map((r) => [r.uid, r.version.rationale])).toEqual([[before.get("formatCents")!.uid, `Merged into formatPrice (${before.get("formatPrice")!.uid}).`]]);
+      const after = await store(root);
+      expect(after.get("formatPrice")!.lineage).toEqual([{ kind: "merge", uids: [before.get("formatCents")!.uid] }]);
+      expect(after.get("formatCents")!.versions.at(-1)!.change).toBe("removed");
+    });
   });
 });
