@@ -58,7 +58,7 @@ describe("createServer", () => {
     const server = createServer({ root: "." });
     await expect(server.callTool("nope", {})).rejects.toThrow("Unknown tool: nope");
     await expect(server.callTool("poetics_signals", { unit: "x" })).rejects.toThrow(NotImplementedError);
-    await expect(server.callTool("poetics_record_rationale", { unit: "x", rationale: "why" })).rejects.toThrow(NotImplementedError);
+    await expect(server.callTool("poetics_link_test", { unit: "x", file: "x.test.ts" })).rejects.toThrow(NotImplementedError);
   });
 
   it("advertises only the tools it answers", () => {
@@ -76,6 +76,9 @@ describe("createServer", () => {
       "poetics_tests_for",
       "poetics_verify",
       "poetics_notes",
+      "poetics_record_rationale",
+      "poetics_declare_lineage",
+      "poetics_record_note",
     ]);
   });
 

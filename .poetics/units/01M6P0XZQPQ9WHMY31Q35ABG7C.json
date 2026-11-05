@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6P0XZQPQ9WHMY31Q35ABG7C",
+  "kind": "type",
+  "framework": "none",
+  "name": "WriteToolContext",
+  "location": {
+    "file": "packages/mcp/src/write-tools.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:da777e118eb859d898e3e55a19d0b98cedbdcee5a4bd4a5428bfed6e6035c110",
+      "interfaceHash": "b3:104308256c23ca3093e657d96f80db36566e5763c7456b35ae2869d076a9ea7c",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The read context plus the actor every write is attributed to.",
+      "deps": {
+        "01M5XDBC7242S6J91S3VHFFY98": "b3:6132ad1bb03eda44a4092b8d11be5fe787dd79eca9d7ecba4b13f7c15a0ac702",
+        "01M6GF24JVZVN1Q752CA2GEJQM": "b3:26f6d35747fc5db28ff82d83689a8b01bd75613a19eee74fbbe25fd3a002f875"
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/mcp/src/write-tools.test.ts",
+      "via": "static"
+    }
+  ],
+  "docs": "The context write tools run in: store, index, code view and the calling agent."
+}

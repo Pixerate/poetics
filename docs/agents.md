@@ -79,7 +79,24 @@ an ambiguous name is refused with its candidates.
   current version; pass or fail needs a test-runner integration.
 
 Uses inside a non-exported helper count as uses by the exported unit that calls
-it. `poetics_signals` and the writes are still stubs.
+it.
+
+The write tools are served too, every write attributed to the calling agent
+(the server's `session`, or the client's `clientInfo` name) as unreviewed:
+
+- `poetics_record_rationale` gives the newest version of a unit its rationale
+  and adds links. Only a version not yet committed can change, so history stays
+  append-only: the use is refining the run-wide rationale `poetics index` wrote.
+- `poetics_declare_lineage` declares a rename, move, split or merge (`from`
+  units, `to` places as `file#name`), matched the way `poetics index` matches
+  and rejected with the reason when the code disagrees. It writes identity
+  only: places and lineage, split parts and merged removals, each with its own
+  rationale. `poetics index` records any code change afterwards.
+- `poetics_record_note` records a note, anchored at its units' current
+  versions, or with `confirm` re-confirms one, and regenerates `GOTCHAS.md`
+  when the repository keeps one.
+
+`poetics_signals`, `poetics_link_test` and `poetics_set_docs` are still stubs.
 
 To try it from a checkout, register it with your MCP client:
 

@@ -9,8 +9,11 @@ Run `poetics-orient` first. `pnpm poetics index` does steps 2, 4, 5 and 7 for
 you: run it without `--write` to see what it would record, then
 `pnpm poetics index --write --rationale "<why>" --agent claude-code --model <id>`.
 It classifies each change from its hashes and writes one rationale for every
-unit, so then edit each new version's `rationale` to say what changed for that
-unit, and check its `change` class (a refactor that cannot alter results is
+unit, so then give each new version its own reason: call
+`poetics_record_rationale` with the unit and what changed for it (with links
+to the issue or task), or edit the version's `rationale` by hand if you have
+no MCP server. Only a version not yet committed can be changed. Check each
+`change` class (a refactor that cannot alter results is
 classified `behaviour`; say so in the rationale). The steps below are what it
 does, and what to do by hand.
 

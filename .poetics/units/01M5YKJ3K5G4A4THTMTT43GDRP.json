@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "buildGotchas",
   "location": {
-    "file": "scripts/gotchas.ts"
+    "file": "packages/store/src/gotchas.ts"
   },
   "versions": [
     {
@@ -51,6 +51,12 @@
     {
       "file": "scripts/scripts.test.ts",
       "via": "static"
+    }
+  ],
+  "lineage": [
+    {
+      "kind": "move",
+      "from": "scripts/gotchas.ts"
     }
   ]
 }

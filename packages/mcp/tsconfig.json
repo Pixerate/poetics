@@ -24,6 +24,9 @@
       "path": "../adapter-react"
     },
     {
+      "path": "../cli"
+    },
+    {
       "path": "../store"
     }
   ]

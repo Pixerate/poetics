@@ -1,4 +1,6 @@
 import type { Link, Note } from "@poetics/core";
+import { parseNote, parseUnit, readNoteFiles, readUnitFiles } from "./json-store.ts";
+import { storePaths } from "./paths.ts";
 
 /** Headings for known areas, in display order. Other areas follow alphabetically. */
 export const AREA_TITLES: ReadonlyArray<readonly [string, string]> = [
@@ -108,4 +110,12 @@ function formatLink(link: Link): string {
 
 function escapeCell(text: string): string {
   return text.replaceAll("|", "\\|");
+}
+
+/** GOTCHAS.md for the repository at `root`, from its notes, with anchors named after their units. */
+export async function buildGotchas(root: string): Promise<string> {
+  const paths = storePaths(root);
+  const notes = (await readNoteFiles(paths)).map(parseNote);
+  const unitNames = new Map((await readUnitFiles(paths)).map(parseUnit).map((unit) => [unit.uid, unit.name]));
+  return renderGotchas(notes, { unitNames });
 }

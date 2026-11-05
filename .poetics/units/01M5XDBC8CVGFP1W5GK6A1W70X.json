@@ -5,7 +5,7 @@
   "framework": "none",
   "name": "declareLineage",
   "location": {
-    "file": "packages/store/src/json-store.ts"
+    "file": "packages/cli/src/indexing.ts"
   },
   "versions": [
     {
@@ -45,6 +45,37 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:54eab1d247bc092b7cf47e0049e1d898bb1cd6f70ffb5545e108e08ce543d5d7",
+      "interfaceHash": "b3:199f1f698c35e331adc1fd17fa7e098a663bcaba924d4cad0f27f0394416d03e",
+      "parent": "b3:01a2f905414ac512b0a450d2861b842fd0f80131a3ee60f492d9aac1d238b072",
+      "change": "interface",
+      "rationale": "Implements the planned declareLineage, moved from a store stub to the CLI, where the indexer it needs is available. It declares a rename, move, split or merge through poetics index's own matching, refuses it with the reason when the code disagrees, and writes identity only: places, lineage, split parts and merged removals. The plan's write rules say a declaration the diff disagrees with is rejected.",
+      "deps": {
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:5c0aec475867a9db35ef70a70161f9506aa95580da3ee4bfa8ebf3ccfd433c7e",
+        "01M6HXEYDEF480EDP3WX2271SV": "b3:2626760e870c99f3d56ec520929eeeba2367441ee532e62daeceec10d5c73c70",
+        "01M6HXEYDDNG0KFMNFYRAH0DBY": "b3:7fba29621de90f7be07b7125696d94321e7040cfc35b51dfa9e135182ed844f1",
+        "01M6HXEYDE1M8H5FYVN16JC6C2": "b3:6dfe143c1727cad43a9898cae7e6c0551fba324c61a4da0b16b7cffa99c481a4",
+        "01M6HXEYDEZ9Z7E3V1R9FWEZ91": "b3:f50a3e533a2ae54e8305035ad108cd7339d89dd0ca52bb950c480be359e7d6ce",
+        "01M6HS3HPGW693T6MZB6ZGQRPY": "b3:9cd4df3e6ee7292cfd2e53dfc32f56b827ec6eef6d8b9592b4b8c0b263bd7054",
+        "01M5XDBC7242S6J91S3VHFFY98": "b3:6132ad1bb03eda44a4092b8d11be5fe787dd79eca9d7ecba4b13f7c15a0ac702",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:194f0d956019c1f2ce35c3ba6df7bb35285b4ee68753a4bd5206339f0454aa62",
+        "01M5XDBC8F5TCR82AMFQY7887B": "b3:4b77b80d7c475adf67fb1a140b6473be9f5969533ffac8eee96d8adc3ed3b64d"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
     }
   ],
   "docs": "Records a rename, move, split or merge; rejected if the diff disagrees.",
@@ -52,6 +83,20 @@
     {
       "file": "packages/store/src/json-store.test.ts",
       "via": "static"
+    },
+    {
+      "file": "packages/cli/src/indexing.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/mcp/src/write-tools.test.ts",
+      "via": "static"
+    }
+  ],
+  "lineage": [
+    {
+      "kind": "move",
+      "from": "packages/store/src/json-store.ts"
     }
   ]
 }

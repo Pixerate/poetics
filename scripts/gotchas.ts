@@ -3,16 +3,9 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseNote, parseUnit, readNoteFiles, readUnitFiles, renderGotchas, storePaths } from "@poetics/store";
+import { buildGotchas } from "@poetics/store";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-
-export async function buildGotchas(root: string): Promise<string> {
-  const paths = storePaths(root);
-  const notes = (await readNoteFiles(paths)).map(parseNote);
-  const unitNames = new Map((await readUnitFiles(paths)).map(parseUnit).map((unit) => [unit.uid, unit.name]));
-  return renderGotchas(notes, { unitNames });
-}
 
 /** Returns true when GOTCHAS.md already matched (or, without check, was written). */
 export async function syncGotchas(root: string, check: boolean): Promise<boolean> {

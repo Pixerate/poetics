@@ -6,8 +6,12 @@ description: Use when something in a Poetics repo cost you real time and is like
 # Record a gotcha as a note
 
 `GOTCHAS.md` is generated. Never edit it by hand: write a note file, then
-regenerate. Day-one version: you write the file by hand. When
-`poetics_record_note` lands, steps 3–5 become a call to it.
+regenerate. With an MCP server, steps 4 and 5 are one call to
+`poetics_record_note` (kind, area, title, symptoms, cause, fix, anchors with
+unit names or uids): it anchors each unit at its current version, attributes
+the note to your session and regenerates `GOTCHAS.md`. Pass `confirm` with a
+note's id to re-confirm it after its units change. Without one, write the file
+by hand as below.
 
 1. **Search first.** `grep -ril '<key phrase or error text>' .poetics/notes/`.
    If a note already covers it, improve that note (add the symptom you saw, a

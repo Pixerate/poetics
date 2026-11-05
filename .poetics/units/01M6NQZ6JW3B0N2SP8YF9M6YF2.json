@@ -29,6 +29,28 @@
           "ref": "#45"
         }
       ]
+    },
+    {
+      "contentHash": "b3:45042c8779fd7387e905af2d91ffa33b3bfef6401015111e03819afd6f476d5a",
+      "interfaceHash": "b3:4cdae39dc418b79521963541b45d1dcb10e91c4ce4f353c4212f0d59c6052232",
+      "parent": "b3:4bb2db2e749c0b83c23adb5e65fd678398dd19b5ca96409643925c8b339f0c56",
+      "change": "behaviour",
+      "rationale": "Asks for a run rationale only when a version would otherwise have none. Declared split parts and merged removals bring their own, and moves, test links and reclassifications carry none.",
+      "deps": {
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:5c0aec475867a9db35ef70a70161f9506aa95580da3ee4bfa8ebf3ccfd433c7e"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
     }
   ],
   "docs": "Whether the plan records anything a rationale is asked for; a reclassification alone changes no code, so it needs none.",

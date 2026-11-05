@@ -1,0 +1,46 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M6P0XZQP6JV1PYQ4K14Z1NAT",
+  "kind": "function",
+  "framework": "none",
+  "name": "createNote",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:52159785707991dd67ffc965cbc38d8669c3b7ee2c6654fc3c4024940cdd71ba",
+      "interfaceHash": "b3:8a5f82f4c16dc26d6af6dc950c0e2f35d024e1c2f07a6b065c89d186223b0996",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Writes a new note attributed to the writer, validated when a validator is given, and refuses an id that exists.",
+      "deps": {
+        "01M5YKJ3JZM095NT4VJR6HMH42": "b3:a0ad133514cf410878d3ce938ccde3df7ed7a15cda710fb50b81460217eb3828",
+        "01M5XDBC898NK9SFW67483HRZP": "b3:e7700ce887b5ee465cedbcd55a226dbc989c7aad2a73e4e5bfb5545b86880520"
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
+    }
+  ],
+  "docs": "Writes a new note file. Its id must be new, and it is attributed to `ctx.actor`.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/mcp/src/write-tools.test.ts",
+      "via": "static"
+    }
+  ]
+}

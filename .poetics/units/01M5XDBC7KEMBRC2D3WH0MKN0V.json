@@ -64,11 +64,38 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:41e6f9793d2038e6bb6997baf54a35fd577ca8d88f101d288aedf66354a62844",
+      "interfaceHash": "b3:c43ef6bd810bf88923f3a18120719d815aaa072d2a7911059f86a984d6ee7324",
+      "parent": "b3:d2cef963b511b0324b6e91acba430bb3d99c83de3e9342b1549777995376cd65",
+      "change": "interface",
+      "rationale": "Adds connect, which receives the MCP client's clientInfo, so writes are attributed to the agent that made them when no session is configured.",
+      "deps": {
+        "01M6GF25HJ83J6D8NBR7SHCPPW": "b3:ed062686aba6d67ae5b5dd4e290ab30d445a14ab18750b7080c9d4a1cb7c3d94",
+        "01M5XDBC7P80WKNPFGYY2JSZ01": "b3:fe2804fa8324f1e560852876a594ee236ce34fe7f68206c6d2c42a77eb51bbfc"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
     }
   ],
   "tests": [
     {
       "file": "packages/mcp/src/tools.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/mcp/src/write-tools.test.ts",
       "via": "static"
     }
   ],

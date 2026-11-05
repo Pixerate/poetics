@@ -10,7 +10,7 @@ import ts from "typescript";
 import { contentTree, createTypeScriptIndexer, detectUnits, fingerprint } from "@poetics/adapter-typescript";
 import type { FrameworkPlugin, IndexedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
-import type { Actor, ChangeClass, CodeUnit, Hash, LineageEntry, Link, QueuedMatch, TrackedUnit, Unit, Version } from "@poetics/core";
+import type { Actor, ChangeClass, CodeUnit, Hash, LineageDeclaration, LineageEntry, Link, QueuedMatch, RejectedDeclaration, TrackedUnit, Unit, Version } from "@poetics/core";
 import { appendVersion, createMatcher, createUnit, filesInScope, parseUnit, readUnitFiles, reclassifyUnit, relinkTests, relocateUnit, storePaths } from "@poetics/store";
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { pluginsFor } from "./frameworks.ts";
@@ -21,6 +21,8 @@ export interface IndexOptions {
   since?: string;
   /** Rationale for every version written. Default: the messages of the commits since `since`. */
   rationale?: string;
+  /** Renames, moves, splits and merges someone declared, matched first and checked against the code. */
+  declarations?: LineageDeclaration[];
 }
 
 /** A version to append, with where its unit is, for reporting. */
@@ -28,6 +30,8 @@ export interface PlannedVersion {
   uid: string;
   key: string;
   version: Omit<Version, "actor">;
+  /** For a removal a declared merge caused: the unit it merged into. */
+  mergedInto?: string;
 }
 
 /** A unit that moved or was renamed, and the lineage that says so. */
@@ -70,6 +74,8 @@ export interface IndexPlan {
   relinks: PlannedRelink[];
   reclassified: PlannedReclassification[];
   queued: QueuedMatch[];
+  /** Declarations the code disagrees with, and why. Nothing is written for them. */
+  rejected: RejectedDeclaration[];
 }
 
 const CACHE = "typescript.json";
@@ -93,7 +99,9 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     .sort((a, b) => (a.uid < b.uid ? -1 : 1));
   const units = live.filter((unit) => unit.owner === undefined && indexable(unit.location.file));
 
-  const plan: IndexPlan = { base, rationale, fresh: 0, moves: [], versions: [], created: [], removed: [], relinks: [], reclassified: [], queued: [] };
+  const plan: IndexPlan = { base, rationale, fresh: 0, moves: [], versions: [], created: [], removed: [], relinks: [], reclassified: [], queued: [], rejected: [] };
+  // A declared unit goes through matching even when its old place still has code, as a split's original does.
+  const declared = new Set((options.declarations ?? []).flatMap((declaration) => declaration.uids));
   // A store recorded before an adapter existed calls its components functions; the code now says otherwise.
   const reclassify = (unit: Unit, at: IndexedUnit) => {
     if (unit.kind === at.kind && unit.framework === at.framework) return;
@@ -109,7 +117,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   // 1. Units at their recorded place: recorded already, or edited in place.
   for (const unit of units) {
     const at = codeByPlace.get(place(unit.location.file, unit.name, unit.kind));
-    if (!at) {
+    if (!at || declared.has(unit.uid)) {
       orphans.push(unit);
       continue;
     }
@@ -126,27 +134,39 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     const was = baseCode(unit.location.file, unit.name, unit.kind);
     return was ? { ...was, uid: unit.uid } : { key: `${unit.location.file}#${unit.name}`, file: unit.location.file, name: unit.name, kind: unit.kind, contentHash: unit.versions.at(-1)!.contentHash, fingerprint: [], uid: unit.uid };
   });
-  const result = matchIdentities(before, untracked.map(codeUnit));
+  const result = matchIdentities(before, untracked.map(codeUnit), options.declarations ?? []);
+  plan.rejected = result.rejected;
   const unitByUid = new Map(units.map((unit) => [unit.uid, unit]));
   const codeByKey = new Map(code.map((unit) => [unit.key, unit]));
-  for (const match of result.matched) {
-    const unit = unitByUid.get(match.uid)!;
-    const at = codeByKey.get(match.key)!;
-    uidOfKey.set(at.key, unit.uid);
-    const to: PlannedMove["to"] = { file: at.span.file, name: at.name };
-    if (at.exportedAs !== undefined) to.export = at.exportedAs;
-    const move: PlannedMove = { uid: unit.uid, from: `${unit.location.file}#${unit.name}`, key: at.key, to, lineage: match.lineage, via: match.via };
-    if (match.score !== undefined) move.score = match.score;
-    plan.moves.push(move);
-    reclassify(unit, at);
-    if (unit.versions.at(-1)!.contentHash !== at.contentHash) pending.push({ unit, at });
-  }
-  const createdFrom: Array<{ unit: Unit; at: IndexedUnit }> = [];
+  // New units first, so a declared split's original can name its parts' uids.
+  const createdFrom: Array<{ unit: Unit; at: IndexedUnit; splitFrom?: Unit }> = [];
   for (const created of result.created) {
     const at = codeByKey.get(created.key)!;
     const uid = mintUid();
     uidOfKey.set(at.key, uid);
-    createdFrom.push({ unit: newUnit(root, uid, at), at });
+    const unit = newUnit(root, uid, at);
+    const original = created.lineage?.find((entry) => entry.kind === "split")?.uids?.[0];
+    if (created.lineage) unit.lineage = created.lineage;
+    createdFrom.push({ unit, at, ...(original ? { splitFrom: unitByUid.get(original)! } : {}) });
+  }
+  for (const match of result.matched) {
+    const unit = unitByUid.get(match.uid)!;
+    const at = codeByKey.get(match.key)!;
+    uidOfKey.set(at.key, unit.uid);
+    const lineage = [...match.lineage];
+    if (match.splitInto) lineage.push({ kind: "split", uids: match.splitInto.map((key) => uidOfKey.get(key)!) });
+    // A declared unit that kept its place and gained no lineage is simply where it was.
+    if (lineage.length > 0) {
+      const to: PlannedMove["to"] = { file: at.span.file, name: at.name };
+      if (at.exportedAs !== undefined) to.export = at.exportedAs;
+      const move: PlannedMove = { uid: unit.uid, from: `${unit.location.file}#${unit.name}`, key: at.key, to, lineage, via: match.via };
+      if (match.score !== undefined) move.score = match.score;
+      plan.moves.push(move);
+    } else if (unit.versions.at(-1)!.contentHash === at.contentHash) {
+      plan.fresh++;
+    }
+    reclassify(unit, at);
+    if (unit.versions.at(-1)!.contentHash !== at.contentHash) pending.push({ unit, at });
   }
   plan.created = createdFrom.map(({ unit }) => unit);
   plan.queued = result.queued;
@@ -178,18 +198,21 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     if (deps) version.deps = deps;
     plan.versions.push({ uid: unit.uid, key: at.key, version });
   }
-  for (const { unit, at } of createdFrom) {
+  for (const { unit, at, splitFrom } of createdFrom) {
     const first = unit.versions[0]!;
-    first.rationale = words;
+    // A declared split says where the part came from; that is its reason to exist.
+    first.rationale = splitFrom ? `Split out of ${splitFrom.name} (${splitFrom.uid}).` : words;
     if (links.length > 0) first.links = links;
     const deps = depsOf(at);
     if (deps) first.deps = deps;
   }
-  for (const { uid } of result.removed) {
+  for (const { uid, mergedInto } of result.removed) {
     const unit = unitByUid.get(uid)!;
-    const version: Omit<Version, "actor"> = { contentHash: REMOVED_CONTENT_HASH, provisional: true, parent: unit.versions.at(-1)!.contentHash, change: "removed", rationale: words };
+    const survivor = mergedInto ? unitByUid.get(mergedInto) : undefined;
+    const reason = survivor ? `Merged into ${survivor.name} (${survivor.uid}).` : words;
+    const version: Omit<Version, "actor"> = { contentHash: REMOVED_CONTENT_HASH, provisional: true, parent: unit.versions.at(-1)!.contentHash, change: "removed", rationale: reason };
     if (links.length > 0) version.links = links;
-    plan.removed.push({ uid, key: `${unit.location.file}#${unit.name}`, version });
+    plan.removed.push({ uid, key: `${unit.location.file}#${unit.name}`, version, ...(mergedInto ? { mergedInto } : {}) });
   }
   // 4. Test links, for every live unit (moved or not, in scope or not): a renamed test file would leave them dangling.
   const renamed = new Map((since?.changes ?? []).filter((change) => change.status === "R").map((change) => [change.from!, change.path]));
@@ -234,6 +257,7 @@ export function formatIndexPlan(plan: IndexPlan, written?: number): string {
   for (const { key, tests } of plan.relinks) lines.push(`= ${key} tests: ${tests.map(({ from, to }) => `${from} -> ${to}`).join(", ")}`);
   for (const { key, from, to } of plan.reclassified) lines.push(`* ${key} ${from.kind} (${from.framework}) -> ${to.kind} (${to.framework})`);
   for (const q of plan.queued) lines.push(`? ${q.reason}: ${q.uids.join(", ")} -> ${q.keys.join(", ")}; declare which is which with lineage (poetics-refactor)`);
+  for (const r of plan.rejected) lines.push(`! declared ${r.declaration.kind} of ${r.declaration.uids.join(", ")} rejected: ${r.reason}`);
   if (plan.rationale === undefined && needsRationale(plan)) lines.push("No rationale yet: pass --rationale, or commit with a message first.");
   const counts = `${plan.moves.length} moved, ${plan.versions.length} changed, ${plan.created.length} new, ${plan.removed.length} removed, ${plan.relinks.length} relinked, ${plan.reclassified.length} reclassified, ${plan.queued.length} queued, ${plan.fresh} up to date`;
   lines.push(written === undefined ? `Would record: ${counts}. Run with --write to record it.` : `Recorded ${written} unit file(s): ${counts}.`);
@@ -245,9 +269,45 @@ export function hasWrites(plan: IndexPlan): boolean {
   return needsRationale(plan) || plan.reclassified.length > 0;
 }
 
-/** Whether the plan records anything a rationale is asked for; a reclassification alone changes no code, so it needs none. */
+/**
+ * Whether the plan writes a version with no rationale of its own. Moves, test
+ * links and reclassifications carry none; a declared split or merge brings its
+ * own.
+ */
 export function needsRationale(plan: IndexPlan): boolean {
-  return plan.moves.length + plan.versions.length + plan.created.length + plan.removed.length + plan.relinks.length > 0;
+  return [...plan.versions.map((v) => v.version), ...plan.removed.map((v) => v.version), ...plan.created.map((u) => u.versions[0]!)].some((v) => v.rationale === "");
+}
+
+/**
+ * Records one declared rename, move, split or merge, checked the way
+ * `poetics index` matches: the declaration is refused, with the reason, when
+ * the code disagrees. Only identity is written (places, lineage, split parts,
+ * merged removals); code changes are left for `poetics index` to record.
+ */
+export async function declareLineage(
+  root: string,
+  config: PoeticsConfig,
+  declaration: LineageDeclaration,
+  actor: Actor,
+  layout: StoreLayout = "flat",
+): Promise<{ moved: PlannedMove[]; created: Unit[]; removed: PlannedVersion[] }> {
+  const plan = await planIndex(root, config, { declarations: [declaration], rationale: "" });
+  const rejected = plan.rejected[0];
+  if (rejected) throw new Error(`Declaration rejected: ${rejected.reason}`);
+  const uids = new Set(declaration.uids);
+  const own: IndexPlan = {
+    ...plan,
+    fresh: 0,
+    moves: plan.moves.filter((move) => uids.has(move.uid)),
+    versions: [],
+    created: plan.created.filter((unit) => unit.lineage?.some((entry) => entry.kind === "split" && entry.uids?.some((uid) => uids.has(uid)))),
+    removed: plan.removed.filter((entry) => entry.mergedInto !== undefined && uids.has(entry.uid)),
+    relinks: [],
+    reclassified: plan.reclassified.filter((entry) => uids.has(entry.uid)),
+    queued: [],
+  };
+  await applyIndex(root, own, actor, layout);
+  return { moved: own.moves, created: own.created, removed: own.removed };
 }
 
 /**

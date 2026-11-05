@@ -49,12 +49,38 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:342ecbc1b2ca4bf7a3363365908bd2bd9482c79c79aae43453ff22d7c75c8da7",
+      "interfaceHash": "b3:993ac9addddaa078503554a0be2792724f150840f1b467a14698c9c65e0bdcad",
+      "parent": "b3:6cfb71932c60ed2b298d00e6472cf3ce23f9c67fb30717a8cbc18fe718d09b1e",
+      "change": "interface",
+      "rationale": "Adds an optional connect hook, called from initialize with the client's clientInfo.",
+      "deps": {
+        "01M5XDBC7P80WKNPFGYY2JSZ01": "b3:fe2804fa8324f1e560852876a594ee236ce34fe7f68206c6d2c42a77eb51bbfc"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
     }
   ],
   "docs": "What the stdio transport serves: a tool list and a call function.",
   "tests": [
     {
       "file": "packages/mcp/src/stdio.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/mcp/src/write-tools.test.ts",
       "via": "static"
     }
   ]

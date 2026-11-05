@@ -26,6 +26,28 @@
           "ref": "#24"
         }
       ]
+    },
+    {
+      "contentHash": "b3:91393e02ffb95d399bb1b3e9b8a7a2493f93eea229fc9f7428a0cf38d4d55998",
+      "interfaceHash": "b3:7b52af333e72bb3d4aa09241d52b561855bfd4c918a195fb3676acb37495080e",
+      "parent": "b3:96fd98ea6a20b4916fb4d88ff73c8ce7c059b46d69c1481f608ab8c2929f5f00",
+      "change": "interface",
+      "rationale": "Adds declarations, which are matched first and checked against the code. Additive: without them, poetics index behaves as before.",
+      "deps": {
+        "01M6HS3HPGW693T6MZB6ZGQRPY": "b3:9cd4df3e6ee7292cfd2e53dfc32f56b827ec6eef6d8b9592b4b8c0b263bd7054"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#mcp-server-poeticsmcp"
+        }
+      ]
     }
   ],
   "docs": "The base ref and rationale for poetics index.",
