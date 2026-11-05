@@ -242,6 +242,57 @@
           "ref": "docs/plan.md#mcp-server-poeticsmcp"
         }
       ]
+    },
+    {
+      "contentHash": "b3:cf1d3a86b69c3965a8d2f4d80808e23b8a429d2410939ceb21e2e61e637b34a1",
+      "interfaceHash": "b3:a04df6aa2c2960b718e71b9ae318240cd7d023cd673a7777305e8402ba650d57",
+      "parent": "b3:f50a3e533a2ae54e8305035ad108cd7339d89dd0ca52bb950c480be359e7d6ce",
+      "change": "behaviour",
+      "rationale": "Attributes each commit's issue references (#N, owner/repo#N) to the units in the files that commit touched, instead of giving every version in the range every reference. References in an explicit --rationale still apply to all. Phase 2 of the plan: linking issue references to unit versions.",
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:6004f5b9e3d8b29e1e73aad0e532e809cb147948d3e8052121d4daf2f309c7d7",
+        "01M6HNRFMK1WQP8F6MRK9FMJY0": "b3:1a7870af0a68169489f98a309965d342312673fe353cdbc51cf4e12b98d60742",
+        "01M6HS3HPGSA1NB2JTM6ZM903R": "b3:dbb56abfafffa1a6af99b5f802532bed33a61a89ad8e7a7bbdb12c4f73443a5e",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:c0d8e0d42482a337df58d377a39417534e79f08a0fcbba50561cd6b1611a57e5",
+        "01M6HNRFMKW8GXW0YMCVY67N4A": "b3:588fed85ac85cda89945b814917f1b7a4fcec907b605bd56053915157ead9ecb",
+        "01M6HNRFMKSSPK73VN3DNDX6B3": "b3:4791c4a21120ac45a24334f83277a4f8f8071a863395250159d72803671d3c99",
+        "01M6ME83DBRXTEJAFTHD4TY1R0": "b3:2bced8d96434b3d623f644cf2e834e591c115073faaf9b19d4572022f25e6cf6",
+        "01M5Z1F6NSEZG78RH31S5GZANP": "b3:6f1bd4d062f93cf88e1b3e890edcadcbb79a8311e3f82efce3a6250f7308a575",
+        "01M5Z1F6NP3C1KG9NNND31TPSJ": "b3:dd4eb578ac15dbcb0dcf9645b932f78a8a124faebe26255799f186266636ddbb",
+        "01M5Z1F6NQR9T376HTSH2ZYP8C": "b3:85859a81a9f157d7de29c1cfe6fed88d978006bd3ed9ea8645bd87f785770203",
+        "01M6HXEYDD4MHGVQEYFBGW2ZHF": "b3:91393e02ffb95d399bb1b3e9b8a7a2493f93eea229fc9f7428a0cf38d4d55998",
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:5c0aec475867a9db35ef70a70161f9506aa95580da3ee4bfa8ebf3ccfd433c7e",
+        "01M6HXEYDEF480EDP3WX2271SV": "b3:2626760e870c99f3d56ec520929eeeba2367441ee532e62daeceec10d5c73c70",
+        "01M5XDBC6TWJ0A59K9ER71Q88Y": "b3:19dd1d269306d1c7edc17d860a6674f7831d3d232ba7b067020f558ad0488a11",
+        "01M6HS3HPGZVH440C5ZV7AYGMS": "b3:fee65a0014cedc3229df6817f1070051f134600d1d9804f246940a818bf956d0",
+        "01M6HS3HPGWQSVQ3NJ5VJ8WEVV": "b3:a758a3287b7cca85cd56fe02fba2800684980f7cc5add38bc15e193ea8a406e2",
+        "01M6HS3HPGM7XKCBTGKAJ8RCSH": "b3:a8be2a1254b37843e5c66268ede92743b2389cd10ae516755fef228ec00911de",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC71JDZ5ANVBKKB168EW": "b3:15b02c3dbcc5b7c1d93a89f604dbb5aa20e8b6b319338904d3189c6c1305ed69",
+        "01M5XDBC6YYK0M5RPS3YMPYSPM": "b3:a9d8f9922d57a2b242a17ff15b364a707eb1b721d5ced5d96e4ec2f62342087d",
+        "01M5XDBC74RY8DRPAXNTM7KM0W": "b3:2256d971b742e8b5a6ad40714f082f993c4521518fb083ae3238e8e5edc1f79b",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b",
+        "01M5XDBC7FTZ5GY3BX711BWGN6": "b3:3cf0225787144e59edd01ec041de70443d024e2b9e55b22dfceabec9025b44b7",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:194f0d956019c1f2ce35c3ba6df7bb35285b4ee68753a4bd5206339f0454aa62",
+        "01M5Z1F6NV9Q4BF2C1KBZD09MQ": "b3:73bb120c04ff81df07603ebd00c8a7b85a52b560589afe2ec8b7691c4be3c18a",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
     }
   ],
   "docs": "What poetics index would record: nothing is written until `applyIndex`.",

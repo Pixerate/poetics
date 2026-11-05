@@ -250,4 +250,28 @@ describe("planIndex and applyIndex", () => {
       expect(after.get("formatCents")!.versions.at(-1)!.change).toBe("removed");
     });
   });
+
+  it("links each commit's issue references to the units in the files it touched", async () => {
+    const root = await seeded({ "src/a.ts": TOTAL, "src/b.ts": PRICE });
+    await write(root, "src/a.ts", TOTAL.replace("sum += item;", "sum += item * 2;"));
+    runGit(root, "commit", "-q", "-am", "Double items (fixes #7)\n\nCo-Authored-By: Someone <x@example.com>");
+    await write(root, "src/b.ts", PRICE.replace("100", "1000"));
+    runGit(root, "commit", "-q", "-am", "Use mills\n\nRefs Pixerate/other#3");
+    await write(root, "src/new.ts", "export function fresh() {\n  return 1;\n}\n");
+    runGit(root, "add", "-A");
+    runGit(root, "commit", "-q", "-m", "Add fresh, see #8");
+
+    const linksOf = (plan: Awaited<ReturnType<typeof planIndex>>) =>
+      Object.fromEntries([...plan.versions.map((v) => [v.key, v.version.links]), ...plan.created.map((u) => [u.name, u.versions[0]!.links])]);
+    expect(linksOf(await planIndex(root, CONFIG, { since: "HEAD~3" }))).toEqual({
+      "src/a.ts#total": [{ kind: "github-issue", ref: "#7" }],
+      "src/b.ts#formatPrice": [{ kind: "github-issue", ref: "Pixerate/other#3" }],
+      fresh: [{ kind: "github-issue", ref: "#8" }],
+    });
+    // An explicit rationale speaks for the whole run, so its references go on every version.
+    expect(linksOf(await planIndex(root, CONFIG, { since: "HEAD~3", rationale: "Pricing pass (#9)" }))["src/b.ts#formatPrice"]).toEqual([
+      { kind: "github-issue", ref: "#9" },
+      { kind: "github-issue", ref: "Pixerate/other#3" },
+    ]);
+  });
 });
