@@ -21,5 +21,6 @@ new record here.
 | [0012](0012-open-items-as-notes.md) | Assumptions, considerations and planned work are notes | Proposed |
 | [0013](0013-compiler-api-without-ts-morph.md) | The TypeScript compiler API directly, without ts-morph | Proposed |
 | [0014](0014-rehash-versions.md) | The rehash is an appended version | Proposed |
+| [0015](0015-contradictions-in-intent.md) | Contradictions in intent are found by reading recorded intent together | Proposed |
 
 New records copy [`template.md`](template.md).

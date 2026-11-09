@@ -326,6 +326,8 @@ Quirks and workarounds are recorded as notes rather than appended to a document,
 
 Proposed in [ADR 0012](decisions/0012-open-items-as-notes.md): notes also record unvalidated assumptions, considerations for future development and anchors for planned work, so open items surface the same way. Planned work keeps its status in the issue tracker.
 
+Proposed in [ADR 0015](decisions/0015-contradictions-in-intent.md): Poetics pairs a unit's newest rationale with its earlier versions, its dependencies' rationale, the notes anchored to its closure and the decisions it cites. A `poetics_contradictions` tool hands those pairs to the calling agent to judge, so a reversal of earlier intent is flagged unless the new rationale acknowledges it. Only the deterministic findings, such as citing a superseded decision, reach `poetics verify`.
+
 ### Agent provenance
 
 Each version records who produced it: a human, or an agent with its tool, model, session id and task link. Teams can set policy on that, for example marking agent-written rationale as unreviewed until a human approves the pull request, or requiring human sign-off on any interface change made by an agent.
@@ -480,4 +482,5 @@ Open questions, each tracked as an issue labelled `question`:
 - Is `poetics.lock` pinning worth building before a team asks for it? ([#6](https://github.com/Pixerate/poetics/issues/6))
 - When to build the Swift adapter, and what the out-of-process adapter contract looks like? See [ADR 0008](decisions/0008-out-of-process-adapters.md) (proposed). ([#11](https://github.com/Pixerate/poetics/issues/11))
 - Should assumptions, considerations and planned work be note kinds, with `TODO` comments required to reference one or a tracker item? See [ADR 0012](decisions/0012-open-items-as-notes.md) (proposed).
+- Should Poetics find contradictions between recorded intents, with the calling agent judging pairs chosen from the graph? See [ADR 0015](decisions/0015-contradictions-in-intent.md) (proposed).
 - Which agent runtimes to target first for skills and evals, and whether to ship skills in one format or generate per-runtime variants? ([#7](https://github.com/Pixerate/poetics/issues/7))
