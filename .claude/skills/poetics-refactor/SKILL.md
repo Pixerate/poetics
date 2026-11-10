@@ -14,14 +14,19 @@ the code disagrees with is rejected with the reason, and nothing is written.
 Without an MCP server, step 3 below is the same thing by hand.
 
 1. **Before touching code**, find every unit you will rename, move, split or
-   merge (`poetics-orient`) and note each uid.
+   merge (`poetics_context_pack` or `poetics_search`; see `poetics-orient`)
+   and note each uid. `poetics_impact` with those `units` lists the callers a
+   rename or move will touch.
 2. **Make the code change**, then run `pnpm poetics index` (a dry run). It
    follows renames and moves itself, by content or by syntax-tree similarity,
    and lists them as `>` lines; `--write` records them with lineage. Lines
    starting with `?` are matches it would not guess (look-alikes): declare
    those by hand as below, and run it again. Splits and merges are never
    inferred.
-3. **Declare lineage** in each affected unit file:
+3. **Declare lineage** with `poetics_declare_lineage` (`kind`, `from` uids,
+   `to` as `file#name`) for each queued rename or move and every split and
+   merge. If it is rejected, fix the code or the declaration; never delete
+   units to get past it. By hand, without the server, in each unit file:
    - **Rename or move:** keep the same file and uid. Update `name` and/or
      `location.file`, and append to `lineage`:
      `{ "kind": "move", "from": "src/old/path.ts" }` or
@@ -36,7 +41,8 @@ Without an MCP server, step 3 below is the same thing by hand.
      history stays readable.
 4. **Append a version** to each unit whose source text changed, per
    `poetics-change`. A pure move with identical text needs no new version.
-5. **Check**: `pnpm validate`, `pnpm poetics:check` and `pnpm test`. The
+5. **Check**: `poetics_verify`, then `pnpm validate`, `pnpm poetics:check`
+   and `pnpm test`. The
    check fails a unit whose name or location changed without a new lineage
    entry, a unit left behind in a deleted file, and a deleted unit file.
 

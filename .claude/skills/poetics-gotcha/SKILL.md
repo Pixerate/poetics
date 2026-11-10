@@ -13,7 +13,9 @@ the note to your session and regenerates `GOTCHAS.md`. Pass `confirm` with a
 note's id to re-confirm it after its units change. Without one, write the file
 by hand as below.
 
-1. **Search first.** `grep -ril '<key phrase or error text>' .poetics/notes/`.
+1. **Search first.** Call `poetics_notes` with the `error` text, `unit`,
+   `path` or `command` (`includeRetired: true` to see retired ones too);
+   without the server, `grep -ril '<key phrase or error text>' .poetics/notes/`.
    If a note already covers it, improve that note (add the symptom you saw, a
    tighter anchor, a check) instead of adding another.
 2. **Is it worth a note?** Yes if it cost real time, was surprising, and is
@@ -61,9 +63,10 @@ by hand as below.
 
 ## Keeping notes true
 
-- `pnpm validate` warns when an anchored unit has a newer version than
-  `observedAt`. Re-check the note: if it still holds, update `observedAt`; if
-  not, retire it.
+- `pnpm validate` and `poetics_verify` warn when an anchored unit has a newer
+  version than `observedAt`. Re-check the note: if it still holds, call
+  `poetics_record_note` with `confirm` and its id (or update `observedAt` by
+  hand); if not, retire it.
 - **Retire, never delete.** Set `"status": "resolved"` with
   `"resolvedBy": { "kind": "commit", "ref": "<sha>" }`, or `"superseded"` with
   `"supersededBy": "<note id>"`. Retired notes drop to a table in `GOTCHAS.md`.
