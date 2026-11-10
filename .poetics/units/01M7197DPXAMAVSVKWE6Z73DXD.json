@@ -90,6 +90,34 @@
           "ref": "docs/decisions/0010-removed-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:4a6906526335352e88a68de2a33f7bf1fb82f67f5d82493641cbc7172e348921",
+      "interfaceHash": "b3:175aebba45aac3550aacf2851a0817917539fcd332ffc454a32a3eb4aa9458ad",
+      "parent": "b3:abb879204494b20e46e19dfc7949fb97ef8d13b43c25a1c9cc92c0cbd5675666",
+      "change": "interface",
+      "rationale": "Adds kept, units whose recorded prehistory a walk with other evidence would change and so leaves alone, and tracker, whether pull request evidence was used.",
+      "deps": {
+        "01M7197DPWEHB21TK3H594CYBN": "b3:8d9799713462ca1e795d5cdf80b07d9b0b206b4fcfc4fb9aef32ddf0a9e04f3e",
+        "01M730BJ24P27EB5Q94C76JBB8": "b3:794991c9c84a4c40835e231e32fe18c926151f59895b039b9be16d6b5785c0c8",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ]
     }
   ],
   "tests": [

@@ -21,6 +21,10 @@ export type { IndexOptions, IndexPlan, PlannedMove, PlannedReclassification, Pla
 export { applyIndex, declareLineage, formatIndexPlan, hasWrites, needsRationale, planIndex } from "./indexing.ts";
 export type { BackfillPlan, Evidence, PrehistoryEntry, PrehistoryPlan } from "./backfill.ts";
 export { applyBackfill, applyPrehistory, formatBackfillPlan, formatPrehistoryPlan, hasBackfill, planBackfill, planPrehistory } from "./backfill.ts";
+export { RateLimitedError, connectGitHub, createGitHubTracker, githubRepoOf, githubToken } from "./github.ts";
+export type { GitHubTracker, GitHubTrackerOptions, TrackerStatus } from "./github.ts";
+export { closingIssues, pullRequestsInSubject } from "./pull-requests.ts";
+export type { TrackerUse } from "./pull-requests.ts";
 export type { Adapter, InitConfig, InitPlan } from "./init.ts";
 export { applyInit, formatInitPlan, planInit } from "./init.ts";
 export { pluginsFor } from "./frameworks.ts";

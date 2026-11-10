@@ -1,0 +1,35 @@
+{
+  "uid": "01M730BJ25PQYZ9XTYPHKC0K12",
+  "kind": "type",
+  "framework": "none",
+  "name": "TrackedPullRequest",
+  "location": {
+    "file": "packages/core/src/tracker.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:f5d43b96b1c069c31c26249a8e36b62fb73d8cd00b5792ee91d00acc26b3fe85",
+      "interfaceHash": "b3:74f797c483ca1064d3b6eb6fd6a848577b847ebdd32dea200d1ac621dcfcec5e",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A pull request as a tracker reports it. Its text is read as evidence and never written to .poetics/.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A pull request as a tracker reports it. Its text is evidence only and is never written to `.poetics/`."
+}

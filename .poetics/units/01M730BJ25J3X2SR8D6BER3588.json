@@ -1,0 +1,35 @@
+{
+  "uid": "01M730BJ25J3X2SR8D6BER3588",
+  "kind": "type",
+  "framework": "none",
+  "name": "TrackedReviewComment",
+  "location": {
+    "file": "packages/core/src/tracker.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:77e1cbbd5629e8b1d6ae95d62aaa099ac8d3d189417556b213d7e6398b85adc2",
+      "interfaceHash": "b3:4399f5cd77d6b5d22e5f38a7c29ebce22fef6d6b7b42cb99a12bf3da1f1d3843",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A review comment with the lines it was left on, so backfill can tell whether it is about a unit.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A review comment, with the lines it was left on in the file as the pull request saw it."
+}
