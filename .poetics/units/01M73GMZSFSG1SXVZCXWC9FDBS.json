@@ -1,0 +1,38 @@
+{
+  "uid": "01M73GMZSFSG1SXVZCXWC9FDBS",
+  "kind": "type",
+  "framework": "none",
+  "name": "IssueCandidate",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:5830cbe0cbc4884d0e1c8fbdc5171dc6ef76eb6d5f6fc43f1578308a8cbbc2a4",
+      "interfaceHash": "b3:9b481e7e2b7ff28e596e41018b882510a905ca4a317c4717958d8cdd163c271b",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A unit an issue likely touches, with why and a score, so an agent can tell a linked unit from a search guess.",
+      "deps": {
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M73GMZSFV71CJPJK2AKJ2W2R": "b3:61c406f8e970dde4af6cd70a2f49e0c6874faf6c267735f020a8f37279ebc66e"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ]
+}

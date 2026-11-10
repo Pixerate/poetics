@@ -68,6 +68,36 @@
           "ref": "docs/decisions/0017-drafting-through-a-command.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:9ead7a5ce3cba13650398aec835e948b083f74a210b6b8b741e4459401975136",
+      "interfaceHash": "b3:d6302e0ede521312a0b336583338034ed0190a6788858e1c80130ffbbf57a75b",
+      "parent": "b3:631844446d7d9c5e17acd07d1adc8889e9ab039e6d6df999c01bf5746bf05f53",
+      "change": "behaviour",
+      "rationale": "Reads one issue or pull request by number from GitHub's issues endpoint, so poetics_signals and issue-driven context packs can show titles, states and bodies. GitHub numbers issues and pull requests together, so the answer says which it is.",
+      "deps": {
+        "01M730BJ24Q4SYHKQCMSQ2PDWK": "b3:0e79e323ae71715a71c4531dbeb0d6971df896ae9d00f2c6115367a867c0c5cc",
+        "01M730BJ24XK1FD76YX9BQH7C5": "b3:fcc781e018cef7a3d0fa0813dd8f29b6ef6bdd9c9f3c213ea2f10e2c01b33d56",
+        "01M73GMZSE6FXYRB3BEND7E9S9": "b3:aacad2e2dca5925286d5ead791c4117b266da80ebbc5f7c044f178becca42ea0",
+        "01M730BJ25PQYZ9XTYPHKC0K12": "b3:f5d43b96b1c069c31c26249a8e36b62fb73d8cd00b5792ee91d00acc26b3fe85",
+        "01M730BJ25J3X2SR8D6BER3588": "b3:77e1cbbd5629e8b1d6ae95d62aaa099ac8d3d189417556b213d7e6398b85adc2"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
     }
   ],
   "docs": "A GitHub tracker for `options.repo`.",

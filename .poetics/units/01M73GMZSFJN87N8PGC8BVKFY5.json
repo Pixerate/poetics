@@ -1,0 +1,44 @@
+{
+  "uid": "01M73GMZSFJN87N8PGC8BVKFY5",
+  "kind": "function",
+  "framework": "none",
+  "name": "linkedNumber",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:c7b86c00ce1a95c931d1ad4d3aedeabd76f1a7f7275083da34cda69e83ea10f3",
+      "interfaceHash": "b3:90e2d6647dc1c93b47d195aa6423fdcf1c3166662698bb8a39e6039a1d79fcd2",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Reads a version's link as this repository's issue or pull request number. Links naming another repository are left out, so a number is never looked up in the wrong place.",
+      "deps": {
+        "01M5XDBC74RY8DRPAXNTM7KM0W": "b3:2256d971b742e8b5a6ad40714f082f993c4521518fb083ae3238e8e5edc1f79b"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ],
+  "docs": "A version's link to an issue or pull request in this repository, by number.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/issues.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,9 +1,11 @@
 import type { DatabaseSync } from "node:sqlite";
 import { notImplemented } from "@poetics/core";
 import type { Actor } from "@poetics/core";
+import { createGitHubTracker, githubRepoOf, githubToken } from "@poetics/cli";
 import { changesBetween, openIndex, parseUnit, readUnitFiles, rebuildIndex, storePaths } from "@poetics/store";
 import { codeView } from "./code.ts";
 import type { CodeView } from "./code.ts";
+import type { TrackerAccess } from "./issues.ts";
 import { callReadTool, changedUnits, impactReport } from "./read-tools.ts";
 import { serveStdio } from "./stdio.ts";
 import type { StdioIo } from "./stdio.ts";
@@ -16,6 +18,12 @@ export interface ServerOptions {
   root: string;
   /** Attributed on every write; filled from the MCP client's session. */
   session?: { tool: string; model?: string; session?: string; task?: string };
+  /**
+   * The issue tracker for `poetics_signals` and issue-driven context packs.
+   * Defaults to GitHub when `origin` is on github.com and a token is found
+   * (`GITHUB_TOKEN`, else `gh auth token`); `false` turns it off.
+   */
+  tracker?: false | (() => TrackerAccess | Promise<TrackerAccess>);
 }
 
 export interface PoeticsServer {
@@ -28,8 +36,9 @@ export interface PoeticsServer {
   listen(io?: StdioIo): Promise<void>;
 }
 
-/** Tools answered from the store and the code. Signals need the integrations; links to tests and docs come later. */
+/** Tools answered from the store, the code and the issue tracker. Links to tests and docs come later. */
 const SERVED = new Set([
+  "poetics_signals",
   "poetics_record_rationale",
   "poetics_declare_lineage",
   "poetics_record_note",
@@ -50,6 +59,17 @@ export function createServer(options: ServerOptions): PoeticsServer {
   let db: DatabaseSync | undefined;
   // One view per tool call at most: the indexer's cache keeps it cheap, and each call sees the code as it is now.
   const code = async (): Promise<CodeView> => codeView(options.root, (await readUnitFiles(paths)).map(parseUnit));
+  // The token is looked up once; the tracker is made per call and caches nothing, so issue states are read fresh.
+  let token: string | null | undefined;
+  const github = (): TrackerAccess => {
+    const repo = githubRepoOf(options.root);
+    if (!repo) return { unavailable: "the repository has no origin on github.com" };
+    token ??= githubToken() ?? null;
+    if (!token) return { repo, unavailable: "no GitHub token: set GITHUB_TOKEN or run gh auth login" };
+    return { repo, tracker: createGitHubTracker({ repo, token }) };
+  };
+  const tracker = async (): Promise<TrackerAccess> =>
+    options.tracker === false ? { unavailable: "the issue tracker is turned off for this server" } : (options.tracker ?? github)();
   let client: string | undefined;
   // Every write is an agent's, unreviewed until a person approves it, as the plan's provenance rules say.
   const actor = (): Actor => {
@@ -74,7 +94,8 @@ export function createServer(options: ServerOptions): PoeticsServer {
       db ??= openIndex(paths.indexDb);
       await rebuildIndex(paths, db);
       let view: Promise<CodeView> | undefined;
-      const ctx = { paths, db, code: () => (view ??= code()) };
+      let access: Promise<TrackerAccess> | undefined;
+      const ctx = { paths, db, code: () => (view ??= code()), tracker: () => (access ??= tracker()) };
       if (name === "poetics_changes") {
         const { from, to } = args as { from?: string; to?: string };
         const set = await changesBetween(paths, { ...(from ? { from } : {}), ...(to ? { to } : {}) });

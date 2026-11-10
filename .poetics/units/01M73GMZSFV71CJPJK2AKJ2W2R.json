@@ -1,0 +1,35 @@
+{
+  "uid": "01M73GMZSFV71CJPJK2AKJ2W2R",
+  "kind": "type",
+  "framework": "none",
+  "name": "IssueMatch",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:61c406f8e970dde4af6cd70a2f49e0c6874faf6c267735f020a8f37279ebc66e",
+      "interfaceHash": "b3:bf337bafc5b20d325f4a20fb1729519c31e0b41fabaaf93f16b5bbfacccbf31c",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The reasons an issue points at a unit, strongest first: already linked, a stack frame inside it, named as code, a file it mentions, or search.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ],
+  "docs": "Why an issue points at a unit, strongest first."
+}

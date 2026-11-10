@@ -1,0 +1,35 @@
+{
+  "uid": "01M73GMZSE6FXYRB3BEND7E9S9",
+  "kind": "type",
+  "framework": "none",
+  "name": "TrackedIssue",
+  "location": {
+    "file": "packages/core/src/tracker.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:aacad2e2dca5925286d5ead791c4117b266da80ebbc5f7c044f178becca42ea0",
+      "interfaceHash": "b3:51cfa44d1cbb72e09c3fb2e7c8358a9af8de98a297c94750abfe4eeb8b22714f",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "An issue or pull request as a tracker reports it, read on demand for agents. Its text is never written to .poetics/, as the plan's references-not-content rule requires.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ],
+  "docs": "An issue, or a pull request read as one. Its text is read on demand for agents and never written to `.poetics/`."
+}

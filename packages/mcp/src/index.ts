@@ -6,3 +6,5 @@ export type { ContextPack, ContextPackRequest, NoteMatch, NoteQuery, ReadContext
 export { callReadTool, contextPack, matchNotes } from "./read-tools.ts";
 export type { StdioIo, ToolHost } from "./stdio.ts";
 export { PROTOCOL_VERSIONS, serveStdio } from "./stdio.ts";
+export type { IssueCandidate, IssueMatch, LinkedSignal, ReviewSignal, SignalsReport, TrackerAccess } from "./issues.ts";
+export { linkedSignals, parseIssueRef, unitSignals, unitsForIssue } from "./issues.ts";

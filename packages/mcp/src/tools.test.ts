@@ -57,7 +57,6 @@ describe("createServer", () => {
   it("rejects unknown tools and stubs the ones it cannot answer yet", async () => {
     const server = createServer({ root: "." });
     await expect(server.callTool("nope", {})).rejects.toThrow("Unknown tool: nope");
-    await expect(server.callTool("poetics_signals", { unit: "x" })).rejects.toThrow(NotImplementedError);
     await expect(server.callTool("poetics_link_test", { unit: "x", file: "x.test.ts" })).rejects.toThrow(NotImplementedError);
   });
 
@@ -75,6 +74,7 @@ describe("createServer", () => {
       "poetics_impact",
       "poetics_tests_for",
       "poetics_verify",
+      "poetics_signals",
       "poetics_notes",
       "poetics_record_rationale",
       "poetics_declare_lineage",
@@ -93,6 +93,20 @@ describe("createServer", () => {
     const reply = JSON.parse(text) as { result: { content: Array<{ text: string }>; isError?: boolean } };
     expect(reply.result.isError).toBeUndefined();
     expect(JSON.parse(reply.result.content[0]!.text)).toMatchObject({ name: "searchUnits", location: { file: "packages/store/src/index-db.ts" } });
+  });
+
+  it("answers poetics_signals through the tracker it is given, and says when it is turned off", async () => {
+    const issue = async (number: number) => ({ number, url: `https://github.com/acme/shop/issues/${number}`, title: `Issue ${number}`, body: "", state: "open" as const, labels: [], pullRequest: false });
+    const tracker = { name: "github", pullRequestsFor: async () => [], reviewComments: async () => [], issue };
+    const withTracker = (await createServer({ root: process.cwd(), tracker: () => ({ repo: "Pixerate/poetics", tracker }) }).callTool("poetics_signals", { unit: "searchUnits" })) as {
+      linked: Array<{ title?: string }>;
+      missing: string[];
+    };
+    expect(withTracker.linked.length).toBeGreaterThan(0);
+    expect(withTracker.linked.every((signal) => signal.title?.startsWith("Issue "))).toBe(true);
+    expect(withTracker.missing).toEqual(["production errors: no error-monitoring integration yet"]);
+    const off = (await createServer({ root: process.cwd(), tracker: false }).callTool("poetics_signals", { unit: "searchUnits" })) as { missing: string[] };
+    expect(off.missing[0]).toMatch(/turned off for this server/);
   });
 
   it("answers poetics_changes from the repository's git history", async () => {

@@ -21,6 +21,8 @@ export interface CodeView {
   missing: Uid[];
   /** The unit's source text, from its first declaration to the end of its last. */
   sourceOf(unit: IndexedUnit): string;
+  /** The 1-based lines that text spans, to place stack frames and review comments. */
+  linesOf(unit: IndexedUnit): { startLine: number; endLine: number };
 }
 
 /** Indexes the files in scope, reusing the cache, and joins the result to `units`. */
@@ -76,14 +78,22 @@ export function joinCode(
   }
 
   const texts = new Map<string, string>();
+  const text = (file: string) => {
+    if (!texts.has(file)) texts.set(file, read(file));
+    return texts.get(file)!;
+  };
+  const lineAt = (source: string, offset: number) => source.slice(0, offset).split("\n").length;
   return {
     byUid,
     graph: createGraph(edges, unresolved),
     untracked: indexed.filter((unit) => !uidOfKey.has(unit.key)),
     missing,
     sourceOf(unit) {
-      if (!texts.has(unit.span.file)) texts.set(unit.span.file, read(unit.span.file));
-      return texts.get(unit.span.file)!.slice(unit.span.start, unit.span.end);
+      return text(unit.span.file).slice(unit.span.start, unit.span.end);
+    },
+    linesOf(unit) {
+      const source = text(unit.span.file);
+      return { startLine: lineAt(source, unit.span.start), endLine: lineAt(source, unit.span.end) };
     },
   };
 }

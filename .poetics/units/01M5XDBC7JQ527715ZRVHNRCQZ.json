@@ -45,6 +45,32 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:d93905836b52d75757b82b617b7e8c16ac5976e3d73d6471912f63ce3266cd67",
+      "interfaceHash": "b3:4c59f03074f0e27b0f19470ab828648e3bf5a58b980b1abacf740fc0d9c0e22c",
+      "parent": "b3:1547b40ea6fce013a46688762a1b075f8936d3a21ebf833b2e0933798654fc56",
+      "change": "interface",
+      "rationale": "Adds a tracker option: GitHub by default when origin is on github.com and a token is found, a function for tests and other trackers, or false to turn it off.",
+      "deps": {
+        "01M73GMZSE4B4SSV7NRSAEPJ0S": "b3:55fca55b443dc78edd7823a663ba9e70840534296140a9038e57b0d114d9daca"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
     }
   ],
   "tests": []

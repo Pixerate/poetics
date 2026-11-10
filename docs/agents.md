@@ -52,7 +52,8 @@ the units those changes reach, as `poetics_impact` does.
 
 The read-only tools answered today are `poetics_context_pack`,
 `poetics_search`, `poetics_unit`, `poetics_history`, `poetics_changes`,
-`poetics_impact`, `poetics_tests_for`, `poetics_verify` and `poetics_notes`.
+`poetics_impact`, `poetics_tests_for`, `poetics_verify`, `poetics_signals` and
+`poetics_notes`.
 Each call brings the SQLite index up to date first, so edits between calls are
 seen, and the tools that read code index it through the TypeScript indexer's
 cache. Units are referenced by uid, name, or `file#name` when a name is shared;
@@ -64,6 +65,16 @@ an ambiguous name is refused with its candidates.
   It reports what it cut in `truncated`, keeping the first lines of code that
   does not fit, and lists under `missing` what it cannot show, such as code the
   indexer cannot read yet.
+- `poetics_context_pack` with `issue` (`#12`, `owner/name#12` or an issue
+  URL) picks the unit the issue most likely touches: one whose versions link
+  it, then one a stack frame in the issue falls inside, one it names as code
+  (in backticks, or camelCase), one in a file it mentions, and last one that
+  search finds from its title. `issue.unitMatched` says which, so a pack
+  chosen by search alone is read as a guess; the next best are `candidates`,
+  each with its reasons. The pack adds the issue's title, state, labels and
+  body (at most a quarter of the budget) and `relatedIssues`: other issues
+  linked from those units, past work on the same code. Without a tracker it
+  can still pick units that link the issue, and says the text is missing.
 - `poetics_impact` takes `units`, `since` (the units the store recorded as
   changed since that ref), or both, and ranks every unit they reach through the
   composition graph by distance: `own`, `closure`, or `interface-caller` for
@@ -75,6 +86,11 @@ an ambiguous name is refused with its candidates.
   It also lists stored docs that differ from the code's TSDoc, notes whose
   units changed since they were confirmed, units with no linked tests, and
   unresolved uses.
+- `poetics_signals` lists the issues and pull requests a unit's versions link,
+  newest first, with the versions that link each, their titles and states, and
+  the review comments those pull requests left on the unit's file (with lines
+  as the pull request saw them). Production errors need an error-monitoring
+  integration and are listed under `missing`.
 - `poetics_tests_for` reports `verified` when a test was recorded against the
   current version; pass or fail needs a test-runner integration.
 
@@ -96,7 +112,14 @@ The write tools are served too, every write attributed to the calling agent
   versions, or with `confirm` re-confirms one, and regenerates `GOTCHAS.md`
   when the repository keeps one.
 
-`poetics_signals`, `poetics_link_test` and `poetics_set_docs` are still stubs.
+Issue and review text is read through the issue tracker when a tool asks for
+it and handed to the agent as data; none of it is written to `.poetics/`. The
+server uses GitHub when `origin` is on github.com and a token is found
+(`GITHUB_TOKEN`, else `gh auth token`); otherwise the tools keep the
+references and say under `missing` why titles and text are absent. Nothing is
+cached, so states are current.
+
+`poetics_link_test` and `poetics_set_docs` are still stubs.
 
 To try it from a checkout, register it with your MCP client:
 

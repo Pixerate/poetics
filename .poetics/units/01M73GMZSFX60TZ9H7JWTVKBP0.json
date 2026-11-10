@@ -1,0 +1,50 @@
+{
+  "uid": "01M73GMZSFX60TZ9H7JWTVKBP0",
+  "kind": "function",
+  "framework": "none",
+  "name": "unitsForIssue",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:5521e1443957ad5a5cbcdf513c2f68a110d8ff593ef7f72846a13f61d8cc2bb9",
+      "interfaceHash": "b3:7f61fb9064832cb0b87266c0113a7ea16d8d35ca5b19484ef33c7c55a41e4ee0",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Ranks the units an issue likely touches, weighting evidence that names the unit over search. Names count only when quoted as code or code-shaped, since prose is full of short words that are also unit names.",
+      "deps": {
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M6HYTZKT55NHNSV9KRKKHEDT": "b3:a333be7869a4cc295280179fc7f97590f1fc9e6738349b147c71c73a8d6e747a",
+        "01M73GMZSFSG1SXVZCXWC9FDBS": "b3:5830cbe0cbc4884d0e1c8fbdc5171dc6ef76eb6d5f6fc43f1578308a8cbbc2a4",
+        "01M73GMZSFV71CJPJK2AKJ2W2R": "b3:61c406f8e970dde4af6cd70a2f49e0c6874faf6c267735f020a8f37279ebc66e",
+        "01M73GMZSFJN87N8PGC8BVKFY5": "b3:c7b86c00ce1a95c931d1ad4d3aedeabd76f1a7f7275083da34cda69e83ea10f3"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ],
+  "docs": "The units an issue likely touches, best first: units whose versions already\nlink it, units a stack frame in it falls inside, units it names as code,\nunits in files it mentions, and units `search` finds from its title.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/issues.test.ts",
+      "via": "static"
+    }
+  ]
+}

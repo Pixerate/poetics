@@ -1,0 +1,35 @@
+{
+  "uid": "01M73GMZSFAZCGSANY57152B6E",
+  "kind": "type",
+  "framework": "none",
+  "name": "ReviewSignal",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:b97ea4ea43fcfc79c2df858a369c4eff0ed48993ac3ce90b4cf7bd9a6a8f1090",
+      "interfaceHash": "b3:6852c231fe5a19ad1aa5e7f8cce1f5ae0be587279b1f99cf61ddfdc50ce6d6fa",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A review comment a linked pull request left on the unit's file. Lines are as the pull request saw them, since lines move between versions.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ],
+  "docs": "A review comment left in a linked pull request on the unit's file."
+}

@@ -64,6 +64,34 @@
           "ref": "docs/decisions/0017-drafting-through-a-command.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:b5625cb2ee684874bd99f074d03928f306cddaecc054ad9d37b07a8f130f3155",
+      "interfaceHash": "b3:9f03c6d14f82352969794a7782e69bed928b8f0fd9787288bdaf8759cc4d635c",
+      "parent": "b3:ac7e545d07f0cf8abbe56ab8c48e15f3506ea2d7888364bb89ba98b0abd1b12c",
+      "change": "interface",
+      "rationale": "Gains an optional issue(number) lookup for the MCP tools. Optional, because backfill never asks for one and other trackers need not implement it to collect evidence.",
+      "deps": {
+        "01M73GMZSE6FXYRB3BEND7E9S9": "b3:aacad2e2dca5925286d5ead791c4117b266da80ebbc5f7c044f178becca42ea0",
+        "01M730BJ25PQYZ9XTYPHKC0K12": "b3:f5d43b96b1c069c31c26249a8e36b62fb73d8cd00b5792ee91d00acc26b3fe85",
+        "01M730BJ25J3X2SR8D6BER3588": "b3:77e1cbbd5629e8b1d6ae95d62aaa099ac8d3d189417556b213d7e6398b85adc2"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
     }
   ],
   "docs": "The pull requests behind a commit, and what reviewers said on them.",

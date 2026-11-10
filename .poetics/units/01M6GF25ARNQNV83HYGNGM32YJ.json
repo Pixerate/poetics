@@ -88,6 +88,55 @@
         "model": "claude-opus-5-5",
         "reviewed": false
       }
+    },
+    {
+      "contentHash": "b3:3cfd11867c8a8df581de98fa845a70ea356613bc69ad58bc77fa2b17626fe11b",
+      "interfaceHash": "b3:f522520d03f0823ab55faf7d34e40056e960149090d3608d7a0a9aa5723cb8de",
+      "parent": "b3:2470f5bc0b0387db510708cfc6e877fd4b3397cbcae8aa29ac89dfb2c09f4a31",
+      "change": "behaviour",
+      "rationale": "Accepts an issue reference: picks the unit the issue most likely touches (linked, stack frame, named as code, file mentioned, then search), puts the issue's text right after the unit with at most a quarter of the budget, and lists related issues among the cuttable sections.",
+      "deps": {
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M73GMZSE6FXYRB3BEND7E9S9": "b3:aacad2e2dca5925286d5ead791c4117b266da80ebbc5f7c044f178becca42ea0",
+        "01M5YKJ3JZM095NT4VJR6HMH42": "b3:a0ad133514cf410878d3ce938ccde3df7ed7a15cda710fb50b81460217eb3828",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M73GMZSE4B4SSV7NRSAEPJ0S": "b3:55fca55b443dc78edd7823a663ba9e70840534296140a9038e57b0d114d9daca",
+        "01M73GMZSEK6J5BKBH1NZAC6FQ": "b3:e2e832b86cf60b783cd8470c54b8f46f6cabee98180fed151150717469be4fde",
+        "01M73GMZSFCERVPG753HV8XN25": "b3:b79394997900ee353af7f3cffee36b9185b4492f48eb6ef1c2ab1e4901ba9c38",
+        "01M73GMZSFX60TZ9H7JWTVKBP0": "b3:5521e1443957ad5a5cbcdf513c2f68a110d8ff593ef7f72846a13f61d8cc2bb9",
+        "01M6GF256TMP0TC24QZYM8FRMJ": "b3:b756376de23030dbb3a2b2eda898286e3be2447af059b08039fa12c67907d3d9",
+        "01M6GF253JD5RKY6HGW0EKRQSX": "b3:b1868170aa53a2201a796295989905aed26cd50719955435dc661e2a80b79749",
+        "01M6GF24JVZVN1Q752CA2GEJQM": "b3:2e3e6b6f4b1662cb3072f7d9e5660fffb2b1c16280e966f69458271ccc7f9c67",
+        "01M6GF250H9680JBZ943BV4K9N": "b3:5d71dfb81d02d88a4667a2145a6e004675a153a7c0472dc94b4dc391b6c1a2c2",
+        "01M5XDBC7YKJD6VJF4K3D1Z289": "b3:6b5620f53d06e3ad3f32882d673d264172c88feb01f8237f8d8a26d044638114",
+        "01M5XDBC815YPH2SXM9166NWM8": "b3:c56fab3aaa9d426418d1a17c2287170dadd8cb01efce793410c2198ef3198fe4",
+        "01M5XDBC7ZDNZA3W91H4RPH0ER": "b3:e497791bc1a798eef6a53929e6ee9fe47fd708170e0eb6c8a0dfe4e700267074",
+        "01M5XDBC82Z5D9AJPVJQXX4EZW": "b3:a530422e1fe25359e3e533beeed1a87012d1f593887db932e658d94b0889c303",
+        "01M5YKJ3K4JGM3F2JMZCKGF0S6": "b3:2a80e27214dbceeea2c451d8b7edd66262977008ecd8b8840a233be48f100387",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5YKJ3K3S9VDT8KJXSPTD5GA": "b3:c8c06a12f825087d86b206e89fae23fa314c3937684d63570cc24de8d7794c59",
+        "01M6GF2ARGHQC5RBVWJQRWMVNG": "b3:f7635eac8cd4575f538d2afcc10be6b766e74a1a6c42e55e43611758915efab2",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8GZ5WSS0KJMF08SPJ9": "b3:d8ec2c1af3288dbe92e7066f79bba2940e4e914ce93c32d1dfe17df754df2c36",
+        "01M6GF24PKWTFAYBMWFTGQ0Y3K": "b3:6f80bc48bd14da0eba03366e7e4f8d58d72bc6e5f86056384bd1f3f31033bea8"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
     }
   ],
   "docs": "Builds a context pack for a unit or task, filling sections in priority order within a token budget.",

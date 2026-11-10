@@ -31,6 +31,34 @@
         "01M5XDBC6HVMJWYFKK186EKB7F": "b3:e4a9b9957f43a652cdbb457103579606bb032196fa54611cc28d5fbe91e9c1a5",
         "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce"
       }
+    },
+    {
+      "contentHash": "b3:a333be7869a4cc295280179fc7f97590f1fc9e6738349b147c71c73a8d6e747a",
+      "interfaceHash": "b3:b7a4282769934b240e1010e03f450cf43d7b6fc660fc2209e64f42f379688562",
+      "parent": "b3:17fbe126f802ae948d5cbfe0f12c64645d621bc991a42f72c94868f4a2d385ed",
+      "change": "interface",
+      "rationale": "Gains linesOf, so a stack frame quoted in an issue can be placed inside the unit whose code spans that line.",
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:6004f5b9e3d8b29e1e73aad0e532e809cb147948d3e8052121d4daf2f309c7d7",
+        "01M5XDBC6HVMJWYFKK186EKB7F": "b3:e4a9b9957f43a652cdbb457103579606bb032196fa54611cc28d5fbe91e9c1a5",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
     }
   ],
   "docs": "Indexed code joined to the store: units by uid, the graph, untracked code and missing units.",

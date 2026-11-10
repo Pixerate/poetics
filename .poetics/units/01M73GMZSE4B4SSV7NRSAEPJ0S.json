@@ -1,0 +1,38 @@
+{
+  "uid": "01M73GMZSE4B4SSV7NRSAEPJ0S",
+  "kind": "type",
+  "framework": "none",
+  "name": "TrackerAccess",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:55fca55b443dc78edd7823a663ba9e70840534296140a9038e57b0d114d9daca",
+      "interfaceHash": "b3:a49511cbe4ab2c1e6a0fcc51a3ac58f8a0199e49bbf7af09367904e13cb3f2aa",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The issue tracker for a tool call, or why there is none, so tools keep working offline and say what they cannot show.",
+      "deps": {
+        "01M730BJ25V8259VT2G94M7242": "b3:b5625cb2ee684874bd99f074d03928f306cddaecc054ad9d37b07a8f130f3155"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ],
+  "docs": "The issue tracker for a tool call, or why there is none."
+}

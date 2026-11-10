@@ -1,0 +1,46 @@
+{
+  "uid": "01M73GMZSFCPN4AVPPEP3KKPVE",
+  "kind": "function",
+  "framework": "none",
+  "name": "linkedSignals",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:16d368baa3f7ca1f39a739c0a3a2e75511010f4f801eb16fd00951aa847f5eef",
+      "interfaceHash": "b3:daf7da6efa3ab059f3966cb60d975059498630291d5428256cf57ad0db2ced45",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Lists each issue and pull request a unit links once, newest version first, including prehistory, so signals read like the unit's history.",
+      "deps": {
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M73GMZSF33WP3N45YP6X440K": "b3:1509042486fb481e886d7c0969fafcedb0497691f50db51b1760a162a6a8d321",
+        "01M73GMZSFJN87N8PGC8BVKFY5": "b3:c7b86c00ce1a95c931d1ad4d3aedeabd76f1a7f7275083da34cda69e83ea10f3"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ],
+  "docs": "The issues and pull requests a unit's versions link, newest first, each once.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/issues.test.ts",
+      "via": "static"
+    }
+  ]
+}
