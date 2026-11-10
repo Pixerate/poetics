@@ -235,14 +235,26 @@ async function init(args: readonly string[], io: Io, json: boolean, root: string
 }
 
 async function backfill(args: readonly string[], io: Io, json: boolean, root: string): Promise<number> {
-  const parsed = parseFlags(args, ["--snapshot", "--history", "--write"], []);
-  if (!parsed || parsed.flags.has("--snapshot") === parsed.flags.has("--history")) {
-    report(io, json, { error: "usage", command: "backfill", message: "Usage: poetics backfill --snapshot [--write] | --history [--write]" });
+  // `--history [from] [to]`: up to two commits, the only arguments that are not flags.
+  const range = args.filter((arg) => !arg.startsWith("--"));
+  const parsed = parseFlags(
+    args.filter((arg) => arg.startsWith("--")),
+    ["--snapshot", "--history", "--write"],
+    [],
+  );
+  if (!parsed || parsed.flags.has("--snapshot") === parsed.flags.has("--history") || range.length > (parsed.flags.has("--history") ? 2 : 0)) {
+    report(io, json, { error: "usage", command: "backfill", message: "Usage: poetics backfill --snapshot [--write] | --history [<from>] [<to>] [--write]" });
     return 2;
   }
   const config = await readConfig(root);
   if (parsed.flags.has("--history")) {
-    const history = await planPrehistory(root, config);
+    let history;
+    try {
+      history = await planPrehistory(root, config, { ...(range[0] ? { from: range[0] } : {}), ...(range[1] ? { to: range[1] } : {}) });
+    } catch (error) {
+      report(io, json, { error: "range", command: "backfill", message: (error as Error).message });
+      return 2;
+    }
     const recorded = parsed.flags.has("--write") ? await applyPrehistory(root, history) : undefined;
     io.out(json ? JSON.stringify({ ...history, written: recorded ?? 0 }) : formatPrehistoryPlan(history, recorded));
     return 0;

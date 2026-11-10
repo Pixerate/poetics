@@ -288,6 +288,9 @@ describe("poetics CLI", () => {
       await write(root, "src/a.ts", "/** Adds one. */\nexport function a(n: number) {\n  return n + 1;\n}\n");
       expect(JSON.parse((await execIn(root, "backfill", "--json")).err)).toMatchObject({ error: "usage", command: "backfill" });
       expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "--history", "--json")).err)).toMatchObject({ error: "usage" });
+      expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "HEAD", "--json")).err)).toMatchObject({ error: "usage" });
+      expect(JSON.parse((await execIn(root, "backfill", "--history", "a", "b", "c", "--json")).err)).toMatchObject({ error: "usage" });
+      expect(await execIn(root, "backfill", "--history", "no-such-ref")).toMatchObject({ code: 2, err: "The repository has no commits to walk a range of" });
       // No commits yet, so there is no history to reconstruct.
       expect(await execIn(root, "backfill", "--history")).toMatchObject({ code: 0, out: "Would record 0 version(s) of prehistory for 0 unit(s), from 0 commit(s). Run with --write to record it." });
       const dry = await execIn(root, "backfill", "--snapshot");
