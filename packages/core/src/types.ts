@@ -7,7 +7,7 @@ export type Uid = string;
  */
 export type Hash = `b3:${string}` | `git:${string}`;
 
-export type UnitKind = "function" | "hook" | "component" | "type";
+export type UnitKind = "function" | "hook" | "component" | "context" | "type";
 
 export type Framework = "react" | "svelte" | "none";
 

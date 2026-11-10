@@ -28,6 +28,11 @@ interfaces and edges; anything else may become an unresolved edge.
   `class Counter extends Component<CounterProps, CounterState>`. The props
   type and `static defaultProps` are the interface; state is not. Prefer a
   function component for new code.
+- **Contexts:** export the context made by `createContext`, with its value
+  type written: `export const CartContext = createContext<Cart | null>(null)`.
+  It is a `context` unit, and every provider and consumer gets a
+  `uses-context` edge to it. Its value type and default are its interface, so
+  changing either flags every component that reads it.
 - **Avoid hiding what renders:** components chosen from a map, render props and
   higher-order components become unresolved edges. Prefer explicit JSX where
   you can, and when you cannot, say so in the rationale.

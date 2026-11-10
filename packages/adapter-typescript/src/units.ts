@@ -43,7 +43,9 @@ export interface FrameworkPlugin {
    * (`fn` undefined, the class its only declaration) is a unit only when a plugin claims it.
    */
   claim?(unit: DetectedUnit, fn: ts.SignatureDeclaration | undefined): UnitKind | undefined;
-  /** The interface of a unit it claimed, or undefined for the plain function signature. `fn` is undefined for a class. */
+  /** The kind of an exported variable that holds no function but that this framework tracks, such as a React context. */
+  value?(declaration: ts.VariableDeclaration): UnitKind | undefined;
+  /** The interface of a unit it claimed, or undefined for the plain function signature. `fn` is undefined for a class or a value. */
   signature?(unit: DetectedUnit, fn: ts.SignatureDeclaration | undefined, checker: ts.TypeChecker): Signature | undefined;
   /** The kind of a use of `target` at `node`, when the framework knows better (JSX renders a component). */
   edgeKind?(node: ts.Identifier, target: DetectedUnit): EdgeKind | undefined;
@@ -78,6 +80,13 @@ export type Signature =
       defaults: Array<{ name: string; value: NormalTree }>;
       /** The ref type, for components that forward one. */
       ref?: TypeText;
+    }
+  | {
+      kind: "context";
+      /** The type of the value providers give and consumers read. */
+      value: TypeText;
+      /** What a consumer reads with no provider above it, or null when none is given. */
+      default: NormalTree | null;
     };
 
 /** A use of another unit, by its key. */
@@ -102,8 +111,8 @@ const TYPE_FORMAT = ts.TypeFormatFlags.NoTruncation;
  */
 export function detectUnits(source: ts.SourceFile, file: string, plugins: readonly FrameworkPlugin[] = []): DetectedUnit[] {
   const exported = exportedNames(source);
-  const groups = new Map<string, { name: string; kind: UnitKind; declarations: UnitDeclaration[]; statements: ts.Node[] }>();
-  const add = (name: string, kind: UnitKind, declaration: UnitDeclaration, statement: ts.Node) => {
+  const groups = new Map<string, { name: string; kind: UnitKind; framework?: Framework; declarations: UnitDeclaration[]; statements: ts.Node[] }>();
+  const add = (name: string, kind: UnitKind, declaration: UnitDeclaration, statement: ts.Node, framework?: Framework) => {
     // Values and types live in separate namespaces, so `type X` and `function X` are two units.
     const space = kind === "type" ? "type" : "value";
     const group = groups.get(`${space}:${name}`);
@@ -111,7 +120,7 @@ export function detectUnits(source: ts.SourceFile, file: string, plugins: readon
       group.declarations.push(declaration);
       group.statements.push(statement);
     } else {
-      groups.set(`${space}:${name}`, { name, kind, declarations: [declaration], statements: [statement] });
+      groups.set(`${space}:${name}`, { name, kind, ...(framework ? { framework } : {}), declarations: [declaration], statements: [statement] });
     }
   };
 
@@ -122,9 +131,14 @@ export function detectUnits(source: ts.SourceFile, file: string, plugins: readon
     } else if (ts.isVariableStatement(statement)) {
       const list = statement.declarationList.declarations;
       for (const declaration of list) {
-        if (!ts.isIdentifier(declaration.name) || !functionOf(declaration, plugins)) continue;
+        if (!ts.isIdentifier(declaration.name)) continue;
+        // A function, or a value a framework tracks (a React context); other variables are not units.
+        const fn = functionOf(declaration, plugins);
+        const value = fn ? undefined : plugins.map((plugin) => ({ framework: plugin.framework, kind: plugin.value?.(declaration) })).find((v) => v.kind !== undefined);
+        if (!fn && !value) continue;
         const name = declaration.name.text;
-        if (hasExportModifier(statement) || exported.has(name)) add(name, functionKind(name), declaration, list.length === 1 ? statement : declaration);
+        const at = list.length === 1 ? statement : declaration;
+        if (hasExportModifier(statement) || exported.has(name)) add(name, value ? value.kind! : functionKind(name), declaration, at, value?.framework);
       }
     } else if (ts.isClassDeclaration(statement)) {
       const name = statement.name?.text ?? "default";
@@ -147,7 +161,7 @@ export function detectUnits(source: ts.SourceFile, file: string, plugins: readon
       kind: group.kind,
       span: { file, start: first.getStart(source), end: last.end },
       declarations: group.declarations,
-      framework: "none",
+      framework: group.framework ?? "none",
     };
     if (exportedAs !== undefined && exportedAs !== group.name) unit.exportedAs = exportedAs;
     if (docs) unit.docs = docs;
@@ -155,7 +169,8 @@ export function detectUnits(source: ts.SourceFile, file: string, plugins: readon
     const wrappers: string[] = [];
     const fn = ts.isFunctionDeclaration(declaration) ? declaration : ts.isVariableDeclaration(declaration) ? functionOf(declaration, plugins, wrappers) : undefined;
     if (wrappers.length > 0) unit.wrappers = wrappers;
-    for (const plugin of plugins) {
+    // A value a framework already tracks keeps the kind it gave.
+    for (const plugin of group.framework ? [] : plugins) {
       const kind = plugin.claim?.(unit, fn);
       if (kind === undefined) continue;
       unit.kind = kind;
@@ -193,7 +208,8 @@ export function signatureOf(unit: DetectedUnit, checker: ts.TypeChecker, plugins
   });
   const plugin = plugins.find((p) => p.framework === unit.framework);
   const isClass = unit.declarations.some(ts.isClassDeclaration);
-  const own = plugin?.signature && (functions[0] || isClass) ? plugin.signature(unit, functions[0], checker) : undefined;
+  // A class or a tracked value has no function, so only its framework can say what its interface is.
+  const own = plugin?.signature && (functions[0] || isClass || unit.framework !== "none") ? plugin.signature(unit, functions[0], checker) : undefined;
   if (own) return own;
   // With overloads, the implementation's own signature is not callable from outside.
   const overloads = functions.length > 1 ? functions.filter((fn) => !fn.body) : functions;
