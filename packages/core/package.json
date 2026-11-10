@@ -1,6 +1,6 @@
 {
   "name": "@poetics/core",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Framework-neutral unit model, hashing, composition graph and closure computation for Poetics.",
   "license": "MIT",
   "type": "module",

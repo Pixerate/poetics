@@ -1,5 +1,19 @@
 # @poetics/cli
 
+## 0.3.0
+
+### Minor Changes
+
+- [#60](https://github.com/Pixerate/poetics/pull/60) [`f14d1a4`](https://github.com/Pixerate/poetics/commit/f14d1a4a510a7a89f7e12e9f8133684b76f7c131) Thanks [@surrealroad](https://github.com/surrealroad)! - `poetics backfill` collects pull request evidence (ADR 0011). Pull requests named in merge and squash subjects are linked as `github-pr`, no longer as issues. With a GitHub token (`GITHUB_TOKEN` or `gh auth token`) and an `origin` on github.com, both modes also link the pull requests containing each commit and the issues they close, and raise a version's confidence when a pull request names the unit or a review comment falls on its lines. Pull request and issue text is never written to `.poetics/`; responses are cached in `.poetics/cache/github.json`, a rate limit stops the collectors without failing the backfill, and `--offline` makes no calls. `@poetics/core` adds the `IssueTracker` interface, and a history walk leaves recorded prehistory alone when new evidence would change it.
+
+### Patch Changes
+
+- Updated dependencies [[`f14d1a4`](https://github.com/Pixerate/poetics/commit/f14d1a4a510a7a89f7e12e9f8133684b76f7c131)]:
+  - @poetics/core@0.5.0
+  - @poetics/adapter-react@0.3.1
+  - @poetics/adapter-typescript@0.2.1
+  - @poetics/store@0.3.2
+
 ## 0.2.1
 
 ### Patch Changes
