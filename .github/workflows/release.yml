@@ -73,6 +73,10 @@ jobs:
         # exits 1 when there is nothing to version, so skip it then.
         if: steps.changeset_check.outputs.should_release == 'true' && steps.changeset_check.outputs.count != '0'
         run: pnpm version-packages
+        env:
+          # @changesets/changelog-github looks up each changeset's commit, PR and author through the
+          # GitHub API and fails without a token. changesets/action used to provide it; a plain run does not.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build packages
         if: steps.changeset_check.outputs.should_release == 'true'
