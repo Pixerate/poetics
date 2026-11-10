@@ -10,6 +10,8 @@ export const COMPONENT_WRAPPERS = ["memo", "forwardRef", "lazy"] as const;
 const ELEMENT_TYPES = new Set(["ReactElement", "ReactNode", "ReactPortal", "JSX.Element", "React.JSX.Element"]);
 /** Types a variable holding a component is annotated with. */
 const COMPONENT_TYPES = new Set(["FC", "FunctionComponent", "VFC", "VoidFunctionComponent", "ComponentType", "ExoticComponent", "NamedExoticComponent"]);
+/** Base classes a class component extends, bare or as `React.X`. */
+const COMPONENT_CLASSES = new Set(["Component", "PureComponent"]);
 /** Calls that make an element without JSX. */
 const ELEMENT_FACTORIES = new Set(["createElement", "cloneElement", "createPortal"]);
 
@@ -25,21 +27,24 @@ export function isComponentName(name: string): boolean {
 
 /**
  * React's part of the TypeScript indexer: it sees through `memo`, `forwardRef`
- * and `lazy`, claims PascalCase functions that render (or are wrapped) as
- * components and `use*` functions as hooks, gives components their props as
+ * and `lazy`, claims PascalCase functions that render (or are wrapped) and
+ * classes that extend `Component` or `PureComponent` as components and `use*` functions as hooks, gives components their props as
  * an interface, and records a JSX tag as a `renders` edge.
  */
 export function reactPlugin(): FrameworkPlugin {
   return {
     framework: "react",
     // 2: components that render without JSX (React return types, FC annotations, casts, createElement).
-    version: 2,
+    // 3: class components.
+    version: 3,
     unwrap(call) {
       const wrapper = wrapperName(call);
       return wrapper && call.arguments[0] ? call.arguments[0] : undefined;
     },
     claim(unit, fn) {
       if (unit.kind === "type") return undefined;
+      const declaration = unit.declarations[0]!;
+      if (ts.isClassDeclaration(declaration)) return componentBase(declaration) ? "component" : undefined;
       if (isHookName(unit.name)) return "hook";
       if (!isComponentName(unit.name)) return undefined;
       if ((unit.wrappers ?? []).some((name) => COMPONENT_WRAPPERS.some((wrapper) => name === wrapper || name.endsWith(`.${wrapper}`)))) return "component";
@@ -47,7 +52,9 @@ export function reactPlugin(): FrameworkPlugin {
     },
     signature(unit, fn, checker) {
       if (unit.kind !== "component") return undefined;
-      return componentSignature(unit, fn, checker);
+      const declaration = unit.declarations[0]!;
+      if (ts.isClassDeclaration(declaration)) return classSignature(declaration);
+      return fn ? componentSignature(unit, fn, checker) : undefined;
     },
     edgeKind(node, target) {
       return target.kind === "component" && isJsxTag(node) ? "renders" : undefined;
@@ -75,6 +82,39 @@ function componentSignature(unit: DetectedUnit, fn: ts.SignatureDeclaration, che
   };
   if (ref && (unit.wrappers ?? []).some((name) => name === "forwardRef" || name.endsWith(".forwardRef"))) signature.ref = typeText(ref.type, ref, checker);
   return signature;
+}
+
+/** The `extends Component<…>` clause of a class component, or undefined for any other class. */
+function componentBase(declaration: ts.ClassDeclaration): ts.ExpressionWithTypeArguments | undefined {
+  const base = declaration.heritageClauses?.find((clause) => clause.token === ts.SyntaxKind.ExtendsKeyword)?.types[0];
+  if (!base) return undefined;
+  const name = ts.isIdentifier(base.expression) ? base.expression.text : ts.isPropertyAccessExpression(base.expression) ? base.expression.name.text : undefined;
+  return name !== undefined && COMPONENT_CLASSES.has(name) ? base : undefined;
+}
+
+/**
+ * A class component's props from `Component<Props, State>`, and its default
+ * prop values from `static defaultProps = { … }`: state is its own business.
+ */
+function classSignature(declaration: ts.ClassDeclaration): Signature {
+  const props = componentBase(declaration)?.typeArguments?.[0];
+  const defaults: Array<{ name: string; value: ts.Expression }> = [];
+  for (const member of declaration.members) {
+    const isStatic = ts.canHaveModifiers(member) && (ts.getModifiers(member) ?? []).some((m) => m.kind === ts.SyntaxKind.StaticKeyword);
+    if (!isStatic || !ts.isPropertyDeclaration(member) || member.name.getText() !== "defaultProps") continue;
+    let value = member.initializer;
+    while (value && (ts.isAsExpression(value) || ts.isSatisfiesExpression(value) || ts.isParenthesizedExpression(value))) value = value.expression;
+    if (!value || !ts.isObjectLiteralExpression(value)) continue;
+    for (const property of value.properties) {
+      if (ts.isPropertyAssignment(property)) defaults.push({ name: property.name.getText(), value: property.initializer });
+      else if (ts.isShorthandPropertyAssignment(property)) defaults.push({ name: property.name.text, value: property.name });
+    }
+  }
+  return {
+    kind: "component",
+    props: props ? { written: normaliseNode(props) } : null,
+    defaults: defaults.sort((a, b) => (a.name < b.name ? -1 : 1)).map(({ name, value }) => ({ name, value: normaliseNode(value) })),
+  };
 }
 
 /** `memo`, `forwardRef` or `lazy`, called bare or as `React.memo`. */

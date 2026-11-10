@@ -6,7 +6,7 @@ import type { EdgeKind, Framework, Span, UnitKind } from "@poetics/core";
 import { normaliseNode } from "./normalise.ts";
 import type { NormalTree } from "./normalise.ts";
 
-type UnitDeclaration = ts.FunctionDeclaration | ts.VariableDeclaration | ts.InterfaceDeclaration | ts.TypeAliasDeclaration;
+type UnitDeclaration = ts.FunctionDeclaration | ts.VariableDeclaration | ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.ClassDeclaration;
 
 /** A unit found in one source file, before any checker work. */
 export interface DetectedUnit {
@@ -38,10 +38,13 @@ export interface FrameworkPlugin {
   version?: number;
   /** The function a call such as `memo(fn)` wraps, when this framework knows the wrapper. */
   unwrap?(call: ts.CallExpression): ts.Expression | undefined;
-  /** The kind this framework gives a unit, or undefined to leave it as plain TypeScript. */
+  /**
+   * The kind this framework gives a unit, or undefined to leave it as plain TypeScript. An exported class
+   * (`fn` undefined, the class its only declaration) is a unit only when a plugin claims it.
+   */
   claim?(unit: DetectedUnit, fn: ts.SignatureDeclaration | undefined): UnitKind | undefined;
-  /** The interface of a unit it claimed, or undefined for the plain function signature. */
-  signature?(unit: DetectedUnit, fn: ts.SignatureDeclaration, checker: ts.TypeChecker): Signature | undefined;
+  /** The interface of a unit it claimed, or undefined for the plain function signature. `fn` is undefined for a class. */
+  signature?(unit: DetectedUnit, fn: ts.SignatureDeclaration | undefined, checker: ts.TypeChecker): Signature | undefined;
   /** The kind of a use of `target` at `node`, when the framework knows better (JSX renders a component). */
   edgeKind?(node: ts.Identifier, target: DetectedUnit): EdgeKind | undefined;
 }
@@ -94,7 +97,8 @@ const TYPE_FORMAT = ts.TypeFormatFlags.NoTruncation;
 
 /**
  * Exported functions, hooks, interfaces and type aliases declared in `source`,
- * in source order. `plugins` see through their wrappers and claim their units.
+ * in source order. `plugins` see through their wrappers and claim their units,
+ * including exported classes, which are units only when a plugin claims them.
  */
 export function detectUnits(source: ts.SourceFile, file: string, plugins: readonly FrameworkPlugin[] = []): DetectedUnit[] {
   const exported = exportedNames(source);
@@ -122,6 +126,9 @@ export function detectUnits(source: ts.SourceFile, file: string, plugins: readon
         const name = declaration.name.text;
         if (hasExportModifier(statement) || exported.has(name)) add(name, functionKind(name), declaration, list.length === 1 ? statement : declaration);
       }
+    } else if (ts.isClassDeclaration(statement)) {
+      const name = statement.name?.text ?? "default";
+      if (hasExportModifier(statement) || exported.has(name)) add(name, "function", statement, statement);
     } else if (ts.isInterfaceDeclaration(statement) || ts.isTypeAliasDeclaration(statement)) {
       const name = statement.name.text;
       if (hasExportModifier(statement) || exported.has(name)) add(name, "type", statement, statement);
@@ -129,7 +136,7 @@ export function detectUnits(source: ts.SourceFile, file: string, plugins: readon
   }
 
   const values = new Set([...groups.values()].filter((g) => g.kind !== "type").map((g) => g.name));
-  return [...groups.values()].map((group) => {
+  const units = [...groups.values()].map((group) => {
     const first = group.statements[0]!;
     const last = group.statements.at(-1)!;
     const exportedAs = exported.get(group.name) ?? (hasDefaultModifier(group.declarations[0]!) ? "default" : undefined);
@@ -157,6 +164,8 @@ export function detectUnits(source: ts.SourceFile, file: string, plugins: readon
     }
     return unit;
   });
+  // A class no framework claims has no unit kind to be: plain classes are not tracked yet.
+  return units.filter((unit) => unit.framework !== "none" || !unit.declarations.some(ts.isClassDeclaration));
 }
 
 /** The unit's whole tree, its own name left out so a rename alone keeps the hash. */
@@ -183,7 +192,8 @@ export function signatureOf(unit: DetectedUnit, checker: ts.TypeChecker, plugins
     return fn ? [fn] : [];
   });
   const plugin = plugins.find((p) => p.framework === unit.framework);
-  const own = plugin?.signature && functions[0] ? plugin.signature(unit, functions[0], checker) : undefined;
+  const isClass = unit.declarations.some(ts.isClassDeclaration);
+  const own = plugin?.signature && (functions[0] || isClass) ? plugin.signature(unit, functions[0], checker) : undefined;
   if (own) return own;
   // With overloads, the implementation's own signature is not callable from outside.
   const overloads = functions.length > 1 ? functions.filter((fn) => !fn.body) : functions;
@@ -229,6 +239,8 @@ export function signatureText(unit: DetectedUnit, source: ts.SourceFile, plugins
     const statement = list && ts.isVariableDeclarationList(list) && list.declarations.length === 1 ? list.parent : declaration;
     const start = statement.getStart(source);
     if (unit.kind === "type") return [source.text.slice(start, statement.end)];
+    // A class up to its body: its name, type parameters and what it extends.
+    if (ts.isClassDeclaration(declaration)) return [source.text.slice(start, source.text.lastIndexOf("{", declaration.members.pos)).trimEnd()];
     const fn = ts.isFunctionDeclaration(declaration) ? declaration : functionOf(declaration as ts.VariableDeclaration, plugins);
     if (!fn?.body) return [source.text.slice(start, statement.end)];
     if (ts.isFunctionDeclaration(fn) && unit.declarations.length > 1) return [];

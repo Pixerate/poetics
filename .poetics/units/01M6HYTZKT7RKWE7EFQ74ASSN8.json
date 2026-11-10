@@ -52,6 +52,29 @@
           "ref": "docs/plan.md#react-ts-tsx"
         }
       ]
+    },
+    {
+      "contentHash": "b3:3aee4b720fa23054622d99f39822fdbb1df75c52a1407b7100b31a56195087c9",
+      "interfaceHash": "b3:50bca86cc3cde4d512f55de4e3e2c43d967715141566a3623b43141ad3620ab5",
+      "parent": "b3:9048587b45f1b18210edbcbe4cd52163e9d0697740a0503bd5be28c6cbd9580b",
+      "change": "behaviour",
+      "rationale": "A class's signature text is its header up to the body (name, type parameters, what it extends), which is what callers of a class component read.",
+      "deps": {
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:9f75b78c92b3d14a08c17793a2138144f9ec807b8a930ccbea497edb96f4ac2a",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:411eb6ed3f7c99d3c5178036bb74e666502d1138061036b0355c454b1463d068"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md"
+        }
+      ]
     }
   ],
   "docs": "What a caller reads: each declaration up to its body, as written. Types are\ntheir whole declaration, since their structure is the interface; with\noverloads, only the overload signatures.",
