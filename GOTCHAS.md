@@ -159,6 +159,15 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 - **Caught by:** test `scripts/workflows.test.ts` (gives the version step a GitHub token when changelogs come from GitHub)
 - **Note:** `01M72QD9DM6TY47V9QTR9BZ0KH`
 
+### Publishing a package by hand fails on provenance, or ships workspace:* dependencies
+
+- **Symptom:** `npm error code EUSAGE`; `npm error Automatic provenance generation not supported for provider: null`; `ERR_PNPM_FAILED_TO_PUBLISH: Failed to publish package @poetics/adapter-typescript@0.1.0 (status 404 Not Found)`
+- **Cause:** npm trusted publishing only works for a package that already exists, so a new package's first release from CI fails with 404 and has to be published by hand. Locally, each package's publishConfig sets provenance, which only CI can generate, and npm publish in a package folder uploads workspace:* dependency ranges as written.
+- **Fix:** Publish the first release with pnpm pack, then npm publish of the tarball with --access public --provenance=false, after its dependencies are on npm. Then run the Release workflow by hand to publish the packages that depend on it. See docs/ci-and-releases.md, Publishing a package by hand.
+- **Applies to:** `npm publish`, `pnpm pack`, `pnpm release`, `.github/workflows/release.yml`, `docs/ci-and-releases.md`
+- **See:** [docs/ci-and-releases.md](docs/ci-and-releases.md)
+- **Note:** `01M72W38R4BRXF56EF7CYAYMVC`
+
 ## Resolved and superseded
 
 | Note | Status |
