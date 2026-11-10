@@ -1,6 +1,7 @@
 # Identity gate: uids survive real refactors
 
-Issue [#26](https://github.com/Pixerate/poetics/issues/26). The plan's phase 1
+Issue [#26](https://github.com/Pixerate/poetics/issues/26) (closed), continued for
+`.svelte` files in [#66](https://github.com/Pixerate/poetics/issues/66). The plan's phase 1
 gate asks that a unit's uid survive renames, moves, splits and merges on real
 code: a React app, a Svelte app and a repository mixing both around shared
 utilities. Phase 2's gate asks the same of a React app with the React adapter
@@ -97,7 +98,6 @@ the kind of unit each refactor picked.
 ## What this gate does not cover yet
 
 - `.svelte` files: the TypeScript indexer cannot read them until the Svelte
-  adapter (phase 3), so they are counted as in scope but not indexed. #26 stays
-  open until the gate covers them.
-- React class components and context providers: the React adapter does not
-  claim them yet, so they are measured as plain units.
+  adapter (phase 3), so they are counted as in scope but not indexed.
+  [#66](https://github.com/Pixerate/poetics/issues/66) adds them to the gate
+  once the adapter exists.
