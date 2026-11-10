@@ -196,4 +196,66 @@ describe("planPrehistory", () => {
     const root = await adoptedLate();
     expect(formatPrehistoryPlan(await planPrehistory(root, CONFIG))).toMatch(/^src\/money\.ts#formatAmount: 2 version\(s\) back to [0-9a-f]{7}\nWould record 2 version\(s\) of prehistory for 1 unit\(s\), from 4 commit\(s\)\./);
   });
+  describe("over a range", () => {
+    const sha = (root: string, subject: string) => runGit(root, "log", "--format=%H", `--grep=${subject}`).trim();
+
+    it("walks only the commits after from, opening code that was already there at its first change", async () => {
+      const root = await adoptedLate();
+      const from = sha(root, "Add formatPrice");
+      const plan = await planPrehistory(root, CONFIG, { from });
+      expect(plan.commits).toBe(3);
+      expect(plan.range).toEqual({ from, to: runGit(root, "rev-parse", "HEAD").trim() });
+      const [entry] = plan.units;
+      expect(entry!.prehistory).toMatchObject([{ change: "created", parent: null, commit: sha(root, "Double each item"), rationale: "Double each item for bulk orders" }]);
+      expect(entry!.stoppedAt).toEqual({ commit: sha(root, "Double each item"), reason: `the range starts after ${from.slice(0, 7)}; earlier history was not walked` });
+    });
+
+    it("lets a walk from further back extend what a shorter range wrote", async () => {
+      const root = await adoptedLate();
+      expect(await applyPrehistory(root, await planPrehistory(root, CONFIG, { from: sha(root, "Add formatPrice") }))).toBe(1);
+      const full = await planPrehistory(root, CONFIG);
+      expect(await applyPrehistory(root, full)).toBe(1);
+      const files = await readdir(join(root, ".poetics/units"));
+      const unit = JSON.parse(await readFile(join(root, ".poetics/units", files[0]!), "utf8")) as Unit;
+      expect(unit.prehistory).toEqual(full.units[0]!.prehistory);
+      expect(unit.prehistory!.map((v) => v.change)).toEqual(["created", "behaviour"]);
+    });
+
+    it("gives code nothing when it did not change in the range", async () => {
+      const root = await adoptedLate();
+      const plan = await planPrehistory(root, CONFIG, { from: sha(root, "Move to money") });
+      expect([plan.commits, plan.units]).toEqual([1, []]);
+    });
+
+    it("leaves out units recorded after to, rather than stopping their prehistory short", async () => {
+      const root = await adoptedLate();
+      const to = sha(root, "Move to money");
+      const plan = await planPrehistory(root, CONFIG, { to });
+      expect([plan.commits, plan.units, plan.beyond, plan.range]).toEqual([3, [], 1, { to }]);
+      expect(formatPrehistoryPlan(plan)).toContain(`1 unit(s) were recorded after ${to.slice(0, 7)}, where the range ends; walk to a later commit to reach them.`);
+    });
+
+    it("skips units recorded by from, whose prehistory is before the range", async () => {
+      const root = await adoptedLate();
+      await write(root, "src/money.ts", TOTAL("formatAmount").replace("sum += item;", "sum += item * 3;"));
+      commit(root, "Triple each item");
+      const plan = await planPrehistory(root, CONFIG, { from: sha(root, "Adopt Poetics") });
+      expect([plan.commits, plan.units, plan.beyond]).toEqual([1, [], 0]);
+    });
+
+    it("refuses refs that name no commit, a from off the first-parent line, and a range in an empty repository", async () => {
+      const root = await adoptedLate();
+      await expect(planPrehistory(root, CONFIG, { from: "no-such-ref" })).rejects.toThrow("no-such-ref does not name a commit");
+      await expect(planPrehistory(root, CONFIG, { from: "HEAD", to: sha(root, "Add formatPrice") })).rejects.toThrow(/is not on the first-parent line of/);
+      const empty = await mkdtemp(join(tmpdir(), "poetics-prehistory-empty-"));
+      runGit(empty, "init", "-q", "-b", "main");
+      await expect(planPrehistory(empty, CONFIG, { from: "HEAD" })).rejects.toThrow("The repository has no commits to walk a range of");
+    });
+
+    it("says where the range starts in the summary", async () => {
+      const root = await adoptedLate();
+      const from = sha(root, "Add formatPrice");
+      expect(formatPrehistoryPlan(await planPrehistory(root, CONFIG, { from }))).toContain(`from 3 commit(s) after ${from.slice(0, 7)}.`);
+    });
+  });
 });

@@ -31,7 +31,12 @@ It never writes to a unit that has a file.
    say "stops at" are units matching would only have queued (look-alikes
    moved together, or a small function renamed and edited at once): their
    history before that commit is not claimed. Prehistory is write-once and
-   can only be extended further back.
+   can only be extended further back. On a long history, walk part of it:
+   `--history <from>` walks the commits after `<from>`, and code already
+   there "stops at" its first change in the range until a walk from further
+   back extends it. `--history <from> <to>` also ends at `<to>`; units
+   recorded after `<to>` are left out rather than given a prehistory that
+   stops short.
 5. **Act on the gaps:** add the listed docs and test links to the unit files,
    record candidate notes with `poetics-gotcha` if they hold, and run
    `pnpm poetics index` for existing units with unrecorded changes.

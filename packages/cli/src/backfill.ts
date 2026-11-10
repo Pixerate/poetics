@@ -334,7 +334,17 @@ export interface PrehistoryEntry {
 export interface PrehistoryPlan {
   /** First-parent commits walked, oldest first. */
   commits: number;
+  /** The range walked, as full commit ids: after `from` (the root when unset) up to and including `to`. */
+  range: { from?: string; to: string };
   units: PrehistoryEntry[];
+  /** Units first recorded after `to`: left for a walk that reaches them, since prehistory can only be extended further back. */
+  beyond: number;
+}
+
+/** Where `poetics backfill --history [from] [to]` walks: refs or commit ids, both optional. */
+export interface PrehistoryRange {
+  from?: string;
+  to?: string;
 }
 
 interface Followed {
@@ -352,17 +362,57 @@ interface Followed {
  * changed. A unit's prehistory is what happened before the commit that first
  * recorded its unit file. Where matching would only queue a unit, its history
  * restarts there, and the plan says so: history is never guessed.
+ *
+ * `range` limits the walk to the first-parent commits after `from` up to `to`
+ * (default: the root to HEAD). Code that exists at `from` starts there: its
+ * first change in the range opens its prehistory, which a later walk from
+ * further back extends. Units first recorded after `to` are left out, since
+ * prehistory that stops short of their recording could never be filled in.
  */
-export async function planPrehistory(root: string, config: PoeticsConfig): Promise<PrehistoryPlan> {
+export async function planPrehistory(root: string, config: PoeticsConfig, range: PrehistoryRange = {}): Promise<PrehistoryPlan> {
   const plugins = pluginsFor(config);
   const inScope = createMatcher(config.include, config.exclude ?? []);
   const indexable = (file: string) => inScope(file) && /\.(ts|tsx|mts|cts)$/.test(file) && !file.endsWith(".d.ts");
-  const commits = hasCommits(root) ? git(root, ["rev-list", "--first-parent", "--reverse", "HEAD"]).split("\n").filter(Boolean) : [];
+  const empty = !hasCommits(root);
+  if (empty && (range.from || range.to)) throw new Error("The repository has no commits to walk a range of");
+  const head = empty ? "" : resolveCommit(root, "HEAD");
+  const to = range.to ? resolveCommit(root, range.to) : head;
+  const from = range.from ? resolveCommit(root, range.from) : undefined;
+  const line = empty ? [] : git(root, ["rev-list", "--first-parent", "--reverse", to]).split("\n").filter(Boolean);
+  if (from && !line.includes(from)) throw new Error(`${range.from} is not on the first-parent line of ${range.to ?? "HEAD"}, so there is no range between them`);
+  const commits = from ? line.slice(line.indexOf(from) + 1) : line;
   const read = commitReader(root);
   const store = new Map((await readUnitFiles(storePaths(root))).map(parseUnit).filter((unit) => !isRemoved(unit)).map((unit) => [unit.uid, unit]));
   const state = new Map<string, Followed[]>();
-  const plan: PrehistoryPlan = { commits: commits.length, units: [] };
+  const plan: PrehistoryPlan = { commits: commits.length, range: { ...(from ? { from } : {}), to }, units: [], beyond: 0 };
   const done = new Set<string>();
+  const startsAt = from ? `the range starts after ${from.slice(0, 7)}; earlier history was not walked` : undefined;
+
+  if (from) {
+    // Units recorded by `from` have their prehistory before the range; none of it is here.
+    for (const path of git(root, ["ls-tree", "-r", "--name-only", from, "--", ".poetics/units"]).split("\n")) {
+      const recorded = /([0-9A-Z]{26})\.json$/.exec(path);
+      if (recorded) done.add(recorded[1]!);
+    }
+    // The code at `from` is where the walk starts: followed, with no history it can claim.
+    for (const file of git(root, ["ls-tree", "-r", "--name-only", from]).split("\n").filter(indexable)) {
+      const text = showAt(root, from, file);
+      if (text === undefined) continue;
+      const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
+      state.set(
+        file,
+        detectUnits(source, file, plugins).map((unit) => {
+          const tree = contentTree(unit);
+          return {
+            code: { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: contentHash(tree), fingerprint: fingerprint(tree) },
+            runtimeHash: contentHash(contentTree(unit, true)),
+            signature: signatureText(unit, source, plugins),
+            history: [],
+          };
+        }),
+      );
+    }
+  }
 
   // A unit's prehistory is the history at its place just before its unit file was first committed.
   const capture = (uid: string, location: Pick<Unit, "name" | "kind"> & { file: string }) => {
@@ -377,7 +427,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig): Promi
   };
 
   commits.forEach((sha, i) => {
-    const parent = i === 0 ? undefined : commits[i - 1];
+    const parent = i === 0 ? from : commits[i - 1];
     const changes = git(root, parent ? ["diff-tree", "-r", "--name-status", "-M", parent, sha] : ["diff-tree", "-r", "--name-status", "--root", sha])
       .split("\n")
       .filter(Boolean)
@@ -439,7 +489,14 @@ export async function planPrehistory(root: string, config: PoeticsConfig): Promi
       const was = ids.get(match.uid)!;
       const now = afterByKey.get(match.key)!;
       const followed: Followed = { ...was, code: now.code, runtimeHash: now.runtimeHash, signature: now.signature };
-      if (now.code.contentHash !== was.code.contentHash) {
+      if (now.code.contentHash !== was.code.contentHash && was.history.length === 0) {
+        // Code that was there when the range started: its first change here opens its prehistory, as created, and a
+        // walk from further back that reaches it records the same version with its real change and parent.
+        const v = version(null, now, "created");
+        followed.history = [v as Version];
+        followed.stoppedAt = { commit: sha, reason: startsAt! };
+        changed.push({ followed, version: v });
+      } else if (now.code.contentHash !== was.code.contentHash) {
         // Interface from the signature as written: the checker's hash would need this commit's dependencies.
         const change: ChangeClass = now.signature !== was.signature ? "interface" : now.runtimeHash === was.runtimeHash ? "cosmetic" : "behaviour";
         const v = version(was.code.contentHash, now, change);
@@ -470,8 +527,12 @@ export async function planPrehistory(root: string, config: PoeticsConfig): Promi
     }
   });
 
-  // Units whose unit file is not committed yet were recorded from the code as it is now.
-  for (const unit of store.values()) capture(unit.uid, { file: unit.location.file, name: unit.name, kind: unit.kind });
+  // Units whose unit file is not committed yet were recorded from the code as it is now, which a walk to HEAD reaches.
+  for (const unit of store.values()) {
+    if (done.has(unit.uid)) continue;
+    if (to === head) capture(unit.uid, { file: unit.location.file, name: unit.name, kind: unit.kind });
+    else plan.beyond++;
+  }
   plan.units.sort((a, b) => (a.file === b.file ? (a.name < b.name ? -1 : 1) : a.file < b.file ? -1 : 1));
   return plan;
 }
@@ -489,6 +550,15 @@ export async function applyPrehistory(root: string, plan: PrehistoryPlan): Promi
   return written;
 }
 
+/** A ref or commit id as the full id of the commit it names. */
+function resolveCommit(root: string, ref: string): string {
+  try {
+    return git(root, ["rev-parse", "--verify", "--quiet", "--end-of-options", `${ref}^{commit}`]).trim();
+  } catch {
+    throw new Error(`${ref} does not name a commit`);
+  }
+}
+
 /** The prehistory plan for people: one line per unit with how far back it reaches, then a summary. */
 export function formatPrehistoryPlan(plan: PrehistoryPlan, written?: number): string {
   const lines = plan.units.map((entry) => {
@@ -497,7 +567,9 @@ export function formatPrehistoryPlan(plan: PrehistoryPlan, written?: number): st
     return `${entry.file}#${entry.name}: ${entry.prehistory.length} version(s) back to ${first.commit!.slice(0, 7)}${stop}`;
   });
   const versions = plan.units.reduce((n, entry) => n + entry.prehistory.length, 0);
-  const counts = `${versions} version(s) of prehistory for ${plan.units.length} unit(s), from ${plan.commits} commit(s)`;
+  const walked = `${plan.commits} commit(s)${plan.range.from ? ` after ${plan.range.from.slice(0, 7)}` : ""}`;
+  const counts = `${versions} version(s) of prehistory for ${plan.units.length} unit(s), from ${walked}`;
+  if (plan.beyond > 0) lines.push(`${plan.beyond} unit(s) were recorded after ${plan.range.to.slice(0, 7)}, where the range ends; walk to a later commit to reach them.`);
   lines.push(written === undefined ? `Would record ${counts}. Run with --write to record it.` : `Recorded ${counts}; ${written} unit file(s) changed.`);
   return lines.join("\n");
 }
