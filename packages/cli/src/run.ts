@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { NotImplementedError } from "@poetics/core";
 import type { Actor, Unit } from "@poetics/core";
 import { changesBetween, openIndex, readConfig, rebuildIndex, resolveUnit, storePaths } from "@poetics/store";
@@ -10,6 +11,7 @@ import { COMMANDS } from "./commands.ts";
 import { coverageFor, formatCoverage } from "./coverage.ts";
 import { formatLog, formatWhy } from "./history.ts";
 import { connectGitHub } from "./github.ts";
+import { commandDrafter } from "./draft.ts";
 import { applyBackfill, applyPrehistory, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
 import { applyIndex, formatIndexPlan, needsRationale, planIndex } from "./indexing.ts";
 import { applyInit, formatInitPlan, planInit } from "./init.ts";
@@ -240,18 +242,34 @@ async function backfill(args: readonly string[], io: Io, json: boolean, root: st
   const range = args.filter((arg) => !arg.startsWith("--"));
   const parsed = parseFlags(
     args.filter((arg) => arg.startsWith("--")),
-    ["--snapshot", "--history", "--include-removed", "--offline", "--write"],
+    ["--snapshot", "--history", "--include-removed", "--offline", "--draft", "--draft-private", "--write"],
     [],
   );
   const history = parsed?.flags.has("--history") === true;
-  if (!parsed || parsed.flags.has("--snapshot") === history || range.length > (history ? 2 : 0) || (parsed.flags.has("--include-removed") && !history)) {
-    report(io, json, { error: "usage", command: "backfill", message: "Usage: poetics backfill --snapshot [--offline] [--write] | --history [<from>] [<to>] [--include-removed] [--offline] [--write]" });
+  const misused = parsed && ((parsed.flags.has("--include-removed") && !history) || (parsed.flags.has("--draft-private") && !parsed.flags.has("--draft")));
+  if (!parsed || parsed.flags.has("--snapshot") === history || range.length > (history ? 2 : 0) || misused) {
+    report(io, json, { error: "usage", command: "backfill", message: "Usage: poetics backfill --snapshot [--offline] [--draft [--draft-private]] [--write] | --history [<from>] [<to>] [--include-removed] [--offline] [--draft [--draft-private]] [--write]" });
     return 2;
   }
   const config = await readConfig(root);
   // Pull requests come from GitHub when a token is found (ADR 0011); --offline keeps backfill local.
   const github = connectGitHub(root, { offline: parsed.flags.has("--offline") });
-  const trackerOptions = { ...(github.tracker ? { tracker: github.tracker } : {}), trackerStatus: github.status };
+  const draftCommand = config.backfill?.draft?.command;
+  if (parsed.flags.has("--draft") && !draftCommand?.length) {
+    report(io, json, { error: "config", command: "backfill", message: "--draft runs the command in backfill.draft.command in .poetics/config.json, which is not set. Poetics names no model: the command reads a JSON draft request on stdin and writes a JSON draft on stdout (see docs/getting-started.md)." });
+    return 2;
+  }
+  const trackerOptions = {
+    ...(github.tracker ? { tracker: github.tracker } : {}),
+    trackerStatus: github.status,
+    ...(parsed.flags.has("--draft")
+      ? {
+          drafter: commandDrafter(draftCommand!, { cwd: root, ...(config.backfill?.draft?.timeoutSeconds ? { timeoutMs: config.backfill.draft.timeoutSeconds * 1000 } : {}) }),
+          draftCache: join(storePaths(root).cache, "drafts.json"),
+          ...(parsed.flags.has("--draft-private") ? { draftPrivate: true } : {}),
+        }
+      : {}),
+  };
   if (history) {
     let plan;
     try {

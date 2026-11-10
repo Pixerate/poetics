@@ -281,6 +281,24 @@ describe("poetics CLI", () => {
   });
 
   describe("backfill", () => {
+    it("drafts with the command the config names, and caches its answers", async () => {
+      const root = await mkdtemp(join(tmpdir(), "poetics-cli-draft-"));
+      execFileSync("git", ["init", "-q", "-b", "main"], { cwd: root });
+      await write(root, "drafter.mjs", `let input = ""; process.stdin.on("data", (c) => (input += c)); process.stdin.on("end", () => { const r = JSON.parse(input); countCall(); process.stdout.write(JSON.stringify({ rationale: "Increments " + r.unit.name + "; the reason is not recorded.", cites: [], diffOnly: true })); });\nfunction countCall() { const fs = process.getBuiltinModule("node:fs"); fs.appendFileSync("calls.log", "x"); }\n`);
+      const config = { version: 1, adapters: ["typescript"], include: ["src/**/*.ts"], backfill: { draft: { command: [process.execPath, "drafter.mjs"], timeoutSeconds: 30 } } };
+      await write(root, ".poetics/config.json", JSON.stringify(config));
+      await write(root, "src/a.ts", "export function a(n: number) {\n  return n + 1;\n}\n");
+      const { createValidator, loadSchemaSet } = await import("@poetics/store");
+      const schemas = await loadSchemaSet(join(import.meta.dirname, "../../../schemas"));
+      expect(createValidator(schemas).config(config)).toEqual({ valid: true, errors: [] });
+      const dry = await execIn(root, "backfill", "--snapshot", "--offline", "--draft");
+      expect(dry.out).toContain("+ src/a.ts#a [low] Increments a; the reason is not recorded.");
+      expect(dry.out).toContain("Drafted 1 rationale(s); 0 rejected and 0 failed kept their extracted rationale.");
+      const written = await execIn(root, "backfill", "--snapshot", "--offline", "--draft", "--write");
+      expect(written.out).toContain("Drafted 1 rationale(s) (1 from the cache)");
+      expect(await readFile(join(root, "calls.log"), "utf8")).toBe("x");
+    });
+
     it("needs exactly one of --snapshot and --history, and plans by default", async () => {
       const root = await mkdtemp(join(tmpdir(), "poetics-cli-backfill-"));
       execFileSync("git", ["init", "-q", "-b", "main"], { cwd: root });
@@ -290,6 +308,8 @@ describe("poetics CLI", () => {
       expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "--history", "--json")).err)).toMatchObject({ error: "usage" });
       expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "HEAD", "--json")).err)).toMatchObject({ error: "usage" });
       expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "--include-removed", "--json")).err)).toMatchObject({ error: "usage" });
+      expect(JSON.parse((await execIn(root, "backfill", "--history", "--draft-private", "--json")).err)).toMatchObject({ error: "usage" });
+      expect(JSON.parse((await execIn(root, "backfill", "--history", "--draft", "--json")).err)).toMatchObject({ error: "config", message: expect.stringContaining("backfill.draft.command") });
       expect(await execIn(root, "backfill", "--history", "--include-removed")).toMatchObject({ code: 0 });
       expect(JSON.parse((await execIn(root, "backfill", "--history", "a", "b", "c", "--json")).err)).toMatchObject({ error: "usage" });
       expect(await execIn(root, "backfill", "--history", "no-such-ref")).toMatchObject({ code: 2, err: "The repository has no commits to walk a range of" });

@@ -60,6 +60,40 @@
           "ref": "docs/decisions/0011-backfill.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:84635a0172d586fed850a37e43f9788ecb4c2309bce672e2a23c5ca09866b0a5",
+      "interfaceHash": "b3:6a1afcef7dbcd0924bc04e279ffc370c0cc0bb09d377d8c20e7a9f20fd912b5a",
+      "parent": "b3:a4ecabf455bd6d38799ead7a37eb4fb7706fea321178863b315662efc3a22df2",
+      "change": "interface",
+      "rationale": "Adds draft: what --draft did (drafted, from the cache, rejected, failed), so the report says which versions kept their extracted rationale.",
+      "deps": {
+        "01M6KA0K76FC45D9BH7SCY6TN4": "b3:db95265239831d56ce2a9186e2c62c6a0a0e3f8f809d58099420a14180162421",
+        "01M7340MGDR066HEMXVP7SXMV9": "b3:63f93a8c0e7bd1f4a24be799b8c18d864b2bca8c9281290e5e5fa530cd834a11",
+        "01M730BJ24P27EB5Q94C76JBB8": "b3:794991c9c84a4c40835e231e32fe18c926151f59895b039b9be16d6b5785c0c8",
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
     }
   ],
   "tests": [

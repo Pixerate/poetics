@@ -117,3 +117,15 @@ export function withPullRequests(confidence: Inferred["confidence"], found: Comm
 function names(text: string, name: string): boolean {
   return new RegExp(`(?<![\\w$])${name.replace(/[$]/g, "\\$")}(?![\\w$])`).test(text);
 }
+
+/** Pull request and review text about `unit`, for a drafter that may read but never quote it (ADR 0011). */
+export function pullRequestTexts(found: CommitPullRequests | undefined, unit: UnitLines): Array<{ source: Inferred["sources"][number]; ref: string; text: string; quotable: false }> {
+  const texts: Array<{ source: Inferred["sources"][number]; ref: string; text: string; quotable: false }> = [];
+  for (const pr of found?.pullRequests ?? []) {
+    texts.push({ source: "pull-request", ref: `#${pr.number}`, text: `${pr.title}\n\n${pr.body}`.trim(), quotable: false });
+    for (const comment of found!.comments.get(pr.number) ?? []) {
+      if (comment.path === unit.file && comment.startLine <= unit.endLine && comment.endLine >= unit.startLine) texts.push({ source: "comment", ref: `#${pr.number}`, text: comment.body, quotable: false });
+    }
+  }
+  return texts;
+}

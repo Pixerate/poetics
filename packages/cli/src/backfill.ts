@@ -13,7 +13,9 @@ import { appendVersion, createMatcher, createUnit, extendsPrehistory, filesInSco
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { git, showAt } from "./git.ts";
 import type { TrackerStatus } from "./github.ts";
-import { pullRequestEvidence, pullRequestsInSubject, trackerReader, withPullRequests } from "./pull-requests.ts";
+import { pullRequestEvidence, pullRequestTexts, pullRequestsInSubject, trackerReader, withPullRequests } from "./pull-requests.ts";
+import { draftRequest, draftVersions, formatDraftReport } from "./draft.ts";
+import type { DraftReport, DraftRequest, Drafter } from "./draft.ts";
 import type { CommitPullRequests, TrackerUse } from "./pull-requests.ts";
 import { pluginsFor } from "./frameworks.ts";
 import { planIndex } from "./indexing.ts";
@@ -39,6 +41,8 @@ export interface BackfillPlan {
   candidateNotes: Array<{ file: string; line: number; text: string }>;
   /** The issue tracker's part: used, or why its collectors were skipped. */
   tracker?: TrackerUse;
+  /** With `--draft`: what the drafter did. */
+  draft?: DraftReport;
 }
 
 /** Where pull request evidence comes from: a tracker when one is connected, and why not when it is not. */
@@ -48,13 +52,24 @@ export interface TrackerOptions {
   trackerStatus?: TrackerStatus;
 }
 
+/** `--draft`: who drafts rationale, and whether a private repository's pull request text may reach it (ADR 0011, ADR 0017). */
+export interface DraftOptions {
+  drafter?: Drafter;
+  /** `--draft-private`: send pull request and review text even when the repository is not public. It is never quoted. */
+  draftPrivate?: boolean;
+  /** Where drafts are cached between runs. */
+  draftCache?: string;
+}
+
 const BY = "poetics-backfill";
 const NOTE_COMMENT = /\/\/\s*(.*\b(?:HACK|XXX|workaround|work around|do not|don't|never|must)\b.*)$/i;
 const AGENT_TRAILER = /\b(claude|copilot|codex|gemini|cursor|devin|aider|chatgpt)\b/i;
 
 /** What a snapshot backfill would write. Nothing is written until `applyBackfill`. */
-export async function planBackfill(root: string, config: PoeticsConfig, options: TrackerOptions = {}): Promise<BackfillPlan> {
+export async function planBackfill(root: string, config: PoeticsConfig, options: TrackerOptions & DraftOptions = {}): Promise<BackfillPlan> {
   const pulls = trackerReader(options.tracker, options.trackerStatus);
+  const prText = await pullRequestTextAllowed(options);
+  const jobs: Array<{ version: Version; request: DraftRequest }> = [];
   const index = await planIndex(root, config, { rationale: "backfill" });
   // The same index planIndex just built, from its cache: spans for blame, docs for the gaps.
   const { parseable } = await filesInScope(root, config);
@@ -93,6 +108,7 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
     const links: Link[] = [];
     let rationale: string | undefined;
     let confidence: Inferred["confidence"] = "low";
+    let found: CommitPullRequests | undefined;
 
     const changeset = commit ? changesets(commit.sha, packageOf(root, unit.location.file)) : undefined;
     if (changeset) {
@@ -111,7 +127,7 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
       }
       // Pull requests are linked and can raise confidence; their text never becomes the rationale.
       const at = codeAt.get(place(unit.location.file, unit.name, unit.kind));
-      const found = await pulls.read(commit.sha);
+      found = await pulls.read(commit.sha);
       const prs = pullRequestEvidence(commit.rawSubject, found, { name: unit.name, file: unit.location.file, startLine: at?.startLine ?? 0, endLine: at?.endLine ?? 0 });
       links.push(...prs.links);
       for (const source of prs.sources) evidence.push({ source, ref: commit.sha });
@@ -133,9 +149,28 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
     if (commit) version.commit = commit.sha;
     version.actor = commit?.agent ? { kind: "agent", tool: commit.agent, reviewed: false } : { kind: "human" };
     version.inferred = { by: BY, confidence, sources: [...new Set(evidence.map((e) => e.source))], drafted: false, reviewed: false };
-    plan.byConfidence[confidence]++;
+    if (options.drafter) {
+      const at = codeAt.get(place(unit.location.file, unit.name, unit.kind));
+      const lines = { name: unit.name, file: unit.location.file, startLine: at?.startLine ?? 0, endLine: at?.endLine ?? 0 };
+      jobs.push({
+        version,
+        request: draftRequest({
+          unit: { name: unit.name, kind: unit.kind, file: unit.location.file },
+          change: "created",
+          ...(commit ? { commit: commit.sha } : {}),
+          code: at ? readFileSync(join(root, unit.location.file), "utf8").slice(at.span.start, at.span.end) : "",
+          evidence: [
+            ...evidence.filter((e) => e.text).map((e) => ({ source: e.source, ref: e.ref, text: e.text!, quotable: true })),
+            ...(prText ? pullRequestTexts(found, lines) : []),
+          ],
+        }),
+      });
+    }
     plan.created.push({ unit, evidence });
   }
+  if (options.drafter) plan.draft = await draftVersions(jobs, options.drafter, options.draftCache ? { cacheFile: options.draftCache } : {});
+  // Counted after drafting, which lowers a version drafted from the diff alone.
+  for (const { unit } of plan.created) plan.byConfidence[unit.versions[0]!.inferred!.confidence]++;
 
   const existing = (await readUnitFiles(storePaths(root))).map(parseUnit).filter((unit) => !isRemoved(unit));
   listGaps(root, parseable, existing, codeAt, plan);
@@ -164,6 +199,7 @@ export function formatBackfillPlan(plan: BackfillPlan, written?: number): string
   for (const note of plan.candidateNotes) lines.push(`note? ${note.file}:${note.line} ${note.text}`);
   if (plan.unrecorded > 0) lines.push(`${plan.unrecorded} existing unit(s) have unrecorded changes; poetics index records those.`);
   if (plan.tracker) lines.push(trackerLine(plan.tracker));
+  if (plan.draft) lines.push(...formatDraftReport(plan.draft));
   const { high, medium, low } = plan.byConfidence;
   const counts = `${plan.created.length} new unit(s) (${high} high, ${medium} medium, ${low} low confidence)`;
   lines.push(written === undefined ? `Would create ${counts}. Run with --write to write them.` : `Created ${counts}.`);
@@ -373,6 +409,8 @@ export interface PrehistoryPlan {
   kept: number;
   /** The issue tracker's part: used, or why its collectors were skipped. */
   tracker?: TrackerUse;
+  /** With `--draft`: what the drafter did. */
+  draft?: DraftReport;
 }
 
 /** Where `poetics backfill --history [from] [to]` walks (refs or commit ids, both optional), and whether to recover deleted exports. */
@@ -386,6 +424,8 @@ export interface PrehistoryRange {
 interface Followed {
   code: CodeUnit;
   framework: Framework;
+  /** Its source text at this point in the walk, for drafting. */
+  text: string;
   runtimeHash: Hash;
   signature: string;
   history: Version[];
@@ -408,7 +448,10 @@ interface Followed {
  * further back extends. Units first recorded after `to` are left out, since
  * prehistory that stops short of their recording could never be filled in.
  */
-export async function planPrehistory(root: string, config: PoeticsConfig, range: PrehistoryRange & TrackerOptions = {}): Promise<PrehistoryPlan> {
+export async function planPrehistory(root: string, config: PoeticsConfig, range: PrehistoryRange & TrackerOptions & DraftOptions = {}): Promise<PrehistoryPlan> {
+  const prText = await pullRequestTextAllowed(range);
+  // Each reconstructed version's draft request, built while the walk still has the code before and after.
+  const requests = new Map<Version, DraftRequest>();
   const plugins = pluginsFor(config);
   const inScope = createMatcher(config.include, config.exclude ?? []);
   const indexable = (file: string) => inScope(file) && /\.(ts|tsx|mts|cts)$/.test(file) && !file.endsWith(".d.ts");
@@ -453,6 +496,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
           return {
             code: { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: contentHash(tree), fingerprint: fingerprint(tree) },
             framework: unit.framework,
+            text: source.text.slice(unit.span.start, unit.span.end),
             runtimeHash: contentHash(contentTree(unit, true)),
             signature: signatureText(unit, source, plugins),
             history: [],
@@ -524,6 +568,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
         return {
           code: { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: contentHash(tree), fingerprint: fingerprint(tree) },
           framework: unit.framework,
+          text: source.text.slice(unit.span.start, unit.span.end),
           runtimeHash: contentHash(contentTree(unit, true)),
           signature: signatureText(unit, source, plugins),
           startLine: source.getLineAndCharacterOfPosition(unit.span.start).line + 1,
@@ -542,7 +587,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     const changed: Array<{ followed: Followed; version: Omit<Version, "inferred"> }> = [];
     // What this commit's pull requests say about each version, kept for when its confidence is computed.
     const prsOf = new Map<Omit<Version, "inferred">, ReturnType<typeof pullRequestEvidence>>();
-    const version = (parentHash: Hash | null, next: (typeof after)[number], change: ChangeClass): Omit<Version, "inferred"> => {
+    const version = (parentHash: Hash | null, next: (typeof after)[number], change: ChangeClass, was?: Followed): Omit<Version, "inferred"> => {
       const v: Omit<Version, "inferred"> = {
         contentHash: next.code.contentHash,
         parent: parentHash,
@@ -555,6 +600,20 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
       const links = dedupe([...info.issues.map((ref): Link => ({ kind: "github-issue", ref })), ...prs.links]);
       if (links.length > 0) v.links = links;
       prsOf.set(v, prs);
+      if (range.drafter) {
+        const lines = { name: next.code.name, file: next.code.file, startLine: next.startLine, endLine: next.endLine };
+        requests.set(
+          v as Version,
+          draftRequest({
+            unit: { name: next.code.name, kind: next.code.kind, file: next.code.file },
+            change,
+            commit: sha,
+            code: next.text,
+            ...(was ? { previous: was.text } : {}),
+            evidence: [...(info.body || info.subject ? [{ source: "commit" as const, ref: sha, text: info.body || info.subject, quotable: true }] : []), ...(prText ? pullRequestTexts(found, lines) : [])],
+          }),
+        );
+      }
       return v;
     };
 
@@ -563,7 +622,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     for (const match of result.matched) {
       const was = ids.get(match.uid)!;
       const now = afterByKey.get(match.key)!;
-      const followed: Followed = { ...was, code: now.code, runtimeHash: now.runtimeHash, signature: now.signature };
+      const followed: Followed = { ...was, code: now.code, text: now.text, runtimeHash: now.runtimeHash, signature: now.signature };
       if (now.code.contentHash !== was.code.contentHash && was.history.length === 0) {
         // Code that was there when the range started: its first change here opens its prehistory, as created, and a
         // walk from further back that reaches it records the same version with its real change and parent.
@@ -574,7 +633,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
       } else if (now.code.contentHash !== was.code.contentHash) {
         // Interface from the signature as written: the checker's hash would need this commit's dependencies.
         const change: ChangeClass = now.signature !== was.signature ? "interface" : now.runtimeHash === was.runtimeHash ? "cosmetic" : "behaviour";
-        const v = version(was.code.contentHash, now, change);
+        const v = version(was.code.contentHash, now, change, was);
         followed.history = [...was.history, v as Version];
         changed.push({ followed, version: v });
       }
@@ -584,7 +643,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     for (const created of [...result.created.map((c) => c.key), ...queuedKeys]) {
       const now = afterByKey.get(created)!;
       const v = version(null, now, "created");
-      const followed: Followed = { code: now.code, framework: now.framework, runtimeHash: now.runtimeHash, signature: now.signature, history: [v as Version] };
+      const followed: Followed = { code: now.code, framework: now.framework, text: now.text, runtimeHash: now.runtimeHash, signature: now.signature, history: [v as Version] };
       // A unit matching would only have queued starts afresh here; what came before is not claimed.
       if (queuedKeys.has(created)) followed.stoppedAt = { commit: sha, reason: result.queued.find((q) => q.keys.includes(created))!.reason };
       changed.push({ followed, version: v });
@@ -626,6 +685,19 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
       };
       const links = dedupe([...info.issues.map((ref): Link => ({ kind: "github-issue", ref })), ...prs.links]);
       if (links.length > 0) removed.links = links;
+      if (range.drafter) {
+        requests.set(
+          removed,
+          draftRequest({
+            unit: { name: was.code.name, kind: was.code.kind, file: was.code.file },
+            change: "removed",
+            commit: sha,
+            code: "",
+            previous: was.text,
+            evidence: [...(info.body || info.subject ? [{ source: "commit" as const, ref: sha, text: info.body || info.subject, quotable: true }] : []), ...(prText ? pullRequestTexts(found, { name: was.code.name, file: was.code.file, startLine: 0, endLine: -1 }) : [])],
+          }),
+        );
+      }
       plan.removed.push({
         uid: mintUid(),
         kind: was.code.kind,
@@ -644,6 +716,24 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     if (done.has(unit.uid)) continue;
     if (to === head) capture(unit.uid, { file: unit.location.file, name: unit.name, kind: unit.kind });
     else plan.beyond++;
+  }
+  if (range.drafter) {
+    // Only versions the plan will write are drafted.
+    const versions = [...plan.units.flatMap((entry) => entry.prehistory), ...plan.removed.flatMap((unit) => [...unit.prehistory!, unit.versions[1]!])];
+    const jobs = versions.flatMap((version) => (requests.has(version) ? [{ version, request: requests.get(version)! }] : []));
+    plan.draft = await draftVersions(jobs, range.drafter, range.draftCache ? { cacheFile: range.draftCache } : {});
+    // A recovered unit's created version is its last code, so it takes that version's drafted rationale.
+    for (const unit of plan.removed) {
+      const last = unit.prehistory!.at(-1)!;
+      unit.versions[0] = { ...last, parent: null, change: "created" };
+    }
+    // Prehistory is write-once: drafted text that would change what was recorded is left alone.
+    plan.units = plan.units.filter((entry) => {
+      const recorded = store.get(entry.uid)?.prehistory;
+      if (!recorded || extendsPrehistory(recorded, entry.prehistory)) return true;
+      plan.kept++;
+      return false;
+    });
   }
   const byPlace = (a: { file: string; name: string }, b: { file: string; name: string }) => (a.file === b.file ? (a.name < b.name ? -1 : 1) : a.file < b.file ? -1 : 1);
   plan.units.sort(byPlace);
@@ -671,6 +761,17 @@ export async function applyPrehistory(root: string, plan: PrehistoryPlan, layout
     written++;
   }
   return written;
+}
+
+/** Whether pull request text may go to the drafter: the repository is public, or `--draft-private` says so. */
+async function pullRequestTextAllowed(options: TrackerOptions & DraftOptions): Promise<boolean> {
+  if (!options.drafter || !options.tracker) return false;
+  if (options.draftPrivate) return true;
+  try {
+    return (await options.tracker.visibility?.()) === "public";
+  } catch {
+    return false;
+  }
 }
 
 /** What the tracker added, or why it added nothing. */
@@ -711,6 +812,7 @@ export function formatPrehistoryPlan(plan: PrehistoryPlan, written?: number): st
   if (plan.removed.length > 0) lines.push(`${plan.removed.length} deleted export(s) would be recovered as removed units.`.replace("would be", written === undefined ? "would be" : "were"));
   if (plan.kept > 0) lines.push(`${plan.kept} unit(s) keep the prehistory already recorded, which this walk would not extend.`);
   if (plan.tracker) lines.push(trackerLine(plan.tracker));
+  if (plan.draft) lines.push(...formatDraftReport(plan.draft));
   if (plan.beyond > 0) lines.push(`${plan.beyond} unit(s) were recorded after ${plan.range.to.slice(0, 7)}, where the range ends; walk to a later commit to reach them.`);
   lines.push(written === undefined ? `Would record ${counts}. Run with --write to record it.` : `Recorded ${counts}; ${written} unit file(s) changed.`);
   return lines.join("\n");

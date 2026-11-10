@@ -25,4 +25,6 @@ export interface IssueTracker {
   name: string;
   pullRequestsFor(commit: string): Promise<TrackedPullRequest[]>;
   reviewComments(pullRequest: number): Promise<TrackedReviewComment[]>;
+  /** Whether anyone can read the repository: its pull request text may then be drafted from (ADR 0011). Unknown counts as private. */
+  visibility?(): Promise<"public" | "private">;
 }

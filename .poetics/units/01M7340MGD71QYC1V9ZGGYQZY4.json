@@ -1,0 +1,50 @@
+{
+  "uid": "01M7340MGD71QYC1V9ZGGYQZY4",
+  "kind": "type",
+  "framework": "none",
+  "name": "DraftRequest",
+  "location": {
+    "file": "packages/cli/src/draft.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:4d66125a754bcd0b1b4b453398921ecb27493828a685fbb0b7b241f795cbbb51",
+      "interfaceHash": "b3:cba104b3f57bba3a6b24ca26f76eb05e7550c5ba5afff6e96e6e92b4f34f48cc",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The provider-neutral request a drafting command receives on stdin: protocol, instructions, the unit, its change and code before and after, numbered evidence, and the ids that may not be quoted (ADR 0017).",
+      "deps": {
+        "01M7340MGDBN3ED9QTP8YDN5MS": "b3:cd0256a28deb8d0fe6241720fedd420aa82bd14eae0dfeef4b482928ca6c9806",
+        "01M5XDBC71JDZ5ANVBKKB168EW": "b3:15b02c3dbcc5b7c1d93a89f604dbb5aa20e8b6b319338904d3189c6c1305ed69",
+        "01M5XDBC6Z8PGANPEC147TCK3S": "b3:310b05240b0bddfa9d2b156478f247c373bc198d7422bdd196ed64e36ca04387"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
+    }
+  ],
+  "docs": "One request, as the drafting command receives it on stdin.",
+  "tests": [
+    {
+      "file": "packages/cli/src/draft.test.ts",
+      "via": "static"
+    }
+  ]
+}

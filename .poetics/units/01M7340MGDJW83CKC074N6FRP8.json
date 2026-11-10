@@ -1,0 +1,49 @@
+{
+  "uid": "01M7340MGDJW83CKC074N6FRP8",
+  "kind": "function",
+  "framework": "none",
+  "name": "checkDraft",
+  "location": {
+    "file": "packages/cli/src/draft.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:b153e2790a8db0ffad24b05aaf27bf6607156013a8dd7efa191e5ef840c49b13",
+      "interfaceHash": "b3:1206f13c719642a027b5501e8e4966511799b63a60c56b538672bb0c4ce8b4ad",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The checks a draft must pass before Poetics uses it: it cites only evidence it was given, diffOnly exactly when it cites nothing, and no run of eight or more words copied from evidence it may not quote.",
+      "deps": {
+        "01M7340MGDJKCEAFAQTBHMAPJB": "b3:90be1c0e2e5f1043a7cf72bccf331f4658eb3732ebf2486c420f13ddd72e0bc5",
+        "01M7340MGD71QYC1V9ZGGYQZY4": "b3:4d66125a754bcd0b1b4b453398921ecb27493828a685fbb0b7b241f795cbbb51"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A draft Poetics can use, or why not: a rationale, citations of evidence it\nwas given, `diffOnly` exactly when it cites nothing, and no run of eight or\nmore words copied from evidence it may not quote.",
+  "tests": [
+    {
+      "file": "packages/cli/src/draft.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -95,6 +95,37 @@
           "ref": "docs/plan.md#react-ts-tsx"
         }
       ]
+    },
+    {
+      "contentHash": "b3:f04382f791d67f79900893b6db74030ac78e675b2251f687fcf757012032b781",
+      "interfaceHash": "b3:b4498c831ef69b6dee9a72788104ac543b1258013e3cccc8dd5a7112f3ddc45a",
+      "parent": "b3:194f0d956019c1f2ce35c3ba6df7bb35285b4ee68753a4bd5206339f0454aa62",
+      "change": "interface",
+      "rationale": "Adds backfill.draft: the command --draft runs and its timeout. Poetics names no model or provider; the repository chooses what drafts (ADR 0017).",
+      "deps": {
+        "01M5Z1F6N42D94MR75JZ15KF7K": "b3:d295d2a951e88c108030e57fbd4b7642daf0e7ec96d4604ea38b8d8bdc84366f",
+        "01M5Z1F6NEEP85GB1637ED9BB3": "b3:f8367fa172fac624fe8134b84bb4d8a768b6823428e6ef392789dbc505e1f5a4"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
     }
   ],
   "tests": [

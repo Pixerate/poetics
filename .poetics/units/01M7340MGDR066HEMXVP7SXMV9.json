@@ -1,0 +1,45 @@
+{
+  "uid": "01M7340MGDR066HEMXVP7SXMV9",
+  "kind": "type",
+  "framework": "none",
+  "name": "DraftReport",
+  "location": {
+    "file": "packages/cli/src/draft.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:63f93a8c0e7bd1f4a24be799b8c18d864b2bca8c9281290e5e5fa530cd834a11",
+      "interfaceHash": "b3:b17eab5055cab0b17661eafe6b672a1cc1dda8691096917ae9ce0637364dc426",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "What drafting did, for the report: drafted, answered from the cache, rejected by a check, or failed.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
+    }
+  ],
+  "docs": "What drafting did, for the report.",
+  "tests": [
+    {
+      "file": "packages/cli/src/draft.test.ts",
+      "via": "static"
+    }
+  ]
+}

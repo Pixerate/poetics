@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { IssueTracker, TrackedPullRequest, TrackedReviewComment, Unit } from "@poetics/core";
 import { checkStore, createValidator, loadSchemaSet, storePaths } from "@poetics/store";
+import type { DraftRequest, Drafter } from "./draft.ts";
 import { applyBackfill, applyPrehistory, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
 import { applyIndex, planIndex } from "./indexing.ts";
 import { runGit, write } from "./test-helpers.ts";
@@ -265,6 +266,102 @@ describe("planPrehistory", () => {
       const plan = await planPrehistory(root, CONFIG, { tracker, trackerStatus: "used" });
       expect([plan.units, plan.kept]).toEqual([[], 1]);
       expect(formatPrehistoryPlan(plan)).toContain("1 unit(s) keep the prehistory already recorded, which this walk would not extend.");
+    });
+  });
+
+  describe("with a drafter", () => {
+    /** Drafts from the first evidence it is given, and records every request. */
+    const recording = (calls: DraftRequest[]): Drafter => ({
+      id: "test",
+      async draft(request) {
+        calls.push(request);
+        const first = request.evidence[0];
+        return first ? { rationale: `Drafted for ${request.unit.name} at ${request.change}.`, cites: [first.id], diffOnly: false } : { rationale: "What changed; the reason is not recorded.", cites: [], diffOnly: true };
+      },
+    });
+    const privateTracker = (root: string, visibility: "public" | "private"): IssueTracker => {
+      const sha = runGit(root, "log", "--format=%H", "--grep=^Double each item").trim();
+      return {
+        name: "github",
+        async pullRequestsFor(commit) {
+          return commit === sha ? [{ number: 7, url: "u7", title: "Bulk orders", body: "Secret plan for the bulk discount", labels: [] }] : [];
+        },
+        async reviewComments() {
+          return [];
+        },
+        async visibility() {
+          return visibility;
+        },
+      };
+    };
+
+    it("drafts each reconstructed version from its code and evidence, and marks it drafted", async () => {
+      const root = await adoptedLate();
+      const calls: DraftRequest[] = [];
+      const plan = await planPrehistory(root, CONFIG, { drafter: recording(calls) });
+      const [created, doubled] = plan.units[0]!.prehistory;
+      expect([created!.rationale, doubled!.rationale]).toEqual(["Drafted for formatPrice at created.", "Drafted for formatPrice at behaviour."]);
+      expect(doubled!.inferred).toMatchObject({ drafted: true, confidence: "high" });
+      const request = calls.find((c) => c.change === "behaviour")!;
+      expect(request.code).toContain("sum += item * 2;");
+      expect(request.previous).toContain("sum += item;");
+      expect(request.evidence).toEqual([{ id: "e1", source: "commit", ref: doubled!.commit, text: "Double each item for bulk orders" }]);
+      expect(plan.draft).toEqual({ drafted: 2, cached: 0, rejected: [], failed: [] });
+      expect(formatPrehistoryPlan(plan)).toContain("Drafted 2 rationale(s); 0 rejected and 0 failed kept their extracted rationale.");
+    });
+
+    it("sends pull request text only for a public repository or with draftPrivate, never to be quoted", async () => {
+      const root = await adoptedLate();
+      const sent = async (visibility: "public" | "private", draftPrivate: boolean) => {
+        const calls: DraftRequest[] = [];
+        await planPrehistory(root, CONFIG, { tracker: privateTracker(root, visibility), trackerStatus: "used", drafter: recording(calls), ...(draftPrivate ? { draftPrivate } : {}) });
+        return calls.find((c) => c.change === "behaviour")!;
+      };
+      expect((await sent("private", false)).evidence.map((e) => e.source)).toEqual(["commit"]);
+      const opted = await sent("private", true);
+      expect(opted.evidence.map((e) => e.source)).toEqual(["commit", "pull-request"]);
+      expect(opted.doNotQuote).toEqual(["e2"]);
+      expect((await sent("public", false)).evidence.map((e) => e.source)).toEqual(["commit", "pull-request"]);
+    });
+
+    it("drafts snapshot units and counts confidence after drafting", async () => {
+      const root = await adopted();
+      const calls: DraftRequest[] = [];
+      const diffOnly: Drafter = {
+        id: "diff",
+        async draft(request) {
+          calls.push(request);
+          return { rationale: "What it does; the reason is not recorded.", cites: [], diffOnly: true };
+        },
+      };
+      const plan = await planBackfill(root, CONFIG, { drafter: diffOnly });
+      expect(plan.created.every(({ unit }) => unit.versions[0]!.rationale === "What it does; the reason is not recorded." && unit.versions[0]!.inferred!.drafted)).toBe(true);
+      expect(plan.byConfidence).toEqual({ high: 0, medium: 0, low: plan.created.length });
+      expect(calls[0]!.code).toMatch(/^export function /);
+      expect(formatBackfillPlan(plan)).toContain(`Drafted ${plan.created.length} rationale(s)`);
+    });
+
+    it("gives a recovered unit's created version the drafted rationale of its last change", async () => {
+      const root = await mkdtemp(join(tmpdir(), "poetics-draft-removed-"));
+      runGit(root, "init", "-q", "-b", "main");
+      await write(root, ".gitignore", ".poetics/cache/\n");
+      await write(root, "src/a.ts", TOTAL("keepMe") + TOTAL("dropMe"));
+      commit(root, "Add both");
+      await write(root, "src/a.ts", TOTAL("keepMe"));
+      commit(root, "Drop dropMe");
+      await applyBackfill(root, await planBackfill(root, CONFIG));
+      commit(root, "Adopt Poetics");
+      const plan = await planPrehistory(root, CONFIG, { includeRemoved: true, drafter: recording([]) });
+      const [unit] = plan.removed;
+      expect(unit!.versions[0]!.rationale).toBe(unit!.prehistory!.at(-1)!.rationale);
+      expect(unit!.versions[1]!.rationale).toBe("Drafted for dropMe at removed.");
+    });
+
+    it("leaves prehistory recorded without drafts alone", async () => {
+      const root = await adoptedLate();
+      expect(await applyPrehistory(root, await planPrehistory(root, CONFIG))).toBe(1);
+      const plan = await planPrehistory(root, CONFIG, { drafter: recording([]) });
+      expect([plan.units, plan.kept]).toEqual([[], 1]);
     });
   });
 

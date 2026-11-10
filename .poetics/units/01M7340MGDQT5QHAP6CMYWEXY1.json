@@ -1,0 +1,48 @@
+{
+  "uid": "01M7340MGDQT5QHAP6CMYWEXY1",
+  "kind": "function",
+  "framework": "none",
+  "name": "formatDraftReport",
+  "location": {
+    "file": "packages/cli/src/draft.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:082f279aa924409839e4abf0a93ccb27f50aecf6c86752e2fbd64b7a80de5e16",
+      "interfaceHash": "b3:1cb195922671fe1224b7ac7ce912ac095b35b784eb7626078b790aa8878fe1a4",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The drafting summary for people, with a line for each rejected or failed draft.",
+      "deps": {
+        "01M7340MGDR066HEMXVP7SXMV9": "b3:63f93a8c0e7bd1f4a24be799b8c18d864b2bca8c9281290e5e5fa530cd834a11"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
+    }
+  ],
+  "docs": "The drafting summary for people.",
+  "tests": [
+    {
+      "file": "packages/cli/src/draft.test.ts",
+      "via": "static"
+    }
+  ]
+}

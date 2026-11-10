@@ -1,0 +1,45 @@
+{
+  "uid": "01M7340MGDJKCEAFAQTBHMAPJB",
+  "kind": "type",
+  "framework": "none",
+  "name": "Draft",
+  "location": {
+    "file": "packages/cli/src/draft.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:90be1c0e2e5f1043a7cf72bccf331f4658eb3732ebf2486c420f13ddd72e0bc5",
+      "interfaceHash": "b3:41286f7e845ad70cbb84020aa26b5557201c9607e7e9d8eab525af796663f4a0",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A draft that passed Poetics' checks: rationale, the evidence ids it cites, and whether it rests on the diff alone.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A draft that passed the checks.",
+  "tests": [
+    {
+      "file": "packages/cli/src/draft.test.ts",
+      "via": "static"
+    }
+  ]
+}
