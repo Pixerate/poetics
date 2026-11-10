@@ -1,8 +1,11 @@
 import { mkdtemp, readdir, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { Unit } from "@poetics/core";
+import { checkStore, createValidator, loadSchemaSet, storePaths } from "@poetics/store";
 import { applyBackfill, applyPrehistory, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
 import { applyIndex, planIndex } from "./indexing.ts";
 import { runGit, write } from "./test-helpers.ts";
@@ -196,6 +199,89 @@ describe("planPrehistory", () => {
     const root = await adoptedLate();
     expect(formatPrehistoryPlan(await planPrehistory(root, CONFIG))).toMatch(/^src\/money\.ts#formatAmount: 2 version\(s\) back to [0-9a-f]{7}\nWould record 2 version\(s\) of prehistory for 1 unit\(s\), from 4 commit\(s\)\./);
   });
+  describe("with includeRemoved", () => {
+    const DISCOUNT = (rate: string) => `export function applyDiscount(price: number, code: string): number {\n  if (code.length === 0) return price;\n  const off = Math.round(price * ${rate});\n  for (let i = 0; i < code.length; i++) {\n    if (code[i] === "x") return price;\n  }\n  return price - off;\n}\n`;
+    const sha = (root: string, subject: string) => runGit(root, "log", "--format=%H", `--grep=${subject}`).trim();
+    const SCHEMAS = resolve(dirname(fileURLToPath(import.meta.url)), "../../../schemas");
+
+    /** formatPrice lives on; applyDiscount is added, changed and deleted, all before Poetics is adopted. */
+    async function deletedBeforeAdoption(): Promise<string> {
+      const root = await mkdtemp(join(tmpdir(), "poetics-prehistory-removed-"));
+      runGit(root, "init", "-q", "-b", "main");
+      await write(root, ".gitignore", ".poetics/cache/\n");
+      await write(root, ".poetics/config.json", JSON.stringify({ version: 1, adapters: ["typescript"], ...CONFIG }));
+      await write(root, "src/price.ts", TOTAL("formatPrice"));
+      await write(root, "src/discount.ts", DISCOUNT("0.1"));
+      commit(root, "Add pricing");
+      await write(root, "src/discount.ts", DISCOUNT("0.15"));
+      commit(root, "Raise the discount (#7)");
+      await write(root, "src/discount.ts", "");
+      commit(root, "Drop applyDiscount: coupons replace it");
+      await applyBackfill(root, await planBackfill(root, CONFIG));
+      commit(root, "Adopt Poetics");
+      return root;
+    }
+
+    it("recovers an export deleted before adoption as a removed unit with its history", async () => {
+      const root = await deletedBeforeAdoption();
+      expect((await planPrehistory(root, CONFIG)).removed).toEqual([]);
+      const plan = await planPrehistory(root, CONFIG, { includeRemoved: true });
+      expect(plan.removed).toHaveLength(1);
+      const [unit] = plan.removed;
+      expect(unit).toMatchObject({ kind: "function", framework: "none", name: "applyDiscount", location: { file: "src/discount.ts" } });
+      expect(unit!.prehistory!.map((v) => [v.change, v.commit])).toEqual([
+        ["created", sha(root, "Add pricing")],
+        ["behaviour", sha(root, "Raise the discount")],
+      ]);
+      const [created, removed] = unit!.versions;
+      expect(created).toMatchObject({ ...unit!.prehistory![1], parent: null, change: "created" });
+      expect(removed).toEqual({
+        contentHash: REMOVED_CONTENT_HASH,
+        provisional: true,
+        parent: created!.contentHash,
+        change: "removed",
+        commit: sha(root, "Drop applyDiscount"),
+        actor: { kind: "human" },
+        rationale: "Drop applyDiscount: coupons replace it",
+        inferred: { by: "poetics-backfill", confidence: "high", sources: ["commit"], drafted: false, reviewed: false },
+      });
+    });
+
+    it("writes recovered units the store accepts, and finds nothing new on a rerun", async () => {
+      const root = await deletedBeforeAdoption();
+      // formatPrice's prehistory, and the recovered applyDiscount.
+      expect(await applyPrehistory(root, await planPrehistory(root, CONFIG, { includeRemoved: true }))).toBe(2);
+      const result = await checkStore(storePaths(root), createValidator(await loadSchemaSet(SCHEMAS)));
+      expect(result.problems.filter((p) => p.severity === "error")).toEqual([]);
+      expect((await planPrehistory(root, CONFIG, { includeRemoved: true })).removed).toEqual([]);
+      commit(root, "Record the recovered unit");
+      expect((await planPrehistory(root, CONFIG, { includeRemoved: true })).removed).toEqual([]);
+    });
+
+    it("leaves code deleted after its unit file was committed to poetics index", async () => {
+      for (const together of [false, true]) {
+        const root = await mkdtemp(join(tmpdir(), "poetics-prehistory-recorded-"));
+        runGit(root, "init", "-q", "-b", "main");
+        await write(root, ".gitignore", ".poetics/cache/\n");
+        await write(root, "src/discount.ts", DISCOUNT("0.1"));
+        // Recorded in a later commit, or in the same commit as the code.
+        if (!together) commit(root, "Add applyDiscount");
+        await applyBackfill(root, await planBackfill(root, CONFIG));
+        commit(root, "Adopt Poetics");
+        await write(root, "src/discount.ts", "");
+        commit(root, "Drop applyDiscount");
+        expect((await planPrehistory(root, CONFIG, { includeRemoved: true })).removed).toEqual([]);
+      }
+    });
+
+    it("lists recovered deletions for people", async () => {
+      const root = await deletedBeforeAdoption();
+      const text = formatPrehistoryPlan(await planPrehistory(root, CONFIG, { includeRemoved: true }));
+      expect(text).toMatch(/^- src\/discount\.ts#applyDiscount: deleted in [0-9a-f]{7} \[high\], 2 version\(s\) before; Drop applyDiscount: coupons replace it$/m);
+      expect(text).toContain("1 deleted export(s) would be recovered as removed units.");
+    });
+  });
+
   describe("over a range", () => {
     const sha = (root: string, subject: string) => runGit(root, "log", "--format=%H", `--grep=${subject}`).trim();
 

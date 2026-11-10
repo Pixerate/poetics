@@ -36,7 +36,11 @@ It never writes to a unit that has a file.
    there "stops at" its first change in the range until a walk from further
    back extends it. `--history <from> <to>` also ends at `<to>`; units
    recorded after `<to>` are left out rather than given a prehistory that
-   stops short.
+   stops short. Add `--include-removed` to recover exports deleted before
+   anyone recorded them: each becomes a unit file with its prehistory, a
+   `created` version for the code as it last was, and a `removed` version
+   from the commit that deleted it. Check the "deleted in" lines: a unit
+   replaced rather than dropped should link to its successor (ADR 0010).
 5. **Act on the gaps:** add the listed docs and test links to the unit files,
    record candidate notes with `poetics-gotcha` if they hold, and run
    `pnpm poetics index` for existing units with unrecorded changes.

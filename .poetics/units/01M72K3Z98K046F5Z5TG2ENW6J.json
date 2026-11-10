@@ -29,7 +29,44 @@
           "ref": "docs/decisions/0011-backfill.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:b347a8e17209dd29dbcb18d2881475dabd0a312bba7a68845385abf30d4f0bed",
+      "interfaceHash": "b3:777e87dc58fb0e39d46edd1331e673d26beeed154dc1ab30785180a8d7b53c61",
+      "parent": "b3:bce2617401278d843ad511afd4ae5fc4e1bcde3f281f675b6bd7fb76b4fb9ec6",
+      "change": "interface",
+      "rationale": "Adds includeRemoved, the --include-removed option ADR 0011 gives history mode.",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0010-removed-versions.md"
+        }
+      ]
     }
   ],
-  "docs": "Where `poetics backfill --history [from] [to]` walks: refs or commit ids, both optional."
+  "docs": "Where `poetics backfill --history [from] [to]` walks: refs or commit ids, both optional.",
+  "tests": [
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/run.test.ts",
+      "via": "static"
+    }
+  ]
 }

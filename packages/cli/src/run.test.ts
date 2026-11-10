@@ -289,6 +289,8 @@ describe("poetics CLI", () => {
       expect(JSON.parse((await execIn(root, "backfill", "--json")).err)).toMatchObject({ error: "usage", command: "backfill" });
       expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "--history", "--json")).err)).toMatchObject({ error: "usage" });
       expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "HEAD", "--json")).err)).toMatchObject({ error: "usage" });
+      expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "--include-removed", "--json")).err)).toMatchObject({ error: "usage" });
+      expect(await execIn(root, "backfill", "--history", "--include-removed")).toMatchObject({ code: 0 });
       expect(JSON.parse((await execIn(root, "backfill", "--history", "a", "b", "c", "--json")).err)).toMatchObject({ error: "usage" });
       expect(await execIn(root, "backfill", "--history", "no-such-ref")).toMatchObject({ code: 2, err: "The repository has no commits to walk a range of" });
       // No commits yet, so there is no history to reconstruct.

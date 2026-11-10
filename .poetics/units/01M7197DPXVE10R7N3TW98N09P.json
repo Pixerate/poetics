@@ -59,6 +59,36 @@
           "ref": "docs/decisions/0011-backfill.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:fa5120953c9b030761e4bd4bb89ff63e1873862cc2a6cbf2045dedfdf2867752",
+      "interfaceHash": "b3:a7817e5a23ebc5acdef3c48c64c67186dc0102af71bd3c9696ce91de1273b1de",
+      "parent": "b3:6d03ee83146a7d1b395fb60dfbe844d684d0f1ec48f52e25eb7c4ef0f8eb054b",
+      "change": "behaviour",
+      "rationale": "Lists each recovered deletion with the commit that deleted it, its confidence, how much history came before and the deleting commit's subject, so a reviewer can link replacements to their successors.",
+      "deps": {
+        "01M7197DPXAMAVSVKWE6Z73DXD": "b3:abb879204494b20e46e19dfc7949fb97ef8d13b43c25a1c9cc92c0cbd5675666"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0010-removed-versions.md"
+        }
+      ]
     }
   ],
   "docs": "The prehistory plan for people: one line per unit with how far back it reaches, then a summary.",
