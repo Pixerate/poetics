@@ -23,6 +23,11 @@ interfaces and edges; anything else may become an unresolved edge.
   return type (`ReactNode`, `ReactElement`, `JSX.Element`), annotate its
   variable as `FC`, or cast what it returns (`children as ReactElement`).
   Otherwise it is recorded as a plain function.
+- **Class components** extend `Component` or `PureComponent` (bare or as
+  `React.Component`) and pass their props type as the first type argument:
+  `class Counter extends Component<CounterProps, CounterState>`. The props
+  type and `static defaultProps` are the interface; state is not. Prefer a
+  function component for new code.
 - **Avoid hiding what renders:** components chosen from a map, render props and
   higher-order components become unresolved edges. Prefer explicit JSX where
   you can, and when you cannot, say so in the rationale.

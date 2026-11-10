@@ -69,6 +69,30 @@
           "ref": "docs/plan.md#react-ts-tsx"
         }
       ]
+    },
+    {
+      "contentHash": "b3:69ed0e558ba6f71566457e3f25b487d147a908548e3d499e03b0965286456aba",
+      "interfaceHash": "b3:46382b7702fbd8dc243f4497240eb3b49d0d16b012ba9cc8adf3f411c0501cef",
+      "parent": "b3:4791c4a21120ac45a24334f83277a4f8f8071a863395250159d72803671d3c99",
+      "change": "behaviour",
+      "rationale": "Reads exported class declarations and keeps one only when a plugin claims it: plain classes have no unit kind yet, so they stay untracked as before.",
+      "deps": {
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:9f75b78c92b3d14a08c17793a2138144f9ec807b8a930ccbea497edb96f4ac2a",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:411eb6ed3f7c99d3c5178036bb74e666502d1138061036b0355c454b1463d068",
+        "01M5XDBC6Z8PGANPEC147TCK3S": "b3:4c3726650f8e2221205ac1514448a07cd31203d53a90a8324d689b3ca2031781"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md"
+        }
+      ]
     }
   ],
   "docs": "Exported functions, hooks, interfaces and type aliases declared in a source file, in source order.",

@@ -42,6 +42,14 @@ describe("detectUnits", () => {
     expect(units.map((u) => u.key)).toContain("src/a.ts#formatPrice");
   });
 
+  it("tracks an exported class only when a plugin claims it", () => {
+    const code = `export class Store { items: string[] = []; }\nclass Hidden {}\nexport { Hidden };\nexport class Widget extends Base { render() { return 1; } }`;
+    expect(detect(code)).toEqual([]);
+    const claimsWidgets = { framework: "react" as const, claim: (unit: { name: string }) => (unit.name === "Widget" ? ("component" as const) : undefined) };
+    const units = detectUnits(ts.createSourceFile("src/a.ts", code, ts.ScriptTarget.Latest, true), "src/a.ts", [claimsWidgets]);
+    expect(units.map((u) => [u.name, u.kind, u.framework, ts.isClassDeclaration(u.declarations[0]!)])).toEqual([["Widget", "component", "react", true]]);
+  });
+
   it("names a default export after its declaration", () => {
     expect(detect(`export default function main() {}`).map((u) => [u.name, u.exportedAs])).toEqual([["main", "default"]]);
     expect(detect(`function main() {}\nexport default main;`).map((u) => [u.name, u.exportedAs])).toEqual([["main", "default"]]);

@@ -77,8 +77,8 @@ describe("reactPlugin on the React fixture", () => {
 });
 
 describe("reactPlugin version", () => {
-  it("is 2 since components that render without JSX, so caches indexed with older rules are not reused", () => {
-    expect(reactPlugin().version).toBe(2);
+  it("is 3 since class components, so caches indexed with older rules are not reused", () => {
+    expect(reactPlugin().version).toBe(3);
   });
 });
 
@@ -152,6 +152,53 @@ describe("reactPlugin on other shapes", () => {
       ["Cast", "function"],
       ["Builder", "function"],
     ]);
+  });
+
+  it("claims classes that extend Component or PureComponent, and leaves other classes out", () => {
+    const units = project({
+      "src/a.tsx": [
+        `import * as React from "react";`,
+        `import { Component, PureComponent } from "react";`,
+        `import { PriceTag } from "./b.tsx";`,
+        `type CounterProps = { start: number; label?: string };`,
+        `/** Counts clicks. */`,
+        `export class Counter extends Component<CounterProps, { n: number }> {`,
+        `  static defaultProps = { label: "Clicks" };`,
+        `  state = { n: this.props.start };`,
+        `  render() { return <button onClick={() => this.setState({ n: this.state.n + 1 })}><PriceTag amount={this.state.n} /></button>; }`,
+        `}`,
+        `export class Banner extends React.PureComponent { render() { return null; } }`,
+        `export default class extends React.Component<{ id: string }> { render() { return <p>{this.props.id}</p>; } }`,
+        `export class Store { items: string[] = []; }`,
+        `export class Fancy extends Error {}`,
+      ].join("\n"),
+      "src/b.tsx": `export function PriceTag({ amount }: { amount: number }) { return <b>{amount}</b>; }`,
+    });
+    expect([...units.values()].map((u) => [u.name, u.kind, u.framework, u.exportedAs])).toEqual([
+      ["Counter", "component", "react", undefined],
+      ["Banner", "component", "react", undefined],
+      ["default", "component", "react", undefined],
+      ["PriceTag", "component", "react", undefined],
+    ]);
+    const counter = units.get("Counter")!;
+    expect(counter.docs).toBe("Counts clicks.");
+    expect(counter.signature).toEqual({
+      kind: "component",
+      props: { written: ["TypeReference", ["Identifier", "CounterProps"]] },
+      defaults: [{ name: "label", value: ["StringLiteral", "Clicks"] }],
+    });
+    expect(counter.signatureText).toBe("export class Counter extends Component<CounterProps, { n: number }>");
+    expect(counter.edges).toEqual([{ to: "src/b.tsx#PriceTag", kind: "renders" }]);
+    expect(units.get("Banner")!.signature).toEqual({ kind: "component", props: null, defaults: [] });
+  });
+
+  it("changes a class component's interface hash with its props or defaults, not with its state or render", () => {
+    const hash = (props: string, fallback: string, render: string) =>
+      project({ "src/a.tsx": `import { Component } from "react";\nexport class Badge extends Component<${props}, { open: boolean }> {\n  static defaultProps = { tone: "${fallback}" };\n  render() { return <b>${render}</b>; }\n}` }).get("Badge")!.interfaceHash;
+    const base = hash("{ tone?: string }", "info", "a");
+    expect(hash("{ tone?: string }", "info", "b")).toBe(base);
+    expect(hash("{ tone?: string }", "warn", "a")).not.toBe(base);
+    expect(hash("{ tone?: string; size?: number }", "info", "a")).not.toBe(base);
   });
 
   it("changes the interface hash with a default prop value, not with the body", () => {

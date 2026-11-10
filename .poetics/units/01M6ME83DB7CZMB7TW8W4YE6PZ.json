@@ -64,6 +64,34 @@
           "url": "https://github.com/Pixerate/poetics/pull/52"
         }
       ]
+    },
+    {
+      "contentHash": "b3:87d0950337c223222097d58da639260774977dbc6533bcc609c160973706aeb3",
+      "interfaceHash": "b3:09a459cba2bcc451812415b0b4e824a76afc8de4e3e96986f4b1b343c95ca90d",
+      "parent": "b3:c83c948bb82f1c81b682f5040dfbeac30990895bbe7b2deeba5bb8311ea4aa83",
+      "change": "behaviour",
+      "rationale": "Claims classes that extend Component or PureComponent (bare or as React.X) as components, as the plan's component detection asks. Their interface is the props type argument and static defaultProps; state and render are not. Version 3 so caches from the old rules are reindexed.",
+      "deps": {
+        "01M5Z1F6MNAJMKR5JCPRBW61V7": "b3:2b0e68e3349a3d76fbf48020cecb752ffd5494b458c75435279955b960c14b40",
+        "01M5Z1F6MMTSKKRPPQ28SCNTV8": "b3:ea506a05fac47cd91ef0cb3cd8147f2e33b3bffd1b9cf88db83628604f916e21",
+        "01M6HNRFMKY02B40EEEAPZ66BP": "b3:30556d396c90f369fc9496e82b92c4e327d78359c0bda51c36d33639523c8d2d",
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:9f75b78c92b3d14a08c17793a2138144f9ec807b8a930ccbea497edb96f4ac2a",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:411eb6ed3f7c99d3c5178036bb74e666502d1138061036b0355c454b1463d068",
+        "01M6HNRFMKWZ43X614N1PYFS0S": "b3:e01e1cd4c9a1183568f3cc96e3b3d5317f6c6470bb703787bd2739f376b28b53",
+        "01M6ME83DBQ587PPY9D0A4T6M3": "b3:ce113f0c9f1166b5261da3b08b781439dc518d14c3fefab1b573426cb57b0cf6"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md"
+        }
+      ]
     }
   ],
   "docs": "React's part of the TypeScript indexer: it sees through `memo`, `forwardRef`\nand `lazy`, claims PascalCase functions that return JSX (or are wrapped) as\ncomponents and `use*` functions as hooks, gives components their props as\nan interface, and records a JSX tag as a `renders` edge.",
