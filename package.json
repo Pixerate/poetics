@@ -32,7 +32,8 @@
     "site:dev": "pnpm --filter @poetics/site dev",
     "site:build": "pnpm --filter @poetics/site build",
     "site:data": "node --conditions=poetics-source scripts/export-site-data.ts",
-    "gate": "node --conditions=poetics-source scripts/gate.ts"
+    "gate": "node --conditions=poetics-source scripts/gate.ts",
+    "eval:backfill": "node --conditions=poetics-source scripts/backfill-eval.ts"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^1.0.1",

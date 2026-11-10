@@ -44,6 +44,7 @@ pnpm install
 | `pnpm poetics hash <file>[#name] [--json]` | The indexer's `contentHash` and `interfaceHash` for a file's units, for a hand-written version |
 | `pnpm poetics rehash [--write] [--agent <tool> [--model <id>]]` | Append `rehash` versions replacing provisional `git:` hashes with `b3:` ones ([ADR 0014](decisions/0014-rehash-versions.md)); a dry run without `--write`, exit 1 if any unit has unrecorded changes |
 | `pnpm gate [--fetch] [--rounds N] [--seed N] [--only name] [--adapters a,b]` | The identity gate (phases 1 and 2): scripted refactors, including `memo` wraps of React components, on pinned real repositories, recorded by `poetics index` and checked uid by uid; writes `evals/gate/results.md` ([evals/gate](../evals/gate/README.md)). `--fetch` downloads the corpus first |
+| `pnpm eval:backfill [--draft]` | The backfill eval (#16): runs the snapshot backfill on a clone of this repository with its unit files removed and scores each inferred rationale against the one recorded in the same commit; writes `evals/backfill/results.md` ([evals/backfill](../evals/backfill/README.md)). `--draft` drafts through `backfill.draft.command` |
 | `pnpm changeset` | Describe a change for the next release |
 
 Run the demo site (Poetics on this repository) in a browser:

@@ -1,0 +1,37 @@
+{
+  "uid": "01M7355N2556376W96SGPB755S",
+  "kind": "type",
+  "framework": "none",
+  "name": "BackfillEvalResult",
+  "location": {
+    "file": "scripts/lib/backfill-eval.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:22b94b77d6f0a20d198b23bbd02428e9648b3ef47060f1e3bebe6e0b61b84f46",
+      "interfaceHash": "b3:8ac5a4e091ac3d8b894d674b030acdbd7f55faecb616beac24cfaa6feb3bb80f",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "What one backfill eval run found: how many units were recorded and inferred, the pairs compared, and how many could not be paired or had no evidence.",
+      "deps": {
+        "01M7355N252PBQGPR5VT2N67RW": "b3:3b6425042a2db0b9bb3664f3871e2f81dc5dbc21ebe812d0d72091568e09e1a2"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ]
+    }
+  ]
+}
