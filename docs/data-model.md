@@ -29,7 +29,7 @@ closure version changes when any function it uses changes.
 | `rationale` | Why this unit changed, citing its source |
 | `links` | URLs or typed references `{ kind, ref, url? }` — never issue content |
 | `deps` | `uid → contentHash` of each dependency when this version was captured |
-| `inferred` | Set only when `poetics backfill` inferred the rationale from evidence instead of anyone recording it: `{ by, confidence, sources, drafted, reviewed }`. `confidence` (`high`, `medium`, `low`) is computed from how specifically the evidence speaks to this unit ([ADR 0011](decisions/0011-backfill.md)) |
+| `inferred` | Set only when `poetics backfill` inferred the rationale from evidence instead of anyone recording it: `{ by, confidence, sources, drafted, reviewed }`. `confidence` (`high`, `medium`, `low`) is computed from how specifically the evidence speaks to this unit ([ADR 0011](decisions/0011-backfill.md), [ADR 0018](decisions/0018-backfill-confidence-is-unit-specific.md)) |
 | `prehistory` (on the unit) | Versions from before the unit was first recorded, reconstructed from git by `poetics backfill --history` and each marked `inferred`, oldest first. `created` first, a parent chain of its own, never `removed` or `rehash`, and every entry has a `commit`: it is joined to `versions` by commit, not by `parent`. Write-once: it may only be extended further back, when its old first entry alone may gain a parent and a change class ([ADR 0011](decisions/0011-backfill.md)) |
 
 Human authorship and dates come from git. Agent provenance is stored because git

@@ -50,6 +50,39 @@ evidence it used.
 - The furthest pairs are types and helpers added inside a large first commit
   whose message describes a whole feature, such as the demo site's types.
 
+## Confidence revised (2026-11-10, ADR 0018)
+
+The finding above led to [ADR 0018](../../docs/decisions/0018-backfill-confidence-is-unit-specific.md):
+naming a unit no longer makes a version `high`; a reason with evidence about
+this unit alone does (a commit that introduced nothing else, a review comment
+on its lines, or the unit's own doc comment in snapshot mode). The rationale
+text is unchanged, so only the split by confidence moves. Both runs are on the
+same corpus, at `7372c64` (311 pairs):
+
+| Rule | Confidence | Pairs | Mean recall | Mean overlap | Recall ≥ 50% |
+| --- | --- | --- | --- | --- | --- |
+| Before: naming the unit gives `high` | high | 35 | 28% | 12% | 11% |
+| | medium | 276 | 30% | 9% | 20% |
+| After: evidence about this unit alone gives `high` | high | 190 | 32% | 10% | 24% |
+| | medium | 121 | 25% | 8% | 12% |
+
+- `high` now agrees better than `medium` on recall (32% against 25%) and
+  doubles the share recovering half the recorded wording (24% against 12%).
+  Overlap barely moves: the rationale is still the change's text, shared with
+  other units.
+- What the evidence was checked against: among the changesets that named the
+  unit, those naming more than two other units from the same commit scored
+  18% recall; using only the sentence that names the unit scored 9%. Neither
+  was turned into a rule.
+- The gain is mostly from the doc comment, which almost every export here has
+  because this repository requires TSDoc. On a repository with little TSDoc,
+  most versions will be `medium`. Versions whose rationale was a bare commit
+  message scored about 18% whatever their confidence.
+- The doc comment itself agrees better than the changeset: as the rationale
+  of the 189 units that have one, it scores 25% overlap against 10%. Leading
+  the extracted rationale with it would change what rationale says, not how
+  sure it is, and is left for its own decision.
+
 ## What this eval cannot say yet
 
 - **The recorded rationale is not human ground truth.** All 303 recorded

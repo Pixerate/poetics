@@ -1,0 +1,44 @@
+{
+  "uid": "01M7361PJ0CYVYTC42Q475YDD1",
+  "kind": "function",
+  "framework": "none",
+  "name": "confidenceOf",
+  "location": {
+    "file": "packages/cli/src/backfill.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:6286dc7262ab80813b9b75afac69172f5e8734933d38a520af7467512c942fad",
+      "interfaceHash": "b3:702657860957febe33eec44c31b810bfdf8d5db731d0d38c20807e2cc151f224",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "One rule for both backfill modes: a reason with evidence about this unit alone is high, a reason shared with other units is medium even when it names this unit, and no reason is low (ADR 0018).",
+      "deps": {
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582"
+      },
+      "links": [
+        {
+          "kind": "doc",
+          "ref": "docs/decisions/0018-backfill-confidence-is-unit-specific.md"
+        },
+        {
+          "kind": "doc",
+          "ref": "evals/backfill/README.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Confidence from how specifically the evidence speaks to one unit (ADR 0018): `high` when a reason comes with\nevidence about this unit alone, `medium` when the reason is shared with other units, even one that names this\nunit, and `low` with no reason at all.",
+  "tests": [
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    }
+  ]
+}

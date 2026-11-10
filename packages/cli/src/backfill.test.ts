@@ -7,11 +7,13 @@ import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { IssueTracker, TrackedPullRequest, TrackedReviewComment, Unit } from "@poetics/core";
 import { checkStore, createValidator, loadSchemaSet, storePaths } from "@poetics/store";
 import type { DraftRequest, Drafter } from "./draft.ts";
-import { applyBackfill, applyPrehistory, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
+import { applyBackfill, applyPrehistory, confidenceOf, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
 import { applyIndex, planIndex } from "./indexing.ts";
 import { runGit, write } from "./test-helpers.ts";
 
 const CONFIG = { include: ["src/**/*.ts"], exclude: ["**/*.test.ts"] };
+// Each test builds a git repository and indexes it, which can pass Vitest's 5s default when the whole suite runs at once.
+const GIT_TIMEOUT_MS = 30_000;
 
 const commit = (root: string, message: string) => {
   runGit(root, "add", "-A");
@@ -43,7 +45,7 @@ async function adopted(): Promise<string> {
 
 const byName = (plan: Awaited<ReturnType<typeof planBackfill>>) => new Map(plan.created.map(({ unit }) => [unit.name, unit]));
 
-describe("planBackfill", () => {
+describe("planBackfill", { timeout: GIT_TIMEOUT_MS }, () => {
   it("infers each new unit's rationale from the most specific evidence, with a computed confidence", async () => {
     const root = await adopted();
     const plan = await planBackfill(root, CONFIG);
@@ -63,7 +65,7 @@ describe("planBackfill", () => {
     });
     // The same commit introduced both, so its text speaks to neither in particular.
     expect(units.get("one")!.versions[0]).toMatchObject({ rationale: "initial import", actor: { kind: "human" }, inferred: { confidence: "medium" } });
-    // The changeset names taxOf, so it speaks to this unit, not only to its package.
+    // The commit introduced taxOf alone, so its changeset speaks to this unit, not only to its package.
     expect(units.get("taxOf")!.versions[0]).toMatchObject({
       rationale: "Add taxOf so totals can show VAT separately.",
       links: [{ kind: "changeset", ref: ".changeset/tax.md" }],
@@ -81,6 +83,26 @@ describe("planBackfill", () => {
     await write(root, ".changeset/fees.md", '---\n"@x/pkg": patch\n---\n\nCharge a card fee.\n');
     commit(root, "feat: fees");
     expect(byName(await planBackfill(root, CONFIG)).get("feeOf")!.versions[0]).toMatchObject({ rationale: "Charge a card fee.", inferred: { confidence: "medium" } });
+  });
+
+  it("treats a changeset that names the unit among others as speaking to the whole change", async () => {
+    const root = await adopted();
+    await write(root, "src/cart.ts", "export function cartTotal() {\n  return 0;\n}\nexport function cartCount() {\n  return 0;\n}\n");
+    await write(root, ".changeset/cart.md", '---\n"@x/pkg": minor\n---\n\nAdd a cart: `cartTotal` sums it and `cartCount` counts it.\n');
+    commit(root, "feat: cart");
+    const units = byName(await planBackfill(root, CONFIG));
+    expect(units.get("cartTotal")!.versions[0]).toMatchObject({ rationale: expect.stringContaining("cartTotal"), inferred: { confidence: "medium", sources: ["changeset", "commit"] } });
+    expect(units.get("cartCount")!.versions[0]!.inferred!.confidence).toBe("medium");
+  });
+
+  it("counts the unit's own doc comment as speaking to it when the change's text is shared", async () => {
+    const root = await adopted();
+    await write(root, "src/count.ts", "/** Counts items, skipping empty ones. */\nexport function countOf() {\n  return 1;\n}\nexport function sizeOf() {\n  return 2;\n}\n");
+    commit(root, "feat: counting");
+    const units = byName(await planBackfill(root, CONFIG));
+    // The commit's text stays the rationale: the doc comment raises confidence without replacing the reason.
+    expect(units.get("countOf")!.versions[0]).toMatchObject({ rationale: "counting", inferred: { confidence: "high", sources: ["commit", "comment"] } });
+    expect(units.get("sizeOf")!.versions[0]).toMatchObject({ rationale: "counting", inferred: { confidence: "medium", sources: ["commit"] } });
   });
 
   it("never stores author names or emails", async () => {
@@ -116,7 +138,16 @@ describe("planBackfill", () => {
   });
 });
 
-describe("formatBackfillPlan", () => {
+describe("confidenceOf", () => {
+  it("is high for a reason with evidence about this unit alone, medium for a shared reason, and low with no reason", () => {
+    expect(confidenceOf({ reason: true, specific: true })).toBe("high");
+    expect(confidenceOf({ reason: true, specific: false })).toBe("medium");
+    expect(confidenceOf({ reason: false, specific: true })).toBe("low");
+    expect(confidenceOf({ reason: false, specific: false })).toBe("low");
+  });
+});
+
+describe("formatBackfillPlan", { timeout: GIT_TIMEOUT_MS }, () => {
   it("lists new units with their confidence, then what to add by hand, then a summary", async () => {
     const root = await adopted();
     const text = formatBackfillPlan(await planBackfill(root, CONFIG));
@@ -132,7 +163,7 @@ describe("formatBackfillPlan", () => {
   });
 });
 
-describe("planPrehistory", () => {
+describe("planPrehistory", { timeout: GIT_TIMEOUT_MS }, () => {
   const TOTAL = (name: string) => `export function ${name}(items: number[], rate: number): number {\n  let sum = 0;\n  for (const item of items) {\n    if (item <= 0) continue;\n    sum += item;\n  }\n  return sum + Math.round(sum * rate * 100) / 100;\n}\n`;
 
   /** A repo with history, then adopted: the snapshot's unit files are committed last. */
@@ -230,6 +261,25 @@ describe("planPrehistory", () => {
       expect(JSON.stringify(plan)).not.toContain("doubles for bulk");
       expect(plan.tracker).toEqual({ name: "github", status: "used", pullRequests: 1 });
       expect(formatPrehistoryPlan(plan)).toContain("GitHub: linked 1 pull request(s).");
+    });
+
+    it("keeps a commit or pull request that names the unit among others it changed at medium", async () => {
+      const root = await mkdtemp(join(tmpdir(), "poetics-prehistory-shared-"));
+      runGit(root, "init", "-q", "-b", "main");
+      await write(root, ".gitignore", ".poetics/cache/\n");
+      await write(root, "src/cart.ts", TOTAL("total") + TOTAL("subtotal").replace("let sum = 0;", "let sum = 1;"));
+      commit(root, "Add totals");
+      await write(root, "src/cart.ts", TOTAL("total").replace("sum += item;", "sum += item * 2;") + TOTAL("subtotal").replace("let sum = 0;", "let sum = 1;").replace("sum += item;", "sum += item * 3;"));
+      commit(root, "Scale total for bulk orders, and subtotal with it");
+      await applyBackfill(root, await planBackfill(root, CONFIG));
+      commit(root, "Adopt Poetics");
+      const tracker = trackerFor(root, "Scale total", { title: "Scale total", body: "" });
+      const plan = await planPrehistory(root, CONFIG, { tracker, trackerStatus: "used" });
+      const total = plan.units.find((u) => u.name === "total")!;
+      expect(total.prehistory.map((v) => [v.change, v.inferred!.confidence])).toEqual([
+        ["created", "medium"],
+        ["behaviour", "medium"],
+      ]);
     });
 
     it("counts a review comment on the unit's lines in that commit as speaking to it", async () => {

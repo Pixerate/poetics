@@ -1,9 +1,9 @@
 {
   "date": "2026-11-10",
-  "commit": "0ca3b0e45732d4ca35b418241a05db9c1340a482",
+  "commit": "7372c64aaa3344af1777d8d8546033b157e09f92",
   "drafted": false,
-  "recorded": 314,
-  "inferred": 314,
+  "recorded": 322,
+  "inferred": 322,
   "pairs": [
     {
       "unit": "packages/adapter-react/src/index.ts#createReactAdapter",
@@ -81,7 +81,7 @@
     {
       "unit": "packages/adapter-typescript/src/indexer.ts#IndexedUnit",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -131,7 +131,7 @@
     {
       "unit": "packages/adapter-typescript/src/indexer.ts#createTypeScriptIndexer",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -149,7 +149,7 @@
     {
       "unit": "packages/adapter-typescript/src/normalise.ts#NormalTree",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -201,7 +201,7 @@
     {
       "unit": "packages/adapter-typescript/src/normalise.ts#normaliseNode",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -235,7 +235,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#DetectedUnit",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -270,7 +270,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#IndexedEdge",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -303,7 +303,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#Signature",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -320,7 +320,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#TypeText",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -337,7 +337,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#UnresolvedUse",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -354,7 +354,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#contentTree",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -372,7 +372,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#detectUnits",
       "commit": "5fa1e892c4b4f4e3a52f47770beedfae91c9b07a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -391,7 +391,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#edgesOf",
       "commit": "e47a3d42e5dfc25a8e17e58735b10a528c62b509",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -409,7 +409,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#signatureOf",
       "commit": "5fa1e892c4b4f4e3a52f47770beedfae91c9b07a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -427,7 +427,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#signatureText",
       "commit": "5fa1e892c4b4f4e3a52f47770beedfae91c9b07a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -445,7 +445,7 @@
     {
       "unit": "packages/adapter-typescript/src/units.ts#typeText",
       "commit": "5fa1e892c4b4f4e3a52f47770beedfae91c9b07a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -479,7 +479,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#DraftOptions",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -496,7 +496,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#Evidence",
       "commit": "25a021942e58edb41a3569379b9f4277f8316962",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -513,7 +513,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#PrehistoryEntry",
       "commit": "4d52ae2cf980b9e22ff2a02dbd2879b4c8aaa0dc",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -547,7 +547,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#PrehistoryRange",
       "commit": "b51bfccffada77132919a630e5101da136c45459",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -564,7 +564,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#TrackerOptions",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -581,7 +581,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#applyBackfill",
       "commit": "25a021942e58edb41a3569379b9f4277f8316962",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -599,7 +599,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#applyPrehistory",
       "commit": "72534039979cba5cb462cf20511bdd12c3b01c02",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -617,7 +617,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#formatBackfillPlan",
       "commit": "25a021942e58edb41a3569379b9f4277f8316962",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -635,7 +635,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#formatPrehistoryPlan",
       "commit": "4d52ae2cf980b9e22ff2a02dbd2879b4c8aaa0dc",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -653,7 +653,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#hasBackfill",
       "commit": "25a021942e58edb41a3569379b9f4277f8316962",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -670,7 +670,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#planBackfill",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -688,7 +688,7 @@
     {
       "unit": "packages/cli/src/backfill.ts#planPrehistory",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -771,7 +771,7 @@
     {
       "unit": "packages/cli/src/changes.ts#formatChanges",
       "commit": "75c7809053251aca256a5233df8f549cfc2a6939",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -922,7 +922,7 @@
     {
       "unit": "packages/cli/src/declarations.ts#declarationsIn",
       "commit": "5fa1e892c4b4f4e3a52f47770beedfae91c9b07a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -940,7 +940,7 @@
     {
       "unit": "packages/cli/src/declarations.ts#discoverDeclarations",
       "commit": "5fa1e892c4b4f4e3a52f47770beedfae91c9b07a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -958,7 +958,7 @@
     {
       "unit": "packages/cli/src/draft.ts#Draft",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -976,7 +976,7 @@
     {
       "unit": "packages/cli/src/draft.ts#DraftEvidence",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -993,7 +993,7 @@
     {
       "unit": "packages/cli/src/draft.ts#DraftReport",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1011,7 +1011,7 @@
     {
       "unit": "packages/cli/src/draft.ts#DraftRequest",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1029,7 +1029,7 @@
     {
       "unit": "packages/cli/src/draft.ts#Drafter",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1047,7 +1047,7 @@
     {
       "unit": "packages/cli/src/draft.ts#checkDraft",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1065,7 +1065,7 @@
     {
       "unit": "packages/cli/src/draft.ts#commandDrafter",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1083,7 +1083,7 @@
     {
       "unit": "packages/cli/src/draft.ts#draftRequest",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1101,7 +1101,7 @@
     {
       "unit": "packages/cli/src/draft.ts#draftVersions",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1119,7 +1119,7 @@
     {
       "unit": "packages/cli/src/draft.ts#formatDraftReport",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1185,7 +1185,7 @@
     {
       "unit": "packages/cli/src/drift.ts#compareCodeWithStore",
       "commit": "c064012fedef2489dbdef3509f00f45f3d23fd98",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1203,7 +1203,7 @@
     {
       "unit": "packages/cli/src/frameworks.ts#pluginsFor",
       "commit": "5fa1e892c4b4f4e3a52f47770beedfae91c9b07a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1236,7 +1236,7 @@
     {
       "unit": "packages/cli/src/git.ts#changesSince",
       "commit": "c064012fedef2489dbdef3509f00f45f3d23fd98",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1269,7 +1269,7 @@
     {
       "unit": "packages/cli/src/git.ts#showAt",
       "commit": "c064012fedef2489dbdef3509f00f45f3d23fd98",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1319,7 +1319,7 @@
     {
       "unit": "packages/cli/src/github.ts#TrackerStatus",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1336,7 +1336,7 @@
     {
       "unit": "packages/cli/src/github.ts#connectGitHub",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1354,7 +1354,7 @@
     {
       "unit": "packages/cli/src/github.ts#createGitHubTracker",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1372,7 +1372,7 @@
     {
       "unit": "packages/cli/src/github.ts#githubRepoOf",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1390,7 +1390,7 @@
     {
       "unit": "packages/cli/src/github.ts#githubToken",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1408,7 +1408,7 @@
     {
       "unit": "packages/cli/src/history.ts#formatLog",
       "commit": "a5da3800ac2ec1d5478f7cc690d413d3bd627622",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1426,7 +1426,7 @@
     {
       "unit": "packages/cli/src/history.ts#formatWhy",
       "commit": "a5da3800ac2ec1d5478f7cc690d413d3bd627622",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1477,7 +1477,7 @@
     {
       "unit": "packages/cli/src/indexing.ts#PlannedMove",
       "commit": "c1c0043bd0d0138fd0405e02146612ceed839381",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1494,7 +1494,7 @@
     {
       "unit": "packages/cli/src/indexing.ts#PlannedReclassification",
       "commit": "1159e9d60b3079056f190ed85e49a580ef46274e",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1511,7 +1511,7 @@
     {
       "unit": "packages/cli/src/indexing.ts#PlannedRelink",
       "commit": "35a768d4eb418e6efb3ae405abd0eed14521014c",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1528,7 +1528,7 @@
     {
       "unit": "packages/cli/src/indexing.ts#PlannedVersion",
       "commit": "c1c0043bd0d0138fd0405e02146612ceed839381",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1545,7 +1545,7 @@
     {
       "unit": "packages/cli/src/indexing.ts#applyIndex",
       "commit": "c1c0043bd0d0138fd0405e02146612ceed839381",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1581,7 +1581,7 @@
     {
       "unit": "packages/cli/src/indexing.ts#formatIndexPlan",
       "commit": "c1c0043bd0d0138fd0405e02146612ceed839381",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1599,7 +1599,7 @@
     {
       "unit": "packages/cli/src/indexing.ts#hasWrites",
       "commit": "c1c0043bd0d0138fd0405e02146612ceed839381",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1616,7 +1616,7 @@
     {
       "unit": "packages/cli/src/indexing.ts#needsRationale",
       "commit": "1159e9d60b3079056f190ed85e49a580ef46274e",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1633,7 +1633,7 @@
     {
       "unit": "packages/cli/src/indexing.ts#planIndex",
       "commit": "c1c0043bd0d0138fd0405e02146612ceed839381",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1668,7 +1668,7 @@
     {
       "unit": "packages/cli/src/init.ts#InitConfig",
       "commit": "4c5b49ed6c0972695c06d07a51e19a218c2457e7",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1702,7 +1702,7 @@
     {
       "unit": "packages/cli/src/init.ts#applyInit",
       "commit": "4c5b49ed6c0972695c06d07a51e19a218c2457e7",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1720,7 +1720,7 @@
     {
       "unit": "packages/cli/src/init.ts#formatInitPlan",
       "commit": "4c5b49ed6c0972695c06d07a51e19a218c2457e7",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1738,7 +1738,7 @@
     {
       "unit": "packages/cli/src/init.ts#planInit",
       "commit": "4c5b49ed6c0972695c06d07a51e19a218c2457e7",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1756,7 +1756,7 @@
     {
       "unit": "packages/cli/src/pull-requests.ts#CommitPullRequests",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1774,7 +1774,7 @@
     {
       "unit": "packages/cli/src/pull-requests.ts#TrackerUse",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1791,7 +1791,7 @@
     {
       "unit": "packages/cli/src/pull-requests.ts#UnitLines",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1808,7 +1808,7 @@
     {
       "unit": "packages/cli/src/pull-requests.ts#closingIssues",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1826,7 +1826,7 @@
     {
       "unit": "packages/cli/src/pull-requests.ts#pullRequestEvidence",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1844,7 +1844,7 @@
     {
       "unit": "packages/cli/src/pull-requests.ts#pullRequestTexts",
       "commit": "f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1861,7 +1861,7 @@
     {
       "unit": "packages/cli/src/pull-requests.ts#pullRequestsInSubject",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1879,7 +1879,7 @@
     {
       "unit": "packages/cli/src/pull-requests.ts#trackerReader",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1897,7 +1897,7 @@
     {
       "unit": "packages/cli/src/pull-requests.ts#withPullRequests",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1947,7 +1947,7 @@
     {
       "unit": "packages/cli/src/rehash.ts#applyRehash",
       "commit": "52fdda88e21439e04970902aa5c9ed0e3976c11e",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1965,7 +1965,7 @@
     {
       "unit": "packages/cli/src/rehash.ts#planRehash",
       "commit": "52fdda88e21439e04970902aa5c9ed0e3976c11e",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -1983,7 +1983,7 @@
     {
       "unit": "packages/cli/src/rehash.ts#unitHashes",
       "commit": "52fdda88e21439e04970902aa5c9ed0e3976c11e",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2036,7 +2036,7 @@
     {
       "unit": "packages/core/src/adapter.ts#CandidateEdge",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2053,7 +2053,7 @@
     {
       "unit": "packages/core/src/adapter.ts#FrameworkAdapter",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2071,7 +2071,7 @@
     {
       "unit": "packages/core/src/adapter.ts#UnitCandidate",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2105,7 +2105,7 @@
     {
       "unit": "packages/core/src/graph.ts#CompositionGraph",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2138,7 +2138,7 @@
     {
       "unit": "packages/core/src/graph.ts#ImpactOptions",
       "commit": "9fa9bf41326306e2112c6cea7a373750799b24eb",
-      "confidence": "high",
+      "confidence": "medium",
       "sources": [
         "changeset",
         "commit"
@@ -2264,7 +2264,7 @@
     {
       "unit": "packages/core/src/hash.ts#gitBlobHash",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2337,7 +2337,7 @@
     {
       "unit": "packages/core/src/identity.ts#CodeUnit",
       "commit": "590a911fc1fc56266de9bb833c064c11d32228f3",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2355,7 +2355,7 @@
     {
       "unit": "packages/core/src/identity.ts#CreatedUnit",
       "commit": "590a911fc1fc56266de9bb833c064c11d32228f3",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2372,7 +2372,7 @@
     {
       "unit": "packages/core/src/identity.ts#IdentityMatch",
       "commit": "590a911fc1fc56266de9bb833c064c11d32228f3",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2405,7 +2405,7 @@
     {
       "unit": "packages/core/src/identity.ts#LineageDeclaration",
       "commit": "590a911fc1fc56266de9bb833c064c11d32228f3",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2455,7 +2455,7 @@
     {
       "unit": "packages/core/src/identity.ts#QueuedMatch",
       "commit": "590a911fc1fc56266de9bb833c064c11d32228f3",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2488,7 +2488,7 @@
     {
       "unit": "packages/core/src/identity.ts#RemovedUnit",
       "commit": "590a911fc1fc56266de9bb833c064c11d32228f3",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2505,7 +2505,7 @@
     {
       "unit": "packages/core/src/identity.ts#TrackedUnit",
       "commit": "590a911fc1fc56266de9bb833c064c11d32228f3",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2523,7 +2523,7 @@
     {
       "unit": "packages/core/src/identity.ts#UnitRef",
       "commit": "590a911fc1fc56266de9bb833c064c11d32228f3",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2578,7 +2578,7 @@
     {
       "unit": "packages/core/src/identity.ts#trackedUnits",
       "commit": "590a911fc1fc56266de9bb833c064c11d32228f3",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2633,7 +2633,7 @@
     {
       "unit": "packages/core/src/tracker.ts#TrackedPullRequest",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2650,7 +2650,7 @@
     {
       "unit": "packages/core/src/tracker.ts#TrackedReviewComment",
       "commit": "f14d1a4a510a7a89f7e12e9f8133684b76f7c131",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2683,7 +2683,7 @@
     {
       "unit": "packages/core/src/types.ts#ChangeClass",
       "commit": "52fdda88e21439e04970902aa5c9ed0e3976c11e",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2700,7 +2700,7 @@
     {
       "unit": "packages/core/src/types.ts#Edge",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2751,7 +2751,7 @@
     {
       "unit": "packages/core/src/types.ts#Hash",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2768,7 +2768,7 @@
     {
       "unit": "packages/core/src/types.ts#Inferred",
       "commit": "25a021942e58edb41a3569379b9f4277f8316962",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2915,7 +2915,7 @@
     {
       "unit": "packages/core/src/types.ts#Reference",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2932,7 +2932,7 @@
     {
       "unit": "packages/core/src/types.ts#Span",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2965,7 +2965,7 @@
     {
       "unit": "packages/core/src/types.ts#Uid",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2982,7 +2982,7 @@
     {
       "unit": "packages/core/src/types.ts#Unit",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -2999,7 +2999,7 @@
     {
       "unit": "packages/core/src/types.ts#UnitKind",
       "commit": "299615fadd2c5f4f62c2372e564af4833896a6e5",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3032,7 +3032,7 @@
     {
       "unit": "packages/core/src/types.ts#UnresolvedEdge",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3083,7 +3083,7 @@
     {
       "unit": "packages/core/src/uid.ts#mintUid",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3102,7 +3102,7 @@
     {
       "unit": "packages/core/src/uid.ts#uidTime",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3137,7 +3137,7 @@
     {
       "unit": "packages/mcp/src/code.ts#codeView",
       "commit": "2b00ca80421daf47fb1ad3eeb94461bb547f3032",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3155,7 +3155,7 @@
     {
       "unit": "packages/mcp/src/code.ts#joinCode",
       "commit": "2b00ca80421daf47fb1ad3eeb94461bb547f3032",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3172,7 +3172,7 @@
     {
       "unit": "packages/mcp/src/read-tools.ts#ContextPack",
       "commit": "98015d790d9f42371dc89d87652b1974236ebf4b",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3205,7 +3205,7 @@
     {
       "unit": "packages/mcp/src/read-tools.ts#ImpactReport",
       "commit": "2b00ca80421daf47fb1ad3eeb94461bb547f3032",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3271,7 +3271,7 @@
     {
       "unit": "packages/mcp/src/read-tools.ts#VerifyReport",
       "commit": "2b00ca80421daf47fb1ad3eeb94461bb547f3032",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3288,7 +3288,7 @@
     {
       "unit": "packages/mcp/src/read-tools.ts#callReadTool",
       "commit": "98015d790d9f42371dc89d87652b1974236ebf4b",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3306,7 +3306,7 @@
     {
       "unit": "packages/mcp/src/read-tools.ts#changedUnits",
       "commit": "2b00ca80421daf47fb1ad3eeb94461bb547f3032",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3323,7 +3323,7 @@
     {
       "unit": "packages/mcp/src/read-tools.ts#contextPack",
       "commit": "98015d790d9f42371dc89d87652b1974236ebf4b",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3341,7 +3341,7 @@
     {
       "unit": "packages/mcp/src/read-tools.ts#impactReport",
       "commit": "2b00ca80421daf47fb1ad3eeb94461bb547f3032",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3358,7 +3358,7 @@
     {
       "unit": "packages/mcp/src/read-tools.ts#matchNotes",
       "commit": "98015d790d9f42371dc89d87652b1974236ebf4b",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3376,7 +3376,7 @@
     {
       "unit": "packages/mcp/src/read-tools.ts#verifyScope",
       "commit": "2b00ca80421daf47fb1ad3eeb94461bb547f3032",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3425,7 +3425,7 @@
     {
       "unit": "packages/mcp/src/server.ts#createServer",
       "commit": "75c7809053251aca256a5233df8f549cfc2a6939",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3475,7 +3475,7 @@
     {
       "unit": "packages/mcp/src/stdio.ts#serveStdio",
       "commit": "98015d790d9f42371dc89d87652b1974236ebf4b",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3558,7 +3558,7 @@
     {
       "unit": "packages/mcp/src/write-tools.ts#callWriteTool",
       "commit": "ef7b943d35665af1ec21b4bcc7e87b2636804c05",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3607,7 +3607,7 @@
     {
       "unit": "packages/store/src/changes.ts#CommitChanges",
       "commit": "41790589c7ba866ebec1c614447dbe207b28ca5f",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3640,7 +3640,7 @@
     {
       "unit": "packages/store/src/changes.ts#UnitChange",
       "commit": "41790589c7ba866ebec1c614447dbe207b28ca5f",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3707,7 +3707,7 @@
     {
       "unit": "packages/store/src/check.ts#checkStore",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3772,7 +3772,7 @@
     {
       "unit": "packages/store/src/glob.ts#createMatcher",
       "commit": "c064012fedef2489dbdef3509f00f45f3d23fd98",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -3790,7 +3790,7 @@
     {
       "unit": "packages/store/src/glob.ts#globToRegExp",
       "commit": "c064012fedef2489dbdef3509f00f45f3d23fd98",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -3890,7 +3890,7 @@
     {
       "unit": "packages/store/src/index-db.ts#dependentsOf",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3908,7 +3908,7 @@
     {
       "unit": "packages/store/src/index-db.ts#dumpIndex",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -3978,7 +3978,7 @@
     {
       "unit": "packages/store/src/index-db.ts#rebuildIndex",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -4016,7 +4016,7 @@
     {
       "unit": "packages/store/src/json-store.ts#UnitFile",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -4162,7 +4162,7 @@
     {
       "unit": "packages/store/src/json-store.ts#listNoteFiles",
       "commit": "02d460760e1a6f155fa030346f6a2f6a3c0e362a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -4179,7 +4179,7 @@
     {
       "unit": "packages/store/src/json-store.ts#listUnitFiles",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -4440,7 +4440,7 @@
     {
       "unit": "packages/store/src/paths.ts#storePaths",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -4458,7 +4458,7 @@
     {
       "unit": "packages/store/src/paths.ts#unitFilePath",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -4561,7 +4561,7 @@
     {
       "unit": "packages/store/src/schemas.ts#loadSchemaSet",
       "commit": "ed9ebd87250609a39068752b5c10d5292a32973a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "changeset",
         "commit",
@@ -4595,7 +4595,7 @@
     {
       "unit": "scripts/gate.ts#fetchCorpus",
       "commit": "feb38d26da8a4ed01d7f44e44c8f35a3c1cbb3e9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment"
@@ -4611,7 +4611,7 @@
     {
       "unit": "scripts/gotchas.ts#syncGotchas",
       "commit": "02d460760e1a6f155fa030346f6a2f6a3c0e362a",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment"
@@ -4622,6 +4622,138 @@
       "score": {
         "recall": 0.16666666666666666,
         "jaccard": 0.045454545454545456
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-eval.ts#BackfillEvalResult",
+      "commit": "c7649059218f78f0e357a79656955097582f9392",
+      "confidence": "medium",
+      "sources": [
+        "commit"
+      ],
+      "drafted": false,
+      "inferred": "#16's last task: run backfill on this repository and compare what it infers with the rationale recorded unit by unit. Without a measurement, nothing says whether inferred rationale, or the confidence it carries, can be trusted.",
+      "recorded": "What one backfill eval run found: how many units were recorded and inferred, the pairs compared, and how many could not be paired or had no evidence.",
+      "score": {
+        "recall": 0.38461538461538464,
+        "jaccard": 0.18518518518518517
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-eval.ts#EvalPair",
+      "commit": "c7649059218f78f0e357a79656955097582f9392",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "#16's last task: run backfill on this repository and compare what it infers with the rationale recorded unit by unit. Without a measurement, nothing says whether inferred rationale, or the confidence it carries, can be trusted.",
+      "recorded": "One inferred version next to the recorded version from the same commit, with its confidence, sources and score, so results can be broken down by what backfill believed.",
+      "score": {
+        "recall": 0.2857142857142857,
+        "jaccard": 0.13793103448275862
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-eval.ts#Score",
+      "commit": "c7649059218f78f0e357a79656955097582f9392",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "#16's last task: run backfill on this repository and compare what it infers with the rationale recorded unit by unit. Without a measurement, nothing says whether inferred rationale, or the confidence it carries, can be trusted.",
+      "recorded": "Recall and overlap of content words, the lexical measure the eval reports; recall alone rewards long text about the whole change.",
+      "score": {
+        "recall": 0,
+        "jaccard": 0
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-eval.ts#contentWords",
+      "commit": "c7649059218f78f0e357a79656955097582f9392",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "#16's last task: run backfill on this repository and compare what it infers with the rationale recorded unit by unit. Without a measurement, nothing says whether inferred rationale, or the confidence it carries, can be trusted.",
+      "recorded": "The words the eval compares: content words of three letters or more, stop words removed and plurals folded, so phrasing differences count less.",
+      "score": {
+        "recall": 0.06666666666666667,
+        "jaccard": 0.030303030303030304
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-eval.ts#formatBackfillEval",
+      "commit": "c7649059218f78f0e357a79656955097582f9392",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "#16's last task: run backfill on this repository and compare what it infers with the rationale recorded unit by unit. Without a measurement, nothing says whether inferred rationale, or the confidence it carries, can be trusted.",
+      "recorded": "The eval's report: totals, scores by confidence and by evidence, and the closest and furthest pairs ranked by overlap rather than recall.",
+      "score": {
+        "recall": 0.07692307692307693,
+        "jaccard": 0.03225806451612903
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-eval.ts#runBackfillEval",
+      "commit": "c7649059218f78f0e357a79656955097582f9392",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "#16's last task: run backfill on this repository and compare what it infers with the rationale recorded unit by unit. Without a measurement, nothing says whether inferred rationale, or the confidence it carries, can be trusted.",
+      "recorded": "Runs the snapshot backfill offline on a clone with its unit files removed and pairs each inferred version with the recorded version committed with its evidence, so inferred and recorded rationale are compared for the same change (#16).",
+      "score": {
+        "recall": 0.2777777777777778,
+        "jaccard": 0.15625
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-eval.ts#score",
+      "commit": "c7649059218f78f0e357a79656955097582f9392",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "#16's last task: run backfill on this repository and compare what it infers with the rationale recorded unit by unit. Without a measurement, nothing says whether inferred rationale, or the confidence it carries, can be trusted.",
+      "recorded": "Scores one inferred rationale against the recorded one by recall and Jaccard overlap of content words.",
+      "score": {
+        "recall": 0.3,
+        "jaccard": 0.11538461538461539
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-eval.ts#versionCommits",
+      "commit": "c7649059218f78f0e357a79656955097582f9392",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "#16's last task: run backfill on this repository and compare what it infers with the rationale recorded unit by unit. Without a measurement, nothing says whether inferred rationale, or the confidence it carries, can be trusted.",
+      "recorded": "The commit that added each version of a unit file, read from the file's history, so an inferred version can be paired with the recorded version from its commit.",
+      "score": {
+        "recall": 0.3333333333333333,
+        "jaccard": 0.12
       }
     },
     {
@@ -4658,7 +4790,7 @@
     {
       "unit": "scripts/lib/gate.ts#KindResult",
       "commit": "feb38d26da8a4ed01d7f44e44c8f35a3c1cbb3e9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment"
@@ -4689,7 +4821,7 @@
     {
       "unit": "scripts/lib/gate.ts#formatResults",
       "commit": "feb38d26da8a4ed01d7f44e44c8f35a3c1cbb3e9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -4706,7 +4838,7 @@
     {
       "unit": "scripts/lib/gate.ts#prepareWorkspace",
       "commit": "b991abdf3264279d58fdf85a53d0b260bdbd38c1",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -4723,7 +4855,7 @@
     {
       "unit": "scripts/lib/gate.ts#refactorsFor",
       "commit": "b991abdf3264279d58fdf85a53d0b260bdbd38c1",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -4740,7 +4872,7 @@
     {
       "unit": "scripts/lib/gate.ts#runGate",
       "commit": "b991abdf3264279d58fdf85a53d0b260bdbd38c1",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -4757,7 +4889,7 @@
     {
       "unit": "scripts/lib/gate.ts#seededRandom",
       "commit": "feb38d26da8a4ed01d7f44e44c8f35a3c1cbb3e9",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -4806,7 +4938,7 @@
     {
       "unit": "scripts/lib/site-data.ts#parseDecision",
       "commit": "e7dd8e88561bd44b4975744c1cf7687e7ee77ddf",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -4929,7 +5061,7 @@
     {
       "unit": "site/src/lib/query.ts#filterUnits",
       "commit": "e7dd8e88561bd44b4975744c1cf7687e7ee77ddf",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -4946,7 +5078,7 @@
     {
       "unit": "site/src/lib/query.ts#inlineCode",
       "commit": "e7dd8e88561bd44b4975744c1cf7687e7ee77ddf",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -4963,7 +5095,7 @@
     {
       "unit": "site/src/lib/query.ts#isStaleFor",
       "commit": "e7dd8e88561bd44b4975744c1cf7687e7ee77ddf",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -4980,7 +5112,7 @@
     {
       "unit": "site/src/lib/query.ts#linkHref",
       "commit": "e7dd8e88561bd44b4975744c1cf7687e7ee77ddf",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -5013,7 +5145,7 @@
     {
       "unit": "site/src/lib/query.ts#matchNotes",
       "commit": "e7dd8e88561bd44b4975744c1cf7687e7ee77ddf",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -5030,7 +5162,7 @@
     {
       "unit": "site/src/lib/query.ts#notesForUnit",
       "commit": "e7dd8e88561bd44b4975744c1cf7687e7ee77ddf",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment",
@@ -5139,7 +5271,7 @@
     {
       "unit": "site/src/lib/types.ts#SiteData",
       "commit": "e7dd8e88561bd44b4975744c1cf7687e7ee77ddf",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment"
@@ -5170,7 +5302,7 @@
     {
       "unit": "site/src/lib/types.ts#SiteUnit",
       "commit": "e7dd8e88561bd44b4975744c1cf7687e7ee77ddf",
-      "confidence": "medium",
+      "confidence": "high",
       "sources": [
         "commit",
         "comment"

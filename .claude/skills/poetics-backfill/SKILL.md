@@ -16,9 +16,10 @@ It never writes to a unit that has a file.
    invariant), and existing units with unrecorded changes.
 2. **Write:** `pnpm poetics backfill --snapshot --write`. Every new version
    carries `inferred` with a computed `confidence`:
-   - `high`: a changeset or commit that names the unit, or a commit that
-     introduced it alone;
-   - `medium`: text shared by the whole change;
+   - `high`: a changeset or commit with evidence about this unit alone: the
+     commit introduced it alone, a review comment is on its lines, or the unit
+     has its own TSDoc (ADR 0018);
+   - `medium`: text shared by the whole change, even when it names the unit;
    - `low`: only the code, its TSDoc or nothing at all.
 3. **Review the `low` and `medium` units first.** The inferred version is
    never edited or deleted: history is append-only. Where you know the real
@@ -43,8 +44,8 @@ It never writes to a unit that has a file.
    replaced rather than dropped should link to its successor (ADR 0010).
    With a GitHub token (`GITHUB_TOKEN` or `gh auth token`), both modes also
    link the pull requests behind each commit and the issues they close, and
-   raise confidence when a pull request names the unit or a review comment
-   is on its lines. Their text is never written: open the linked pull request
+   raise confidence when a review comment is on its lines (a pull request
+   that only names the unit describes the whole change). Their text is never written: open the linked pull request
    to read why. The report's `GitHub:` line says whether it ran; `--offline`
    skips it.
    `--draft` drafts each version's rationale through the command in

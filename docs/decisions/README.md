@@ -24,5 +24,6 @@ new record here.
 | [0015](0015-contradictions-in-intent.md) | Contradictions in intent are found by reading recorded intent together | Proposed |
 | [0016](0016-context-units.md) | React contexts are units of their own kind | Proposed |
 | [0017](0017-drafting-through-a-command.md) | Rationale is drafted by a command the repository configures | Proposed |
+| [0018](0018-backfill-confidence-is-unit-specific.md) | Backfill confidence is high only for evidence about this unit alone | Proposed |
 
 New records copy [`template.md`](template.md).
