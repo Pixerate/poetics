@@ -1,6 +1,6 @@
 # 0018. Backfill confidence is high only for evidence about this unit alone
 
-- Status: Proposed
+- Status: Accepted (2026-11-10)
 - Date: 2026-11-10
 - Amends: [ADR 0011](0011-backfill.md), the `confidence` rule
 

@@ -1,6 +1,6 @@
 # 0017. Rationale is drafted by a command the repository configures
 
-- Status: Proposed
+- Status: Accepted (2026-11-10)
 - Date: 2026-11-10
 
 ## Context

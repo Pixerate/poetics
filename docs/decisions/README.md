@@ -22,9 +22,9 @@ new record here.
 | [0013](0013-compiler-api-without-ts-morph.md) | The TypeScript compiler API directly, without ts-morph | Proposed |
 | [0014](0014-rehash-versions.md) | The rehash is an appended version | Proposed |
 | [0015](0015-contradictions-in-intent.md) | Contradictions in intent are found by reading recorded intent together | Proposed |
-| [0016](0016-context-units.md) | React contexts are units of their own kind | Proposed |
-| [0017](0017-drafting-through-a-command.md) | Rationale is drafted by a command the repository configures | Proposed |
-| [0018](0018-backfill-confidence-is-unit-specific.md) | Backfill confidence is high only for evidence about this unit alone | Proposed |
-| [0019](0019-backfill-rationale-leads-with-the-doc-comment.md) | Backfill rationale leads with the unit's doc comment when the change's text is shared | Proposed |
+| [0016](0016-context-units.md) | React contexts are units of their own kind | Accepted |
+| [0017](0017-drafting-through-a-command.md) | Rationale is drafted by a command the repository configures | Accepted |
+| [0018](0018-backfill-confidence-is-unit-specific.md) | Backfill confidence is high only for evidence about this unit alone | Accepted |
+| [0019](0019-backfill-rationale-leads-with-the-doc-comment.md) | Backfill rationale leads with the unit's doc comment when the change's text is shared | Accepted |
 
 New records copy [`template.md`](template.md).

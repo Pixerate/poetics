@@ -1,6 +1,6 @@
 # 0019. Backfill rationale leads with the unit's doc comment when the change's text is shared
 
-- Status: Proposed
+- Status: Accepted (2026-11-10)
 - Date: 2026-11-10
 - Amends: [ADR 0011](0011-backfill.md), the extracted-rationale rule
 

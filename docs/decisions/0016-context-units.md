@@ -1,6 +1,6 @@
 # 0016. React contexts are units of their own kind
 
-- Status: Proposed
+- Status: Accepted (2026-11-10)
 - Date: 2026-11-10
 
 ## Context
