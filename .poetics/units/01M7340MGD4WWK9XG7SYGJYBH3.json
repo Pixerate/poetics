@@ -1,0 +1,52 @@
+{
+  "uid": "01M7340MGD4WWK9XG7SYGJYBH3",
+  "kind": "function",
+  "framework": "none",
+  "name": "draftVersions",
+  "location": {
+    "file": "packages/cli/src/draft.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:7ac9b28889a3aae9a581275da6d20a59afcd9dca6c317c77f21c7aace71a8a78",
+      "interfaceHash": "b3:4a792d85a1794895e5122b22f6f5dc4f2cddd479304283a53348d63169c181d6",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Drafts each version through the drafter with a small worker pool, caches answers by drafter and request so a dry run and --write draft once, and keeps the extracted rationale for anything rejected or failed. A draft never raises confidence; one from the diff alone lowers it to low.",
+      "deps": {
+        "01M7340MGDR066HEMXVP7SXMV9": "b3:63f93a8c0e7bd1f4a24be799b8c18d864b2bca8c9281290e5e5fa530cd834a11",
+        "01M7340MGD71QYC1V9ZGGYQZY4": "b3:4d66125a754bcd0b1b4b453398921ecb27493828a685fbb0b7b241f795cbbb51",
+        "01M7340MGD8QVP5Q94M6WEKKPG": "b3:f467722affd1508177c7cdd2019d83e408a7a37bef093f27d82a807d79d87d99",
+        "01M7340MGDJW83CKC074N6FRP8": "b3:b153e2790a8db0ffad24b05aaf27bf6607156013a8dd7efa191e5ef840c49b13",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Drafts each job's rationale and writes it into its version: `inferred.drafted`\nbecomes true, and a draft from the diff alone lowers confidence to low.\nConfidence otherwise stays what the evidence gave; a draft never raises it.\nAnswers are cached by drafter and request, so a dry run and the `--write`\nafter it run the drafter once.",
+  "tests": [
+    {
+      "file": "packages/cli/src/draft.test.ts",
+      "via": "static"
+    }
+  ]
+}

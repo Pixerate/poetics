@@ -57,6 +57,39 @@
           "ref": "docs/decisions/0011-backfill.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:7e4437c347ade5391a1dfe83c85c1ef4e1dfafc9bbf03db0d838d691817882e0",
+      "interfaceHash": "b3:2b8a493bcd5a6a7fcae2285c201b5f7966ba4a5fb2bf8a0945ca1430f4b80ae0",
+      "parent": "b3:a9edaa805a7d5e734bd07ec08436c3508b98cc4d04102ef4ca0f3eb337e9566d",
+      "change": "behaviour",
+      "rationale": "Adds the drafting summary and a line for each rejected or failed draft. Confidence is counted after drafting, since a draft from the diff alone lowers it.",
+      "deps": {
+        "01M6KA0K7605CEA11BACFR4NG7": "b3:84635a0172d586fed850a37e43f9788ecb4c2309bce672e2a23c5ca09866b0a5",
+        "01M7340MGDQT5QHAP6CMYWEXY1": "b3:082f279aa924409839e4abf0a93ccb27f50aecf6c86752e2fbd64b7a80de5e16",
+        "01M730BJ24KSV18BMEMYZ3J34B": "b3:e90112877ba660229ca9693fa06db50dd66edf3ddaebe4bd98eb9a421b697a8b",
+        "01M730BJ24P27EB5Q94C76JBB8": "b3:794991c9c84a4c40835e231e32fe18c926151f59895b039b9be16d6b5785c0c8"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
     }
   ],
   "docs": "The report for people: confidence counts, then what to add or record by hand.",

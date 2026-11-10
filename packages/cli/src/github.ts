@@ -54,8 +54,24 @@ export function createGitHubTracker(options: GitHubTrackerOptions): GitHubTracke
     return items;
   };
 
+  // A single object, cached like the lists.
+  const one = async (path: string): Promise<unknown> => {
+    if (cache[path]) return cache[path][0];
+    requests++;
+    const response = await call(`${api}/repos/${options.repo}${path}`, { headers: { accept: "application/vnd.github+json", authorization: `Bearer ${options.token}`, "x-github-api-version": "2022-11-28" } });
+    if (response.status === 429 || (response.status === 403 && response.headers.get("x-ratelimit-remaining") === "0")) throw new RateLimitedError("GitHub rate limit reached");
+    if (!response.ok) return undefined;
+    const body = (await response.json()) as unknown;
+    cache[path] = [body];
+    return body;
+  };
+
   return {
     name: "github",
+    async visibility() {
+      const repo = (await one("")) as { private?: boolean } | undefined;
+      return repo?.private === false ? "public" : "private";
+    },
     get requests() {
       return requests;
     },

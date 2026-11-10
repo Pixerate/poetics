@@ -47,6 +47,12 @@ It never writes to a unit that has a file.
    is on its lines. Their text is never written: open the linked pull request
    to read why. The report's `GitHub:` line says whether it ran; `--offline`
    skips it.
+   `--draft` drafts each version's rationale through the command in
+   `backfill.draft.command` (ADR 0017); without one configured, it stops
+   and says so. Drafts are marked `inferred.drafted` and are still
+   unreviewed: read them against the linked evidence like any other
+   inferred rationale. Lines starting `draft rejected:` or `draft failed:`
+   kept the extracted rationale.
 5. **Act on the gaps:** add the listed docs and test links to the unit files,
    record candidate notes with `poetics-gotcha` if they hold, and run
    `pnpm poetics index` for existing units with unrecorded changes.

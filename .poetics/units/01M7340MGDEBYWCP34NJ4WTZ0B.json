@@ -1,0 +1,44 @@
+{
+  "uid": "01M7340MGDEBYWCP34NJ4WTZ0B",
+  "kind": "function",
+  "framework": "none",
+  "name": "pullRequestTexts",
+  "location": {
+    "file": "packages/cli/src/pull-requests.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:3d6fe8d6f825d69b2dc1cfef19f670832321a259e6f53fa26fd91f3b02bbe8c8",
+      "interfaceHash": "b3:1ca99e2c8d536ff68af9663d557df8de1bda41ed690b36de4f3850936c9e1148",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Pull request and review text about a unit, for a drafter that may read but never quote it.",
+      "deps": {
+        "01M730BJ247CHY6J1T3D4XCYCN": "b3:18615b7b9efa47d5e37ae67d8c9f58a92ce7bfbfcb9cb46bbba23a69e3d0aa3d",
+        "01M730BJ2488V325HSGZWDDE82": "b3:64042e6dd981048a032fd9ec50168d37eff947b1ddf511a0677410f5e7399964",
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Pull request and review text about `unit`, for a drafter that may read but never quote it (ADR 0011)."
+}

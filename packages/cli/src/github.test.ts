@@ -73,6 +73,17 @@ describe("createGitHubTracker", () => {
     expect(second.calls).toEqual([]);
   });
 
+  it("reports a repository public only when GitHub says it is not private, and caches the answer", async () => {
+    const pub = fakeFetch({ "": { body: { private: false } } });
+    const tracker = createGitHubTracker({ repo: "acme/shop", token: "t", fetch: pub.fn });
+    expect(await tracker.visibility!()).toBe("public");
+    expect(await tracker.visibility!()).toBe("public");
+    expect(pub.calls).toEqual(["https://api.github.com/repos/acme/shop"]);
+    expect(await createGitHubTracker({ repo: "acme/shop", token: "t", fetch: fakeFetch({ "": { body: { private: true } } }).fn }).visibility!()).toBe("private");
+    // Unknown counts as private.
+    expect(await createGitHubTracker({ repo: "acme/shop", token: "t", fetch: fakeFetch({}).fn }).visibility!()).toBe("private");
+  });
+
   it("sends the token as a bearer header and fails on other errors", async () => {
     let auth: string | null = null;
     const fn = (async (_url: string, init?: RequestInit) => {

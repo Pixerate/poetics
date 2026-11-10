@@ -1,0 +1,49 @@
+{
+  "uid": "01M7340MGD1F1B0PVCAFV3WNJZ",
+  "kind": "function",
+  "framework": "none",
+  "name": "draftRequest",
+  "location": {
+    "file": "packages/cli/src/draft.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:af90c372da809d6b9a753b83d3254294647992b1ae53436b76858a83bc00c441",
+      "interfaceHash": "b3:9bbb344870e1f3e6da0838c5647af999bcb7d7b00119de6625914434b6dfcec8",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Builds a draft request with evidence numbered in order, so drafts cite stable ids, and the not-quotable ids listed.",
+      "deps": {
+        "01M7340MGDBN3ED9QTP8YDN5MS": "b3:cd0256a28deb8d0fe6241720fedd420aa82bd14eae0dfeef4b482928ca6c9806",
+        "01M7340MGD71QYC1V9ZGGYQZY4": "b3:4d66125a754bcd0b1b4b453398921ecb27493828a685fbb0b7b241f795cbbb51"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A request with evidence numbered in order, so drafts cite stable ids.",
+  "tests": [
+    {
+      "file": "packages/cli/src/draft.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "uid": "01M7340MGD8QVP5Q94M6WEKKPG",
+  "kind": "type",
+  "framework": "none",
+  "name": "Drafter",
+  "location": {
+    "file": "packages/cli/src/draft.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:f467722affd1508177c7cdd2019d83e408a7a37bef093f27d82a807d79d87d99",
+      "interfaceHash": "b3:a70129f9361efc1abe128b6bae5204e08a0c6d0b674afcbc322d08a51b4e577c",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Anything that turns a draft request into an answer, so Poetics names no model; the command drafter is the one it ships.",
+      "deps": {
+        "01M7340MGD71QYC1V9ZGGYQZY4": "b3:4d66125a754bcd0b1b4b453398921ecb27493828a685fbb0b7b241f795cbbb51"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Anything that turns a request into an answer; the command drafter is the one Poetics ships.",
+  "tests": [
+    {
+      "file": "packages/cli/src/draft.test.ts",
+      "via": "static"
+    }
+  ]
+}

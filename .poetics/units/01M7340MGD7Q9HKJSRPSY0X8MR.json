@@ -1,0 +1,48 @@
+{
+  "uid": "01M7340MGD7Q9HKJSRPSY0X8MR",
+  "kind": "function",
+  "framework": "none",
+  "name": "commandDrafter",
+  "location": {
+    "file": "packages/cli/src/draft.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:b7e56181348ca35f2190ff290cd416042cb27a95001c59238cb672171bdfb99f",
+      "interfaceHash": "b3:b0af0283810f174b97a5b5368d293e67d2591b65f0633e62cb0ee68980c4b76a",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Runs the configured command once per request without a shell, request on stdin and draft as JSON on stdout, failing on a non-zero exit, output that is not JSON, or a timeout.",
+      "deps": {
+        "01M7340MGD8QVP5Q94M6WEKKPG": "b3:f467722affd1508177c7cdd2019d83e408a7a37bef093f27d82a807d79d87d99"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0017-drafting-through-a-command.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Runs `command` once per request, from `cwd`, without a shell: the request on stdin, the draft as JSON on stdout.",
+  "tests": [
+    {
+      "file": "packages/cli/src/draft.test.ts",
+      "via": "static"
+    }
+  ]
+}
