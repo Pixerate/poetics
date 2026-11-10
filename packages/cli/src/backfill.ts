@@ -133,6 +133,10 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
     }
     if (unit.docs) {
       evidence.push({ source: "comment", ref: unit.location.file, text: unit.docs });
+      // Text shared with other units describes the whole change; the unit's own doc comment says what this one is
+      // for, so it leads (ADR 0019). A one-unit commit's text is already about this unit and stands alone.
+      const shared = !commit || perCommit.get(commit.sha) !== 1;
+      if (rationale && shared) rationale = `${unit.docs}\n\n${rationale}`;
       rationale ??= unit.docs;
     }
     for (const test of unit.tests ?? []) evidence.push({ source: "test", ref: test.file });

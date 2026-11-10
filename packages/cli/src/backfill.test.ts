@@ -100,9 +100,22 @@ describe("planBackfill", { timeout: GIT_TIMEOUT_MS }, () => {
     await write(root, "src/count.ts", "/** Counts items, skipping empty ones. */\nexport function countOf() {\n  return 1;\n}\nexport function sizeOf() {\n  return 2;\n}\n");
     commit(root, "feat: counting");
     const units = byName(await planBackfill(root, CONFIG));
-    // The commit's text stays the rationale: the doc comment raises confidence without replacing the reason.
-    expect(units.get("countOf")!.versions[0]).toMatchObject({ rationale: "counting", inferred: { confidence: "high", sources: ["commit", "comment"] } });
+    // The doc comment says what this unit is for and leads; the shared reason follows it (ADR 0019).
+    expect(units.get("countOf")!.versions[0]).toMatchObject({ rationale: "Counts items, skipping empty ones.\n\ncounting", inferred: { confidence: "high", sources: ["commit", "comment"] } });
     expect(units.get("sizeOf")!.versions[0]).toMatchObject({ rationale: "counting", inferred: { confidence: "medium", sources: ["commit"] } });
+  });
+
+  it("keeps a one-unit commit's text as the whole rationale, even with a doc comment", async () => {
+    const root = await adopted();
+    await write(root, "src/trim.ts", "/** Trims whitespace from both ends. */\nexport function trimBoth(s: string) {\n  return s.trim();\n}\n");
+    // Only this file: adopted() leaves src/new.ts uncommitted.
+    runGit(root, "add", "src/trim.ts");
+    runGit(root, "commit", "-q", "-m", "feat: trim pasted codes\n\nPasted coupon codes carry stray spaces.");
+    // The commit introduced trimBoth alone, so its text already speaks to this unit: the most specific evidence wins.
+    expect(byName(await planBackfill(root, CONFIG)).get("trimBoth")!.versions[0]).toMatchObject({
+      rationale: "Pasted coupon codes carry stray spaces.",
+      inferred: { confidence: "high", sources: ["commit", "comment"] },
+    });
   });
 
   it("never stores author names or emails", async () => {

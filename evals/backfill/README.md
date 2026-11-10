@@ -83,6 +83,49 @@ same corpus, at `7372c64` (311 pairs):
   the extracted rationale with it would change what rationale says, not how
   sure it is, and is left for its own decision.
 
+## Rationale leads with the doc comment (2026-11-10, ADR 0019)
+
+The last finding led to [ADR 0019](../../docs/decisions/0019-backfill-rationale-leads-with-the-doc-comment.md):
+when the change's text is shared with other units the commit introduced, the
+unit's doc comment leads it, as its own paragraph. A one-unit commit's text
+stays the whole rationale. Confidence is unchanged. Both runs are on the same
+corpus, at `df077c8` (312 pairs):
+
+| Rule | | Pairs | Mean recall | Mean overlap | Recall ≥ 50% |
+| --- | --- | --- | --- | --- | --- |
+| Before: the change's text | All | 312 | 30% | 10% | 19% |
+| | high | 191 | 33% | 11% | 24% |
+| | from: commit + comment | 26 | 18% | 6% | 12% |
+| After: doc comment, then the change's text | All | 312 | 41% | 12% | 36% |
+| | high | 191 | 50% | 15% | 51% |
+| | from: commit + comment | 26 | 50% | 16% | 58% |
+
+`medium` versions (no doc comment, shared text) are unchanged at 25% recall
+and 8% overlap.
+
+Variants measured on the 185 versions the rule changes, before choosing it:
+
+| Rationale | Mean recall | Mean overlap | Recall ≥ 50% | Content words |
+| --- | --- | --- | --- | --- |
+| The change's text (before) | 32% | 10% | 24% | 34 |
+| The doc comment alone | 32% | 25% | 24% | 11 |
+| The doc comment, then the change's text (chosen) | 51% | 15% | 51% | 41 |
+| Control: another unit's doc comment, then the change's text | 34% | 9% | 24% | 43 |
+
+The recorded rationale averages 15 content words.
+
+- Overlap rises with recall, so the gain is not just longer text, and the
+  control confirms it: a doc comment that is not this unit's, of the same
+  length, adds nothing.
+- The doc comment alone agrees most tightly but drops the change's reason;
+  leading with it keeps both.
+- Also leading one-unit commits with the doc comment scored the same (51%
+  against 50% recall for `high`), so the rule keeps ADR 0011's "most specific
+  evidence wins" there.
+- Bare commit messages gain most: they rarely say what a unit is for.
+- This repository requires TSDoc, so the gain here is an upper bound: on a
+  repository with little TSDoc most versions keep the change's text.
+
 ## What this eval cannot say yet
 
 - **The recorded rationale is not human ground truth.** All 303 recorded

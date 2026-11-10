@@ -143,6 +143,9 @@ Rationale is written in two tiers:
    package beats a commit body, which beats a subject. With nothing better, the
    rationale is the commit message, as the plan already says. A pull request
    that gives the reason is linked, not quoted.
+   [ADR 0019](0019-backfill-rationale-leads-with-the-doc-comment.md): in
+   snapshot mode, when that text is shared with other units the commit
+   introduced, the unit's doc comment leads it.
 2. **Drafted** (`--draft`, optional model call): a per-unit rationale
    synthesised from the evidence items, which must cite them and must say when
    the only evidence is the diff. Evidence text is passed to the model as data.

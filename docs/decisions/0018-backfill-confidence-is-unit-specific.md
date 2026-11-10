@@ -48,7 +48,8 @@ thresholds this repository happens to favour.
 
 The rule is one function, `confidenceOf`, used by both modes. The extracted
 rationale is unchanged: it is still the change's reason, and the doc comment
-raises confidence without replacing it.
+raises confidence without replacing it. (ADR 0019 later leads a shared reason
+with the doc comment.)
 
 ## Consequences
 
@@ -67,4 +68,5 @@ raises confidence without replacing it.
   even when the unit had a doc comment. The extracted rationale could lead with
   the doc comment when the change's text is shared, which agreed far better in
   the eval; that changes what rationale says, not how sure it is, and needs its
-  own decision.
+  own decision. [ADR 0019](0019-backfill-rationale-leads-with-the-doc-comment.md)
+  makes it.
