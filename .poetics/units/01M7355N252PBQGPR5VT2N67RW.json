@@ -1,0 +1,39 @@
+{
+  "uid": "01M7355N252PBQGPR5VT2N67RW",
+  "kind": "type",
+  "framework": "none",
+  "name": "EvalPair",
+  "location": {
+    "file": "scripts/lib/backfill-eval.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:3b6425042a2db0b9bb3664f3871e2f81dc5dbc21ebe812d0d72091568e09e1a2",
+      "interfaceHash": "b3:ffe665a804e41086ba853bfe7a2a7aed12f8a7cbec5aea90c63b2ac4c691a103",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "One inferred version next to the recorded version from the same commit, with its confidence, sources and score, so results can be broken down by what backfill believed.",
+      "deps": {
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582",
+        "01M7355N25HW0EFZPAF46P7Y3H": "b3:0bcb4545155d389cfaff192ac30f5d28794cad5097b835ade90c2d541214dd63"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ]
+    }
+  ],
+  "docs": "One inferred version next to the recorded version from the same commit."
+}

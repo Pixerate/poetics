@@ -1,0 +1,41 @@
+{
+  "uid": "01M7355N26WJ54EWRMZ994J33Y",
+  "kind": "function",
+  "framework": "none",
+  "name": "contentWords",
+  "location": {
+    "file": "scripts/lib/backfill-eval.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:fe663bd41319e51dad73c4a337bcff50ba28aa7fd1220dcb030b9fb805661497",
+      "interfaceHash": "b3:ae8e6c92878fb01eedb7ab7fe2e1d5f9827812f189d9d67dc0d882b9b8756152",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The words the eval compares: content words of three letters or more, stop words removed and plurals folded, so phrasing differences count less.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Lower-cased content words of three letters or more, stop words left out, with a crude plural fold.",
+  "tests": [
+    {
+      "file": "scripts/lib/backfill-eval.test.ts",
+      "via": "static"
+    }
+  ]
+}
