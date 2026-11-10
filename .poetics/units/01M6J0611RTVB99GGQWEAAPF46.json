@@ -31,6 +31,31 @@
         "01M6J0611RJRBW8VKQT9E7MFTW": "b3:7bb9caf454c26b73be0b5e6487eae48357bd574e99076936c1d4c2f6beb6e3a1",
         "01M6J0611RXDG1J0DGPDSS1GZS": "b3:afd0d32a14fd9d18d07da68caf35d1fc6077f9b9d2a0be9dd279a3cb49b942c1"
       }
+    },
+    {
+      "contentHash": "b3:ddf68ee10722e08f6f6b297afde60e6aa9a5075fdfd17c088c5065b378295ec8",
+      "interfaceHash": "b3:c3d29bd1d0d8c4ebcd7c20092c6d61dfe42d6b5469e2046664790b040fa6c8e1",
+      "parent": "b3:8efe6d7aa8c6eb81d22b8a2be4f9911ff8d4ff31f97152862b3a94172aa3272b",
+      "change": "interface",
+      "rationale": "Adds the adapters a run used, seeded units by kind and uids kept by unit kind, so the report shows components and hooks separately; byKind is partial because wrap is only measured with React.",
+      "deps": {
+        "01M6J0611RWR0GXQFD30AW6JBG": "b3:6829e3e4ad13789b6fe6de9a163fe69bc0ee1ebded7db716596df2d38acb1c81",
+        "01M6J0611RJRBW8VKQT9E7MFTW": "b3:7bb9caf454c26b73be0b5e6487eae48357bd574e99076936c1d4c2f6beb6e3a1",
+        "01M6J0611RXDG1J0DGPDSS1GZS": "b3:6e487112eb663dc0079cf368f75027c9a966b97e453265eeb824d5b12197c432"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-milestone",
+          "ref": "2",
+          "url": "https://github.com/Pixerate/poetics/milestone/2"
+        }
+      ]
     }
   ],
   "docs": "One corpus's gate outcome: per-refactor tallies, spurious units, timings and misses.",

@@ -26,6 +26,26 @@
           "ref": "#26"
         }
       ]
+    },
+    {
+      "contentHash": "b3:6829e3e4ad13789b6fe6de9a163fe69bc0ee1ebded7db716596df2d38acb1c81",
+      "interfaceHash": "b3:f3e5dfa63812eeceedd88e92055a4c3aa130597744f0cc82acee427bccdb781a",
+      "parent": "b3:d5d15670919f5df64a04333e473474d96648fd034a7a3ad1c5a4c02189b3c830",
+      "change": "interface",
+      "rationale": "Adds optional adapters, so each corpus says which adapters its config lists: taxonomy and TanStack Query run with React for phase 2's gate, shadcn-svelte stays on TypeScript until the Svelte adapter.",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-milestone",
+          "ref": "2",
+          "url": "https://github.com/Pixerate/poetics/milestone/2"
+        }
+      ]
     }
   ],
   "tests": [

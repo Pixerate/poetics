@@ -31,6 +31,31 @@
         "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765",
         "01M6J0611RWR0GXQFD30AW6JBG": "b3:d5d15670919f5df64a04333e473474d96648fd034a7a3ad1c5a4c02189b3c830"
       }
+    },
+    {
+      "contentHash": "b3:d7e99dcef25c96c960f0a9180660e0de419f5c77762226d3050471816a063e78",
+      "interfaceHash": "b3:4660b6e041f1fd7f8f9a698f2814c31bd7a93feed02aabd237f080a99508bf38",
+      "parent": "b3:78eb72c5750c80d543a72a25bb226bf91755c45705fd8bc815f306e3d3dad837",
+      "change": "interface",
+      "rationale": "Takes the adapters to index with (the corpus's unless overridden) and writes them into the workspace config, instead of hard-coding typescript, so poetics index runs the React plugin.",
+      "deps": {
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:194f0d956019c1f2ce35c3ba6df7bb35285b4ee68753a4bd5206339f0454aa62",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:52dfc6f144b0773151c94dc5f2265e072e6db10d50e626c95a9d833c0b1ab765",
+        "01M6J0611RWR0GXQFD30AW6JBG": "b3:6829e3e4ad13789b6fe6de9a163fe69bc0ee1ebded7db716596df2d38acb1c81"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-milestone",
+          "ref": "2",
+          "url": "https://github.com/Pixerate/poetics/milestone/2"
+        }
+      ]
     }
   ],
   "docs": "Copies the corpus's in-scope files into a throwaway git repository with a\nconfig for the same scope, so the gate never writes into the downloaded tree.",

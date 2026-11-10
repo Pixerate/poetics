@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { REFACTORS, formatResults, prepareWorkspace, runGate, seededRandom } from "./gate.ts";
+import { REFACTORS, formatResults, prepareWorkspace, refactorsFor, runGate, seededRandom } from "./gate.ts";
 import type { CorpusEntry } from "./gate.ts";
 
 // Distinct statement shapes, so no two functions look alike and nothing is queued.
@@ -64,7 +64,7 @@ describe("seededRandom", () => {
 describe("prepareWorkspace", () => {
   it("copies only the files in scope into a fresh git repository with a matching config", async () => {
     const { root, config, notIndexed } = await prepareWorkspace(await corpus(), ENTRY);
-    expect(config).toEqual({ include: ENTRY.include, exclude: [] });
+    expect(config).toEqual({ include: ENTRY.include, exclude: [], adapters: ["typescript"] });
     expect(notIndexed).toBe(1);
     const { readdir } = await import("node:fs/promises");
     expect((await readdir(join(root, "src"))).sort()).toEqual(["alpha.ts", "delta.ts", "golf.ts", "juliet.ts", "view.svelte"]);
@@ -77,12 +77,61 @@ describe("runGate", () => {
     const result = await runGate(ENTRY, await corpus(), { rounds: 2, seed: 26 });
     expect(result.units).toBe(12);
     expect(result.files).toEqual({ indexed: 4, notIndexed: 1 });
-    for (const kind of REFACTORS) expect(result.byKind[kind].refactors + result.byKind[kind].skipped).toBe(2);
+    expect(Object.keys(result.byKind)).toEqual(REFACTORS.filter((kind) => kind !== "wrap"));
+    for (const kind of refactorsFor({})) expect(result.byKind[kind]!.refactors + result.byKind[kind]!.skipped).toBe(2);
     const missed = Object.values(result.byKind).reduce((n, k) => n + k.lost + k.misplaced + k.queued, 0);
     expect(result.failures).toEqual([]);
     expect(missed).toBe(0);
-    expect(result.byKind.split.kept).toBe(2 * result.byKind.split.refactors);
+    expect(result.byKind.split!.kept).toBe(2 * result.byKind.split!.refactors);
+    expect(result.adapters).toEqual(["typescript"]);
+    expect(result.unitKinds).toEqual({ function: 12 });
     expect(result.timings.indexMs).toHaveLength(2);
+  }, GATE_TIMEOUT_MS);
+});
+
+/** A React corpus: components with block bodies, which only the React adapter claims. */
+async function reactCorpus(): Promise<string> {
+  const root = await mkdtemp(join(tmpdir(), "poetics-gate-react-"));
+  const component = (name: string, tag: string) =>
+    `export function ${name}(props: { label: string; count: number }) {\n  const text = \`\${props.label}: \${props.count}\`;\n  if (props.count > ${name.length}) console.info("${name}");\n  return <${tag} className="${name.toLowerCase()}">{text}</${tag}>;\n}\n`;
+  const files: Record<string, string> = {
+    "src/cards.tsx": component("AlphaCard", "section") + component("BravoCard", "article") + component("CharlieCard", "aside"),
+    "src/lists.tsx": component("DeltaList", "ul") + component("EchoList", "ol") + component("FoxtrotList", "menu"),
+    "src/panels.tsx": component("GolfPanel", "div") + component("HotelPanel", "main") + component("IndiaPanel", "nav"),
+    "src/rows.tsx": component("JulietRow", "tr") + component("KiloRow", "td") + component("LimaRow", "th"),
+  };
+  for (const [file, text] of Object.entries(files)) {
+    await mkdir(dirname(join(root, file)), { recursive: true });
+    await writeFile(join(root, file), text);
+  }
+  return root;
+}
+
+const REACT_ENTRY: CorpusEntry = { name: "react", kind: "react", repo: "example/react", commit: "0".repeat(40), include: ["src/**/*.tsx"], exclude: [], adapters: ["typescript", "react"] };
+
+describe("refactorsFor", () => {
+  it("measures wraps only when the React adapter is on", () => {
+    expect(refactorsFor({ adapters: ["typescript"] })).not.toContain("wrap");
+    expect(refactorsFor({})).not.toContain("wrap");
+    expect(refactorsFor({ adapters: ["typescript", "react"] })).toEqual(REFACTORS);
+  });
+});
+
+describe("runGate with the React adapter", () => {
+  it("records components as components and keeps a component's uid when it is wrapped in memo", async () => {
+    const result = await runGate(REACT_ENTRY, await reactCorpus(), { rounds: 2, seed: 26 });
+    expect(result.adapters).toEqual(["typescript", "react"]);
+    expect(result.unitKinds).toEqual({ component: 12 });
+    expect(result.byKind.wrap!.refactors).toBeGreaterThan(0);
+    expect(result.byKind.wrap!.kept).toBe(result.byKind.wrap!.refactors);
+    expect(result.byUnitKind["component"]!.touched).toBeGreaterThan(0);
+  }, GATE_TIMEOUT_MS);
+
+  it("runs without React when adapters are overridden", async () => {
+    const result = await runGate(REACT_ENTRY, await reactCorpus(), { rounds: 1, seed: 26, adapters: ["typescript"] });
+    expect(result.adapters).toEqual(["typescript"]);
+    expect(result.unitKinds).toEqual({ function: 12 });
+    expect(result.byKind.wrap).toBeUndefined();
   }, GATE_TIMEOUT_MS);
 });
 
@@ -91,7 +140,10 @@ describe("formatResults", () => {
     const result = await runGate(ENTRY, await corpus(), { rounds: 1, seed: 1 });
     result.failures.push("round 1 rename: X removed, should be at src/a.ts#y");
     const text = formatResults([result], { date: "2026-11-04", rounds: 1, seed: 1 });
-    expect(text).toMatch(/^# Phase 1 gate results\n/);
+    expect(text).toMatch(/^# Gate results\n/);
+    expect(text).toContain("adapters typescript:");
+    expect(text).toContain("units (12 function)");
+    expect(text).not.toContain("| wrap |");
     expect(text).toContain("## synthetic (mixed)");
     expect(text).toContain("| rename | ");
     expect(text).toMatch(/Uids kept: \*\*\d+ of \d+\*\*/);

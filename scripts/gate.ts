@@ -1,4 +1,6 @@
-// The phase 1 gate (#26): `pnpm gate [--fetch] [--rounds N] [--seed N] [--only name]`.
+// The identity gate (#26; phase 2's React gate):
+// `pnpm gate [--fetch] [--rounds N] [--seed N] [--only name] [--adapters a,b]`.
+// --adapters overrides each corpus's adapters, e.g. `typescript` to rerun phase 1.
 // --fetch downloads each corpus repository at its pinned commit into
 // evals/gate/.cache/ (shallow, source only; nothing is installed or run).
 // Writes evals/gate/results.md and results.json.
@@ -30,6 +32,7 @@ if (import.meta.main) {
   const rounds = Number(value("--rounds", "10"));
   const seed = Number(value("--seed", "26"));
   const only = argv.includes("--only") ? value("--only", "") : undefined;
+  const adapters = argv.includes("--adapters") ? value("--adapters", "typescript").split(",") : undefined;
   const { repos } = JSON.parse(await readFile(join(GATE, "corpus.json"), "utf8")) as { repos: CorpusEntry[] };
   const cache = join(GATE, ".cache");
   await mkdir(cache, { recursive: true });
@@ -43,7 +46,7 @@ if (import.meta.main) {
       continue;
     }
     console.error(`${entry.name}: ${rounds} rounds…`);
-    results.push(await runGate(entry, dir, { rounds, seed }));
+    results.push(await runGate(entry, dir, { rounds, seed, ...(adapters ? { adapters } : {}) }));
   }
   const date = new Date().toISOString().slice(0, 10);
   await writeFile(join(GATE, "results.json"), `${JSON.stringify({ date, rounds, seed, results }, null, 2)}\n`);
