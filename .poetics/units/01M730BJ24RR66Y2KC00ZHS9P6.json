@@ -1,0 +1,44 @@
+{
+  "uid": "01M730BJ24RR66Y2KC00ZHS9P6",
+  "kind": "function",
+  "framework": "none",
+  "name": "githubRepoOf",
+  "location": {
+    "file": "packages/cli/src/github.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:75f2a09b13987e7d6b499b3d7e7de4891da5c292456ae72825f603a21bb31d8d",
+      "interfaceHash": "b3:1c2d75980556ce440db86336a5a9ca914869e3cd67f01f2704e50bcec5deaa90",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "owner/name from an https or ssh origin on github.com, so backfill knows which repository's pull requests to ask for without any configuration.",
+      "deps": {
+        "01M5Z1F6NP3C1KG9NNND31TPSJ": "b3:dd4eb578ac15dbcb0dcf9645b932f78a8a124faebe26255799f186266636ddbb"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ]
+    }
+  ],
+  "docs": "`owner/name` from the `origin` remote, when it is on github.com.",
+  "tests": [
+    {
+      "file": "packages/cli/src/github.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -294,9 +294,10 @@ describe("poetics CLI", () => {
       expect(JSON.parse((await execIn(root, "backfill", "--history", "a", "b", "c", "--json")).err)).toMatchObject({ error: "usage" });
       expect(await execIn(root, "backfill", "--history", "no-such-ref")).toMatchObject({ code: 2, err: "The repository has no commits to walk a range of" });
       // No commits yet, so there is no history to reconstruct.
-      expect(await execIn(root, "backfill", "--history")).toMatchObject({ code: 0, out: "Would record 0 version(s) of prehistory for 0 unit(s), from 0 commit(s). Run with --write to record it." });
+      expect(await execIn(root, "backfill", "--history")).toMatchObject({ code: 0, out: "GitHub: skipped: the origin remote is not on github.com.\nWould record 0 version(s) of prehistory for 0 unit(s), from 0 commit(s). Run with --write to record it." });
+      expect((await execIn(root, "backfill", "--history", "--offline")).out).toMatch(/^GitHub: skipped \(--offline\)/);
       const dry = await execIn(root, "backfill", "--snapshot");
-      expect([dry.code, dry.out]).toEqual([0, "+ src/a.ts#a [low] Adds one.\nWould create 1 new unit(s) (0 high, 0 medium, 1 low confidence). Run with --write to write them."]);
+      expect([dry.code, dry.out]).toEqual([0, "+ src/a.ts#a [low] Adds one.\nGitHub: skipped: the origin remote is not on github.com.\nWould create 1 new unit(s) (0 high, 0 medium, 1 low confidence). Run with --write to write them."]);
       expect(JSON.parse((await execIn(root, "backfill", "--snapshot", "--write", "--json")).out)).toMatchObject({ written: 1 });
       expect((await readdir(join(root, ".poetics/units"))).length).toBe(1);
     });

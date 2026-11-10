@@ -41,6 +41,12 @@ It never writes to a unit that has a file.
    `created` version for the code as it last was, and a `removed` version
    from the commit that deleted it. Check the "deleted in" lines: a unit
    replaced rather than dropped should link to its successor (ADR 0010).
+   With a GitHub token (`GITHUB_TOKEN` or `gh auth token`), both modes also
+   link the pull requests behind each commit and the issues they close, and
+   raise confidence when a pull request names the unit or a review comment
+   is on its lines. Their text is never written: open the linked pull request
+   to read why. The report's `GitHub:` line says whether it ran; `--offline`
+   skips it.
 5. **Act on the gaps:** add the listed docs and test links to the unit files,
    record candidate notes with `poetics-gotcha` if they hold, and run
    `pnpm poetics index` for existing units with unrecorded changes.

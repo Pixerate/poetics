@@ -31,6 +31,35 @@
         "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582",
         "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e"
       }
+    },
+    {
+      "contentHash": "b3:a4ecabf455bd6d38799ead7a37eb4fb7706fea321178863b315662efc3a22df2",
+      "interfaceHash": "b3:2f1d88c9d661ba1d189a258f1e3aa43bbb542a0d18f05e2139e7b408bfcd0b37",
+      "parent": "b3:a4bdf86922ac2ce5656dc3f7ec898867dfd4be9db85a4e81cb51600d9fdce0ef",
+      "change": "interface",
+      "rationale": "Adds tracker: whether pull request evidence was used, and why not when it was not.",
+      "deps": {
+        "01M6KA0K76FC45D9BH7SCY6TN4": "b3:db95265239831d56ce2a9186e2c62c6a0a0e3f8f809d58099420a14180162421",
+        "01M730BJ24P27EB5Q94C76JBB8": "b3:794991c9c84a4c40835e231e32fe18c926151f59895b039b9be16d6b5785c0c8",
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ]
     }
   ],
   "tests": [

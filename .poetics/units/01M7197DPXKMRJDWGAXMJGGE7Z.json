@@ -155,6 +155,63 @@
           "ref": "docs/decisions/0010-removed-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:d38de519dd988308d7bd6955e8ba96352c1468110c4fa1c08920a6bcef304d8d",
+      "interfaceHash": "b3:5c27cf6243217add743d7fffbe5bf6eca3dbd55e329b7eb1633ea8f511a74e72",
+      "parent": "b3:26c4f66d1803ccd040d82b5a76ecd4cc119012df3bc4079a049628447f7fae72",
+      "change": "interface",
+      "rationale": "Takes a tracker: pull requests for each commit are fetched before the walk, then linked to each version with the issues they close, raising confidence when they name the unit or a review comment is on its lines at that commit. A unit whose recorded prehistory the walk would not keep as its tail is counted in kept and left alone, since prehistory is write-once.",
+      "deps": {
+        "01M6HS3HPGSA1NB2JTM6ZM903R": "b3:dbb56abfafffa1a6af99b5f802532bed33a61a89ad8e7a7bbdb12c4f73443a5e",
+        "01M6HNRFMKW8GXW0YMCVY67N4A": "b3:588fed85ac85cda89945b814917f1b7a4fcec907b605bd56053915157ead9ecb",
+        "01M6HNRFMKSSPK73VN3DNDX6B3": "b3:41f72b8801bba3555c3dfb1b1ebc6ebb4fa47ec928ebfc058aac77c11b5acbcf",
+        "01M6HYTZKT7RKWE7EFQ74ASSN8": "b3:3aee4b720fa23054622d99f39822fdbb1df75c52a1407b7100b31a56195087c9",
+        "01M7197DPWEHB21TK3H594CYBN": "b3:8d9799713462ca1e795d5cdf80b07d9b0b206b4fcfc4fb9aef32ddf0a9e04f3e",
+        "01M7197DPXAMAVSVKWE6Z73DXD": "b3:4a6906526335352e88a68de2a33f7bf1fb82f67f5d82493641cbc7172e348921",
+        "01M72K3Z98K046F5Z5TG2ENW6J": "b3:b347a8e17209dd29dbcb18d2881475dabd0a312bba7a68845385abf30d4f0bed",
+        "01M730BJ24H3DAFKF9948AMEVB": "b3:8460a6f15cb97cc50b65dd31611fafb7e8db2a2acfb967602ed9e6a55d6697af",
+        "01M6ME83DBRXTEJAFTHD4TY1R0": "b3:2bced8d96434b3d623f644cf2e834e591c115073faaf9b19d4572022f25e6cf6",
+        "01M5Z1F6NP3C1KG9NNND31TPSJ": "b3:dd4eb578ac15dbcb0dcf9645b932f78a8a124faebe26255799f186266636ddbb",
+        "01M5Z1F6NQR9T376HTSH2ZYP8C": "b3:85859a81a9f157d7de29c1cfe6fed88d978006bd3ed9ea8645bd87f785770203",
+        "01M730BJ247CHY6J1T3D4XCYCN": "b3:18615b7b9efa47d5e37ae67d8c9f58a92ce7bfbfcb9cb46bbba23a69e3d0aa3d",
+        "01M730BJ25Z9CBVB7NV150A8PF": "b3:39a8fa5eaa15c4c80d9f065239da8a71a62787b21163cf2da9404570035ce545",
+        "01M730BJ250K5MMKKZ8DFDQPS9": "b3:39b0450a008ac659a94eb3d016a84863f461367c492260fc0ab0dea909a45d94",
+        "01M730BJ25RZTVMGZSE0NEH1TH": "b3:b1a21f0cbabaa176431e06691fc13e66911f548097f5b7fa26205e10ee47c230",
+        "01M730BJ257M0R4ARH7MGD8VFG": "b3:271a5e1728307dcd48680617c44ff5f03c2d0880d17ff005edd8cb64622c3a1c",
+        "01M5XDBC6TWJ0A59K9ER71Q88Y": "b3:19dd1d269306d1c7edc17d860a6674f7831d3d232ba7b067020f558ad0488a11",
+        "01M6HS3HPGM7XKCBTGKAJ8RCSH": "b3:a8be2a1254b37843e5c66268ede92743b2389cd10ae516755fef228ec00911de",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC71JDZ5ANVBKKB168EW": "b3:15b02c3dbcc5b7c1d93a89f604dbb5aa20e8b6b319338904d3189c6c1305ed69",
+        "01M5XDBC6YYK0M5RPS3YMPYSPM": "b3:a9d8f9922d57a2b242a17ff15b364a707eb1b721d5ced5d96e4ec2f62342087d",
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582",
+        "01M5XDBC74RY8DRPAXNTM7KM0W": "b3:2256d971b742e8b5a6ad40714f082f993c4521518fb083ae3238e8e5edc1f79b",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b",
+        "01M5XDBC7FTZ5GY3BX711BWGN6": "b3:3cf0225787144e59edd01ec041de70443d024e2b9e55b22dfceabec9025b44b7",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:194f0d956019c1f2ce35c3ba6df7bb35285b4ee68753a4bd5206339f0454aa62",
+        "01M5Z1F6NV9Q4BF2C1KBZD09MQ": "b3:73bb120c04ff81df07603ebd00c8a7b85a52b560589afe2ec8b7691c4be3c18a",
+        "01M7197DPX923K14R9JAV6MB6S": "b3:c445b73411996b115dd57f71ec857a513589e0938eec690a6f40538e32e962d5",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ]
     }
   ],
   "docs": "`poetics backfill --history` (ADR 0011): walks the first-parent history,\nreads each changed file's units syntactically, and follows them from commit\nto commit with `matchIdentities`, recording a version whenever a unit's code\nchanged. A unit's prehistory is what happened before the commit that first\nrecorded its unit file. Where matching would only queue a unit, its history\nrestarts there, and the plan says so: history is never guessed.",

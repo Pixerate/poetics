@@ -4,7 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { REMOVED_CONTENT_HASH } from "@poetics/core";
-import type { Unit } from "@poetics/core";
+import type { IssueTracker, TrackedPullRequest, TrackedReviewComment, Unit } from "@poetics/core";
 import { checkStore, createValidator, loadSchemaSet, storePaths } from "@poetics/store";
 import { applyBackfill, applyPrehistory, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
 import { applyIndex, planIndex } from "./indexing.ts";
@@ -162,7 +162,7 @@ describe("planPrehistory", () => {
     expect(entry).toMatchObject({ name: "formatAmount", file: "src/money.ts" });
     expect(entry!.stoppedAt).toBeUndefined();
     expect(entry!.prehistory).toMatchObject([
-      { change: "created", parent: null, commit: sha("Add formatPrice"), rationale: "Add formatPrice (#1)", links: [{ kind: "github-issue", ref: "#1" }], actor: { kind: "human" }, inferred: { by: "poetics-backfill", confidence: "high", sources: ["commit"] } },
+      { change: "created", parent: null, commit: sha("Add formatPrice"), rationale: "Add formatPrice (#1)", links: [{ kind: "github-pr", ref: "#1" }], actor: { kind: "human" }, inferred: { by: "poetics-backfill", confidence: "high", sources: ["commit"] } },
       { change: "behaviour", commit: sha("Double each item"), rationale: "Double each item for bulk orders", actor: { kind: "agent", tool: "Claude Opus 5.5", reviewed: false } },
     ]);
     expect(entry!.prehistory[1]!.parent).toBe(entry!.prehistory[0]!.contentHash);
@@ -199,6 +199,75 @@ describe("planPrehistory", () => {
     const root = await adoptedLate();
     expect(formatPrehistoryPlan(await planPrehistory(root, CONFIG))).toMatch(/^src\/money\.ts#formatAmount: 2 version\(s\) back to [0-9a-f]{7}\nWould record 2 version\(s\) of prehistory for 1 unit\(s\), from 4 commit\(s\)\./);
   });
+  describe("with an issue tracker", () => {
+    /** A tracker that knows one pull request, for the commit whose subject starts with `subject`. */
+    const trackerFor = (root: string, subject: string, pr: Partial<TrackedPullRequest>, comments: TrackedReviewComment[] = []): IssueTracker => {
+      const sha = runGit(root, "log", "--format=%H", `--grep=^${subject}`).trim();
+      const full: TrackedPullRequest = { number: 7, url: "https://github.com/acme/shop/pull/7", title: "Bulk orders", body: "Fixes #2", labels: [], ...pr };
+      return {
+        name: "github",
+        async pullRequestsFor(commit) {
+          return commit === sha ? [full] : [];
+        },
+        async reviewComments() {
+          return comments;
+        },
+      };
+    };
+
+    it("links pull requests and closed issues, raises confidence when one speaks to the unit, and never quotes it", async () => {
+      const root = await adoptedLate();
+      const tracker = trackerFor(root, "Double each item", { body: "formatPrice doubles for bulk. Fixes #2" });
+      const plan = await planPrehistory(root, CONFIG, { tracker, trackerStatus: "used" });
+      const doubled = plan.units[0]!.prehistory[1]!;
+      expect(doubled.links).toEqual([
+        { kind: "github-pr", ref: "#7", url: "https://github.com/acme/shop/pull/7" },
+        { kind: "github-issue", ref: "#2" },
+      ]);
+      expect(doubled.inferred).toMatchObject({ confidence: "high", sources: ["commit", "pull-request", "issue"] });
+      expect(doubled.rationale).toBe("Double each item for bulk orders");
+      expect(JSON.stringify(plan)).not.toContain("doubles for bulk");
+      expect(plan.tracker).toEqual({ name: "github", status: "used", pullRequests: 1 });
+      expect(formatPrehistoryPlan(plan)).toContain("GitHub: linked 1 pull request(s).");
+    });
+
+    it("counts a review comment on the unit's lines in that commit as speaking to it", async () => {
+      const root = await adoptedLate();
+      const tracker = trackerFor(root, "Double each item", {}, [{ path: "src/price.ts", startLine: 5, endLine: 5, body: "why double?" }]);
+      const doubled = (await planPrehistory(root, CONFIG, { tracker, trackerStatus: "used" })).units[0]!.prehistory[1]!;
+      expect(doubled.inferred).toMatchObject({ confidence: "high", sources: ["commit", "pull-request", "issue", "comment"] });
+    });
+
+    it("gives snapshot units the same links and confidence", async () => {
+      const root = await adopted();
+      const sha = runGit(root, "log", "--format=%H", "-1").trim();
+      const tracker: IssueTracker = {
+        name: "github",
+        async pullRequestsFor(commit) {
+          return commit === sha ? [{ number: 9, url: "u9", title: "t", body: "", labels: [] }] : [];
+        },
+        async reviewComments() {
+          return [];
+        },
+      };
+      const plan = await planBackfill(root, CONFIG, { tracker, trackerStatus: "used" });
+      const linked = plan.created.filter(({ unit }) => (unit.versions[0]!.links ?? []).some((l) => typeof l !== "string" && l.kind === "github-pr" && l.ref === "#9"));
+      expect(linked.length).toBeGreaterThan(0);
+      for (const { unit } of linked) expect(unit.versions[0]!.inferred!.sources).toContain("pull-request");
+      expect(plan.tracker).toEqual({ name: "github", status: "used", pullRequests: 1 });
+      expect(formatBackfillPlan(plan)).toContain("GitHub: linked 1 pull request(s).");
+    });
+
+    it("leaves prehistory recorded without a tracker alone when a walk with one would change it", async () => {
+      const root = await adoptedLate();
+      expect(await applyPrehistory(root, await planPrehistory(root, CONFIG))).toBe(1);
+      const tracker = trackerFor(root, "Double each item", {});
+      const plan = await planPrehistory(root, CONFIG, { tracker, trackerStatus: "used" });
+      expect([plan.units, plan.kept]).toEqual([[], 1]);
+      expect(formatPrehistoryPlan(plan)).toContain("1 unit(s) keep the prehistory already recorded, which this walk would not extend.");
+    });
+  });
+
   describe("with includeRemoved", () => {
     const DISCOUNT = (rate: string) => `export function applyDiscount(price: number, code: string): number {\n  if (code.length === 0) return price;\n  const off = Math.round(price * ${rate});\n  for (let i = 0; i < code.length; i++) {\n    if (code[i] === "x") return price;\n  }\n  return price - off;\n}\n`;
     const sha = (root: string, subject: string) => runGit(root, "log", "--format=%H", `--grep=${subject}`).trim();

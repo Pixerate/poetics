@@ -9,6 +9,7 @@ import { formatChanges } from "./changes.ts";
 import { COMMANDS } from "./commands.ts";
 import { coverageFor, formatCoverage } from "./coverage.ts";
 import { formatLog, formatWhy } from "./history.ts";
+import { connectGitHub } from "./github.ts";
 import { applyBackfill, applyPrehistory, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
 import { applyIndex, formatIndexPlan, needsRationale, planIndex } from "./indexing.ts";
 import { applyInit, formatInitPlan, planInit } from "./init.ts";
@@ -239,15 +240,18 @@ async function backfill(args: readonly string[], io: Io, json: boolean, root: st
   const range = args.filter((arg) => !arg.startsWith("--"));
   const parsed = parseFlags(
     args.filter((arg) => arg.startsWith("--")),
-    ["--snapshot", "--history", "--include-removed", "--write"],
+    ["--snapshot", "--history", "--include-removed", "--offline", "--write"],
     [],
   );
   const history = parsed?.flags.has("--history") === true;
   if (!parsed || parsed.flags.has("--snapshot") === history || range.length > (history ? 2 : 0) || (parsed.flags.has("--include-removed") && !history)) {
-    report(io, json, { error: "usage", command: "backfill", message: "Usage: poetics backfill --snapshot [--write] | --history [<from>] [<to>] [--include-removed] [--write]" });
+    report(io, json, { error: "usage", command: "backfill", message: "Usage: poetics backfill --snapshot [--offline] [--write] | --history [<from>] [<to>] [--include-removed] [--offline] [--write]" });
     return 2;
   }
   const config = await readConfig(root);
+  // Pull requests come from GitHub when a token is found (ADR 0011); --offline keeps backfill local.
+  const github = connectGitHub(root, { offline: parsed.flags.has("--offline") });
+  const trackerOptions = { ...(github.tracker ? { tracker: github.tracker } : {}), trackerStatus: github.status };
   if (history) {
     let plan;
     try {
@@ -255,16 +259,19 @@ async function backfill(args: readonly string[], io: Io, json: boolean, root: st
         ...(range[0] ? { from: range[0] } : {}),
         ...(range[1] ? { to: range[1] } : {}),
         ...(parsed.flags.has("--include-removed") ? { includeRemoved: true } : {}),
+        ...trackerOptions,
       });
     } catch (error) {
       report(io, json, { error: "range", command: "backfill", message: (error as Error).message });
       return 2;
     }
+    await github.tracker?.flush();
     const recorded = parsed.flags.has("--write") ? await applyPrehistory(root, plan, config.store?.layout) : undefined;
     io.out(json ? JSON.stringify({ ...plan, written: recorded ?? 0 }) : formatPrehistoryPlan(plan, recorded));
     return 0;
   }
-  const snapshot = await planBackfill(root, config);
+  const snapshot = await planBackfill(root, config, trackerOptions);
+  await github.tracker?.flush();
   const written = parsed.flags.has("--write") ? await applyBackfill(root, snapshot, config.store?.layout) : undefined;
   io.out(json ? JSON.stringify({ ...snapshot, written: written ?? 0 }) : formatBackfillPlan(snapshot, written));
   return 0;

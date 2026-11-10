@@ -8,10 +8,13 @@ import ts from "typescript";
 import { contentTree, createTypeScriptIndexer, detectUnits, fingerprint, signatureText } from "@poetics/adapter-typescript";
 import type { IndexedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
-import type { Actor, ChangeClass, CodeUnit, Framework, Hash, Inferred, Link, Unit, Version } from "@poetics/core";
-import { appendVersion, createMatcher, createUnit, filesInScope, parseUnit, readUnitFiles, setPrehistory, storePaths } from "@poetics/store";
+import type { Actor, ChangeClass, CodeUnit, Framework, Hash, Inferred, IssueTracker, Link, Unit, Version } from "@poetics/core";
+import { appendVersion, createMatcher, createUnit, extendsPrehistory, filesInScope, parseUnit, readUnitFiles, setPrehistory, storePaths } from "@poetics/store";
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { git, showAt } from "./git.ts";
+import type { TrackerStatus } from "./github.ts";
+import { pullRequestEvidence, pullRequestsInSubject, trackerReader, withPullRequests } from "./pull-requests.ts";
+import type { CommitPullRequests, TrackerUse } from "./pull-requests.ts";
 import { pluginsFor } from "./frameworks.ts";
 import { planIndex } from "./indexing.ts";
 
@@ -34,6 +37,15 @@ export interface BackfillPlan {
   missingTests: Array<{ uid: string; name: string; file: string; test: string }>;
   /** Comments that read like a workaround or an invariant: candidates for a note, never written. */
   candidateNotes: Array<{ file: string; line: number; text: string }>;
+  /** The issue tracker's part: used, or why its collectors were skipped. */
+  tracker?: TrackerUse;
+}
+
+/** Where pull request evidence comes from: a tracker when one is connected, and why not when it is not. */
+export interface TrackerOptions {
+  tracker?: IssueTracker;
+  /** `used` with a tracker; otherwise the reason there is none, for the report. */
+  trackerStatus?: TrackerStatus;
 }
 
 const BY = "poetics-backfill";
@@ -41,7 +53,8 @@ const NOTE_COMMENT = /\/\/\s*(.*\b(?:HACK|XXX|workaround|work around|do not|don'
 const AGENT_TRAILER = /\b(claude|copilot|codex|gemini|cursor|devin|aider|chatgpt)\b/i;
 
 /** What a snapshot backfill would write. Nothing is written until `applyBackfill`. */
-export async function planBackfill(root: string, config: PoeticsConfig): Promise<BackfillPlan> {
+export async function planBackfill(root: string, config: PoeticsConfig, options: TrackerOptions = {}): Promise<BackfillPlan> {
+  const pulls = trackerReader(options.tracker, options.trackerStatus);
   const index = await planIndex(root, config, { rationale: "backfill" });
   // The same index planIndex just built, from its cache: spans for blame, docs for the gaps.
   const { parseable } = await filesInScope(root, config);
@@ -96,6 +109,13 @@ export async function planBackfill(root: string, config: PoeticsConfig): Promise
         rationale = commit.body || commit.subject;
         confidence = perCommit.get(commit.sha) === 1 || names(rationale, unit.name) ? "high" : "medium";
       }
+      // Pull requests are linked and can raise confidence; their text never becomes the rationale.
+      const at = codeAt.get(place(unit.location.file, unit.name, unit.kind));
+      const found = await pulls.read(commit.sha);
+      const prs = pullRequestEvidence(commit.rawSubject, found, { name: unit.name, file: unit.location.file, startLine: at?.startLine ?? 0, endLine: at?.endLine ?? 0 });
+      links.push(...prs.links);
+      for (const source of prs.sources) evidence.push({ source, ref: commit.sha });
+      confidence = withPullRequests(confidence, found, prs.speaks);
     }
     if (unit.docs) {
       evidence.push({ source: "comment", ref: unit.location.file, text: unit.docs });
@@ -119,6 +139,8 @@ export async function planBackfill(root: string, config: PoeticsConfig): Promise
 
   const existing = (await readUnitFiles(storePaths(root))).map(parseUnit).filter((unit) => !isRemoved(unit));
   listGaps(root, parseable, existing, codeAt, plan);
+  const tracker = pulls.use();
+  if (tracker) plan.tracker = tracker;
   return plan;
 }
 
@@ -141,6 +163,7 @@ export function formatBackfillPlan(plan: BackfillPlan, written?: number): string
   for (const gap of plan.missingTests) lines.push(`tests? ${gap.file}#${gap.name} looks tested by ${gap.test}`);
   for (const note of plan.candidateNotes) lines.push(`note? ${note.file}:${note.line} ${note.text}`);
   if (plan.unrecorded > 0) lines.push(`${plan.unrecorded} existing unit(s) have unrecorded changes; poetics index records those.`);
+  if (plan.tracker) lines.push(trackerLine(plan.tracker));
   const { high, medium, low } = plan.byConfidence;
   const counts = `${plan.created.length} new unit(s) (${high} high, ${medium} medium, ${low} low confidence)`;
   lines.push(written === undefined ? `Would create ${counts}. Run with --write to write them.` : `Created ${counts}.`);
@@ -195,7 +218,10 @@ function blameLines(root: string): (file: string, line: number) => string | unde
 
 interface CommitInfo {
   sha: string;
+  /** Without its Conventional Commit prefix. */
   subject: string;
+  /** As written, which names a merged or squashed pull request. */
+  rawSubject: string;
   body: string;
   issues: string[];
   /** The agent a `Co-Authored-By` trailer names, by its display name only. */
@@ -221,7 +247,9 @@ function commitReader(root: string): (sha: string) => CommitInfo {
         // The Conventional Commit prefix says what kind of change, not why.
         subject: subject.replace(/^[a-z]+(\([^)]*\))?!?:\s*/, "").trim(),
         body,
-        issues: [...new Set([...`${subject}\n${raw}`.matchAll(/(?:^|[\s(])#(\d+)\b/g)].map((m) => `#${m[1]}`))],
+        rawSubject: subject,
+        // A merge or squash subject's number is the pull request, linked as one, not an issue.
+        issues: [...new Set([...`${subject}\n${raw}`.matchAll(/(?:^|[\s(])#(\d+)\b/g)].map((m) => `#${m[1]}`))].filter((ref) => !pullRequestsInSubject(subject).includes(ref)),
       };
       const agent = agentTrailer?.replace(/^co-authored-by:\s*/i, "").replace(/\s*<[^>]*>\s*$/, "").trim();
       if (agent) info.agent = agent;
@@ -341,6 +369,10 @@ export interface PrehistoryPlan {
   beyond: number;
   /** With `includeRemoved`: exports deleted before anyone recorded them, as new unit files ending in `removed`. */
   removed: Unit[];
+  /** Units whose recorded prehistory this walk would not keep as its tail (other evidence, such as pull requests): left as recorded. */
+  kept: number;
+  /** The issue tracker's part: used, or why its collectors were skipped. */
+  tracker?: TrackerUse;
 }
 
 /** Where `poetics backfill --history [from] [to]` walks (refs or commit ids, both optional), and whether to recover deleted exports. */
@@ -376,7 +408,7 @@ interface Followed {
  * further back extends. Units first recorded after `to` are left out, since
  * prehistory that stops short of their recording could never be filled in.
  */
-export async function planPrehistory(root: string, config: PoeticsConfig, range: PrehistoryRange = {}): Promise<PrehistoryPlan> {
+export async function planPrehistory(root: string, config: PoeticsConfig, range: PrehistoryRange & TrackerOptions = {}): Promise<PrehistoryPlan> {
   const plugins = pluginsFor(config);
   const inScope = createMatcher(config.include, config.exclude ?? []);
   const indexable = (file: string) => inScope(file) && /\.(ts|tsx|mts|cts)$/.test(file) && !file.endsWith(".d.ts");
@@ -395,7 +427,11 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
   const deletion = (file: string, name: string, commit: string) => `${file}#${name}@${commit}`;
   const recovered = new Set(all.filter(isRemoved).map((unit) => deletion(unit.location.file, unit.name, unit.versions.at(-1)!.commit ?? "")));
   const state = new Map<string, Followed[]>();
-  const plan: PrehistoryPlan = { commits: commits.length, range: { ...(from ? { from } : {}), to }, units: [], beyond: 0, removed: [] };
+  const plan: PrehistoryPlan = { commits: commits.length, range: { ...(from ? { from } : {}), to }, units: [], beyond: 0, removed: [], kept: 0 };
+  // Asked before the walk, which reads each commit synchronously: one call per commit, cached between runs.
+  const pulls = trackerReader(range.tracker, range.trackerStatus);
+  const pullsAt = new Map<string, CommitPullRequests | undefined>();
+  for (const sha of commits) pullsAt.set(sha, await pulls.read(sha));
   const done = new Set<string>();
   const startsAt = from ? `the range starts after ${from.slice(0, 7)}; earlier history was not walked` : undefined;
 
@@ -434,6 +470,11 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     const followed = (state.get(location.file) ?? []).find((f) => f.code.name === location.name && (f.code.kind === "type") === (location.kind === "type"));
     if (followed) followed.recorded = true;
     if (!followed || followed.history.length === 0) return;
+    // Prehistory is write-once: a walk that saw other evidence leaves what was recorded alone.
+    if (unit.prehistory && !extendsPrehistory(unit.prehistory, followed.history)) {
+      plan.kept++;
+      return;
+    }
     const entry: PrehistoryEntry = { uid, name: unit.name, file: unit.location.file, prehistory: followed.history };
     if (followed.stoppedAt) entry.stoppedAt = followed.stoppedAt;
     plan.units.push(entry);
@@ -485,6 +526,8 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
           framework: unit.framework,
           runtimeHash: contentHash(contentTree(unit, true)),
           signature: signatureText(unit, source, plugins),
+          startLine: source.getLineAndCharacterOfPosition(unit.span.start).line + 1,
+          endLine: source.getLineAndCharacterOfPosition(unit.span.end).line + 1,
         };
       });
     });
@@ -495,7 +538,10 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     );
     const afterByKey = new Map(after.map((a) => [a.code.key, a]));
     const info = read(sha);
+    const found = pullsAt.get(sha);
     const changed: Array<{ followed: Followed; version: Omit<Version, "inferred"> }> = [];
+    // What this commit's pull requests say about each version, kept for when its confidence is computed.
+    const prsOf = new Map<Omit<Version, "inferred">, ReturnType<typeof pullRequestEvidence>>();
     const version = (parentHash: Hash | null, next: (typeof after)[number], change: ChangeClass): Omit<Version, "inferred"> => {
       const v: Omit<Version, "inferred"> = {
         contentHash: next.code.contentHash,
@@ -505,7 +551,10 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
         actor: info.agent ? { kind: "agent", tool: info.agent, reviewed: false } : { kind: "human" },
         rationale: info.body || info.subject || `Changed in ${sha.slice(0, 7)}; the commit does not say why.`,
       };
-      if (info.issues.length > 0) v.links = info.issues.map((ref) => ({ kind: "github-issue", ref }));
+      const prs = pullRequestEvidence(info.rawSubject, found, { name: next.code.name, file: next.code.file, startLine: next.startLine, endLine: next.endLine });
+      const links = dedupe([...info.issues.map((ref): Link => ({ kind: "github-issue", ref })), ...prs.links]);
+      if (links.length > 0) v.links = links;
+      prsOf.set(v, prs);
       return v;
     };
 
@@ -548,9 +597,10 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     // Text shared by everything a commit changed speaks to none of them in particular.
     const sources: Inferred["sources"] = info.body || info.subject ? ["commit"] : [];
     for (const { followed, version: v } of changed) {
-      const confidence: Inferred["confidence"] = sources.length === 0 ? "low" : changed.length === 1 || names(v.rationale, followed.code.name) ? "high" : "medium";
+      const prs = prsOf.get(v)!;
+      const base: Inferred["confidence"] = sources.length === 0 ? "low" : changed.length === 1 || names(v.rationale, followed.code.name) ? "high" : "medium";
       const last = followed.history.at(-1)!;
-      last.inferred = { by: BY, confidence, sources, drafted: false, reviewed: false };
+      last.inferred = { by: BY, confidence: withPullRequests(base, found, prs.speaks), sources: [...new Set([...sources, ...prs.sources])], drafted: false, reviewed: false };
     }
 
     // Exports this commit deleted before anyone recorded them. Matching is confident they are gone: a unit it would
@@ -559,7 +609,10 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     const gone = result.removed.map((r) => ids.get(r.uid)!).filter((was) => !was.recorded && was.history.length > 0 && !recovered.has(deletion(was.code.file, was.code.name, sha)));
     for (const was of gone) {
       const rationale = info.body || info.subject || `Deleted in ${sha.slice(0, 7)}; the commit does not say why.`;
-      const confidence: Inferred["confidence"] = sources.length === 0 ? "low" : gone.length + changed.length === 1 || names(rationale, was.code.name) ? "high" : "medium";
+      // The deletion has no lines left to review, so only a pull request that names the unit speaks to it.
+      const prs = pullRequestEvidence(info.rawSubject, found, { name: was.code.name, file: was.code.file, startLine: 0, endLine: -1 });
+      const base: Inferred["confidence"] = sources.length === 0 ? "low" : gone.length + changed.length === 1 || names(rationale, was.code.name) ? "high" : "medium";
+      const confidence = withPullRequests(base, found, prs.speaks);
       const last = was.history.at(-1)!;
       const removed: Version = {
         contentHash: REMOVED_CONTENT_HASH,
@@ -569,9 +622,10 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
         commit: sha,
         actor: info.agent ? { kind: "agent", tool: info.agent, reviewed: false } : { kind: "human" },
         rationale,
-        inferred: { by: BY, confidence, sources, drafted: false, reviewed: false },
+        inferred: { by: BY, confidence, sources: [...new Set([...sources, ...prs.sources])], drafted: false, reviewed: false },
       };
-      if (info.issues.length > 0) removed.links = info.issues.map((ref) => ({ kind: "github-issue", ref }));
+      const links = dedupe([...info.issues.map((ref): Link => ({ kind: "github-issue", ref })), ...prs.links]);
+      if (links.length > 0) removed.links = links;
       plan.removed.push({
         uid: mintUid(),
         kind: was.code.kind,
@@ -594,6 +648,8 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
   const byPlace = (a: { file: string; name: string }, b: { file: string; name: string }) => (a.file === b.file ? (a.name < b.name ? -1 : 1) : a.file < b.file ? -1 : 1);
   plan.units.sort(byPlace);
   plan.removed.sort((a, b) => byPlace({ file: a.location.file, name: a.name }, { file: b.location.file, name: b.name }));
+  const tracker = pulls.use();
+  if (tracker) plan.tracker = tracker;
   return plan;
 }
 
@@ -615,6 +671,18 @@ export async function applyPrehistory(root: string, plan: PrehistoryPlan, layout
     written++;
   }
   return written;
+}
+
+/** What the tracker added, or why it added nothing. */
+function trackerLine(use: TrackerUse): string {
+  const why: Record<TrackerStatus, string> = {
+    used: `linked ${use.pullRequests} pull request(s)`,
+    offline: "skipped (--offline); pull requests named in merge and squash subjects are still linked",
+    "no-remote": "skipped: the origin remote is not on github.com",
+    "no-token": "skipped: no GITHUB_TOKEN and no gh login",
+    "rate-limited": `stopped at the rate limit after linking ${use.pullRequests} pull request(s); run again later to continue from the cache`,
+  };
+  return `${use.name === "github" ? "GitHub" : use.name}: ${why[use.status]}.`;
 }
 
 /** A ref or commit id as the full id of the commit it names. */
@@ -641,6 +709,8 @@ export function formatPrehistoryPlan(plan: PrehistoryPlan, written?: number): st
     lines.push(`- ${unit.location.file}#${unit.name}: deleted in ${removed.commit!.slice(0, 7)} [${removed.inferred!.confidence}], ${unit.prehistory!.length} version(s) before; ${firstLine(removed.rationale)}`);
   }
   if (plan.removed.length > 0) lines.push(`${plan.removed.length} deleted export(s) would be recovered as removed units.`.replace("would be", written === undefined ? "would be" : "were"));
+  if (plan.kept > 0) lines.push(`${plan.kept} unit(s) keep the prehistory already recorded, which this walk would not extend.`);
+  if (plan.tracker) lines.push(trackerLine(plan.tracker));
   if (plan.beyond > 0) lines.push(`${plan.beyond} unit(s) were recorded after ${plan.range.to.slice(0, 7)}, where the range ends; walk to a later commit to reach them.`);
   lines.push(written === undefined ? `Would record ${counts}. Run with --write to record it.` : `Recorded ${counts}; ${written} unit file(s) changed.`);
   return lines.join("\n");

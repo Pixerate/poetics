@@ -1,0 +1,34 @@
+{
+  "uid": "01M730BJ24XK1FD76YX9BQH7C5",
+  "kind": "type",
+  "framework": "none",
+  "name": "GitHubTrackerOptions",
+  "location": {
+    "file": "packages/cli/src/github.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:fcc781e018cef7a3d0fa0813dd8f29b6ef6bdd9c9f3c213ea2f10e2c01b33d56",
+      "interfaceHash": "b3:7c2b4175b7219c3445f3136e951b177639bd348e2d81cc3abf8af9df9ca8f577",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "What createGitHubTracker needs: the repository, a token, an optional cache file, and fetch and API URL for tests and GitHub Enterprise.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ]
+    }
+  ]
+}
