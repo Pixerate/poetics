@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { Unit } from "@poetics/core";
-import { applyBackfill, formatBackfillPlan, planBackfill } from "./backfill.ts";
+import { applyBackfill, applyPrehistory, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
 import { applyIndex, planIndex } from "./indexing.ts";
 import { runGit, write } from "./test-helpers.ts";
 
@@ -125,5 +125,75 @@ describe("formatBackfillPlan", () => {
     await write(root, "src/Badge.tsx", "export function Badge() {\n  return <b />;\n}\n");
     const units = byName(await planBackfill(root, { ...CONFIG, include: ["src/**/*.{ts,tsx}"], adapters: ["typescript", "react"] }));
     expect(units.get("Badge")).toMatchObject({ kind: "component", framework: "react" });
+  });
+});
+
+describe("planPrehistory", () => {
+  const TOTAL = (name: string) => `export function ${name}(items: number[], rate: number): number {\n  let sum = 0;\n  for (const item of items) {\n    if (item <= 0) continue;\n    sum += item;\n  }\n  return sum + Math.round(sum * rate * 100) / 100;\n}\n`;
+
+  /** A repo with history, then adopted: the snapshot's unit files are committed last. */
+  async function adoptedLate(): Promise<string> {
+    const root = await mkdtemp(join(tmpdir(), "poetics-prehistory-"));
+    runGit(root, "init", "-q", "-b", "main");
+    await write(root, ".gitignore", ".poetics/cache/\n");
+    await write(root, ".poetics/config.json", JSON.stringify({ version: 1, adapters: ["typescript"], ...CONFIG }));
+    await write(root, "src/price.ts", TOTAL("formatPrice"));
+    commit(root, "Add formatPrice (#1)");
+    await write(root, "src/price.ts", TOTAL("formatPrice").replace("sum += item;", "sum += item * 2;"));
+    commit(root, "Double each item for bulk orders\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>");
+    await write(root, "src/price.ts", "");
+    await write(root, "src/money.ts", TOTAL("formatAmount").replace("sum += item;", "sum += item * 2;"));
+    commit(root, "Move to money");
+    await applyBackfill(root, await planBackfill(root, CONFIG));
+    commit(root, "Adopt Poetics");
+    return root;
+  }
+
+  it("follows a unit back through edits, renames and moves, stopping at the commit that recorded it", async () => {
+    const root = await adoptedLate();
+    const plan = await planPrehistory(root, CONFIG);
+    const sha = (subject: string) => runGit(root, "log", "--format=%H", `--grep=${subject}`).trim();
+    expect(plan.commits).toBe(4);
+    expect(plan.units).toHaveLength(1);
+    const [entry] = plan.units;
+    expect(entry).toMatchObject({ name: "formatAmount", file: "src/money.ts" });
+    expect(entry!.stoppedAt).toBeUndefined();
+    expect(entry!.prehistory).toMatchObject([
+      { change: "created", parent: null, commit: sha("Add formatPrice"), rationale: "Add formatPrice (#1)", links: [{ kind: "github-issue", ref: "#1" }], actor: { kind: "human" }, inferred: { by: "poetics-backfill", confidence: "high", sources: ["commit"] } },
+      { change: "behaviour", commit: sha("Double each item"), rationale: "Double each item for bulk orders", actor: { kind: "agent", tool: "Claude Opus 5.5", reviewed: false } },
+    ]);
+    expect(entry!.prehistory[1]!.parent).toBe(entry!.prehistory[0]!.contentHash);
+  });
+
+  it("writes prehistory once, after which re-running changes nothing", async () => {
+    const root = await adoptedLate();
+    expect(await applyPrehistory(root, await planPrehistory(root, CONFIG))).toBe(1);
+    expect(await applyPrehistory(root, await planPrehistory(root, CONFIG))).toBe(0);
+    const files = await readdir(join(root, ".poetics/units"));
+    const unit = JSON.parse(await readFile(join(root, ".poetics/units", files[0]!), "utf8")) as Unit;
+    expect([unit.prehistory!.length, unit.versions.length, unit.versions[0]!.change]).toEqual([2, 1, "created"]);
+  });
+
+  it("does not claim history across a move matching would only queue", async () => {
+    const root = await mkdtemp(join(tmpdir(), "poetics-prehistory-queue-"));
+    runGit(root, "init", "-q", "-b", "main");
+    await write(root, ".gitignore", ".poetics/cache/\n");
+    await write(root, "src/cart.ts", TOTAL("total") + TOTAL("totalWithTax"));
+    commit(root, "Add totals");
+    await write(root, "src/cart.ts", "");
+    await write(root, "src/sums.ts", TOTAL("sum") + TOTAL("sumWithTax"));
+    commit(root, "Move totals");
+    await applyBackfill(root, await planBackfill(root, CONFIG));
+    commit(root, "Adopt Poetics");
+    const plan = await planPrehistory(root, CONFIG);
+    const sum = plan.units.find((u) => u.name === "sum")!;
+    expect(sum.prehistory.map((v) => v.change)).toEqual(["created"]);
+    expect(sum.stoppedAt).toMatchObject({ reason: "4 units share the same content" });
+    expect(sum.prehistory[0]!.commit).toBe(runGit(root, "log", "--format=%H", "--grep=Move totals").trim());
+  });
+
+  it("describes the plan for people", async () => {
+    const root = await adoptedLate();
+    expect(formatPrehistoryPlan(await planPrehistory(root, CONFIG))).toMatch(/^src\/money\.ts#formatAmount: 2 version\(s\) back to [0-9a-f]{7}\nWould record 2 version\(s\) of prehistory for 1 unit\(s\), from 4 commit\(s\)\./);
   });
 });

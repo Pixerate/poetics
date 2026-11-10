@@ -93,6 +93,12 @@ export interface Unit {
   owner?: Uid;
   location: UnitLocation;
   versions: Version[];
+  /**
+   * Versions from before the unit was first recorded, reconstructed from git
+   * history and marked inferred, oldest first. Write-once: only extended
+   * further back (ADR 0011).
+   */
+  prehistory?: Version[];
   lineage?: LineageEntry[];
   docs?: string;
   tests?: TestLink[];

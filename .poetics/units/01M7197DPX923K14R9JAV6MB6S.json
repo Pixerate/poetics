@@ -1,0 +1,49 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M7197DPX923K14R9JAV6MB6S",
+  "kind": "function",
+  "framework": "none",
+  "name": "extendsPrehistory",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:c445b73411996b115dd57f71ec857a513589e0938eec690a6f40538e32e962d5",
+      "interfaceHash": "b3:59c7f45ebefe92a4a9436ac8efdf2ad77e12451525cc79489bf241d319b91c44",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The write-once rule, shared by the store and verify. Reaching further back gives the old first entry a predecessor, so that entry alone may change its change class and parent.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ],
+      "deps": {
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b"
+      }
+    }
+  ],
+  "docs": "Whether `now` keeps recorded prehistory `was` as its tail, reaching further\nback. Reaching back gives the old first entry a predecessor, so that entry\nalone may change its `change` (from `created`) and its `parent`.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/change.test.ts",
+      "via": "static"
+    }
+  ]
+}

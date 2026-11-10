@@ -87,6 +87,41 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:7075431b494a7659a845db8ba2eb5b7b6b73486d9b9edcf8b66b578fcd9ea838",
+      "interfaceHash": "b3:09665c304e423693bba21bbe37f9d41896e52e4693d688fe83bdf937a12c64a2",
+      "parent": "b3:bd2feaef3fcc49d646a71bfaac403e7f7a4538817e1428851f85f90ddfb032ab",
+      "change": "behaviour",
+      "rationale": "Checks prehistory as a chain of its own: created first and only first (ADR 0011's amendment to ADR 0010), each parent the one before, never removed or rehash, and every entry inferred and tied to a commit.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ],
+      "deps": {
+        "01M5XDBC6R15PA0T08670RYQVW": "b3:c7034313ef971387c011fbcdcf06bfe2f467ae890db397d3a5de9836190a5313",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5YKJ3JZM095NT4VJR6HMH42": "b3:a0ad133514cf410878d3ce938ccde3df7ed7a15cda710fb50b81460217eb3828",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M5XDBC7SX2FQPK8XCKRSMNY9": "b3:ae16f3317c8f3dbb32515444948ffb6d4bca366da4394c9068cbe33cd2848ee7",
+        "01M5XDBC7RWXY5VAHMN3WYVYY4": "b3:a0f02318e4a5f8f3691bd22b64b26ac0771045780bcb7d6461804b7a2296398a",
+        "01M5YKJ3K3S9VDT8KJXSPTD5GA": "b3:c8c06a12f825087d86b206e89fae23fa314c3937684d63570cc24de8d7794c59",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8GZ5WSS0KJMF08SPJ9": "b3:d8ec2c1af3288dbe92e7066f79bba2940e4e914ce93c32d1dfe17df754df2c36",
+        "01M5XDBC8NQB03HCECHYV9JTGH": "b3:9926a46992c80177f761485e1d0d39d05fa9ad1ac5ee985ec48d7a65511acaa2"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "Validates the whole store: config, lock, every unit file and every note\nagainst their JSON Schemas, then the rules a schema cannot express (ids\nmatch filenames, version chains are intact, references point at real units,\nnotes and files, and notes are flagged when their units have moved on).\nRemoved units keep their files but need not point at code that still exists.",

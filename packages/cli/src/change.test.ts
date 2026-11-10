@@ -214,4 +214,24 @@ describe("checkChange", () => {
     expect((await checkChange(root, "HEAD", react)).findings).toMatchObject([{ kind: "untracked", message: expect.stringMatching(/^Tag has no unit/) }]);
     expect((await checkChange(root, "HEAD", { ...react, adapters: [] })).findings).toEqual([]);
   });
+
+  it("rejects an edit to recorded prehistory, and accepts one that reaches further back", async () => {
+    const root = await makeGitRepo(UID);
+    const step = (hashChar: string, parent: string | null, change: "created" | "behaviour") => ({
+      contentHash: `b3:${hashChar.repeat(64)}` as const,
+      parent: parent as never,
+      change,
+      commit: "a".repeat(40),
+      actor: { kind: "human" } as const,
+      rationale: "From git.",
+      inferred: { by: "poetics-backfill", confidence: "medium" as const, sources: ["commit" as const], drafted: false, reviewed: false },
+    });
+    await writeUnitFile(root, unitFor(UID, "a", FN_A, { prehistory: [step("7", null, "created")] }));
+    runGit(root, "commit", "-q", "-am", "Prehistory");
+    await writeUnitFile(root, unitFor(UID, "a", FN_A, { prehistory: [{ ...step("7", null, "created"), rationale: "Rewritten." }] }));
+    expect(kinds(await checkChange(root, "HEAD", SCOPE))).toEqual(["error:rewritten-history"]);
+    // Reaching further back: the old first entry gains a predecessor, and nothing else about it changes.
+    await writeUnitFile(root, unitFor(UID, "a", FN_A, { prehistory: [step("6", null, "created"), step("7", `b3:${"6".repeat(64)}`, "behaviour")] }));
+    expect(kinds(await checkChange(root, "HEAD", SCOPE))).not.toContain("error:rewritten-history");
+  });
 });

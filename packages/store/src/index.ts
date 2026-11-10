@@ -24,6 +24,7 @@ export {
   confirmNote,
   createNote,
   createUnit,
+  extendsPrehistory,
   linkTest,
   listNoteFiles,
   listUnitFiles,
@@ -36,6 +37,7 @@ export {
   recordRationale,
   relinkTests,
   relocateUnit,
+  setPrehistory,
   setDocs,
 } from "./json-store.ts";
 export type { StoreLayout, StorePaths } from "./paths.ts";

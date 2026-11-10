@@ -66,3 +66,39 @@ describe("formatWhy", () => {
     expect(formatWhy({ ...unit, lineage: [] })).not.toContain("Along the way");
   });
 });
+
+describe("prehistory in log and why", () => {
+  const pre = (hash: string, parent: string | null, change: "created" | "behaviour", rationale: string): Unit["versions"][number] => ({
+    contentHash: `b3:${hash.repeat(64)}` as `b3:${string}`,
+    parent: parent as never,
+    change,
+    commit: hash.repeat(40),
+    actor: { kind: "human" },
+    rationale,
+    inferred: { by: "poetics-backfill", confidence: "medium", sources: ["commit"], drafted: false, reviewed: false },
+  });
+  const unit: Unit = {
+    uid: "01JB8K0000000000000000000A",
+    kind: "function",
+    framework: "none",
+    name: "formatPrice",
+    location: { file: "src/price.ts" },
+    prehistory: [pre("1", null, "created", "Add formatPrice"), pre("2", `b3:${"1".repeat(64)}`, "behaviour", "Round half up")],
+    versions: [{ contentHash: `b3:${"3".repeat(64)}`, parent: null, change: "created", actor: { kind: "human" }, rationale: "Adopted." }],
+  };
+
+  it("lists prehistory after the recorded versions in log, marked as reconstructed", () => {
+    const log = formatLog(unit);
+    expect(log.split("\n")[0]).toBe("formatPrice (function, src/price.ts) 01JB8K0000000000000000000A: 1 version(s), 2 before it was recorded");
+    expect(log.indexOf("#0 created")).toBeLessThan(log.indexOf("Before it was recorded"));
+    expect(log).toContain("~1 behaviour b3:222222222 2222222 by human (inferred, medium confidence)");
+  });
+
+  it("tells the whole story oldest first in why", () => {
+    expect(formatWhy(unit).split("\n").filter((line) => /^\d+\./.test(line))).toEqual([
+      "1. created (inferred, medium confidence)",
+      "2. behaviour (inferred, medium confidence)",
+      "3. created",
+    ]);
+  });
+});

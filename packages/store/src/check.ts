@@ -72,6 +72,7 @@ export async function checkStore(paths: StorePaths, validator: StoreValidator): 
 
   for (const { unit, file } of units.values()) {
     checkVersions(unit, file, error, allowProvisional);
+    checkPrehistory(unit, file, error);
     const removed = isRemoved(unit);
     if (!removed && !(await exists(join(paths.root, unit.location.file)))) {
       error(file, `location.file ${unit.location.file} does not exist`);
@@ -166,6 +167,27 @@ async function checkNotes(
 function changedSince(unit: Unit, hash: string): boolean {
   const at = unit.versions.findIndex((version) => version.contentHash === hash);
   return at === -1 || unit.versions.slice(at + 1).some((version) => version.change !== "rehash");
+}
+
+/**
+ * Prehistory is reconstructed, so every entry says it was inferred. It is a
+ * chain of its own: `created` first and only first (ADR 0011 amends ADR 0010),
+ * each parent the one before, and never a removal, which belongs to `versions`.
+ */
+function checkPrehistory(unit: Unit, file: string, error: (file: string, message: string) => void): void {
+  const prehistory = unit.prehistory ?? [];
+  const seen = new Set<string>();
+  prehistory.forEach((version, i) => {
+    const at = `prehistory[${i}]`;
+    if (seen.has(version.contentHash)) error(file, `${at} repeats contentHash ${version.contentHash}`);
+    seen.add(version.contentHash);
+    const expectedParent = i === 0 ? null : prehistory[i - 1]!.contentHash;
+    if ((version.parent ?? null) !== expectedParent) error(file, `${at}.parent should be ${expectedParent ?? "null"}`);
+    if ((i === 0) !== (version.change === "created")) error(file, i === 0 ? `${at}.change must be "created"` : `${at}.change cannot be "created"`);
+    if (version.change === "removed" || version.change === "rehash") error(file, `${at} cannot be "${version.change}"; prehistory only reconstructs changes to code`);
+    if (version.inferred === undefined) error(file, `${at} has no inferred record; prehistory is always reconstructed`);
+    if (version.commit === undefined) error(file, `${at} has no commit; prehistory is joined to versions by commit`);
+  });
 }
 
 function checkVersions(
