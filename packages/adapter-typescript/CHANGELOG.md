@@ -1,5 +1,16 @@
 # @poetics/adapter-typescript
 
+## 0.2.0
+
+### Minor Changes
+
+- [#59](https://github.com/Pixerate/poetics/pull/59) [`299615f`](https://github.com/Pixerate/poetics/commit/299615fadd2c5f4f62c2372e564af4833896a6e5) Thanks [@surrealroad](https://github.com/surrealroad)! - React contexts are units of a new kind, `context` (ADR 0016). The React adapter tracks `createContext` values, with their value type and default as the interface, and records every provider and consumer (`useContext`, `use`, `<Ctx.Provider>`, `<Ctx>`, `static contextType`) as a `uses-context` edge. `FrameworkPlugin` gains a `value` hook for exported variables that hold no function.
+
+### Patch Changes
+
+- Updated dependencies [[`299615f`](https://github.com/Pixerate/poetics/commit/299615fadd2c5f4f62c2372e564af4833896a6e5)]:
+  - @poetics/core@0.4.0
+
 ## 0.1.0
 
 ### Minor Changes
