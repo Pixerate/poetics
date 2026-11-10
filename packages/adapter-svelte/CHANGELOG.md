@@ -1,5 +1,12 @@
 # @poetics/adapter-svelte
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [[`f6a3cce`](https://github.com/Pixerate/poetics/commit/f6a3cce234ca2f956b4b65d2ee1cb4340223b0c9)]:
+  - @poetics/core@0.6.0
+
 ## 0.1.5
 
 ### Patch Changes
