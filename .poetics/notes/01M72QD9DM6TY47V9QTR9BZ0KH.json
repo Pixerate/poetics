@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schemas/note.schema.json",
+  "id": "01M72QD9DM6TY47V9QTR9BZ0KH",
+  "kind": "gotcha",
+  "area": "releases",
+  "title": "changeset version fails in the release workflow without GITHUB_TOKEN",
+  "symptoms": [
+    "Error: Please create a GitHub personal access token at https://github.com/settings/tokens/new?scopes=read:user,repo:status&description=changesets-",
+    "The following error was encountered while generating changelog entries"
+  ],
+  "cause": "`.changeset/config.json` uses `@changesets/changelog-github`, which reads `GITHUB_TOKEN` from the environment to look up each changeset's commit, PR and author. `changesets/action` sets it; a plain `run: pnpm version-packages` step does not. Release runs with no changesets skip that step, so they stay green and hide the failure until changesets are pending.",
+  "fix": "Give the version step `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}`. Any step that runs `changeset version` with the GitHub changelog needs it.",
+  "anchors": {
+    "paths": [".github/workflows/release.yml", ".changeset/config.json"],
+    "dependencies": [{ "name": "@changesets/changelog-github", "range": "^1" }],
+    "commands": ["pnpm version-packages"]
+  },
+  "check": { "kind": "test", "ref": "scripts/workflows.test.ts", "name": "gives the version step a GitHub token when changelogs come from GitHub" },
+  "status": "active",
+  "actor": { "kind": "agent", "tool": "claude-code", "model": "claude-opus-5-5", "reviewed": false }
+}

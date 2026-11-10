@@ -27,7 +27,8 @@ everything else. Changes that release nothing (docs, tests, CI) don't need one.
 On every push to `main` (and on manual `workflow_dispatch`), `release.yml` checks
 for pending changesets:
 
-- If changesets exist, it runs `pnpm version-packages`, builds and tests, commits
+- If changesets exist, it runs `pnpm version-packages` (with `GITHUB_TOKEN`, which
+  `@changesets/changelog-github` needs to link each entry to its PR), builds and tests, commits
   and pushes the version bumps and changelogs to `main` with `[skip ci]`,
   publishes the changed packages to npm with provenance, and pushes release tags.
   Releases are fully automatic; no release pull request or manual approval is needed.

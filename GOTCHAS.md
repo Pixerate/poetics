@@ -148,6 +148,17 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 - **See:** [docs/decisions/0004-provisional-hashes.md](docs/decisions/0004-provisional-hashes.md)
 - **Note:** `01M5YKKDBFX6D69ZPHJDYC70BZ`
 
+## Releases
+
+### changeset version fails in the release workflow without GITHUB_TOKEN
+
+- **Symptom:** `Error: Please create a GitHub personal access token at https://github.com/settings/tokens/new?scopes=read:user,repo:status&description=changesets-`; `The following error was encountered while generating changelog entries`
+- **Cause:** `.changeset/config.json` uses `@changesets/changelog-github`, which reads `GITHUB_TOKEN` from the environment to look up each changeset's commit, PR and author. `changesets/action` sets it; a plain `run: pnpm version-packages` step does not. Release runs with no changesets skip that step, so they stay green and hide the failure until changesets are pending.
+- **Fix:** Give the version step `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}`. Any step that runs `changeset version` with the GitHub changelog needs it.
+- **Applies to:** `pnpm version-packages`, `@changesets/changelog-github@^1`, `.github/workflows/release.yml`, `.changeset/config.json`
+- **Caught by:** test `scripts/workflows.test.ts` (gives the version step a GitHub token when changelogs come from GitHub)
+- **Note:** `01M72QD9DM6TY47V9QTR9BZ0KH`
+
 ## Resolved and superseded
 
 | Note | Status |
