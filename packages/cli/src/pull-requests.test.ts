@@ -37,8 +37,8 @@ describe("pullRequestEvidence", () => {
     });
   });
 
-  it("speaks to a unit its title or description names, or a review comment on its lines", () => {
-    expect(pullRequestEvidence("x", { pullRequests: [{ ...PR, title: "Round formatPrice" }], comments: new Map() }, UNIT).speaks).toBe(true);
+  it("speaks to a unit a review comment falls on, not one its title or description only names", () => {
+    expect(pullRequestEvidence("x", { pullRequests: [{ ...PR, title: "Round formatPrice", body: "formatPrice rounds half up." }], comments: new Map() }, UNIT).speaks).toBe(false);
     const onLines = pullRequestEvidence("x", found(new Map([[12, [{ path: "src/price.ts", startLine: 18, endLine: 25, body: "why?" }]]])), UNIT);
     expect([onLines.speaks, onLines.sources]).toEqual([true, ["pull-request", "issue", "comment"]]);
     const elsewhere = found(new Map([[12, [{ path: "src/price.ts", startLine: 21, endLine: 25, body: "" }, { path: "src/other.ts", startLine: 10, endLine: 10, body: "" }]]]));

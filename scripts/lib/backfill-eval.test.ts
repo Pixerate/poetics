@@ -64,9 +64,10 @@ describe("runBackfillEval", () => {
     expect([result.recorded, result.inferred, result.unpaired, result.fallback]).toEqual([2, 2, 0, 0]);
     const first = git(root, "log", "--reverse", "--format=%H").trim().split("\n")[0]!;
     // The declaration's header line was written in the first commit, so both units pair with their created version.
+    // Its message names both units, which is the whole change speaking, not either unit: medium (ADR 0018).
     expect(result.pairs.map((p) => [p.unit, p.commit, p.confidence, p.inferred, p.recorded])).toEqual([
-      ["src/price.ts#formatPrice", first, "high", "add formatPrice and addTax for checkout prices", "Shows checkout prices with two decimals."],
-      ["src/tax.ts#addTax", first, "high", "add formatPrice and addTax for checkout prices", "Shows checkout prices with two decimals."],
+      ["src/price.ts#formatPrice", first, "medium", "add formatPrice and addTax for checkout prices", "Shows checkout prices with two decimals."],
+      ["src/tax.ts#addTax", first, "medium", "add formatPrice and addTax for checkout prices", "Shows checkout prices with two decimals."],
     ]);
     expect(result.pairs[0]!.score.recall).toBeCloseTo(2 / 5);
     // The source repository keeps its unit files.
@@ -79,7 +80,7 @@ describe("runBackfillEval", () => {
     expect(text).toMatch(/^# Backfill eval results\n/);
     expect(text).toContain("2 units are recorded by hand; the snapshot backfill inferred 2 from the code. 2 inferred versions have a recorded version from the same commit");
     expect(text).toContain("| All | 2 | 40% |");
-    expect(text).toContain("| confidence: high | 2 |");
+    expect(text).toContain("| confidence: medium | 2 |");
     expect(text).toContain("| from: commit | 2 |");
     expect(text).toContain("  - recorded: Shows checkout prices with two decimals.");
   });

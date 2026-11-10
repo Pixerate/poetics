@@ -143,6 +143,9 @@ Rationale is written in two tiers:
    package beats a commit body, which beats a subject. With nothing better, the
    rationale is the commit message, as the plan already says. A pull request
    that gives the reason is linked, not quoted.
+   [ADR 0019](0019-backfill-rationale-leads-with-the-doc-comment.md): in
+   snapshot mode, when that text is shared with other units the commit
+   introduced, the unit's doc comment leads it.
 2. **Drafted** (`--draft`, optional model call): a per-unit rationale
    synthesised from the evidence items, which must cite them and must say when
    the only evidence is the diff. Evidence text is passed to the model as data.
@@ -167,6 +170,9 @@ Every backfilled version, in either mode, carries a new `inferred` field:
   changeset, a review comment on its lines, a commit touching only it);
   `medium` when it speaks to the whole change (commit or PR text shared by
   many units); `low` when only the code and diff were available.
+  [ADR 0018](0018-backfill-confidence-is-unit-specific.md) narrows `high` to
+  evidence about this unit alone: a changeset or text that only names the unit
+  among others is `medium`.
 - **`actor` keeps its meaning**: who made the change, not who wrote the
   rationale. Only its kind comes from git: `human`, or an agent when a
   `Co-Authored-By` trailer names one (with `reviewed: false`). Author names and

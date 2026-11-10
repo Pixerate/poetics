@@ -115,16 +115,14 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
       evidence.push({ source: "changeset", ref: changeset.path, text: changeset.text });
       links.push({ kind: "changeset", ref: changeset.path });
       rationale = changeset.text;
-      // A changeset describes its package's change; it speaks to this unit only when it names it.
-      confidence = names(changeset.text, unit.name) ? "high" : "medium";
     }
     if (commit) {
       evidence.push({ source: "commit", ref: commit.sha, ...(commit.body || commit.subject ? { text: commit.body || commit.subject } : {}) });
       for (const issue of commit.issues) links.push({ kind: "github-issue", ref: issue });
-      if (!rationale && (commit.body || commit.subject)) {
-        rationale = commit.body || commit.subject;
-        confidence = perCommit.get(commit.sha) === 1 || names(rationale, unit.name) ? "high" : "medium";
-      }
+      if (!rationale && (commit.body || commit.subject)) rationale = commit.body || commit.subject;
+      // A changeset or commit describes the whole change even when it names this unit (ADR 0018): it speaks to this
+      // unit alone only when the change introduced nothing else, or alongside the unit's own doc comment.
+      if (rationale) confidence = confidenceOf({ reason: true, specific: perCommit.get(commit.sha) === 1 || Boolean(unit.docs) });
       // Pull requests are linked and can raise confidence; their text never becomes the rationale.
       const at = codeAt.get(place(unit.location.file, unit.name, unit.kind));
       found = await pulls.read(commit.sha);
@@ -135,6 +133,10 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
     }
     if (unit.docs) {
       evidence.push({ source: "comment", ref: unit.location.file, text: unit.docs });
+      // Text shared with other units describes the whole change; the unit's own doc comment says what this one is
+      // for, so it leads (ADR 0019). A one-unit commit's text is already about this unit and stands alone.
+      const shared = !commit || perCommit.get(commit.sha) !== 1;
+      if (rationale && shared) rationale = `${unit.docs}\n\n${rationale}`;
       rationale ??= unit.docs;
     }
     for (const test of unit.tests ?? []) evidence.push({ source: "test", ref: test.file });
@@ -364,9 +366,14 @@ function hasCommits(root: string): boolean {
   }
 }
 
-/** Whether `text` names `name` as a word, as prose about a unit does. */
-function names(text: string, name: string): boolean {
-  return new RegExp(`(?<![\\w$])${name.replace(/[$]/g, "\\$")}(?![\\w$])`).test(text);
+/**
+ * Confidence from how specifically the evidence speaks to one unit (ADR 0018): `high` when a reason comes with
+ * evidence about this unit alone, `medium` when the reason is shared with other units, even one that names this
+ * unit, and `low` with no reason at all.
+ */
+export function confidenceOf(evidence: { reason: boolean; specific: boolean }): Inferred["confidence"] {
+  if (!evidence.reason) return "low";
+  return evidence.specific ? "high" : "medium";
 }
 
 function dedupe(links: Link[]): Link[] {
@@ -657,7 +664,8 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     const sources: Inferred["sources"] = info.body || info.subject ? ["commit"] : [];
     for (const { followed, version: v } of changed) {
       const prs = prsOf.get(v)!;
-      const base: Inferred["confidence"] = sources.length === 0 ? "low" : changed.length === 1 || names(v.rationale, followed.code.name) ? "high" : "medium";
+      // A doc comment says what the unit is, not why this commit changed it, so only a one-unit commit is specific.
+      const base = confidenceOf({ reason: sources.length > 0, specific: changed.length === 1 });
       const last = followed.history.at(-1)!;
       last.inferred = { by: BY, confidence: withPullRequests(base, found, prs.speaks), sources: [...new Set([...sources, ...prs.sources])], drafted: false, reviewed: false };
     }
@@ -668,9 +676,9 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     const gone = result.removed.map((r) => ids.get(r.uid)!).filter((was) => !was.recorded && was.history.length > 0 && !recovered.has(deletion(was.code.file, was.code.name, sha)));
     for (const was of gone) {
       const rationale = info.body || info.subject || `Deleted in ${sha.slice(0, 7)}; the commit does not say why.`;
-      // The deletion has no lines left to review, so only a pull request that names the unit speaks to it.
+      // The deletion has no lines left to review, so only a commit that deleted or changed nothing else speaks to it.
       const prs = pullRequestEvidence(info.rawSubject, found, { name: was.code.name, file: was.code.file, startLine: 0, endLine: -1 });
-      const base: Inferred["confidence"] = sources.length === 0 ? "low" : gone.length + changed.length === 1 || names(rationale, was.code.name) ? "high" : "medium";
+      const base = confidenceOf({ reason: sources.length > 0, specific: gone.length + changed.length === 1 });
       const confidence = withPullRequests(base, found, prs.speaks);
       const last = was.history.at(-1)!;
       const removed: Version = {

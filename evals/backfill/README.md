@@ -50,6 +50,82 @@ evidence it used.
 - The furthest pairs are types and helpers added inside a large first commit
   whose message describes a whole feature, such as the demo site's types.
 
+## Confidence revised (2026-11-10, ADR 0018)
+
+The finding above led to [ADR 0018](../../docs/decisions/0018-backfill-confidence-is-unit-specific.md):
+naming a unit no longer makes a version `high`; a reason with evidence about
+this unit alone does (a commit that introduced nothing else, a review comment
+on its lines, or the unit's own doc comment in snapshot mode). The rationale
+text is unchanged, so only the split by confidence moves. Both runs are on the
+same corpus, at `7372c64` (311 pairs):
+
+| Rule | Confidence | Pairs | Mean recall | Mean overlap | Recall ≥ 50% |
+| --- | --- | --- | --- | --- | --- |
+| Before: naming the unit gives `high` | high | 35 | 28% | 12% | 11% |
+| | medium | 276 | 30% | 9% | 20% |
+| After: evidence about this unit alone gives `high` | high | 190 | 32% | 10% | 24% |
+| | medium | 121 | 25% | 8% | 12% |
+
+- `high` now agrees better than `medium` on recall (32% against 25%) and
+  doubles the share recovering half the recorded wording (24% against 12%).
+  Overlap barely moves: the rationale is still the change's text, shared with
+  other units.
+- What the evidence was checked against: among the changesets that named the
+  unit, those naming more than two other units from the same commit scored
+  18% recall; using only the sentence that names the unit scored 9%. Neither
+  was turned into a rule.
+- The gain is mostly from the doc comment, which almost every export here has
+  because this repository requires TSDoc. On a repository with little TSDoc,
+  most versions will be `medium`. Versions whose rationale was a bare commit
+  message scored about 18% whatever their confidence.
+- The doc comment itself agrees better than the changeset: as the rationale
+  of the 189 units that have one, it scores 25% overlap against 10%. Leading
+  the extracted rationale with it would change what rationale says, not how
+  sure it is, and is left for its own decision.
+
+## Rationale leads with the doc comment (2026-11-10, ADR 0019)
+
+The last finding led to [ADR 0019](../../docs/decisions/0019-backfill-rationale-leads-with-the-doc-comment.md):
+when the change's text is shared with other units the commit introduced, the
+unit's doc comment leads it, as its own paragraph. A one-unit commit's text
+stays the whole rationale. Confidence is unchanged. Both runs are on the same
+corpus, at `df077c8` (312 pairs):
+
+| Rule | | Pairs | Mean recall | Mean overlap | Recall ≥ 50% |
+| --- | --- | --- | --- | --- | --- |
+| Before: the change's text | All | 312 | 30% | 10% | 19% |
+| | high | 191 | 33% | 11% | 24% |
+| | from: commit + comment | 26 | 18% | 6% | 12% |
+| After: doc comment, then the change's text | All | 312 | 41% | 12% | 36% |
+| | high | 191 | 50% | 15% | 51% |
+| | from: commit + comment | 26 | 50% | 16% | 58% |
+
+`medium` versions (no doc comment, shared text) are unchanged at 25% recall
+and 8% overlap.
+
+Variants measured on the 185 versions the rule changes, before choosing it:
+
+| Rationale | Mean recall | Mean overlap | Recall ≥ 50% | Content words |
+| --- | --- | --- | --- | --- |
+| The change's text (before) | 32% | 10% | 24% | 34 |
+| The doc comment alone | 32% | 25% | 24% | 11 |
+| The doc comment, then the change's text (chosen) | 51% | 15% | 51% | 41 |
+| Control: another unit's doc comment, then the change's text | 34% | 9% | 24% | 43 |
+
+The recorded rationale averages 15 content words.
+
+- Overlap rises with recall, so the gain is not just longer text, and the
+  control confirms it: a doc comment that is not this unit's, of the same
+  length, adds nothing.
+- The doc comment alone agrees most tightly but drops the change's reason;
+  leading with it keeps both.
+- Also leading one-unit commits with the doc comment scored the same (51%
+  against 50% recall for `high`), so the rule keeps ADR 0011's "most specific
+  evidence wins" there.
+- Bare commit messages gain most: they rarely say what a unit is for.
+- This repository requires TSDoc, so the gain here is an upper bound: on a
+  repository with little TSDoc most versions keep the change's text.
+
 ## What this eval cannot say yet
 
 - **The recorded rationale is not human ground truth.** All 303 recorded

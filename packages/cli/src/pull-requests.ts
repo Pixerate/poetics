@@ -1,7 +1,7 @@
 // Pull request evidence for backfill (ADR 0011). Offline, a commit subject
 // names its pull request. With a tracker, the pull requests that contain the
-// commit add links, the issues they close, and confidence when they speak to a
-// unit. Their text is read to decide that, never written to .poetics/.
+// commit add links, the issues they close, and confidence when a review comment
+// falls on a unit's lines. Their text is never written to .poetics/.
 import type { Inferred, IssueTracker, Link, TrackedPullRequest, TrackedReviewComment } from "@poetics/core";
 import type { TrackerStatus } from "./github.ts";
 import { RateLimitedError } from "./github.ts";
@@ -79,9 +79,9 @@ export function trackerReader(tracker: IssueTracker | undefined, status: Tracker
 }
 
 /**
- * Links, sources and whether a pull request speaks to `unit`: its title or
- * description names it, or a review comment falls on its lines. Shared text
- * that does neither speaks to the whole change, not to this unit.
+ * Links, sources and whether a pull request speaks to `unit`: a review comment
+ * falls on its lines. A title or description describes the whole change even
+ * when it names this unit, so it does not (ADR 0018).
  */
 export function pullRequestEvidence(subject: string, found: CommitPullRequests | undefined, unit: UnitLines): { links: Link[]; sources: Inferred["sources"]; speaks: boolean } {
   const links: Link[] = [];
@@ -96,7 +96,6 @@ export function pullRequestEvidence(subject: string, found: CommitPullRequests |
       links.push({ kind: "github-issue", ref: issue });
       sources.add("issue");
     }
-    if (names(`${pr.title}\n${pr.body}`, unit.name)) speaks = true;
     for (const comment of found!.comments.get(pr.number) ?? []) {
       if (comment.path === unit.file && comment.startLine <= unit.endLine && comment.endLine >= unit.startLine) {
         speaks = true;
@@ -111,11 +110,6 @@ export function pullRequestEvidence(subject: string, found: CommitPullRequests |
 export function withPullRequests(confidence: Inferred["confidence"], found: CommitPullRequests | undefined, speaks: boolean): Inferred["confidence"] {
   if (speaks) return "high";
   return confidence === "low" && (found?.pullRequests.length ?? 0) > 0 ? "medium" : confidence;
-}
-
-/** Text about a unit names it as a word. */
-function names(text: string, name: string): boolean {
-  return new RegExp(`(?<![\\w$])${name.replace(/[$]/g, "\\$")}(?![\\w$])`).test(text);
 }
 
 /** Pull request and review text about `unit`, for a drafter that may read but never quote it (ADR 0011). */

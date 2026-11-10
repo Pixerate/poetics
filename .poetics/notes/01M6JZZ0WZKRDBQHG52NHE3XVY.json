@@ -9,7 +9,7 @@
   "fix": "Give such a test its own timeout as the last argument to it(), as scripts/lib/gate.test.ts does with GATE_TIMEOUT_MS, rather than raising the global testTimeout for fast tests too.",
   "anchors": {
     "units": [{ "uid": "01M6J0611SJTB4MRB2ME5KH5BH", "observedAt": "b3:11b8baf4140e18b1a2cf5a1052385da32ccff4bacaddecd490134a5276bffece" }],
-    "paths": ["scripts/lib/gate.test.ts"],
+    "paths": ["scripts/lib/gate.test.ts", "packages/cli/src/backfill.test.ts"],
     "dependencies": [{ "name": "vitest", "range": "^5" }],
     "commands": ["pnpm test", "pnpm preflight"]
   },
