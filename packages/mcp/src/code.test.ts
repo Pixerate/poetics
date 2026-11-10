@@ -72,6 +72,9 @@ describe("codeView", () => {
     expect(view.graph.dependentsOf(UID.round)).toEqual([UID.price]);
     expect(view.graph.unresolved).toMatchObject([{ from: UID.label, kind: "calls", reason: "missing does not resolve to a declaration" }]);
     expect(view.sourceOf(view.byUid.get(UID.round)!)).toBe("export function roundHalf(n: number): number {\n  return Math.round(n);\n}");
+    // After its doc comment on line 1.
+    expect(view.linesOf(view.byUid.get(UID.round)!)).toEqual({ startLine: 2, endLine: 4 });
+    expect(view.linesOf(view.byUid.get(UID.price)!)).toEqual({ startLine: 4, endLine: 6 });
   });
 });
 

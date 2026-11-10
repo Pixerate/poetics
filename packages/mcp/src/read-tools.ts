@@ -3,10 +3,13 @@
 // when the context offers it.
 import type { DatabaseSync } from "node:sqlite";
 import { impactOf, isRemoved, notImplemented } from "@poetics/core";
+import type { TrackedIssue } from "@poetics/core";
 import type { Hash, ImpactEntry, Note, Uid, Unit, Version } from "@poetics/core";
-import { changesBetween, dependentsOf, getUnit, parseNote, readNoteFiles, readUnit, resolveUnit as resolveInStore, searchUnits } from "@poetics/store";
+import { changesBetween, dependentsOf, getUnit, parseNote, parseUnit, readNoteFiles, readUnit, readUnitFiles, resolveUnit as resolveInStore, searchUnits } from "@poetics/store";
 import type { ChangeSet, StorePaths, UnitRow } from "@poetics/store";
 import type { CodeView } from "./code.ts";
+import { parseIssueRef, relatedIssues, unitSignals, unitsForIssue } from "./issues.ts";
+import type { IssueMatch, TrackerAccess } from "./issues.ts";
 
 export interface ReadContext {
   paths: StorePaths;
@@ -14,6 +17,8 @@ export interface ReadContext {
   db: DatabaseSync;
   /** The code joined to the store, built on first use; without it, packs and tools say what they cannot show. */
   code?: () => Promise<CodeView>;
+  /** The issue tracker, connected on first use; without it, issue text and titles are listed as missing. */
+  tracker?: () => Promise<TrackerAccess>;
 }
 
 const DEFAULT_LIMIT = 20;
@@ -86,8 +91,12 @@ export interface ContextPackRequest {
 export interface ContextPack {
   /** With `signature`, the declaration up to its body, when the indexer can read the unit. */
   unit: ReturnType<typeof summarise> & { signature?: string };
-  /** Other units the task text matched, when the pack was chosen from `task`. */
-  candidates?: SearchHit[];
+  /** Other units the task or issue matched; for an issue, with why each matched. */
+  candidates?: Array<SearchHit & { why?: IssueMatch[] }>;
+  /** The issue the pack was chosen from, read through the tracker when it can be, and why its unit matched. */
+  issue?: { ref: string; url?: string; title?: string; state?: TrackedIssue["state"]; labels?: string[]; body?: string; unitMatched: IssueMatch[] };
+  /** Other issues linked from the pack's units: past work on the same code. */
+  relatedIssues?: Array<{ ref: string; units: string[] }>;
   notes: Array<Pick<Note, "id" | "kind" | "title" | "symptoms" | "cause" | "fix">>;
   tests: Unit["tests"];
   /** The unit's source text, as written. */
@@ -128,11 +137,15 @@ interface SearchHit {
  * spent; whatever is cut is counted in `truncated`, so nothing is silently lost.
  */
 export async function contextPack(ctx: ReadContext, request: ContextPackRequest): Promise<ContextPack> {
-  // Resolving an issue to units needs the issue-tracker integration.
-  if (request.issue !== undefined) return notImplemented("poetics_context_pack issue");
   let unit: Unit;
-  let candidates: SearchHit[] | undefined;
-  if (request.unit !== undefined) {
+  let candidates: ContextPack["candidates"];
+  let fromIssue: { issue: NonNullable<ContextPack["issue"]>; related: NonNullable<ContextPack["relatedIssues"]>; missing?: string } | undefined;
+  if (request.issue !== undefined) {
+    const chosen = await unitForIssue(ctx, request.issue);
+    unit = chosen.unit;
+    candidates = chosen.candidates;
+    fromIssue = chosen;
+  } else if (request.unit !== undefined) {
     unit = await resolveUnit(ctx, request.unit);
   } else if (request.task !== undefined) {
     const hits = searchUnits(ctx.db, request.task, { match: "any" });
@@ -162,12 +175,13 @@ export async function contextPack(ctx: ReadContext, request: ContextPackRequest)
     }
   }
 
-  const missing: string[] = [];
+  const missing: string[] = fromIssue?.missing ? [fromIssue.missing] : [];
   if (!view) missing.push("code and signatures: this server has no code view");
   else if (!code) missing.push(`code and signatures: no ${unit.kind} ${unit.name} in ${unit.location.file} that the TypeScript indexer can read`);
   const pack: ContextPack = {
     unit: { ...summarise(unit), ...(code ? { signature: code.signatureText } : {}) },
     ...(candidates ? { candidates } : {}),
+    ...(fromIssue ? { issue: fromIssue.issue } : {}),
     notes: [],
     tests: [],
     dependencies: [],
@@ -177,6 +191,15 @@ export async function contextPack(ctx: ReadContext, request: ContextPackRequest)
     missing,
     estimatedTokens: 0,
   };
+  if (pack.issue?.body) {
+    // The issue is the task, so it comes before the code, but its body may have at most a quarter of the budget.
+    const body = pack.issue.body;
+    const share = Math.floor(budget / 4) * 4;
+    if (body.length > share) {
+      pack.issue.body = `${body.slice(0, Math.max(0, share - 1))}…`;
+      pack.truncated["issue.body"] = 1;
+    }
+  }
   if (estimateTokens(pack) > budget && pack.unit.docs) {
     // Even the unit alone is over budget: keep as much of its docs as fits.
     const docs = pack.unit.docs;
@@ -204,10 +227,12 @@ export async function contextPack(ctx: ReadContext, request: ContextPackRequest)
   const sections: Array<[keyof ContextPack & string, unknown[]]> = [
     ["notes", notes.map(({ note }) => ({ id: note.id, kind: note.kind, title: note.title, symptoms: note.symptoms, cause: note.cause, fix: note.fix }))],
     ["tests", unit.tests ?? []],
+    ...(fromIssue ? [["relatedIssues", fromIssue.related] as [keyof ContextPack & string, unknown[]]] : []),
     ["dependencies", deps.map((uid) => withSignature(brief(ctx.db, uid)))],
     ["callers", callers.map((uid) => withSignature(brief(ctx.db, uid)))],
     ["history", unit.versions.slice(0, -1).reverse().map(({ contentHash, change, rationale }) => ({ contentHash, change, rationale }))],
   ];
+  if (fromIssue) pack.relatedIssues = [];
   let full = false;
   for (const [name, items] of sections) {
     const into = pack[name] as unknown[];
@@ -222,6 +247,49 @@ export async function contextPack(ctx: ReadContext, request: ContextPackRequest)
   }
   pack.estimatedTokens = estimateTokens(pack);
   return pack;
+}
+
+const ISSUE_CANDIDATES = 4;
+
+/** The unit an issue most likely touches, the next best, and the issue as the tracker reports it. */
+async function unitForIssue(ctx: ReadContext, ref: string) {
+  const access: TrackerAccess = ctx.tracker ? await ctx.tracker() : { unavailable: "this server has no issue tracker" };
+  const number = parseIssueRef(ref, access.repo);
+  let tracked: TrackedIssue | undefined;
+  let missing: string | undefined;
+  if (access.tracker?.issue) {
+    try {
+      tracked = await access.tracker.issue(number);
+      if (!tracked) missing = `issue text: the tracker has no #${number}`;
+    } catch (error) {
+      missing = `issue text: ${(error as Error).message}`;
+    }
+  } else {
+    missing = `issue text: ${access.unavailable ?? "the issue tracker cannot read issues"}`;
+  }
+  const units = (await readUnitFiles(ctx.paths)).map(parseUnit);
+  const view = tracked && ctx.code ? await ctx.code() : undefined;
+  const matches = unitsForIssue(tracked ?? { number }, units, {
+    search: (query) => searchUnits(ctx.db, query, { match: "any" }).map((row) => row.uid),
+    ...(view ? { view } : {}),
+  });
+  if (matches.length === 0) {
+    throw new Error(tracked ? `No unit matches #${number}; pass a unit or try poetics_search` : `No unit links #${number}, and its text cannot be read (${missing}); pass a unit or a task`);
+  }
+  const byUid = new Map(units.map((u) => [u.uid, u]));
+  const unit = byUid.get(matches[0]!.uid)!;
+  const rest = matches.slice(1, 1 + ISSUE_CANDIDATES);
+  const candidates = rest.flatMap((match) => {
+    const row = getUnit(ctx.db, match.uid);
+    return row ? [{ ...hit(row), why: match.why }] : [];
+  });
+  const issue: NonNullable<ContextPack["issue"]> = {
+    ref: `#${number}`,
+    ...(tracked ? { url: tracked.url, title: tracked.title, state: tracked.state, labels: tracked.labels, body: tracked.body } : {}),
+    unitMatched: matches[0]!.why,
+  };
+  const related = relatedIssues([unit, ...rest.map((match) => byUid.get(match.uid)!)], number);
+  return { unit, candidates, issue, related, ...(missing ? { missing } : {}) };
 }
 
 /** Units affected by a change, with enough to name them, and the unresolved edges that make the list incomplete. */
@@ -458,6 +526,10 @@ export async function callReadTool(ctx: ReadContext, name: string, args: Record<
     }
     case "poetics_verify":
       return verifyScope(ctx, await requireCode(ctx, name), optionalString(args, "scope"));
+    case "poetics_signals": {
+      const unit = await resolveUnit(ctx, stringArg(args, "unit"));
+      return unitSignals(unit, ctx.tracker ? await ctx.tracker() : { unavailable: "this server has no issue tracker" });
+    }
     case "poetics_context_pack": {
       const request: ContextPackRequest = {};
       for (const key of ["unit", "task", "issue"] as const) {

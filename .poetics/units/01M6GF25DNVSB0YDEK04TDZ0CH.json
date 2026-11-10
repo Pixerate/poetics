@@ -94,6 +94,56 @@
         "model": "claude-opus-5-5",
         "reviewed": false
       }
+    },
+    {
+      "contentHash": "b3:9136cba49cee20bc620fcd65800eab7ee7eae9285139ceb534241e607e4a5829",
+      "interfaceHash": "b3:47dc68d2eae61f2280992da20c837f8f80aeee5d85fcd930dc4512d019f8b29e",
+      "parent": "b3:3427f53124f3bf8c8a5d9cd55e3d9f5204ceec7ae8ed378ed409b685c5b2b862",
+      "change": "behaviour",
+      "rationale": "Serves poetics_signals: a unit's linked issues and pull requests, their titles and states, and review comments on its file.",
+      "deps": {
+        "01M5XDBC6G1M0RK498KPNPTA6C": "b3:9182ff09570d0dbf4284cd2a0891ded16e325d51b7e3e36a76c1624ef10cf894",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC6YYK0M5RPS3YMPYSPM": "b3:a9d8f9922d57a2b242a17ff15b364a707eb1b721d5ced5d96e4ec2f62342087d",
+        "01M5YKJ3JZM095NT4VJR6HMH42": "b3:a0ad133514cf410878d3ce938ccde3df7ed7a15cda710fb50b81460217eb3828",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M6HYTZKT55NHNSV9KRKKHEDT": "b3:a333be7869a4cc295280179fc7f97590f1fc9e6738349b147c71c73a8d6e747a",
+        "01M73GMZSFCJHXN7HY2M2GKR7H": "b3:5acbdf72168222b0112421cad3b23c1ffd4d2c4ad0769cc6264dcd3e94579760",
+        "01M6GF253JD5RKY6HGW0EKRQSX": "b3:b1868170aa53a2201a796295989905aed26cd50719955435dc661e2a80b79749",
+        "01M6GF24T3PVHY4QCQ7JRVDXMR": "b3:c08253b5e87c1caeeecab0771c822e88757c8ac1e9f521e495fea4474fbaa4ad",
+        "01M6GF24JVZVN1Q752CA2GEJQM": "b3:2e3e6b6f4b1662cb3072f7d9e5660fffb2b1c16280e966f69458271ccc7f9c67",
+        "01M6HYTZKTF43YF7P3EK81A2DE": "b3:c3512128860846e68f40532ee42c29504b81ed073b3adc426977f1397e7b3298",
+        "01M6GF25ARNQNV83HYGNGM32YJ": "b3:3cfd11867c8a8df581de98fa845a70ea356613bc69ad58bc77fa2b17626fe11b",
+        "01M6HYTZKT3Z2JH7G1XMNSWZ7Z": "b3:89fdb094bfd1ef7352a10325b883f5e8e967e7186524fb54e15a36b57bad8ca2",
+        "01M6GF250H9680JBZ943BV4K9N": "b3:5d71dfb81d02d88a4667a2145a6e004675a153a7c0472dc94b4dc391b6c1a2c2",
+        "01M6HYTZKVKA5X6DXD48WZQ0T3": "b3:6429f80a37b7a8e21fb72599247c3de38033640dc0d20515f88ef9c970ae7edf",
+        "01M617V6SZ6XMVAQ36MF6C7ZBB": "b3:65febe07a26e4cad1193f904dbd6af6079b7a1c6039d1e60a2e0709d62d54a7b",
+        "01M5XDBC7YKJD6VJF4K3D1Z289": "b3:6b5620f53d06e3ad3f32882d673d264172c88feb01f8237f8d8a26d044638114",
+        "01M5XDBC815YPH2SXM9166NWM8": "b3:c56fab3aaa9d426418d1a17c2287170dadd8cb01efce793410c2198ef3198fe4",
+        "01M5XDBC7ZDNZA3W91H4RPH0ER": "b3:e497791bc1a798eef6a53929e6ee9fe47fd708170e0eb6c8a0dfe4e700267074",
+        "01M5XDBC82Z5D9AJPVJQXX4EZW": "b3:a530422e1fe25359e3e533beeed1a87012d1f593887db932e658d94b0889c303",
+        "01M5YKJ3K4JGM3F2JMZCKGF0S6": "b3:2a80e27214dbceeea2c451d8b7edd66262977008ecd8b8840a233be48f100387",
+        "01M5YKJ3K3S9VDT8KJXSPTD5GA": "b3:c8c06a12f825087d86b206e89fae23fa314c3937684d63570cc24de8d7794c59",
+        "01M5XDBC8GZ5WSS0KJMF08SPJ9": "b3:d8ec2c1af3288dbe92e7066f79bba2940e4e914ce93c32d1dfe17df754df2c36",
+        "01M6GF24PKWTFAYBMWFTGQ0Y3K": "b3:6f80bc48bd14da0eba03366e7e4f8d58d72bc6e5f86056384bd1f3f31033bea8"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
     }
   ],
   "docs": "Answers one read-only tool call from the store, checking its arguments.",

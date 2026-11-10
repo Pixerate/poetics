@@ -72,6 +72,34 @@
         "model": "claude-opus-5-5",
         "reviewed": false
       }
+    },
+    {
+      "contentHash": "b3:2e3e6b6f4b1662cb3072f7d9e5660fffb2b1c16280e966f69458271ccc7f9c67",
+      "interfaceHash": "b3:c1f92f74916f7fe16c43fa2b202cbee7e2e8fc2380d6443698282ece49b512ce",
+      "parent": "b3:26f6d35747fc5db28ff82d83689a8b01bd75613a19eee74fbbe25fd3a002f875",
+      "change": "interface",
+      "rationale": "Adds an optional issue tracker, connected on first use, so tools that need issue text ask for it only when called and say what is missing without one.",
+      "deps": {
+        "01M6HYTZKT55NHNSV9KRKKHEDT": "b3:a333be7869a4cc295280179fc7f97590f1fc9e6738349b147c71c73a8d6e747a",
+        "01M73GMZSE4B4SSV7NRSAEPJ0S": "b3:55fca55b443dc78edd7823a663ba9e70840534296140a9038e57b0d114d9daca",
+        "01M5XDBC8GZ5WSS0KJMF08SPJ9": "b3:d8ec2c1af3288dbe92e7066f79bba2940e4e914ce93c32d1dfe17df754df2c36"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
     }
   ],
   "docs": "Store paths and an up-to-date index, passed to every read-only tool handler.",

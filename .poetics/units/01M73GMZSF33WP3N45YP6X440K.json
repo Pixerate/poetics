@@ -1,0 +1,39 @@
+{
+  "uid": "01M73GMZSF33WP3N45YP6X440K",
+  "kind": "type",
+  "framework": "none",
+  "name": "LinkedSignal",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:1509042486fb481e886d7c0969fafcedb0497691f50db51b1760a162a6a8d321",
+      "interfaceHash": "b3:2fa98d166931e50fe5e5f7832578664a3ee3f076337ee856131ed585901c3c35",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "An issue or pull request a unit's versions link, with the versions that link it and what the tracker says about it.",
+      "deps": {
+        "01M73GMZSE6FXYRB3BEND7E9S9": "b3:aacad2e2dca5925286d5ead791c4117b266da80ebbc5f7c044f178becca42ea0",
+        "01M73GMZSFGQE5VAT029B0BDWW": "b3:56f1f2336c409ee6f1729bb7d3894ce01a84af04e082cb5d85fed7af0fa04b0d"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ],
+  "docs": "An issue or pull request linked from a unit's versions, with what the tracker says about it."
+}

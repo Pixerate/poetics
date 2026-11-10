@@ -1,0 +1,35 @@
+{
+  "uid": "01M73GMZSFGQE5VAT029B0BDWW",
+  "kind": "type",
+  "framework": "none",
+  "name": "SignalVersion",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:56f1f2336c409ee6f1729bb7d3894ce01a84af04e082cb5d85fed7af0fa04b0d",
+      "interfaceHash": "b3:087f91be545318fafc4c8e234d2c37180bd338edbc8c6aa56768c81998f06214",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Where a signal was linked from, marking prehistory so inferred links are not mistaken for recorded ones.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ],
+  "docs": "Where a signal was linked from."
+}

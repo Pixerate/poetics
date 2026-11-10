@@ -84,6 +84,17 @@ describe("createGitHubTracker", () => {
     expect(await createGitHubTracker({ repo: "acme/shop", token: "t", fetch: fakeFetch({}).fn }).visibility!()).toBe("private");
   });
 
+  it("reads an issue or a pull request by number, and answers a missing one with undefined", async () => {
+    const { fn } = fakeFetch({
+      "/issues/3": { body: { number: 3, html_url: "https://github.com/acme/shop/issues/3", title: "Prices round down", body: null, state: "open", labels: [{ name: "bug" }, "ui"] } },
+      "/issues/12": { body: { ...PULL, state: "closed", pull_request: { url: "x" } } },
+    });
+    const tracker = createGitHubTracker({ repo: "acme/shop", token: "t", fetch: fn });
+    expect(await tracker.issue!(3)).toEqual({ number: 3, url: "https://github.com/acme/shop/issues/3", title: "Prices round down", body: "", state: "open", labels: ["bug", "ui"], pullRequest: false });
+    expect(await tracker.issue!(12)).toMatchObject({ number: 12, state: "closed", body: "Fixes #3", pullRequest: true });
+    expect(await tracker.issue!(99)).toBeUndefined();
+  });
+
   it("sends the token as a bearer header and fails on other errors", async () => {
     let auth: string | null = null;
     const fn = (async (_url: string, init?: RequestInit) => {

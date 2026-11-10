@@ -1,0 +1,45 @@
+{
+  "uid": "01M73GMZSFCERVPG753HV8XN25",
+  "kind": "function",
+  "framework": "none",
+  "name": "relatedIssues",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:b79394997900ee353af7f3cffee36b9185b4492f48eb6ef1c2ab1e4901ba9c38",
+      "interfaceHash": "b3:76be25b08740015133d7b80329386850a1d486e87bd991db29aef4d74e88d699",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Other issues linked from the units an issue touches: past work on the same code, as the plan's issue-driven context asks.",
+      "deps": {
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M73GMZSFCPN4AVPPEP3KKPVE": "b3:16d368baa3f7ca1f39a739c0a3a2e75511010f4f801eb16fd00951aa847f5eef"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ],
+  "docs": "Issues linked from these units other than `except`, each with the units that link it.",
+  "tests": [
+    {
+      "file": "packages/mcp/src/issues.test.ts",
+      "via": "static"
+    }
+  ]
+}

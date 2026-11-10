@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import type { IssueTracker, TrackedPullRequest, TrackedReviewComment } from "@poetics/core";
+import type { IssueTracker, TrackedIssue, TrackedPullRequest, TrackedReviewComment } from "@poetics/core";
 import { storePaths } from "@poetics/store";
 
 /** GitHub answered with a rate limit: stop asking for this run. */
@@ -86,6 +86,21 @@ export function createGitHubTracker(options: GitHubTrackerOptions): GitHubTracke
         if (!end) return [];
         return [{ path: comment.path, startLine: comment.start_line ?? comment.original_start_line ?? end, endLine: end, body: comment.body }];
       });
+    },
+    async issue(number) {
+      const issue = (await one(`/issues/${number}`)) as
+        | { number: number; html_url: string; title: string; body: string | null; state: string; labels?: Array<{ name: string } | string>; pull_request?: unknown }
+        | undefined;
+      if (!issue) return undefined;
+      return {
+        number: issue.number,
+        url: issue.html_url,
+        title: issue.title,
+        body: issue.body ?? "",
+        state: issue.state === "closed" ? "closed" : "open",
+        labels: (issue.labels ?? []).map((label) => (typeof label === "string" ? label : label.name)),
+        pullRequest: issue.pull_request !== undefined,
+      } satisfies TrackedIssue;
     },
     async flush() {
       if (!options.cacheFile) return;

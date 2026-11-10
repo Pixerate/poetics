@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { NotImplementedError, REMOVED_CONTENT_HASH } from "@poetics/core";
+import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { Note, Unit } from "@poetics/core";
 import { openIndex, rebuildIndex, storePaths } from "@poetics/store";
 import { callReadTool, contextPack, matchNotes } from "./read-tools.ts";
@@ -175,13 +175,25 @@ describe("callReadTool", () => {
     await expect(callReadTool(ctx, "poetics_notes", {})).rejects.toThrow("Pass an error, unit, path or command");
   });
 
-  it("says when a tool needs the code and the context has none, and leaves signals as a stub", async () => {
+  it("says when a tool needs the code and the context has none", async () => {
     const ctx = await repo();
     await expect(callReadTool(ctx, "poetics_impact", { units: [UID_A] })).rejects.toThrow("poetics_impact needs the code");
     await expect(callReadTool(ctx, "poetics_verify", {})).rejects.toThrow("poetics_verify needs the code");
     await expect(callReadTool(ctx, "poetics_impact", {})).rejects.toThrow("Pass since, units, or both");
     await expect(callReadTool(ctx, "poetics_impact", { units: "x" })).rejects.toThrow("units must be an array");
-    await expect(callReadTool(ctx, "poetics_signals", {})).rejects.toThrow(NotImplementedError);
+    await expect(callReadTool(ctx, "poetics_signals", {})).rejects.toThrow("unit must be a non-empty string");
+  });
+
+  it("answers poetics_signals with the unit's linked references when there is no tracker", async () => {
+    const ctx = await repo();
+    const linked = unit(UID_A, "formatPrice");
+    linked.versions[0]!.links = [{ kind: "github-issue", ref: "#3" }];
+    await writeFile(join(ctx.paths.units, `${UID_A}.json`), JSON.stringify(linked));
+    await rebuildIndex(ctx.paths, ctx.db);
+    expect(await callReadTool(ctx, "poetics_signals", { unit: "formatPrice" })).toMatchObject({
+      linked: [{ ref: "#3", kind: "issue" }],
+      missing: ["titles, states and review comments: this server has no issue tracker", "production errors: no error-monitoring integration yet"],
+    });
   });
 });
 
@@ -231,10 +243,48 @@ describe("contextPack", () => {
     expect(pack.truncated["unit.docs"]).toBe(1);
   });
 
-  it("refuses an empty request and leaves issue lookup as a stub", async () => {
+  it("picks the unit an issue names, with the issue's text, related issues and other candidates", async () => {
+    const base = await repo();
+    const price = unit(UID_A, "formatPrice", { docs: "Formats a price in the user's currency." });
+    price.versions[0]!.links = [{ kind: "github-issue", ref: "#3" }];
+    await writeFile(join(base.paths.units, `${UID_A}.json`), JSON.stringify(price));
+    await rebuildIndex(base.paths, base.db);
+    const body = "`roundHalf` rounds 0.5 down in src/lib.ts. " + "More detail. ".repeat(400);
+    const tracker = {
+      name: "github",
+      pullRequestsFor: async () => [],
+      reviewComments: async () => [],
+      issue: async (number: number) => (number === 7 ? { number, url: "https://github.com/acme/shop/issues/7", title: "Wrong rounding", body, state: "open" as const, labels: ["bug"], pullRequest: false } : undefined),
+    };
+    const ctx: ReadContext = { ...base, tracker: async () => ({ repo: "acme/shop", tracker }) };
+    const pack = await contextPack(ctx, { issue: "https://github.com/acme/shop/issues/7" });
+    expect(pack.unit.uid).toBe(UID_B);
+    expect(pack.issue).toMatchObject({ ref: "#7", title: "Wrong rounding", state: "open", labels: ["bug"], unitMatched: ["name", "path"] });
+    // Every unit in src/lib.ts is mentioned by path.
+    expect(pack.candidates?.map((c) => [c.uid, c.why])).toEqual([[UID_A, ["path"]]]);
+    expect(pack.relatedIssues).toEqual([{ ref: "#3", units: ["formatPrice"] }]);
+    // The body gets at most a quarter of the budget.
+    expect(pack.issue!.body!.length).toBeLessThanOrEqual(4000);
+    expect(pack.truncated["issue.body"]).toBe(1);
+    await expect(contextPack(ctx, { issue: "other/repo#7" })).rejects.toThrow("not this repository");
+    await expect(contextPack(ctx, { issue: "#8" })).rejects.toThrow("No unit links #8, and its text cannot be read (issue text: the tracker has no #8)");
+  });
+
+  it("packs an issue's linked unit without a tracker, saying the text is missing", async () => {
+    const ctx = await repo();
+    const price = unit(UID_A, "formatPrice");
+    price.versions[0]!.links = [{ kind: "github-issue", ref: "#3" }];
+    await writeFile(join(ctx.paths.units, `${UID_A}.json`), JSON.stringify(price));
+    await rebuildIndex(ctx.paths, ctx.db);
+    const pack = await contextPack(ctx, { issue: "#3" });
+    expect(pack.unit.uid).toBe(UID_A);
+    expect(pack.issue).toEqual({ ref: "#3", unitMatched: ["linked"] });
+    expect(pack.missing[0]).toBe("issue text: this server has no issue tracker");
+  });
+
+  it("refuses an empty request", async () => {
     const ctx = await repo();
     await expect(contextPack(ctx, {})).rejects.toThrow("Pass a unit, a task or an issue");
-    await expect(contextPack(ctx, { issue: "#22" })).rejects.toThrow(NotImplementedError);
     await expect(callReadTool(ctx, "poetics_context_pack", { unit: UID_A, tokenBudget: 10 })).rejects.toThrow(/at least 256/);
   });
 

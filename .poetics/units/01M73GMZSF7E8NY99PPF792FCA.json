@@ -1,0 +1,39 @@
+{
+  "uid": "01M73GMZSF7E8NY99PPF792FCA",
+  "kind": "type",
+  "framework": "none",
+  "name": "SignalsReport",
+  "location": {
+    "file": "packages/mcp/src/issues.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:c12ec38ac8406af7448103932a59ef7584e2a874afc38e314fdcfde17af81f0c",
+      "interfaceHash": "b3:354631fb914e00c87d7d87d6ecc658988212fd994f5198b334fd4d610c22160b",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "What poetics_signals returns: linked issues and pull requests, review comments, an empty errors list until an error-monitoring integration exists, and what is missing and why.",
+      "deps": {
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M73GMZSF33WP3N45YP6X440K": "b3:1509042486fb481e886d7c0969fafcedb0497691f50db51b1760a162a6a8d321",
+        "01M73GMZSFAZCGSANY57152B6E": "b3:b97ea4ea43fcfc79c2df858a369c4eff0ed48993ac3ce90b4cf7bd9a6a8f1090"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#23"
+        },
+        {
+          "kind": "plan",
+          "ref": "docs/plan.md#issue-trackers"
+        }
+      ]
+    }
+  ]
+}
