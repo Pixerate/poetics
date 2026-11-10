@@ -1,0 +1,41 @@
+{
+  "uid": "01M73SRDN5FH57E7YM7MCP8NW1",
+  "kind": "function",
+  "framework": "none",
+  "name": "componentSignatureText",
+  "location": {
+    "file": "packages/adapter-svelte/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:adb7846daa8c17e6c57f93a311756ce37333d5173d3286a4bcd5a6c1145c415d",
+      "interfaceHash": "b3:ac632d9854d0fd1d8da530063d63accf0751c4e359be73138226174fbf278eeb",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Shows callers how a component takes its props, as written (the $props() destructure or export let lines), since the generated declarations mean nothing to a reader.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ],
+  "docs": "What a caller reads about a component: how it takes its props, as written.",
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

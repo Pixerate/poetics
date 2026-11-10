@@ -112,7 +112,7 @@ packages/
   core/                   unit model, uids, hashes, graph (stubs)
   store/                  JSON store, validation, SQLite index
   adapter-react/          React detection (stub)
-  adapter-svelte/         Svelte detection (stub)
+  adapter-svelte/         Svelte components through svelte2tsx
   mcp/                    MCP tool definitions and the read-only stdio server
   cli/                    poetics CLI (help and changes work; the rest stubbed)
 site/                     the GitHub Pages demo (Svelte)

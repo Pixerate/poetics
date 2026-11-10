@@ -4,7 +4,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { isDeepStrictEqual } from "node:util";
-import { createMatcher, extendsPrehistory, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
+import { createMatcher, extendsPrehistory, isParseable, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
 import type { Scope } from "@poetics/store";
 import type { Unit } from "@poetics/core";
 import { declarationsIn } from "./declarations.ts";
@@ -41,8 +41,6 @@ export interface ChangeReport {
   findings: ChangeFinding[];
 }
 
-const PARSEABLE = /\.(ts|tsx|mts|cts)$/;
-
 export async function checkChange(root: string, since: string, scope: Scope & { adapters?: readonly string[] }): Promise<ChangeReport> {
   const plugins = pluginsFor(scope);
   const { base, changes } = changesSince(root, since);
@@ -51,7 +49,7 @@ export async function checkChange(root: string, since: string, scope: Scope & { 
   const findings: ChangeFinding[] = [];
 
   // 1. Code that changed must match the store.
-  const codeFiles = [...changedPaths].filter((path) => inScope(path) && PARSEABLE.test(path) && !path.endsWith(".d.ts")).sort();
+  const codeFiles = [...changedPaths].filter((path) => inScope(path) && isParseable(path, scope.adapters)).sort();
   const declarations: Declaration[] = [];
   for (const file of codeFiles) {
     const text = await readFile(join(root, file), "utf8").catch(() => undefined);

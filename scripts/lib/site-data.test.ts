@@ -40,6 +40,23 @@ describe("buildSiteData", () => {
     expect(data.units[1]!.source).toBeUndefined();
   });
 
+  it("finds the source of a named default export, such as a Svelte component", () => {
+    const tag: Unit = { ...unit("01JB8K0000000000000000000C", "Tag", "site/src/Tag.svelte"), kind: "component", framework: "svelte", location: { file: "site/src/Tag.svelte", export: "default" } };
+    const withComponent = buildSiteData({
+      repoUrl: "https://github.com/o/r",
+      commit: "abc",
+      generatedAt: "2026-10-27T00:00:00.000Z",
+      thresholds: {},
+      coverage: {} as SiteCoverage,
+      units: [tag],
+      notes: [],
+      declarations: [{ file: "site/src/Tag.svelte", name: "Tag", exportedAs: "default", kind: "component", hash: `git:${"1".repeat(40)}`, contentHash: `b3:${"1".repeat(64)}`, startLine: 1, endLine: 1 }],
+      sources: new Map([["site/src/Tag.svelte", "<b>tag</b>\n"]]),
+      decisions: [],
+    });
+    expect(withComponent.units[0]).toMatchObject({ source: "<b>tag</b>", startLine: 1 });
+  });
+
   it("carries repo, thresholds and sorted decisions", () => {
     expect(data.repo).toEqual({ url: "https://github.com/o/r", commit: "abc" });
     expect(data.thresholds).toEqual({ tracked: 1 });

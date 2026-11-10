@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { gitBlobHash } from "@poetics/core";
 import { filesInScope } from "@poetics/store";
 import { reactPlugin } from "@poetics/adapter-react";
+import { sveltePlugin } from "@poetics/adapter-svelte";
 import { declarationsIn, discoverDeclarations } from "./declarations.ts";
 
 const SOURCE = `import x from "y";
@@ -78,5 +79,13 @@ describe("discoverDeclarations", () => {
     const code = 'import { memo } from "react";\nexport const Tag = memo(function Tag() {\n  return <b />;\n});\n';
     expect(declarationsIn("src/Tag.tsx", code).map((d) => d.name)).toEqual([]);
     expect(declarationsIn("src/Tag.tsx", code, [reactPlugin()]).map((d) => [d.name, d.kind])).toEqual([["Tag", "component"]]);
+  });
+
+  it("reads a .svelte component through Svelte's plugin, spanning its file, hashed from its source", () => {
+    const text = `<script lang="ts">\n  let { n }: { n: number } = $props();\n</script>\n\n<p>{n}</p>\n`;
+    const [component] = declarationsIn("src/Count.svelte", text, [sveltePlugin()]);
+    expect(component).toMatchObject({ file: "src/Count.svelte", name: "Count", kind: "component", startLine: 1, endLine: 6 });
+    const reformatted = declarationsIn("src/Count.svelte", text.replace("<p>", "<p >"), [sveltePlugin()])[0]!;
+    expect(reformatted.contentHash).toBe(component!.contentHash);
   });
 });

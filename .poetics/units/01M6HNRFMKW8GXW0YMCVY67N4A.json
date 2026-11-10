@@ -45,6 +45,34 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:1d24ec831164b4800ab2ef100dd1b4e382fdc4d1ec5d5ce599f8eab5ccd7c43c",
+      "interfaceHash": "b3:361e8585cee2dfcc02ddb162aa8ad69e7d9db0ebd28a2e237a0aff4f074dd322",
+      "parent": "b3:588fed85ac85cda89945b814917f1b7a4fcec907b605bd56053915157ead9ecb",
+      "change": "behaviour",
+      "rationale": "Uses a unit's own content trees when it has them, so generated declarations never enter a content hash.",
+      "deps": {
+        "01M6HNRFMKJGK18JKH37PPJ711": "b3:167f4daf6b6b849a3c90172c988aefdaead3e1e3835dad2d4aa7da4a1159f537",
+        "01M6HNRFMKY02B40EEEAPZ66BP": "b3:30556d396c90f369fc9496e82b92c4e327d78359c0bda51c36d33639523c8d2d",
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:41e882d59fca82afb877f729e898113e5de5ed19cc05737c63cff20bc0598823"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
     }
   ],
   "docs": "A unit's whole normalised tree, own name excluded, optionally with types erased.",

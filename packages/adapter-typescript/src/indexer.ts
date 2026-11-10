@@ -7,7 +7,7 @@ import { computeClosureHashes, contentHash, createGraph, gitBlobHash, interfaceH
 import type { Edge, Framework, Hash, Span, UnitKind } from "@poetics/core";
 import { fingerprint } from "./normalise.ts";
 import { contentTree, detectUnits, edgesOf, signatureOf, signatureText } from "./units.ts";
-import type { DetectedUnit, FrameworkPlugin, IndexedEdge, Signature, UnresolvedUse } from "./units.ts";
+import type { DetectedUnit, FrameworkPlugin, IndexedEdge, Signature, Transformed, UnresolvedUse } from "./units.ts";
 
 export interface TypeScriptIndexerOptions {
   /** Repository root: files, spans and keys are relative to it. */
@@ -92,8 +92,11 @@ export function createTypeScriptIndexer(options: TypeScriptIndexerOptions): Type
   const root = resolve(options.root);
   const compilerOptions: ts.CompilerOptions = { ...compilerOptionsFor(root, options), noEmit: true };
   const resolutionCache = ts.createModuleResolutionCache(root, (name) => name, compilerOptions);
-  const host = reusingHost(compilerOptions);
   const plugins = options.plugins ?? [];
+  const sources = transformedSources(plugins);
+  const resolveImport = importResolver(root, compilerOptions, resolutionCache, sources);
+  const host = reusingHost(compilerOptions, sources, resolveImport);
+  const ambient = [...new Set(plugins.flatMap((plugin) => plugin.ambient ?? []))];
   // A plugin changes what units are and what they use, so the frameworks and their rules' versions are part of what cached units depend on.
   const environment = gitBlobHash(JSON.stringify([CACHE_VERSION, ts.version, compilerOptions, lockfileHash(root), plugins.map((p) => [p.framework, p.version ?? 0])]));
   let cache = readCache(options.cacheFile, environment);
@@ -101,30 +104,34 @@ export function createTypeScriptIndexer(options: TypeScriptIndexerOptions): Type
 
   const absolute = (file: string) => join(root, file);
   const relativeTo = (path: string) => relative(root, path).split(sep).join("/");
+  // A transformed file is read by the checker under a name of its own, so `X.svelte` and `X.svelte.ts` never collide.
+  const programPath = (file: string) => (sources.pluginFor(file) ? virtualPath(absolute(file)) : absolute(file));
 
   return {
     index(files = options.files) {
       const scope = [...new Set(files)];
-      const keys = fileKeys(scope, root, compilerOptions, resolutionCache, relativeTo);
+      const keys = fileKeys(scope, root, (path) => sources.code(path), resolveImport, relativeTo);
       const misses = scope.filter((file) => cache.files[file]?.key !== keys.get(file));
       const next: Record<string, CachedFile> = {};
 
       if (misses.length > 0) {
-        program = ts.createProgram({ rootNames: scope.map(absolute), options: compilerOptions, host, ...(program ? { oldProgram: program } : {}) });
+        program = ts.createProgram({ rootNames: [...scope.map(programPath), ...ambient], options: compilerOptions, host, ...(program ? { oldProgram: program } : {}) });
         const checker = program.getTypeChecker();
-        const detected = new Map<string, { source: ts.SourceFile; units: DetectedUnit[] }>();
+        const detected = new Map<string, { source: ts.SourceFile; units: DetectedUnit[]; original?: { text: string; transformed: Transformed } }>();
         const byDeclaration = new Map<ts.Node, DetectedUnit>();
         for (const file of scope) {
-          const source = program.getSourceFile(absolute(file));
+          const source = program.getSourceFile(programPath(file));
           if (!source) continue;
-          const units = detectUnits(source, file, plugins);
-          detected.set(file, { source, units });
+          const plugin = sources.pluginFor(file);
+          const original = plugin ? sources.get(absolute(file)) : undefined;
+          const units = plugin?.detect && original ? plugin.detect(source, file, original.text, original.transformed) : detectUnits(source, file, plugins);
+          detected.set(file, { source, units, ...(original ? { original } : {}) });
           for (const unit of units) for (const declaration of unit.declarations) byDeclaration.set(declaration, unit);
         }
         const unitAt = (declaration: ts.Declaration) => byDeclaration.get(declaration);
         for (const file of misses) {
           const found = detected.get(file);
-          const units = found ? found.units.map((unit) => indexUnit(unit, found.source, checker, unitAt, plugins)) : [];
+          const units = found ? found.units.map((unit) => indexUnit(unit, found.source, checker, unitAt, plugins, found.original)) : [];
           next[file] = { key: keys.get(file)!, units };
         }
       }
@@ -146,9 +153,19 @@ function indexUnit(
   checker: ts.TypeChecker,
   unitAt: (d: ts.Declaration) => DetectedUnit | undefined,
   plugins: readonly FrameworkPlugin[],
+  original?: { text: string; transformed: Transformed },
 ): IndexedUnit {
   const signature = signatureOf(unit, checker, plugins);
-  const { edges, unresolved } = edgesOf(unit, checker, unitAt, plugins);
+  const found = edgesOf(unit, checker, unitAt, plugins);
+  // In a transformed file, a use the author did not write has no place to show, so it is left out.
+  const unresolved = original
+    ? found.unresolved.flatMap((use) => {
+        const start = original.transformed.toOriginal(use.span.start);
+        const end = original.transformed.toOriginal(use.span.end);
+        return start === undefined ? [] : [{ ...use, span: { ...use.span, start, end: Math.max(start, end ?? start) } }];
+      })
+    : found.unresolved;
+  const lineOf = original ? (offset: number) => original.text.slice(0, offset).split("\n").length : (offset: number) => source.getLineAndCharacterOfPosition(offset).line + 1;
   const tree = contentTree(unit);
   const indexed: IndexedUnit = {
     key: unit.key,
@@ -156,15 +173,15 @@ function indexUnit(
     kind: unit.kind,
     framework: unit.framework,
     span: unit.span,
-    startLine: source.getLineAndCharacterOfPosition(unit.span.start).line + 1,
-    endLine: source.getLineAndCharacterOfPosition(unit.span.end).line + 1,
+    startLine: lineOf(unit.span.start),
+    endLine: lineOf(unit.span.end),
     contentHash: contentHash(tree),
     runtimeHash: contentHash(contentTree(unit, true)),
     interfaceHash: interfaceHash(signature),
     fingerprint: fingerprint(tree),
     signature,
     signatureText: signatureText(unit, source, plugins),
-    edges,
+    edges: found.edges,
     unresolved,
   };
   if (unit.exportedAs !== undefined) indexed.exportedAs = unit.exportedAs;
@@ -172,17 +189,107 @@ function indexUnit(
   return indexed;
 }
 
+/** The suffix a transformed file is read under: `Button.svelte` is checked as `Button.svelte.tsx`. */
+const VIRTUAL_SUFFIX = ".tsx";
+
+function virtualPath(path: string): string {
+  return `${path}${VIRTUAL_SUFFIX}`;
+}
+
+interface TransformedSources {
+  /** The plugin that transforms `file`, by its extension. */
+  pluginFor(file: string): FrameworkPlugin | undefined;
+  /** The original text of an absolute path and its transform, read once per text. */
+  get(path: string): { text: string; transformed: Transformed } | undefined;
+  /** The original path a virtual path stands for. */
+  originalOf(path: string): string | undefined;
+  /** What the checker reads at a real path: the transformed code for a transformed file. */
+  code(path: string): string;
+}
+
+function transformedSources(plugins: readonly FrameworkPlugin[]): TransformedSources {
+  const memo = new Map<string, { text: string; transformed: Transformed }>();
+  const pluginFor = (file: string) => plugins.find((plugin) => plugin.transform && plugin.extensions?.some((ext) => file.endsWith(ext)));
+  const get = (path: string) => {
+    const plugin = pluginFor(path);
+    if (!plugin || !existsSync(path)) return undefined;
+    const text = readFileSync(path, "utf8");
+    const known = memo.get(path);
+    if (known?.text === text) return known;
+    const entry = { text, transformed: plugin.transform!(path, text) };
+    memo.set(path, entry);
+    return entry;
+  };
+  return {
+    pluginFor,
+    get,
+    originalOf(path) {
+      if (!path.endsWith(VIRTUAL_SUFFIX)) return undefined;
+      const original = path.slice(0, -VIRTUAL_SUFFIX.length);
+      return pluginFor(original) && existsSync(original) ? original : undefined;
+    },
+    code(path) {
+      if (pluginFor(path)) return get(path)?.transformed.code ?? "";
+      return existsSync(path) ? readFileSync(path, "utf8") : "";
+    },
+  };
+}
+
+type ImportResolver = (specifier: string, containingFile: string, mode?: ts.ResolutionMode) => ts.ResolvedModuleWithFailedLookupLocations;
+
+/**
+ * Module resolution that also finds transformed files: `./Button.svelte` resolves
+ * to the virtual `Button.svelte.tsx`, directly or through `paths`. Everything
+ * else resolves as TypeScript would.
+ */
+function importResolver(root: string, options: ts.CompilerOptions, cache: ts.ModuleResolutionCache, sources: TransformedSources): ImportResolver {
+  const transformedAt = (path: string): ts.ResolvedModuleWithFailedLookupLocations | undefined =>
+    sources.pluginFor(path) && existsSync(path) ? { resolvedModule: { resolvedFileName: virtualPath(path), extension: ts.Extension.Tsx, isExternalLibraryImport: false } } : undefined;
+  return (specifier, containingFile, mode) => {
+    if (sources.pluginFor(specifier)) {
+      if (specifier.startsWith(".") || isAbsolute(specifier)) {
+        const found = transformedAt(resolve(dirname(containingFile), specifier));
+        if (found) return found;
+      }
+      for (const candidate of pathCandidates(specifier, options, root)) {
+        const found = transformedAt(candidate);
+        if (found) return found;
+      }
+    }
+    return ts.resolveModuleName(specifier, containingFile, options, ts.sys, cache, undefined, mode);
+  };
+}
+
+/** Where `paths` in the compiler options would send `specifier`, most specific pattern first. */
+function pathCandidates(specifier: string, options: ts.CompilerOptions, root: string): string[] {
+  const base = (options.pathsBasePath as string | undefined) ?? options.baseUrl ?? root;
+  const out: string[] = [];
+  const patterns = Object.entries(options.paths ?? {}).sort(([a], [b]) => b.length - a.length);
+  for (const [pattern, targets] of patterns) {
+    const star = pattern.indexOf("*");
+    let rest: string | undefined;
+    if (star === -1) rest = pattern === specifier ? "" : undefined;
+    else if (specifier.startsWith(pattern.slice(0, star)) && specifier.endsWith(pattern.slice(star + 1)) && specifier.length >= pattern.length - 1) {
+      rest = specifier.slice(star, specifier.length - (pattern.length - star - 1));
+    }
+    if (rest === undefined) continue;
+    for (const target of targets) out.push(resolve(base, target.replace("*", rest)));
+  }
+  return out;
+}
+
 /**
  * A cache key per file in scope: a Merkle hash of its path, text and whether it
  * is in scope, over every project file it imports, directly or not. A file's
  * signatures and edges can only depend on what it imports, so an unchanged key
- * means its cached units still hold.
+ * means its cached units still hold. A transformed file's imports are read from
+ * the code it is transformed into.
  */
 function fileKeys(
   scope: readonly string[],
   root: string,
-  options: ts.CompilerOptions,
-  resolutionCache: ts.ModuleResolutionCache,
+  codeAt: (path: string) => string,
+  resolveImport: ImportResolver,
   relativeTo: (path: string) => string,
 ): Map<string, Hash> {
   const inScope = new Set(scope);
@@ -194,11 +301,14 @@ function fileKeys(
     const path = join(root, file);
     const text = existsSync(path) ? readFileSync(path, "utf8") : "";
     own.set(file, gitBlobHash(`${file}\0${inScope.has(file) ? "scope" : "dependency"}\0${text}`));
-    for (const { fileName } of ts.preProcessFile(text, true, true).importedFiles) {
-      const resolved = ts.resolveModuleName(fileName, path, options, ts.sys, resolutionCache).resolvedModule;
+    for (const { fileName } of ts.preProcessFile(codeAt(path), true, true).importedFiles) {
+      const resolved = resolveImport(fileName, path).resolvedModule;
       // Packages are covered by the lockfile in the cache's environment.
       if (!resolved || resolved.isExternalLibraryImport) continue;
-      const target = relativeTo(resolved.resolvedFileName);
+      // A transformed file is keyed by its own path, not the virtual one it is read under.
+      const resolvedPath = resolved.resolvedFileName;
+      const real = resolvedPath.endsWith(VIRTUAL_SUFFIX) && !existsSync(resolvedPath) ? resolvedPath.slice(0, -VIRTUAL_SUFFIX.length) : resolvedPath;
+      const target = relativeTo(real);
       if (target.startsWith("../") || isAbsolute(target)) continue;
       edges.push({ from: file, to: target, kind: "references-type" });
       queue.push(target);
@@ -207,9 +317,20 @@ function fileKeys(
   return computeClosureHashes(createGraph(edges), own);
 }
 
-/** A compiler host that hands back the same SourceFile for unchanged text, so `oldProgram` reuse works. */
-function reusingHost(options: ts.CompilerOptions): ts.CompilerHost {
+/**
+ * A compiler host that hands back the same SourceFile for unchanged text, so
+ * `oldProgram` reuse works, and that serves transformed files under their
+ * virtual names and resolves imports of them.
+ */
+function reusingHost(options: ts.CompilerOptions, transformed: TransformedSources, resolveImport: ImportResolver): ts.CompilerHost {
   const host = ts.createCompilerHost(options, true);
+  const fileExists = host.fileExists.bind(host);
+  const readFile = host.readFile.bind(host);
+  host.fileExists = (path) => transformed.originalOf(path) !== undefined || fileExists(path);
+  host.readFile = (path) => {
+    const original = transformed.originalOf(path);
+    return original ? transformed.get(original)?.transformed.code : readFile(path);
+  };
   const sources = new Map<string, { text: string; file: ts.SourceFile }>();
   host.getSourceFile = (fileName, languageVersion) => {
     const text = host.readFile(fileName);
@@ -220,6 +341,8 @@ function reusingHost(options: ts.CompilerOptions): ts.CompilerHost {
     sources.set(fileName, { text, file });
     return file;
   };
+  host.resolveModuleNameLiterals = (literals, containingFile, _redirected, compilerOptions, containingSource) =>
+    literals.map((literal) => resolveImport(literal.text, containingFile, ts.getModeForUsageLocation(containingSource, literal, compilerOptions)));
   return host;
 }
 

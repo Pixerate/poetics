@@ -45,6 +45,29 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:3cb0ac8d6a8cb4867429fad4745ce467dc8da15f7133cdb776676590a8fb508c",
+      "interfaceHash": "b3:00c9cfdb589ec74672aba0cf963e728945ae6e35852be4148377f55c1b5476e2",
+      "parent": "b3:f8367fa172fac624fe8134b84bb4d8a768b6823428e6ef392789dbc505e1f5a4",
+      "change": "interface",
+      "rationale": "Gains adapters, which decide whether .svelte files are readable.",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
     }
   ],
   "tests": [

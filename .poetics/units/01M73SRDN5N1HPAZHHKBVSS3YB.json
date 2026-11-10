@@ -1,0 +1,41 @@
+{
+  "uid": "01M73SRDN5N1HPAZHHKBVSS3YB",
+  "kind": "component",
+  "framework": "svelte",
+  "name": "App",
+  "location": {
+    "file": "site/src/App.svelte",
+    "export": "default"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:184e48b0817fd704cd91358bf6973d202ae0b55126888374fb96afcddf2f306a",
+      "interfaceHash": "b3:3c6f46b127f08c746c5ed74c73326880dd6acaba6fb36b8662b1df52b5d0cc18",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "First recorded when the Svelte adapter began reading .svelte files (#69). It was written with the demo site (e7dd8e8), whose commit records why the site exists, not why this component does; it loads the exported site data and switches between the overview, units and notes views.",
+      "deps": {
+        "01M73SRDN5JVTDZ7HG7VR7XK1V": "b3:c376d6d6c7787b55b3b22e4b7d960eed77af3ddda7b72130fa596bb4c2b281aa",
+        "01M73SRDN5VFB32AZMBRY8J5R4": "b3:7f08ff248c942f20b9ecdc4f818fc2faf799940c658315397d4ba01f4b207f97",
+        "01M73SRDN58AYCPDW06T83SACX": "b3:fb1c2421bbdb6b974297bbd9d047a8b71fbd8ca8b2b2be8a545da5579317dcc2",
+        "01M5Z1YW0J4X5G0AS6KTYG2S4X": "b3:528c2212f1626533bc0790c9184c41984091a9d6710c54a5ff48e2b6e2d6b2a8"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ]
+}

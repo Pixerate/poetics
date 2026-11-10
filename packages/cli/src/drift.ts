@@ -68,7 +68,8 @@ export function compareCodeWithStore(
   let fresh = 0;
   const matched = new Set<string>();
   for (const decl of declarations) {
-    const k = key(decl.file, decl.name);
+    // Units of default exports are keyed by `location.export`, so declarations are keyed by the name they are exported as.
+    const k = key(decl.file, decl.exportedAs ?? decl.name);
     const unit = byKey.get(k);
     if (!unit) {
       findings.push({

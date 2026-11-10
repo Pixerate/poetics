@@ -24,6 +24,9 @@
       "path": "../adapter-react"
     },
     {
+      "path": "../adapter-svelte"
+    },
+    {
       "path": "../store"
     }
   ]

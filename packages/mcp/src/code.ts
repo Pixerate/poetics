@@ -3,12 +3,12 @@
 // as a composition graph over uids.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { reactPlugin } from "@poetics/adapter-react";
+import { pluginsFor } from "@poetics/cli";
 import { createTypeScriptIndexer } from "@poetics/adapter-typescript";
 import type { IndexedUnit } from "@poetics/adapter-typescript";
 import { createGraph, isRemoved } from "@poetics/core";
 import type { CompositionGraph, Edge, Uid, Unit, UnresolvedEdge } from "@poetics/core";
-import { createMatcher, filesInScope, readConfig, storePaths } from "@poetics/store";
+import { createMatcher, filesInScope, isParseable, readConfig, storePaths } from "@poetics/store";
 
 export interface CodeView {
   /** The indexed code of every live unit found at its recorded place. */
@@ -35,12 +35,12 @@ export async function codeView(root: string, units: readonly Unit[]): Promise<Co
     files: parseable,
     cacheFile: join(storePaths(root).cache, "typescript.json"),
     // The same plugins poetics index runs, so packs and impact see components as it records them.
-    plugins: config.adapters?.includes("react") ? [reactPlugin()] : [],
+    plugins: pluginsFor(config),
     ...(tsconfig ? { tsconfig } : {}),
   }).index().units;
   // By scope, not existence: a unit whose file was deleted is missing, not out of scope.
   const inScope = createMatcher(config.include, config.exclude ?? []);
-  const indexable = (file: string) => inScope(file) && /\.(ts|tsx|mts|cts)$/.test(file) && !file.endsWith(".d.ts");
+  const indexable = (file: string) => inScope(file) && isParseable(file, config.adapters);
   return joinCode(indexed, units, indexable, (file) => readFileSync(join(root, file), "utf8"));
 }
 

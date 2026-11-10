@@ -30,6 +30,34 @@
           "ref": "docs/plan.md#react-ts-tsx"
         }
       ]
+    },
+    {
+      "contentHash": "b3:e785e7902ae83fdddf735d45dcfccf08fe6bac9d6525091d4d11599921e0bf1f",
+      "interfaceHash": "b3:20cd0e1e8e3aabb28204c25dfc8a9dda65550bc67e2b235ed3580093d19c14f6",
+      "parent": "b3:2bced8d96434b3d623f644cf2e834e591c115073faaf9b19d4572022f25e6cf6",
+      "change": "behaviour",
+      "rationale": "Adds the Svelte plugin when svelte is in the configured adapters.",
+      "deps": {
+        "01M6ME83DB7CZMB7TW8W4YE6PZ": "b3:1dd83970f2ffc92c08a31fa813e45797464a2663afc5358e1d85627c3649eefa",
+        "01M73SRDN5F6KY612X9A9V8741": "b3:2b9cdb1b9e7c4539ee0e1647b82e96c1fe5e86c7455e5bf0edffea322b2838ca",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:edb73add1559c280c4dcdceb5f3f6bf3dbf06d95ad7a8ce70316aef31405ac59"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
     }
   ],
   "docs": "The plugins for `config.adapters`: React's when `react` is listed. Svelte's arrives with its adapter.",

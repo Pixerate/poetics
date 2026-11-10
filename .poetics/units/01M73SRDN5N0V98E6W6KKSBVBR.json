@@ -1,0 +1,41 @@
+{
+  "uid": "01M73SRDN5N0V98E6W6KKSBVBR",
+  "kind": "function",
+  "framework": "none",
+  "name": "decodeMappings",
+  "location": {
+    "file": "packages/adapter-svelte/src/source-map.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:bb0e0e8118c708906349ce92f93228aec87c5390a4d10510d44d4cad2f4cb46d",
+      "interfaceHash": "b3:07fece18672bf0d5521eb170ee24f10b735290c27fb4615cfc5ca2ef11ada305",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Decodes source map mappings so generated offsets can be traced to the .svelte file. Owned rather than a dependency: it is a few lines and only reading is needed.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Decodes a version 3 `mappings` string into segments per generated line, each line sorted by column.",
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/source-map.test.ts",
+      "via": "static"
+    }
+  ]
+}

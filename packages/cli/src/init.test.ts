@@ -55,7 +55,9 @@ describe("planInit", () => {
     expect(plan.config.include).toEqual(["packages/*/src/**/*.{ts,svelte}"]);
     expect(plan.detected.svelte).toEqual(["packages/ui/package.json"]);
     expect(plan.config.typescript).toBeUndefined();
-    expect(plan.backfill!.created.map(({ unit }) => unit.location.file).sort()).toEqual(["packages/core/src/a.ts", "packages/ui/src/b.ts"]);
+    // With Svelte detected, its components are units too (ADR 0020).
+    expect(plan.backfill!.created.map(({ unit }) => unit.location.file).sort()).toEqual(["packages/core/src/a.ts", "packages/ui/src/View.svelte", "packages/ui/src/b.ts"]);
+    expect(plan.backfill!.created.find(({ unit }) => unit.name === "View")!.unit).toMatchObject({ kind: "component", framework: "svelte" });
   });
 
   it("falls back to the whole repository, and to file extensions when no dependency says", async () => {

@@ -75,6 +75,33 @@
           "ref": "docs/plan.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:aa673e5faac465803b12d6cd059d5d9243b72699f9872ca33512d5281f660a89",
+      "interfaceHash": "b3:50bca86cc3cde4d512f55de4e3e2c43d967715141566a3623b43141ad3620ab5",
+      "parent": "b3:3aee4b720fa23054622d99f39822fdbb1df75c52a1407b7100b31a56195087c9",
+      "change": "behaviour",
+      "rationale": "Uses a unit's own signature text when it has one, for units whose declarations are generated.",
+      "deps": {
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:41e882d59fca82afb877f729e898113e5de5ed19cc05737c63cff20bc0598823",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:edb73add1559c280c4dcdceb5f3f6bf3dbf06d95ad7a8ce70316aef31405ac59"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
     }
   ],
   "docs": "What a caller reads: each declaration up to its body, as written. Types are\ntheir whole declaration, since their structure is the interface; with\noverloads, only the overload signatures.",

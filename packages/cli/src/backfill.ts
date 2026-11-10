@@ -4,12 +4,12 @@
 // written to; what they lack is listed for someone to add.
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import ts from "typescript";
-import { contentTree, createTypeScriptIndexer, detectUnits, fingerprint, signatureText } from "@poetics/adapter-typescript";
+import { contentTree, createTypeScriptIndexer, fingerprint, signatureText } from "@poetics/adapter-typescript";
+import { detectIn } from "./declarations.ts";
 import type { IndexedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
 import type { Actor, ChangeClass, CodeUnit, Framework, Hash, Inferred, IssueTracker, Link, Unit, Version } from "@poetics/core";
-import { appendVersion, createMatcher, createUnit, extendsPrehistory, filesInScope, parseUnit, readUnitFiles, setPrehistory, storePaths } from "@poetics/store";
+import { appendVersion, createMatcher, createUnit, extendsPrehistory, filesInScope, isParseable, parseUnit, readUnitFiles, setPrehistory, storePaths } from "@poetics/store";
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { git, showAt } from "./git.ts";
 import type { TrackerStatus } from "./github.ts";
@@ -461,7 +461,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
   const requests = new Map<Version, DraftRequest>();
   const plugins = pluginsFor(config);
   const inScope = createMatcher(config.include, config.exclude ?? []);
-  const indexable = (file: string) => inScope(file) && /\.(ts|tsx|mts|cts)$/.test(file) && !file.endsWith(".d.ts");
+  const indexable = (file: string) => inScope(file) && isParseable(file, config.adapters);
   const empty = !hasCommits(root);
   if (empty && (range.from || range.to)) throw new Error("The repository has no commits to walk a range of");
   const head = empty ? "" : resolveCommit(root, "HEAD");
@@ -495,15 +495,15 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     for (const file of git(root, ["ls-tree", "-r", "--name-only", from]).split("\n").filter(indexable)) {
       const text = showAt(root, from, file);
       if (text === undefined) continue;
-      const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
+      const { units, source } = detectIn(file, text, plugins);
       state.set(
         file,
-        detectUnits(source, file, plugins).map((unit) => {
+        units.map((unit) => {
           const tree = contentTree(unit);
           return {
             code: { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: contentHash(tree), fingerprint: fingerprint(tree) },
             framework: unit.framework,
-            text: source.text.slice(unit.span.start, unit.span.end),
+            text: text.slice(unit.span.start, unit.span.end),
             runtimeHash: contentHash(contentTree(unit, true)),
             signature: signatureText(unit, source, plugins),
             history: [],
@@ -569,17 +569,17 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     const after = present.flatMap((file) => {
       const text = showAt(root, sha, file);
       if (text === undefined) return [];
-      const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
-      return detectUnits(source, file, plugins).map((unit) => {
+      const { units, source, lineOf } = detectIn(file, text, plugins);
+      return units.map((unit) => {
         const tree = contentTree(unit);
         return {
           code: { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: contentHash(tree), fingerprint: fingerprint(tree) },
           framework: unit.framework,
-          text: source.text.slice(unit.span.start, unit.span.end),
+          text: text.slice(unit.span.start, unit.span.end),
           runtimeHash: contentHash(contentTree(unit, true)),
           signature: signatureText(unit, source, plugins),
-          startLine: source.getLineAndCharacterOfPosition(unit.span.start).line + 1,
-          endLine: source.getLineAndCharacterOfPosition(unit.span.end).line + 1,
+          startLine: lineOf(unit.span.start),
+          endLine: lineOf(unit.span.end),
         };
       });
     });

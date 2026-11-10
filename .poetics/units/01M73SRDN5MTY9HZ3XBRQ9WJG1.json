@@ -1,0 +1,35 @@
+{
+  "uid": "01M73SRDN5MTY9HZ3XBRQ9WJG1",
+  "kind": "type",
+  "framework": "none",
+  "name": "Transformed",
+  "location": {
+    "file": "packages/adapter-typescript/src/units.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:980e655943e1a6ab73488f8a049c9649074a2f926d877889e8dce99a1141ab01",
+      "interfaceHash": "b3:9fb35923662e12911e78c0b43e4f2bd4e20e1d84556e66e49d2fdf3227f268e0",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A transformed file's generated code and the way back to its own text, so the indexer can read .svelte components without knowing Svelte (ADR 0020).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A file a framework turns into TypeScript for the checker, such as a `.svelte`\ncomponent, with the way back from the generated text to what was written."
+}

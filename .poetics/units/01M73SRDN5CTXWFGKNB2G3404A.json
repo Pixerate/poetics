@@ -1,0 +1,41 @@
+{
+  "uid": "01M73SRDN5CTXWFGKNB2G3404A",
+  "kind": "function",
+  "framework": "none",
+  "name": "componentDocs",
+  "location": {
+    "file": "packages/adapter-svelte/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:2c25020520e7dd2163730a4fb56e388b0c884fcf1429f96063b80ae4d8441216",
+      "interfaceHash": "b3:1c2d75980556ce440db86336a5a9ca914869e3cd67f01f2704e50bcec5deaa90",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Reads the <!-- @component --> comment, which Svelte tooling already shows as a component's docs, so Poetics uses the same text.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ],
+  "docs": "The component's `<!--",
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}
