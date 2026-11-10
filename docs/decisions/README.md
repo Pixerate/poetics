@@ -26,5 +26,6 @@ new record here.
 | [0017](0017-drafting-through-a-command.md) | Rationale is drafted by a command the repository configures | Accepted |
 | [0018](0018-backfill-confidence-is-unit-specific.md) | Backfill confidence is high only for evidence about this unit alone | Accepted |
 | [0019](0019-backfill-rationale-leads-with-the-doc-comment.md) | Backfill rationale leads with the unit's doc comment when the change's text is shared | Accepted |
+| [0020](0020-svelte-through-svelte2tsx.md) | Svelte components enter the TypeScript program through svelte2tsx | Proposed |
 
 New records copy [`template.md`](template.md).
