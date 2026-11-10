@@ -34,6 +34,8 @@ export interface DetectedUnit {
  */
 export interface FrameworkPlugin {
   framework: Framework;
+  /** Bumped whenever the plugin's rules change what it claims or records, so cached units made by older rules are indexed again. */
+  version?: number;
   /** The function a call such as `memo(fn)` wraps, when this framework knows the wrapper. */
   unwrap?(call: ts.CallExpression): ts.Expression | undefined;
   /** The kind this framework gives a unit, or undefined to leave it as plain TypeScript. */

@@ -76,6 +76,12 @@ describe("reactPlugin on the React fixture", () => {
   });
 });
 
+describe("reactPlugin version", () => {
+  it("is 2 since components that render without JSX, so caches indexed with older rules are not reused", () => {
+    expect(reactPlugin().version).toBe(2);
+  });
+});
+
 describe("reactPlugin on other shapes", () => {
   it("sees through React.memo, forwardRef and lazy, and keeps a forwarded ref in the interface", () => {
     const units = project({
@@ -101,6 +107,51 @@ describe("reactPlugin on other shapes", () => {
     ]);
     expect(units.get("Input")!.signature).toMatchObject({ kind: "component", props: { inferred: "{ label: string; }" }, ref: { inferred: "React.ForwardedRef<HTMLInputElement>" } });
     expect(units.get("Card")!.signature).toEqual({ kind: "component", props: null, defaults: [] });
+  });
+
+  it("claims PascalCase functions that render without JSX, from their types or what they return", () => {
+    const units = project({
+      "src/a.tsx": [
+        `import * as React from "react";`,
+        `import { cloneElement, createElement, type FC, type ReactElement, type ReactNode } from "react";`,
+        `import { createPortal } from "react-dom";`,
+        // A provider returning its children, as TanStack Query's HydrationBoundary does.
+        `export const Boundary = ({ children }: { children: ReactNode }) => {`,
+        `  const ready = React.useMemo(() => true, []);`,
+        `  return ready ? (children as React.ReactElement) : null;`,
+        `};`,
+        `export function Slot({ children }: { children: ReactNode }): ReactNode { return children; }`,
+        `export function Maybe(): JSX.Element | null { return null; }`,
+        `export async function Page(): Promise<React.JSX.Element> { return null as never; }`,
+        `export const Typed: FC<{ label: string }> = ({ label }) => label as never;`,
+        `export const Memoed: React.FC = React.memo(() => null) as never;`,
+        `export function Made() { return createElement("p"); }`,
+        `export function Cloned({ child }: { child: ReactElement }) { return cloneElement(child); }`,
+        `export function Portal({ children }: { children: ReactNode }) { return createPortal(children, document.body); }`,
+        `export const Satisfied = () => (null satisfies ReactNode);`,
+      ].join("\n"),
+    });
+    for (const name of ["Boundary", "Slot", "Maybe", "Page", "Typed", "Memoed", "Made", "Cloned", "Portal", "Satisfied"]) {
+      expect([name, units.get(name)?.kind, units.get(name)?.framework]).toEqual([name, "component", "react"]);
+    }
+  });
+
+  it("leaves PascalCase functions that only render in nested functions, or return other types, as plain functions", () => {
+    const units = project({
+      "src/a.ts": [
+        `import { createElement, type ReactElement } from "react";`,
+        `export function Factory() { return () => createElement("p"); }`,
+        `export function Lookup(): Map<string, number> { return new Map(); }`,
+        `export const Cast = (value: unknown) => value as string;`,
+        `export function Builder() { const make = (): ReactElement => createElement("p"); return { make }; }`,
+      ].join("\n"),
+    });
+    expect([...units.values()].map((u) => [u.name, u.kind])).toEqual([
+      ["Factory", "function"],
+      ["Lookup", "function"],
+      ["Cast", "function"],
+      ["Builder", "function"],
+    ]);
   });
 
   it("changes the interface hash with a default prop value, not with the body", () => {

@@ -33,6 +33,33 @@
           "ref": "docs/plan.md#react-ts-tsx"
         }
       ]
+    },
+    {
+      "contentHash": "b3:9503e574e1678b9626f6cff1fc2f68705952526909f95b1f1fe72f7a4d938439",
+      "interfaceHash": "b3:963c314b87e4ad189b3d9f621a02a718a477159ee520f13aa72ea73a09e38147",
+      "parent": "b3:c0d8e0d42482a337df58d377a39417534e79f08a0fcbba50561cd6b1611a57e5",
+      "change": "interface",
+      "rationale": "Adds an optional version, bumped when a plugin's rules change what it claims or records; the indexer's cache keys on it so stale classifications are not reused.",
+      "deps": {
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:9f75b78c92b3d14a08c17793a2138144f9ec807b8a930ccbea497edb96f4ac2a",
+        "01M6HNRFMKWZ43X614N1PYFS0S": "b3:e01e1cd4c9a1183568f3cc96e3b3d5317f6c6470bb703787bd2739f376b28b53",
+        "01M5XDBC7C6GPPYBAPA9EC570N": "b3:92fca5cec93473b7ed775dc834989d4a8e5930ef90f21df9a871a24cc99af249",
+        "01M5XDBC70JB43RTKH94WY8G3Y": "b3:a3e05f73312a84de0f66ca2db883ec23e047a971da258023e6a70b372f79e71e",
+        "01M5XDBC6Z8PGANPEC147TCK3S": "b3:4c3726650f8e2221205ac1514448a07cd31203d53a90a8324d689b3ca2031781"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-pr",
+          "ref": "#52",
+          "url": "https://github.com/Pixerate/poetics/pull/52"
+        }
+      ]
     }
   ],
   "docs": "What a framework adapter adds to this indexer, so React and Svelte units\nresolve through the same checker as plain TypeScript: wrappers to see\nthrough, units to claim as its own kinds, their interfaces, and edge kinds.",
