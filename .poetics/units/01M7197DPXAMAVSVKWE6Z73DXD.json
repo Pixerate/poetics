@@ -59,6 +59,37 @@
           "ref": "docs/decisions/0011-backfill.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:abb879204494b20e46e19dfc7949fb97ef8d13b43c25a1c9cc92c0cbd5675666",
+      "interfaceHash": "b3:a2d25c50b3d2ba86398a187c95111daac68e994c1a52cfd8b2a1a29cd80c8ba6",
+      "parent": "b3:cfc3798760a4857461f60dee2662980fbf407e1eb5a80e9729758809bf3d2ec1",
+      "change": "interface",
+      "rationale": "Adds removed: exports deleted before anyone recorded them, as complete unit files ready to write, so --include-removed is reviewed in the same plan as prehistory.",
+      "deps": {
+        "01M7197DPWEHB21TK3H594CYBN": "b3:8d9799713462ca1e795d5cdf80b07d9b0b206b4fcfc4fb9aef32ddf0a9e04f3e",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0010-removed-versions.md"
+        }
+      ]
     }
   ],
   "tests": [

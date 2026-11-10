@@ -37,6 +37,44 @@
         "01M7197DPX24BXAC5ZYVT3R79K": "b3:ad9409722a1e2d7d8f05bda1648d54c4dc283e94450c98c48db452f87382422c",
         "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6"
       }
+    },
+    {
+      "contentHash": "b3:c350831a2f9a50b4488acc4e992edfcbaf0e344deeec6aa3c84393da6cb1cec3",
+      "interfaceHash": "b3:e8b34020cb84fd1efeaec8c84883422429d5775ac8277c842b05b578ca4b005d",
+      "parent": "b3:d78cb2abb84d553b21fa048da86b135b0013a591e09ff025b8a879784435dca6",
+      "change": "interface",
+      "rationale": "Also writes a unit file for each recovered deletion: created through createUnit with the code as it last was, then removed through appendVersion, so the store's own rules check both. Takes the store layout for those new files.",
+      "deps": {
+        "01M7197DPXAMAVSVKWE6Z73DXD": "b3:abb879204494b20e46e19dfc7949fb97ef8d13b43c25a1c9cc92c0cbd5675666",
+        "01M5XDBC7242S6J91S3VHFFY98": "b3:6132ad1bb03eda44a4092b8d11be5fe787dd79eca9d7ecba4b13f7c15a0ac702",
+        "01M5XDBC8AHR2H46K5QP50Q2KF": "b3:5e969e449753e15d4f3b6c002d64d33563529f661d39de0d75aca22a99128ff2",
+        "01M6HXEYDEHEF6JER5T7XB6K4Y": "b3:4d194b8a3592eb2bf128175d15179e25845cb0f2e8700d2e4d01bff705b61087",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M7197DPX24BXAC5ZYVT3R79K": "b3:ad9409722a1e2d7d8f05bda1648d54c4dc283e94450c98c48db452f87382422c",
+        "01M5XDBC8F5TCR82AMFQY7887B": "b3:4b77b80d7c475adf67fb1a140b6473be9f5969533ffac8eee96d8adc3ed3b64d",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0010-removed-versions.md"
+        }
+      ]
     }
   ],
   "docs": "Writes each unit's prehistory, unless it already has exactly that. Returns how many unit files changed.",

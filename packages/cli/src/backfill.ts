@@ -7,9 +7,9 @@ import { dirname, join } from "node:path";
 import ts from "typescript";
 import { contentTree, createTypeScriptIndexer, detectUnits, fingerprint, signatureText } from "@poetics/adapter-typescript";
 import type { IndexedUnit } from "@poetics/adapter-typescript";
-import { contentHash, isRemoved, matchIdentities } from "@poetics/core";
-import type { Actor, ChangeClass, CodeUnit, Hash, Inferred, Link, Unit, Version } from "@poetics/core";
-import { createMatcher, createUnit, filesInScope, parseUnit, readUnitFiles, setPrehistory, storePaths } from "@poetics/store";
+import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
+import type { Actor, ChangeClass, CodeUnit, Framework, Hash, Inferred, Link, Unit, Version } from "@poetics/core";
+import { appendVersion, createMatcher, createUnit, filesInScope, parseUnit, readUnitFiles, setPrehistory, storePaths } from "@poetics/store";
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { git, showAt } from "./git.ts";
 import { pluginsFor } from "./frameworks.ts";
@@ -339,20 +339,27 @@ export interface PrehistoryPlan {
   units: PrehistoryEntry[];
   /** Units first recorded after `to`: left for a walk that reaches them, since prehistory can only be extended further back. */
   beyond: number;
+  /** With `includeRemoved`: exports deleted before anyone recorded them, as new unit files ending in `removed`. */
+  removed: Unit[];
 }
 
-/** Where `poetics backfill --history [from] [to]` walks: refs or commit ids, both optional. */
+/** Where `poetics backfill --history [from] [to]` walks (refs or commit ids, both optional), and whether to recover deleted exports. */
 export interface PrehistoryRange {
   from?: string;
   to?: string;
+  /** `--include-removed`: recover exports deleted before they were recorded (ADR 0011). */
+  includeRemoved?: boolean;
 }
 
 interface Followed {
   code: CodeUnit;
+  framework: Framework;
   runtimeHash: Hash;
   signature: string;
   history: Version[];
   stoppedAt?: { commit: string; reason: string };
+  /** Its unit file is committed: from here on `poetics index` records what happens to it, removal included. */
+  recorded?: boolean;
 }
 
 /**
@@ -382,9 +389,13 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
   if (from && !line.includes(from)) throw new Error(`${range.from} is not on the first-parent line of ${range.to ?? "HEAD"}, so there is no range between them`);
   const commits = from ? line.slice(line.indexOf(from) + 1) : line;
   const read = commitReader(root);
-  const store = new Map((await readUnitFiles(storePaths(root))).map(parseUnit).filter((unit) => !isRemoved(unit)).map((unit) => [unit.uid, unit]));
+  const all = (await readUnitFiles(storePaths(root))).map(parseUnit);
+  const store = new Map(all.filter((unit) => !isRemoved(unit)).map((unit) => [unit.uid, unit]));
+  // A deletion already recovered, by where the code was and the commit that deleted it, so a rerun mints nothing new.
+  const deletion = (file: string, name: string, commit: string) => `${file}#${name}@${commit}`;
+  const recovered = new Set(all.filter(isRemoved).map((unit) => deletion(unit.location.file, unit.name, unit.versions.at(-1)!.commit ?? "")));
   const state = new Map<string, Followed[]>();
-  const plan: PrehistoryPlan = { commits: commits.length, range: { ...(from ? { from } : {}), to }, units: [], beyond: 0 };
+  const plan: PrehistoryPlan = { commits: commits.length, range: { ...(from ? { from } : {}), to }, units: [], beyond: 0, removed: [] };
   const done = new Set<string>();
   const startsAt = from ? `the range starts after ${from.slice(0, 7)}; earlier history was not walked` : undefined;
 
@@ -405,6 +416,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
           const tree = contentTree(unit);
           return {
             code: { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: contentHash(tree), fingerprint: fingerprint(tree) },
+            framework: unit.framework,
             runtimeHash: contentHash(contentTree(unit, true)),
             signature: signatureText(unit, source, plugins),
             history: [],
@@ -420,6 +432,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     if (!unit || done.has(uid)) return;
     done.add(uid);
     const followed = (state.get(location.file) ?? []).find((f) => f.code.name === location.name && (f.code.kind === "type") === (location.kind === "type"));
+    if (followed) followed.recorded = true;
     if (!followed || followed.history.length === 0) return;
     const entry: PrehistoryEntry = { uid, name: unit.name, file: unit.location.file, prehistory: followed.history };
     if (followed.stoppedAt) entry.stoppedAt = followed.stoppedAt;
@@ -432,13 +445,25 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
       .split("\n")
       .filter(Boolean)
       .map((line) => line.split("\t"));
+    const recordedHere: Array<Pick<Unit, "name" | "kind"> & { file: string }> = [];
     for (const [status, path] of changes) {
       const added = /^\.poetics\/units\/(?:[^/]+\/)?([0-9A-Z]{26})\.json$/.exec(path ?? "");
       if (status === "A" && added) {
         const recorded = JSON.parse(showAt(root, sha, path!) ?? "{}") as Partial<Unit>;
-        if (recorded.location && recorded.name && recorded.kind) capture(added[1]!, { file: recorded.location.file, name: recorded.name, kind: recorded.kind });
+        if (recorded.location && recorded.name && recorded.kind) {
+          const location = { file: recorded.location.file, name: recorded.name, kind: recorded.kind };
+          capture(added[1]!, location);
+          recordedHere.push(location);
+        }
       }
     }
+    // A unit file committed with its code describes the code after this commit, so mark it once the commit is read.
+    const markRecorded = () => {
+      for (const location of recordedHere) {
+        const followed = (state.get(location.file) ?? []).find((f) => f.code.name === location.name && (f.code.kind === "type") === (location.kind === "type"));
+        if (followed) followed.recorded = true;
+      }
+    };
     const touched = new Set<string>();
     const present: string[] = [];
     for (const [status, first, second] of changes) {
@@ -446,7 +471,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
       const now = status?.startsWith("R") || status?.startsWith("C") ? second : first;
       if (now && status !== "D" && indexable(now)) present.push(now);
     }
-    if (touched.size === 0) return;
+    if (touched.size === 0) return markRecorded();
 
     const before = [...touched].flatMap((file) => state.get(file) ?? []);
     const after = present.flatMap((file) => {
@@ -457,6 +482,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
         const tree = contentTree(unit);
         return {
           code: { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: contentHash(tree), fingerprint: fingerprint(tree) },
+          framework: unit.framework,
           runtimeHash: contentHash(contentTree(unit, true)),
           signature: signatureText(unit, source, plugins),
         };
@@ -509,7 +535,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     for (const created of [...result.created.map((c) => c.key), ...queuedKeys]) {
       const now = afterByKey.get(created)!;
       const v = version(null, now, "created");
-      const followed: Followed = { code: now.code, runtimeHash: now.runtimeHash, signature: now.signature, history: [v as Version] };
+      const followed: Followed = { code: now.code, framework: now.framework, runtimeHash: now.runtimeHash, signature: now.signature, history: [v as Version] };
       // A unit matching would only have queued starts afresh here; what came before is not claimed.
       if (queuedKeys.has(created)) followed.stoppedAt = { commit: sha, reason: result.queued.find((q) => q.keys.includes(created))!.reason };
       changed.push({ followed, version: v });
@@ -517,13 +543,45 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     }
     for (const file of touched) state.delete(file);
     for (const [file, list] of next) state.set(file, list);
+    markRecorded();
 
     // Text shared by everything a commit changed speaks to none of them in particular.
+    const sources: Inferred["sources"] = info.body || info.subject ? ["commit"] : [];
     for (const { followed, version: v } of changed) {
-      const sources: Inferred["sources"] = info.body || info.subject ? ["commit"] : [];
       const confidence: Inferred["confidence"] = sources.length === 0 ? "low" : changed.length === 1 || names(v.rationale, followed.code.name) ? "high" : "medium";
       const last = followed.history.at(-1)!;
       last.inferred = { by: BY, confidence, sources, drafted: false, reviewed: false };
+    }
+
+    // Exports this commit deleted before anyone recorded them. Matching is confident they are gone: a unit it would
+    // only have queued is not claimed, and code present when the range started has no history here to recover.
+    if (!range.includeRemoved) return;
+    const gone = result.removed.map((r) => ids.get(r.uid)!).filter((was) => !was.recorded && was.history.length > 0 && !recovered.has(deletion(was.code.file, was.code.name, sha)));
+    for (const was of gone) {
+      const rationale = info.body || info.subject || `Deleted in ${sha.slice(0, 7)}; the commit does not say why.`;
+      const confidence: Inferred["confidence"] = sources.length === 0 ? "low" : gone.length + changed.length === 1 || names(rationale, was.code.name) ? "high" : "medium";
+      const last = was.history.at(-1)!;
+      const removed: Version = {
+        contentHash: REMOVED_CONTENT_HASH,
+        provisional: true,
+        parent: last.contentHash,
+        change: "removed",
+        commit: sha,
+        actor: info.agent ? { kind: "agent", tool: info.agent, reviewed: false } : { kind: "human" },
+        rationale,
+        inferred: { by: BY, confidence, sources, drafted: false, reviewed: false },
+      };
+      if (info.issues.length > 0) removed.links = info.issues.map((ref) => ({ kind: "github-issue", ref }));
+      plan.removed.push({
+        uid: mintUid(),
+        kind: was.code.kind,
+        framework: was.framework,
+        name: was.code.name,
+        location: { file: was.code.file },
+        prehistory: was.history,
+        // What a snapshot taken just before the deletion would have recorded: the code as it last was, then its removal.
+        versions: [{ ...last, parent: null, change: "created" }, removed],
+      });
     }
   });
 
@@ -533,14 +591,23 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     if (to === head) capture(unit.uid, { file: unit.location.file, name: unit.name, kind: unit.kind });
     else plan.beyond++;
   }
-  plan.units.sort((a, b) => (a.file === b.file ? (a.name < b.name ? -1 : 1) : a.file < b.file ? -1 : 1));
+  const byPlace = (a: { file: string; name: string }, b: { file: string; name: string }) => (a.file === b.file ? (a.name < b.name ? -1 : 1) : a.file < b.file ? -1 : 1);
+  plan.units.sort(byPlace);
+  plan.removed.sort((a, b) => byPlace({ file: a.location.file, name: a.name }, { file: b.location.file, name: b.name }));
   return plan;
 }
 
-/** Writes each unit's prehistory, unless it already has exactly that. Returns how many unit files changed. */
-export async function applyPrehistory(root: string, plan: PrehistoryPlan): Promise<number> {
+/** Writes each unit's prehistory, unless it already has exactly that, and a unit file for each recovered deletion. Returns how many unit files changed. */
+export async function applyPrehistory(root: string, plan: PrehistoryPlan, layout: StoreLayout = "flat"): Promise<number> {
   const paths = storePaths(root);
   let written = 0;
+  for (const unit of plan.removed) {
+    // Created as a snapshot just before the deletion would have, then removed, through the store's own rules.
+    const [created, removed] = unit.versions;
+    await createUnit({ paths, actor: created!.actor as Actor }, { ...unit, versions: [created!] }, layout);
+    await appendVersion({ paths, actor: removed!.actor as Actor }, unit.uid, removed!);
+    written++;
+  }
   for (const entry of plan.units) {
     const unit = parseUnit((await readUnitFiles(paths)).find((file) => file.relativePath.endsWith(`${entry.uid}.json`))!);
     if (JSON.stringify(unit.prehistory ?? []) === JSON.stringify(entry.prehistory)) continue;
@@ -569,6 +636,11 @@ export function formatPrehistoryPlan(plan: PrehistoryPlan, written?: number): st
   const versions = plan.units.reduce((n, entry) => n + entry.prehistory.length, 0);
   const walked = `${plan.commits} commit(s)${plan.range.from ? ` after ${plan.range.from.slice(0, 7)}` : ""}`;
   const counts = `${versions} version(s) of prehistory for ${plan.units.length} unit(s), from ${walked}`;
+  for (const unit of plan.removed) {
+    const removed = unit.versions.at(-1)!;
+    lines.push(`- ${unit.location.file}#${unit.name}: deleted in ${removed.commit!.slice(0, 7)} [${removed.inferred!.confidence}], ${unit.prehistory!.length} version(s) before; ${firstLine(removed.rationale)}`);
+  }
+  if (plan.removed.length > 0) lines.push(`${plan.removed.length} deleted export(s) would be recovered as removed units.`.replace("would be", written === undefined ? "would be" : "were"));
   if (plan.beyond > 0) lines.push(`${plan.beyond} unit(s) were recorded after ${plan.range.to.slice(0, 7)}, where the range ends; walk to a later commit to reach them.`);
   lines.push(written === undefined ? `Would record ${counts}. Run with --write to record it.` : `Recorded ${counts}; ${written} unit file(s) changed.`);
   return lines.join("\n");
