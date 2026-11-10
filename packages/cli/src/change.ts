@@ -4,7 +4,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { isDeepStrictEqual } from "node:util";
-import { createMatcher, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
+import { createMatcher, extendsPrehistory, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
 import type { Scope } from "@poetics/store";
 import type { Unit } from "@poetics/core";
 import { declarationsIn } from "./declarations.ts";
@@ -89,6 +89,17 @@ export async function checkChange(root: string, since: string, scope: Scope & { 
           kind: "rewritten-history",
           file: change.path,
           message: `${head.name}: earlier versions were edited or removed; versions are append-only`,
+        });
+      }
+      // Prehistory is write-once: a later backfill may only reach further back, so what was there stays its tail.
+      const was = before.prehistory ?? [];
+      const now = head.prehistory ?? [];
+      if (!extendsPrehistory(was, now)) {
+        findings.push({
+          severity: "error",
+          kind: "rewritten-history",
+          file: change.path,
+          message: `${head.name}: recorded prehistory was edited or removed; it may only be extended further back`,
         });
       }
       const moved = before.location.file !== head.location.file || before.name !== head.name;

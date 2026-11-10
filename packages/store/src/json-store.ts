@@ -190,6 +190,39 @@ export async function reclassifyUnit(ctx: WriteContext, uid: string, to: Pick<Un
   await writeUnit(ctx, file.path, { ...unit, kind: to.kind, framework: to.framework }, fail);
 }
 
+/**
+ * Whether `now` keeps recorded prehistory `was` as its tail, reaching further
+ * back. Reaching back gives the old first entry a predecessor, so that entry
+ * alone may change its `change` (from `created`) and its `parent`.
+ */
+export function extendsPrehistory(was: readonly Version[], now: readonly Version[]): boolean {
+  if (was.length === 0) return true;
+  if (now.length < was.length) return false;
+  const tail = now.slice(now.length - was.length);
+  const same = (a: Version, b: Version) => JSON.stringify(a) === JSON.stringify(b);
+  if (!tail.slice(1).every((version, i) => same(version, was[i + 1]!))) return false;
+  if (now.length === was.length) return same(tail[0]!, was[0]!);
+  const { change: _change, parent: _parent, ...first } = tail[0]!;
+  const { change: _was, parent: _wasParent, ...before } = was[0]!;
+  return JSON.stringify(first) === JSON.stringify(before);
+}
+
+/**
+ * Gives a unit the versions from before it was first recorded. Write-once: a
+ * unit that has prehistory only accepts one that keeps it as its tail, reaching
+ * further back.
+ */
+export async function setPrehistory(ctx: WriteContext, uid: string, prehistory: readonly Version[]): Promise<void> {
+  const file = await readUnitFile(ctx.paths, uid);
+  const unit = parseUnit(file);
+  const fail = (reason: string): never => {
+    throw new Error(`Cannot set the prehistory of ${uid}: ${reason}`);
+  };
+  if (prehistory.length === 0) fail("it is empty");
+  if (!extendsPrehistory(unit.prehistory ?? [], prehistory)) fail("it would change recorded prehistory, which may only be extended further back");
+  await writeUnit(ctx, file.path, { ...unit, prehistory: [...prehistory] }, fail);
+}
+
 async function writeUnit(ctx: WriteContext, path: string, unit: Unit, fail: (reason: string) => never): Promise<void> {
   if (ctx.validator) {
     const result = ctx.validator.unit(unit);

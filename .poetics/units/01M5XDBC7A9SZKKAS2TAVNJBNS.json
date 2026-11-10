@@ -45,8 +45,45 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+      "interfaceHash": "b3:ae695f17af5558d1755f269dccecaf0a9e8dfb4194738db7fc0efd6cdabf2879",
+      "parent": "b3:dec90f5887c2d718a9b28adb66fe6eb579741427b599ae2b14a2485d2812e84e",
+      "change": "interface",
+      "rationale": "Adds prehistory: versions from before the unit was first recorded, reconstructed from git and marked inferred. It is kept apart from versions so recorded history stays untouched (ADR 0011).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ],
+      "deps": {
+        "01M5XDBC70JB43RTKH94WY8G3Y": "b3:a3e05f73312a84de0f66ca2db883ec23e047a971da258023e6a70b372f79e71e",
+        "01M5XDBC777RN8YV0NBHRBXR3Y": "b3:c728ec79ae2af36596a032d15eca00fa56ff655bde1dfe678b1717b84a191eef",
+        "01M5XDBC78NTWPRZAK3APY6PXR": "b3:caf1dacf5c4f34cfc778bf77fc31ef7437ff7250eba442c11fa80e651acd83cb",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M5XDBC6Z8PGANPEC147TCK3S": "b3:4c3726650f8e2221205ac1514448a07cd31203d53a90a8324d689b3ca2031781",
+        "01M5XDBC7991T7FK30Z1W1B7JS": "b3:23d0ee9c574cc1a3fa3aeb7efeaab059f426d816e897ffdeca5b4573953b2876",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "The shape of one `.poetics/units/<uid>.json` file.",
-  "tests": []
+  "tests": [
+    {
+      "file": "packages/store/src/check.test.ts",
+      "via": "static"
+    }
+  ]
 }

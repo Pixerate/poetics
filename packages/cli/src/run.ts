@@ -9,7 +9,7 @@ import { formatChanges } from "./changes.ts";
 import { COMMANDS } from "./commands.ts";
 import { coverageFor, formatCoverage } from "./coverage.ts";
 import { formatLog, formatWhy } from "./history.ts";
-import { applyBackfill, formatBackfillPlan, planBackfill } from "./backfill.ts";
+import { applyBackfill, applyPrehistory, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
 import { applyIndex, formatIndexPlan, needsRationale, planIndex } from "./indexing.ts";
 import { applyInit, formatInitPlan, planInit } from "./init.ts";
 import type { IndexPlan } from "./indexing.ts";
@@ -235,14 +235,18 @@ async function init(args: readonly string[], io: Io, json: boolean, root: string
 }
 
 async function backfill(args: readonly string[], io: Io, json: boolean, root: string): Promise<number> {
-  // History mode walks past commits and reads GitHub; it lands with the issue tracker integration (ADR 0011).
-  if (args.includes("--history")) throw new NotImplementedError("poetics backfill --history");
-  const parsed = parseFlags(args, ["--snapshot", "--write"], []);
-  if (!parsed || !parsed.flags.has("--snapshot")) {
-    report(io, json, { error: "usage", command: "backfill", message: "Usage: poetics backfill --snapshot [--write]" });
+  const parsed = parseFlags(args, ["--snapshot", "--history", "--write"], []);
+  if (!parsed || parsed.flags.has("--snapshot") === parsed.flags.has("--history")) {
+    report(io, json, { error: "usage", command: "backfill", message: "Usage: poetics backfill --snapshot [--write] | --history [--write]" });
     return 2;
   }
   const config = await readConfig(root);
+  if (parsed.flags.has("--history")) {
+    const history = await planPrehistory(root, config);
+    const recorded = parsed.flags.has("--write") ? await applyPrehistory(root, history) : undefined;
+    io.out(json ? JSON.stringify({ ...history, written: recorded ?? 0 }) : formatPrehistoryPlan(history, recorded));
+    return 0;
+  }
   const plan = await planBackfill(root, config);
   const written = parsed.flags.has("--write") ? await applyBackfill(root, plan, config.store?.layout) : undefined;
   io.out(json ? JSON.stringify({ ...plan, written: written ?? 0 }) : formatBackfillPlan(plan, written));

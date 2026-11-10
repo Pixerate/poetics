@@ -6,7 +6,7 @@ import type { Hash, Version } from "@poetics/core";
 import { checkStore } from "./check.ts";
 import { storePaths } from "./paths.ts";
 import { createValidator, loadSchemaSet } from "./schemas.ts";
-import { NOTE_ID, REPO_SCHEMAS, UID_A, UID_B, defaultConfig, hash, makeNote, makeRepo, makeUnit, writeNote, writeUnit } from "./test-helpers.ts";
+import { NOTE_ID, REPO_SCHEMAS, UID_A, UID_B, UID_C, defaultConfig, hash, makeNote, makeRepo, makeUnit, writeNote, writeUnit } from "./test-helpers.ts";
 
 const validator = createValidator(await loadSchemaSet(REPO_SCHEMAS));
 const check = async (root: string) => checkStore(storePaths(root), validator);
@@ -19,6 +19,16 @@ const removedVersion = (parent: Hash): Version => ({
   rationale: "Folded into formatRange.",
 });
 const messages = (result: Awaited<ReturnType<typeof check>>) => result.problems.map((p) => p.message);
+const inferredVersion = (hash: Hash, parent: Hash | null, change: Version["change"]): Version => ({
+  contentHash: hash,
+  parent,
+  change,
+  commit: "a".repeat(40),
+  actor: { kind: "human" },
+  rationale: "From git.",
+  inferred: { by: "poetics-backfill", confidence: "medium", sources: ["commit"], drafted: false, reviewed: false },
+});
+
 
 describe("checkStore", () => {
   it("passes a consistent store", async () => {
@@ -236,5 +246,23 @@ describe("checkStore notes", () => {
       makeNote({ status: "resolved", resolvedBy: { kind: "commit", ref: "abc1234" }, anchors: { units: [{ uid: UID_A, observedAt: hash("1") }] } }),
     );
     expect((await check(root)).problems).toEqual([]);
+  });
+
+  it("accepts reconstructed prehistory, and checks it is a created-first chain of inferred, committed changes", async () => {
+    const good = makeUnit(UID_A, { prehistory: [inferredVersion(hash("7", "b3"), null, "created"), inferredVersion(hash("8", "b3"), hash("7", "b3"), "behaviour")] });
+    expect(messages(await check(await makeRepo([good])))).toEqual([]);
+
+    const { inferred: _, ...recorded } = inferredVersion(hash("8", "b3"), hash("9", "b3"), "created");
+    const bad = makeUnit(UID_B, { prehistory: [inferredVersion(hash("7", "b3"), null, "behaviour"), recorded] });
+    // A well-formed removal, so the schema passes and the prehistory rule is what refuses it.
+    const removal = { ...inferredVersion(REMOVED_CONTENT_HASH, hash("7", "b3"), "removed"), provisional: true };
+    const removed = makeUnit(UID_C, { prehistory: [inferredVersion(hash("7", "b3"), null, "created"), removal] });
+    expect(messages(await check(await makeRepo([bad, removed])))).toEqual([
+      'prehistory[0].change must be "created"',
+      `prehistory[1].parent should be ${hash("7", "b3")}`,
+      'prehistory[1].change cannot be "created"',
+      "prehistory[1] has no inferred record; prehistory is always reconstructed",
+      'prehistory[1] cannot be "removed"; prehistory only reconstructs changes to code',
+    ]);
   });
 });

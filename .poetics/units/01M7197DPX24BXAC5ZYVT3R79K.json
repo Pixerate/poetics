@@ -1,0 +1,57 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M7197DPX24BXAC5ZYVT3R79K",
+  "kind": "function",
+  "framework": "none",
+  "name": "setPrehistory",
+  "location": {
+    "file": "packages/store/src/json-store.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:ad9409722a1e2d7d8f05bda1648d54c4dc283e94450c98c48db452f87382422c",
+      "interfaceHash": "b3:6e42900cf00f592a2ba07f4c8006c4bcb62abe3c25e619c004ce587d39129d80",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Writes a unit's prehistory, refusing anything that would change what was recorded except reaching further back.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ],
+      "deps": {
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b",
+        "01M5XDBC8407QXDZJZG6GGWVT1": "b3:63f5e0e2ddcc3214d18ad97176b1affad1db318f2344faf5df2b085f48ae9246",
+        "01M5XDBC898NK9SFW67483HRZP": "b3:e7700ce887b5ee465cedbcd55a226dbc989c7aad2a73e4e5bfb5545b86880520",
+        "01M7197DPX923K14R9JAV6MB6S": "b3:c445b73411996b115dd57f71ec857a513589e0938eec690a6f40538e32e962d5",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC88CMF854R75G7BYSSG": "b3:627d4c9245f05b016bc0b027245ee463a6644f23fdf8b4876bd559ac71b44709",
+        "01M5XDBC8GZ5WSS0KJMF08SPJ9": "b3:d8ec2c1af3288dbe92e7066f79bba2940e4e914ce93c32d1dfe17df754df2c36",
+        "01M5XDBC8J6X886TQM2BP73D20": "b3:d920fe27bfd4b3709078fdbc9efa589ffb45a4f4857d0461be9e1ab26f6c8603"
+      }
+    }
+  ],
+  "docs": "Gives a unit the versions from before it was first recorded. Write-once: a\nunit that has prehistory only accepts one that keeps it as its tail, reaching\nfurther back.",
+  "tests": [
+    {
+      "file": "packages/store/src/json-store.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    }
+  ]
+}

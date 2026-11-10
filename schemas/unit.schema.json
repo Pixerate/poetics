@@ -31,6 +31,12 @@
       "description": "Append-only, oldest first.",
       "items": { "$ref": "#/$defs/version" }
     },
+    "prehistory": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Versions from before the unit was first recorded, reconstructed by poetics backfill --history, oldest first. Write-once: it may only be extended further back (ADR 0011).",
+      "items": { "$ref": "#/$defs/version" }
+    },
     "lineage": {
       "type": "array",
       "items": { "$ref": "#/$defs/lineage" }

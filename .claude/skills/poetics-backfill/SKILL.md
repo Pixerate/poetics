@@ -24,10 +24,18 @@ It never writes to a unit that has a file.
    never edited or deleted: history is append-only. Where you know the real
    reason, give it in the next version you record for that unit (its rationale
    can say what the inferred one missed), or in a note if it is a pitfall.
-4. **Act on the gaps:** add the listed docs and test links to the unit files,
+4. **Reach back (optional):** `pnpm poetics backfill --history`, then with
+   `--write`. It walks the first-parent history and gives each unit the
+   versions from before its unit file was committed (`prehistory`), each
+   marked `inferred`, with rationale from the commit that made it. Lines that
+   say "stops at" are units matching would only have queued (look-alikes
+   moved together, or a small function renamed and edited at once): their
+   history before that commit is not claimed. Prehistory is write-once and
+   can only be extended further back.
+5. **Act on the gaps:** add the listed docs and test links to the unit files,
    record candidate notes with `poetics-gotcha` if they hold, and run
    `pnpm poetics index` for existing units with unrecorded changes.
-5. **Check**: `pnpm validate` and `pnpm poetics:check`.
+6. **Check**: `pnpm validate` and `pnpm poetics:check`.
 
 Backfill quotes only what is already in the repository: commits, changesets,
 comments, tests and docs. Pull request and issue text is never written to

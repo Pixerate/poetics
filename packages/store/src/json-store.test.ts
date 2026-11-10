@@ -3,12 +3,13 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { NotImplementedError, REMOVED_CONTENT_HASH } from "@poetics/core";
-import type { Version } from "@poetics/core";
+import type { Hash, Version } from "@poetics/core";
 import {
   appendVersion,
   confirmNote,
   createNote,
   createUnit,
+  extendsPrehistory,
   linkTest,
   listUnitFiles,
   parseUnit,
@@ -18,6 +19,7 @@ import {
   recordRationale,
   relinkTests,
   relocateUnit,
+  setPrehistory,
   setDocs,
 } from "./json-store.ts";
 import { storePaths } from "./paths.ts";
@@ -280,5 +282,59 @@ describe("createNote and confirmNote", () => {
     await createNote(ctx, makeNote({ anchors: { units: [{ uid: UID_A, observedAt: hash("1") }] } }));
     expect((await confirmNote(ctx, NOTE_ID)).anchors.units).toEqual([{ uid: UID_A, observedAt: hash("2") }]);
     await expect(confirmNote(ctx, "01JB8N0000000000000000000Z")).rejects.toThrow("there is no such note");
+  });
+});
+
+describe("setPrehistory", () => {
+  const human = { kind: "human" } as const;
+  const v = (hashChar: string, parent: Hash | null, change: Version["change"]): Version => ({
+    contentHash: hash(hashChar, "b3"),
+    parent,
+    change,
+    commit: "a".repeat(40),
+    actor: human,
+    rationale: "From git.",
+    inferred: { by: "poetics-backfill", confidence: "medium", sources: ["commit"], drafted: false, reviewed: false },
+  });
+
+  it("writes prehistory once, and only accepts one that reaches further back", async () => {
+    const root = await makeRepo([makeUnit(UID_A)]);
+    const ctx = { paths: storePaths(root), actor: human };
+    const recent = [v("7", null, "created")];
+    await setPrehistory(ctx, UID_A, recent);
+    expect((await readUnit(storePaths(root), UID_A)).prehistory).toEqual(recent);
+
+    const rewritten = [{ ...v("7", null, "created"), rationale: "Rewritten." }];
+    await expect(setPrehistory(ctx, UID_A, rewritten)).rejects.toThrow("may only be extended further back");
+    // Reaching back gives the old first entry a predecessor: only its change and parent may differ.
+    const extended = [v("5", null, "created"), v("7", hash("5", "b3"), "behaviour")];
+    await setPrehistory(ctx, UID_A, extended);
+    expect((await readUnit(storePaths(root), UID_A)).prehistory).toHaveLength(2);
+    await expect(setPrehistory(ctx, UID_A, [])).rejects.toThrow("it is empty");
+  });
+});
+
+describe("extendsPrehistory", () => {
+  const v = (hashChar: string, parent: Hash | null, change: Version["change"], rationale = "From git."): Version => ({
+    contentHash: hash(hashChar, "b3"),
+    parent,
+    change,
+    actor: { kind: "human" },
+    rationale,
+  });
+
+  it("accepts nothing recorded, the same, or the same reached further back", () => {
+    const was = [v("7", null, "created"), v("8", hash("7", "b3"), "behaviour")];
+    expect(extendsPrehistory([], was)).toBe(true);
+    expect(extendsPrehistory(was, was)).toBe(true);
+    expect(extendsPrehistory(was, [v("6", null, "created"), v("7", hash("6", "b3"), "cosmetic"), was[1]!])).toBe(true);
+  });
+
+  it("refuses a shorter one, an edit, or a first entry changed in more than its change and parent", () => {
+    const was = [v("7", null, "created"), v("8", hash("7", "b3"), "behaviour")];
+    expect(extendsPrehistory(was, was.slice(1))).toBe(false);
+    expect(extendsPrehistory(was, [was[0]!, v("8", hash("7", "b3"), "behaviour", "Rewritten.")])).toBe(false);
+    expect(extendsPrehistory(was, [v("6", null, "created"), v("7", hash("6", "b3"), "cosmetic", "Rewritten."), was[1]!])).toBe(false);
+    expect(extendsPrehistory(was, [{ ...was[0]!, change: "behaviour" }, was[1]!])).toBe(false);
   });
 });

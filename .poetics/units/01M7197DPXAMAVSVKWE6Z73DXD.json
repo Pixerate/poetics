@@ -1,0 +1,45 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M7197DPXAMAVSVKWE6Z73DXD",
+  "kind": "type",
+  "framework": "none",
+  "name": "PrehistoryPlan",
+  "location": {
+    "file": "packages/cli/src/backfill.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:693ecf29456baa3bf22ad61273fa16dd21411a69017978b805d2a2382f06fa6e",
+      "interfaceHash": "b3:48b6814b74c19dfa261cc71769932caa2f326b6f5674b5ae1b116a0690a83c0b",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "What backfill --history would record, and how many commits it walked.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ],
+      "deps": {
+        "01M7197DPWEHB21TK3H594CYBN": "b3:8d9799713462ca1e795d5cdf80b07d9b0b206b4fcfc4fb9aef32ddf0a9e04f3e"
+      }
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    }
+  ],
+  "docs": "What backfill --history would record."
+}

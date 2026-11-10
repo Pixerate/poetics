@@ -1,0 +1,45 @@
+{
+  "$schema": "../../schemas/unit.schema.json",
+  "uid": "01M7197DPWEHB21TK3H594CYBN",
+  "kind": "type",
+  "framework": "none",
+  "name": "PrehistoryEntry",
+  "location": {
+    "file": "packages/cli/src/backfill.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:8d9799713462ca1e795d5cdf80b07d9b0b206b4fcfc4fb9aef32ddf0a9e04f3e",
+      "interfaceHash": "b3:67d566d6610f82559b02a29931bfc789898b2283b50255ca5991fc0956f1f712",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A unit's reconstructed history, with where it stops when matching would only have queued the unit.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#16"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0011-backfill.md"
+        }
+      ],
+      "deps": {
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b"
+      }
+    }
+  ],
+  "docs": "A unit's reconstructed history, or why it stops short.",
+  "tests": [
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    }
+  ]
+}
