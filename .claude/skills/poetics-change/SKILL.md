@@ -26,8 +26,9 @@ does, and what to do by hand.
    - `cosmetic` — types or docs only.
    - `removed` — the export was deleted. Keep the unit file; see step 5.
    Formatting and comment-only edits are not a new version; skip steps 4–5.
-3. **Handle callers** for `interface` changes: update every unit that depends on
-   this one, and give each of those its own version entry.
+3. **Handle callers** for `interface` changes: `poetics_impact` with the
+   changed `units` lists every `interface-caller`. Update each, and give each
+   its own version entry.
 4. **Get the unit's hashes** from the indexer:
    `pnpm poetics hash <file>#<name>`. It prints the `b3:` `contentHash` (the
    normalised syntax tree, so formatting and comments never change it) and the
@@ -56,10 +57,13 @@ does, and what to do by hand.
 7. **New units** (a new exported function, hook, component or type): mint a uid
    with `pnpm mint-uid`, create `.poetics/units/<uid>.json` with a single
    `"change": "created"` version and `"parent": null`, and link its tests.
-8. **Notes:** if `pnpm validate` warns that a note anchored to a unit you
-   changed needs re-checking, confirm it still holds and set its `observedAt`
-   to the new `contentHash`, or retire it (`poetics-gotcha`). If the change hit
+8. **Notes:** if `pnpm validate` or `poetics_verify` says a note anchored to a
+   unit you changed needs re-checking, confirm it still holds and call
+   `poetics_record_note` with `confirm` and its id, or retire it
+   (`poetics-gotcha`). If the change hit
    a pitfall that cost you time, record it with `poetics-gotcha`.
-9. **Check**: `pnpm validate`, `pnpm poetics:check` and `pnpm test`.
+9. **Check**: `poetics_verify` with the paths you changed as `scope` (`ok`
+   false means code with no version, an export with no unit, or a unit whose
+   code is gone), then `pnpm validate`, `pnpm poetics:check` and `pnpm test`.
    `poetics:check` prints the line range and new hash for any export whose
    unit is missing or behind, so you can fix each finding directly.

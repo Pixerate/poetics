@@ -20,9 +20,10 @@ Skills live in `.claude/skills/<name>/SKILL.md`. Each has front matter with a
 | `poetics-debug` | When tracking down a regression |
 | `poetics-gotcha` | When something cost real time and will recur |
 
-Today's skills are the day-one versions: they tell the agent to edit
-`.poetics/units/*.json` by hand. As each MCP tool lands, rewrite the matching
-step to call it, and (once the harness exists) run the evals before merging.
+Each skill names the MCP tools its steps call and keeps a short by-hand
+fallback for when the server is not connected. When a tool's behaviour
+changes, or a stub is served, update the skills that mention it, and (once the
+harness exists) run the evals before merging.
 
 ### Writing a skill
 
