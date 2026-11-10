@@ -9,8 +9,11 @@
 | [`pages.yml`](../.github/workflows/pages.yml) | Pushes to `main`, manual | Builds the demo site from this repo's `.poetics/` and deploys it to GitHub Pages |
 | [`dependabot.yml`](../.github/dependabot.yml) | Weekly (Monday) | Grouped npm and GitHub Actions updates |
 
-All jobs run on Node 24 with pnpm from `packageManager`. Workflows start with
-`permissions: {}` and grant each job only what it needs.
+All jobs run on Node 24 with pnpm from `packageManager`. `ci.yml` and
+`pages.yml` start with `permissions: {}` and grant each job only what it needs.
+`release.yml` has a single job, which needs `contents: write` (to push the
+version commit and tags) and `id-token: write` (to publish), so it grants them
+at the workflow level.
 
 ## Changesets
 
@@ -37,30 +40,70 @@ for pending changesets:
 ## npm publishing with OIDC
 
 Publishing uses npm [trusted publishing](https://docs.npmjs.com/trusted-publishers):
-GitHub issues a short-lived OIDC token to the `publish` job, npm exchanges it for
-publish rights, and provenance is attached automatically. There is no
-`NPM_TOKEN` secret. Only the `publish` job has `id-token: write`.
+GitHub issues a short-lived OIDC token to the `release` job, npm exchanges it
+for publish rights, and provenance is attached automatically. There is no
+`NPM_TOKEN` secret; the workflow's `NPM_TOKEN` and `NODE_AUTH_TOKEN` are empty,
+and the `Failed to replace env in config: ${NODE_AUTH_TOKEN}` warning they cause
+is harmless.
 
 ### One-time setup (maintainers)
 
 1. **Own the `@poetics` scope on npm** (create the organisation if needed).
-2. **Remove `"private": true`** from each package's `package.json` when it is
-   ready to publish. Today every package is private, so `release.yml` versions
-   them but publishes nothing.
-3. **Bootstrap each package.** npm trusted publishing is configured per
-   package, and a package must exist first. Publish `0.0.0` (or the first
-   release) manually once from a maintainer's machine, or use npm's
+2. **Leave out `"private": true`** for packages that should be published. A
+   private package is versioned but never published.
+3. **Bootstrap each new package.** npm trusted publishing only works for a
+   package that already exists on npm: the first CI publish of a new package
+   fails with `404 Not Found`. Publish its first release by hand (see
+   [Publishing a package by hand](#publishing-a-package-by-hand)), or use npm's
    pending-publisher flow if it is available for your account.
 4. **Add the trusted publisher** on npmjs.com for each `@poetics/*` package:
    Settings → Trusted publishing → GitHub Actions, with organisation `Pixerate`,
    repository `poetics`, and workflow filename `release.yml`. If you add a GitHub
-   environment to the `publish` job, enter it there too.
+   environment to the `release` job, enter it there too.
 5. **Ensure GitHub Actions can write to the repository** (Read and write permissions
    under repository Settings → Actions → General → Workflow permissions).
 6. **Enable GitHub Pages** for the demo: Settings → Pages → Source: GitHub
    Actions.
 7. Optionally, create a `release` environment with required reviewers and set
-   `environment: release` on the `publish` job to gate every publish.
+   `environment: release` on the `release` job to gate every publish.
+
+### When a release fails partway
+
+The version commit is pushed to `main` before anything is published, so a
+failed publish leaves `main` ahead of npm. Fix the cause, then run the Release
+workflow by hand (Actions → Release → Run workflow, on `main`). With no pending
+changesets it skips versioning, publishes only the versions npm is missing,
+and pushes their tags. Tags for packages an earlier, failed run did publish are
+not pushed; create them as annotated tags on the version commit
+(`git tag -a @poetics/<name>@<version> -m @poetics/<name>@<version> <commit>`)
+and push them.
+
+### Publishing a package by hand
+
+Only for a new package's first release, or when CI cannot publish. Two things
+differ from CI:
+
+- **Pack with pnpm.** Packages depend on each other with `workspace:*`.
+  `pnpm pack` replaces it with the real versions; `npm publish` run in the
+  package folder uploads `workspace:*` as written, and every install breaks.
+  Publish the dependencies first, so the versions it pins exist on npm.
+- **Turn provenance off.** Each package sets `"provenance": true` in
+  `publishConfig`, which only CI can satisfy. A local publish otherwise fails
+  with `Automatic provenance generation not supported for provider: null`.
+
+```bash
+pnpm build
+cd packages/<name>
+pnpm pack
+npm publish poetics-<name>-<version>.tgz --access public --provenance=false
+rm poetics-<name>-<version>.tgz
+```
+
+If `--provenance=false` does not override `publishConfig`, remove the
+`provenance` line from that package's `package.json` before `pnpm pack`, and
+restore it afterwards without committing the change. Then check the published
+dependencies (`npm view @poetics/<name>@<version> dependencies`) and add the
+package's trusted publisher, so later releases come from CI.
 
 ## Dependabot
 
