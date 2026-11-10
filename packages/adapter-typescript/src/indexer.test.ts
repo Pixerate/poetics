@@ -90,6 +90,15 @@ describe("createTypeScriptIndexer", () => {
     expect(createTypeScriptIndexer({ ...options, compilerOptions: { strict: false } }).index().stats.indexed).toBe(3);
   });
 
+  it("starts over when a plugin's rules change version, and reuses the cache while they do not", () => {
+    const { options } = setup();
+    const plugin = (version?: number) => ({ framework: "react" as const, ...(version === undefined ? {} : { version }) });
+    createTypeScriptIndexer({ ...options, plugins: [plugin()] }).index();
+    expect(createTypeScriptIndexer({ ...options, plugins: [plugin()] }).index().stats.cached).toBe(3);
+    expect(createTypeScriptIndexer({ ...options, plugins: [plugin(2)] }).index().stats.indexed).toBe(3);
+    expect(createTypeScriptIndexer({ ...options, plugins: [plugin(2)] }).index().stats.cached).toBe(3);
+  });
+
   it("reads compiler options from a tsconfig and reports one it cannot read", () => {
     const root = makeProject({ ...FILES, "tsconfig.json": `{ "compilerOptions": { "strict": true, "module": "nodenext", "allowImportingTsExtensions": true, "noEmit": true } }` });
     expect(createTypeScriptIndexer({ root, files: Object.keys(FILES), tsconfig: "tsconfig.json" }).index().units).toHaveLength(3);

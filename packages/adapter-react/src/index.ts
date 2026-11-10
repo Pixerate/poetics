@@ -6,25 +6,34 @@ import type { FrameworkAdapter } from "@poetics/core";
 /** Wrappers whose argument is still a component. */
 export const COMPONENT_WRAPPERS = ["memo", "forwardRef", "lazy"] as const;
 
+/** What a component returns, named bare, as `React.X`, or `JSX.Element`. */
+const ELEMENT_TYPES = new Set(["ReactElement", "ReactNode", "ReactPortal", "JSX.Element", "React.JSX.Element"]);
+/** Types a variable holding a component is annotated with. */
+const COMPONENT_TYPES = new Set(["FC", "FunctionComponent", "VFC", "VoidFunctionComponent", "ComponentType", "ExoticComponent", "NamedExoticComponent"]);
+/** Calls that make an element without JSX. */
+const ELEMENT_FACTORIES = new Set(["createElement", "cloneElement", "createPortal"]);
+
 /** `use` followed by a capital letter, per the Rules of Hooks. */
 export function isHookName(name: string): boolean {
   return /^use[A-Z0-9]/.test(name);
 }
 
-/** PascalCase names are component candidates; the adapter still checks they return JSX. */
+/** PascalCase names are component candidates; the adapter still checks they render (`rendersElement`). */
 export function isComponentName(name: string): boolean {
   return /^[A-Z][A-Za-z0-9]*$/.test(name);
 }
 
 /**
  * React's part of the TypeScript indexer: it sees through `memo`, `forwardRef`
- * and `lazy`, claims PascalCase functions that return JSX (or are wrapped) as
+ * and `lazy`, claims PascalCase functions that render (or are wrapped) as
  * components and `use*` functions as hooks, gives components their props as
  * an interface, and records a JSX tag as a `renders` edge.
  */
 export function reactPlugin(): FrameworkPlugin {
   return {
     framework: "react",
+    // 2: components that render without JSX (React return types, FC annotations, casts, createElement).
+    version: 2,
     unwrap(call) {
       const wrapper = wrapperName(call);
       return wrapper && call.arguments[0] ? call.arguments[0] : undefined;
@@ -34,7 +43,7 @@ export function reactPlugin(): FrameworkPlugin {
       if (isHookName(unit.name)) return "hook";
       if (!isComponentName(unit.name)) return undefined;
       if ((unit.wrappers ?? []).some((name) => COMPONENT_WRAPPERS.some((wrapper) => name === wrapper || name.endsWith(`.${wrapper}`)))) return "component";
-      return fn && returnsJsx(fn) ? "component" : undefined;
+      return fn && rendersElement(fn) ? "component" : undefined;
     },
     signature(unit, fn, checker) {
       if (unit.kind !== "component") return undefined;
@@ -73,6 +82,68 @@ function wrapperName(call: ts.CallExpression): string | undefined {
   const callee = call.expression;
   const name = ts.isIdentifier(callee) ? callee.text : ts.isPropertyAccessExpression(callee) ? callee.name.text : undefined;
   return name && (COMPONENT_WRAPPERS as readonly string[]).includes(name) ? name : undefined;
+}
+
+/**
+ * Whether a function renders: it contains JSX, says it returns a React element
+ * (its return type, or an `FC`-style annotation on its variable), returns a
+ * value cast to one, or returns `createElement`, `cloneElement` or `createPortal`.
+ * A provider that returns `children as React.ReactElement` has no JSX at all.
+ */
+function rendersElement(fn: ts.SignatureDeclaration): boolean {
+  if (returnsJsx(fn) || (fn.type && isElementType(fn.type))) return true;
+  const holder = variableOf(fn);
+  if (holder?.type && isComponentType(holder.type)) return true;
+  return ownReturns(fn).some(isElementExpression);
+}
+
+/** `ReactElement`, `React.ReactNode | null`, `JSX.Element`, or `Promise<…>` of one, as an async server component returns. */
+function isElementType(type: ts.TypeNode): boolean {
+  if (ts.isParenthesizedTypeNode(type)) return isElementType(type.type);
+  if (ts.isUnionTypeNode(type)) return type.types.some(isElementType);
+  if (!ts.isTypeReferenceNode(type)) return false;
+  const name = type.typeName.getText();
+  if (name === "Promise" && type.typeArguments?.length === 1) return isElementType(type.typeArguments[0]!);
+  return ELEMENT_TYPES.has(name) || ELEMENT_TYPES.has(name.replace(/^React\./, ""));
+}
+
+function isComponentType(type: ts.TypeNode): boolean {
+  if (!ts.isTypeReferenceNode(type)) return false;
+  return COMPONENT_TYPES.has(type.typeName.getText().replace(/^React\./, ""));
+}
+
+/** `children as ReactElement`, `<JSX.Element>x`, `x satisfies ReactNode`, or a call to an element factory. */
+function isElementExpression(expression: ts.Expression): boolean {
+  let node: ts.Expression = expression;
+  while (ts.isParenthesizedExpression(node)) node = node.expression;
+  if (ts.isAsExpression(node) || ts.isTypeAssertionExpression(node) || ts.isSatisfiesExpression(node)) return isElementType(node.type);
+  if (ts.isConditionalExpression(node)) return isElementExpression(node.whenTrue) || isElementExpression(node.whenFalse);
+  if (!ts.isCallExpression(node)) return false;
+  const callee = node.expression;
+  const name = ts.isIdentifier(callee) ? callee.text : ts.isPropertyAccessExpression(callee) ? callee.name.text : undefined;
+  return name !== undefined && ELEMENT_FACTORIES.has(name);
+}
+
+/** The variable a function is assigned to, through any wrapper calls: `const X: FC = memo(() => …)`. */
+function variableOf(fn: ts.SignatureDeclaration): ts.VariableDeclaration | undefined {
+  let node: ts.Node = fn;
+  while (ts.isCallExpression(node.parent) || ts.isParenthesizedExpression(node.parent)) node = node.parent;
+  return ts.isVariableDeclaration(node.parent) && node.parent.initializer === node ? node.parent : undefined;
+}
+
+/** What the function itself returns, not functions nested in it: an arrow's expression body, or its own return statements. */
+function ownReturns(fn: ts.SignatureDeclaration): ts.Expression[] {
+  const body = (fn as ts.FunctionLikeDeclarationBase).body;
+  if (!body) return [];
+  if (!ts.isBlock(body)) return [body];
+  const out: ts.Expression[] = [];
+  const visit = (node: ts.Node) => {
+    if (ts.isFunctionLike(node) || ts.isClassLike(node)) return;
+    if (ts.isReturnStatement(node) && node.expression) out.push(node.expression);
+    node.forEachChild(visit);
+  };
+  body.forEachChild(visit);
+  return out;
 }
 
 function returnsJsx(fn: ts.SignatureDeclaration): boolean {

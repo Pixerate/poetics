@@ -18,6 +18,11 @@ interfaces and edges; anything else may become an unresolved edge.
   other hooks.
 - **Wrappers:** `memo`, `forwardRef` and `lazy` are fine; the wrapped function
   is the unit. For `forwardRef`, type the ref.
+- **A component with no JSX** (a provider that returns `children`, one built
+  with `createElement`) is still a component when it says so: give it a React
+  return type (`ReactNode`, `ReactElement`, `JSX.Element`), annotate its
+  variable as `FC`, or cast what it returns (`children as ReactElement`).
+  Otherwise it is recorded as a plain function.
 - **Avoid hiding what renders:** components chosen from a map, render props and
   higher-order components become unresolved edges. Prefer explicit JSX where
   you can, and when you cannot, say so in the rationale.

@@ -94,8 +94,8 @@ export function createTypeScriptIndexer(options: TypeScriptIndexerOptions): Type
   const resolutionCache = ts.createModuleResolutionCache(root, (name) => name, compilerOptions);
   const host = reusingHost(compilerOptions);
   const plugins = options.plugins ?? [];
-  // A plugin changes what units are and what they use, so the frameworks are part of what cached units depend on.
-  const environment = gitBlobHash(JSON.stringify([CACHE_VERSION, ts.version, compilerOptions, lockfileHash(root), plugins.map((p) => p.framework)]));
+  // A plugin changes what units are and what they use, so the frameworks and their rules' versions are part of what cached units depend on.
+  const environment = gitBlobHash(JSON.stringify([CACHE_VERSION, ts.version, compilerOptions, lockfileHash(root), plugins.map((p) => [p.framework, p.version ?? 0])]));
   let cache = readCache(options.cacheFile, environment);
   let program: ts.Program | undefined;
 
