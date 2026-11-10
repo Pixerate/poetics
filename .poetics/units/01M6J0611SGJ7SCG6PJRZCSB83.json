@@ -29,6 +29,29 @@
       "deps": {
         "01M6J0611RTVB99GGQWEAAPF46": "b3:8efe6d7aa8c6eb81d22b8a2be4f9911ff8d4ff31f97152862b3a94172aa3272b"
       }
+    },
+    {
+      "contentHash": "b3:8330c7a0dba28e1ef892bd921d65dbdaec94da6db4f45dbbd4889a64dd6cdfce",
+      "interfaceHash": "b3:570ca4e1a16eca23e2c873facd40049035a7c9f3bca2ecd7e40e362cd447cbc6",
+      "parent": "b3:1631286249da8c813d1e1fd3e98166a7a00c59ad01253fd7d70c96e8076fea49",
+      "change": "behaviour",
+      "rationale": "Titles the report Gate results rather than phase 1, names the adapters, lists seeded units by kind and uids kept by unit kind, and leaves out refactors a run did not measure.",
+      "deps": {
+        "01M6J0611RTVB99GGQWEAAPF46": "b3:ddf68ee10722e08f6f6b297afde60e6aa9a5075fdfd17c088c5065b378295ec8"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-milestone",
+          "ref": "2",
+          "url": "https://github.com/Pixerate/poetics/milestone/2"
+        }
+      ]
     }
   ],
   "docs": "The gate's results as a Markdown report, one table per corpus.",

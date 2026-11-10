@@ -1,0 +1,41 @@
+{
+  "uid": "01M72HC000EFQ68D1RF4QW91HF",
+  "kind": "function",
+  "framework": "none",
+  "name": "refactorsFor",
+  "location": {
+    "file": "scripts/lib/gate.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:3b1fdfd6d6353c051ea0160e8d8f6c23d040e15ed188a6f6348b02c4f737ccca",
+      "interfaceHash": "b3:07552d49ebcd438d5564b285d3834a1227d07c7c455b67f02cbdee17f2e2ec45",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The refactors a config can be measured on: wrap only when the React adapter is listed, since without it a memo-wrapped component is not a unit.",
+      "deps": {
+        "01M6J0611RXDG1J0DGPDSS1GZS": "b3:6e487112eb663dc0079cf368f75027c9a966b97e453265eeb824d5b12197c432"
+      },
+      "links": [
+        {
+          "kind": "github-milestone",
+          "ref": "2",
+          "url": "https://github.com/Pixerate/poetics/milestone/2"
+        }
+      ]
+    }
+  ],
+  "docs": "The refactors a config can be measured on: wrapping a component in `memo` needs the React adapter to see through it.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate.test.ts",
+      "via": "static"
+    }
+  ]
+}

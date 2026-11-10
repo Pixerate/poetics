@@ -1,6 +1,6 @@
-// The phase 1 gate (#26): scripted renames, moves, splits and merges on real
-// repositories, recorded by poetics index, and checked uid by uid against
-// where each unit should have ended up.
+// The identity gate (#26, and phase 2's React gate): scripted renames, moves,
+// splits, merges and component wraps on real repositories, recorded by poetics
+// index, and checked uid by uid against where each unit should have ended up.
 import { execFileSync } from "node:child_process";
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -10,7 +10,7 @@ import { contentTree, detectUnits, fingerprint } from "@poetics/adapter-typescri
 import type { DetectedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, isRemoved, mintUid } from "@poetics/core";
 import type { Unit } from "@poetics/core";
-import { applyIndex, planIndex, unitHashes } from "@poetics/cli";
+import { applyIndex, planIndex, pluginsFor, unitHashes } from "@poetics/cli";
 import { appendVersion, createUnit, filesInScope, parseUnit, readUnitFiles, relocateUnit, storePaths } from "@poetics/store";
 import type { PoeticsConfig } from "@poetics/store";
 
@@ -21,11 +21,18 @@ export interface CorpusEntry {
   commit: string;
   include: string[];
   exclude: string[];
+  /** The adapters its config lists; `typescript` alone when unset. */
+  adapters?: string[];
 }
 
-export type RefactorKind = "rename" | "move-file" | "move-unit" | "rename-edit" | "split" | "merge";
+export type RefactorKind = "rename" | "move-file" | "move-unit" | "rename-edit" | "split" | "merge" | "wrap";
 
-export const REFACTORS: readonly RefactorKind[] = ["rename", "move-file", "move-unit", "rename-edit", "split", "merge"];
+export const REFACTORS: readonly RefactorKind[] = ["rename", "move-file", "move-unit", "rename-edit", "split", "merge", "wrap"];
+
+/** The refactors a config can be measured on: wrapping a component in `memo` needs the React adapter to see through it. */
+export function refactorsFor(config: { adapters?: readonly string[] }): RefactorKind[] {
+  return REFACTORS.filter((kind) => kind !== "wrap" || config.adapters?.includes("react"));
+}
 
 /** How one kind of refactor fared. A refactor counts once per uid it should have kept. */
 export interface KindResult {
@@ -44,10 +51,17 @@ export interface KindResult {
 
 export interface GateResult {
   corpus: CorpusEntry;
+  /** The adapters the run indexed with. */
+  adapters: string[];
   files: { indexed: number; notIndexed: number };
   units: number;
+  /** Seeded units by kind (`function`, `component`, `hook`, `type`, …). */
+  unitKinds: Record<string, number>;
   rounds: number;
-  byKind: Record<RefactorKind, KindResult>;
+  /** Only the refactors this run measured. */
+  byKind: Partial<Record<RefactorKind, KindResult>>;
+  /** Uids kept out of those a refactor touched, by the unit's kind when it was picked. */
+  byUnitKind: Record<string, { kept: number; touched: number }>;
   /** Units poetics index created that no refactor made: lost identities show up here too. */
   spuriousCreated: number;
   timings: { seedMs: number; indexMs: number[] };
@@ -80,24 +94,29 @@ export function seededRandom(seed: number): () => number {
  * Copies the corpus's in-scope files into a throwaway git repository with a
  * config for the same scope, so the gate never writes into the downloaded tree.
  */
-export async function prepareWorkspace(source: string, corpus: CorpusEntry): Promise<{ root: string; config: PoeticsConfig; notIndexed: number }> {
+export async function prepareWorkspace(
+  source: string,
+  corpus: CorpusEntry,
+  adapters: readonly string[] = corpus.adapters ?? ["typescript"],
+): Promise<{ root: string; config: PoeticsConfig; notIndexed: number }> {
   const root = await mkdtemp(join(tmpdir(), `poetics-gate-${corpus.name}-`));
-  const config: PoeticsConfig = { include: corpus.include, exclude: corpus.exclude };
+  const config: PoeticsConfig = { include: corpus.include, exclude: corpus.exclude, adapters: [...adapters] };
   const { parseable, unsupported } = await filesInScope(source, config);
   for (const file of [...parseable, ...unsupported]) {
     await mkdir(dirname(join(root, file)), { recursive: true });
     await cp(join(source, file), join(root, file));
   }
-  await write(root, ".poetics/config.json", JSON.stringify({ version: 1, adapters: ["typescript"], ...config }, null, 2));
+  await write(root, ".poetics/config.json", JSON.stringify({ version: 1, ...config }, null, 2));
   await write(root, ".gitignore", ".poetics/cache/\n");
   git(root, "init", "-q", "-b", "main");
   commit(root, `Corpus ${corpus.repo}@${corpus.commit.slice(0, 7)}`);
   return { root, config, notIndexed: unsupported.length };
 }
 
-/** Runs the gate on one prepared corpus: seed the store, then `rounds` rounds of one refactor of each kind. */
-export async function runGate(corpus: CorpusEntry, source: string, options: { rounds: number; seed: number }): Promise<GateResult> {
-  const { root, config, notIndexed } = await prepareWorkspace(source, corpus);
+/** Runs the gate on one prepared corpus: seed the store, then `rounds` rounds of one refactor of each kind. `adapters` overrides the corpus's. */
+export async function runGate(corpus: CorpusEntry, source: string, options: { rounds: number; seed: number; adapters?: readonly string[] }): Promise<GateResult> {
+  const { root, config, notIndexed } = await prepareWorkspace(source, corpus, options.adapters);
+  const kinds = refactorsFor(config);
   try {
     const random = seededRandom(options.seed);
     let started = performance.now();
@@ -108,13 +127,20 @@ export async function runGate(corpus: CorpusEntry, source: string, options: { ro
     const { parseable } = await filesInScope(root, config);
 
     const expected: Expected = new Map();
-    for (const unit of await liveUnits(root)) expected.set(unit.uid, { file: unit.location.file, name: unit.name });
+    const unitKinds: Record<string, number> = {};
+    for (const unit of await liveUnits(root)) {
+      expected.set(unit.uid, { file: unit.location.file, name: unit.name });
+      unitKinds[unit.kind] = (unitKinds[unit.kind] ?? 0) + 1;
+    }
     const result: GateResult = {
       corpus,
+      adapters: [...(config.adapters ?? ["typescript"])],
       files: { indexed: parseable.length, notIndexed },
       units: expected.size,
+      unitKinds,
       rounds: options.rounds,
-      byKind: Object.fromEntries(REFACTORS.map((kind) => [kind, { refactors: 0, kept: 0, lost: 0, misplaced: 0, queued: 0, skipped: 0 }])) as GateResult["byKind"],
+      byKind: Object.fromEntries(kinds.map((kind) => [kind, { refactors: 0, kept: 0, lost: 0, misplaced: 0, queued: 0, skipped: 0 }])),
+      byUnitKind: {},
       spuriousCreated: 0,
       timings: { seedMs, indexMs: [] },
       failures: [],
@@ -125,13 +151,14 @@ export async function runGate(corpus: CorpusEntry, source: string, options: { ro
       const touched = new Map<string, RefactorKind>();
       const sizes = new Map<string, string>();
       const madeByRefactor = new Set<string>();
-      for (const kind of REFACTORS) {
+      const kindOf = new Map((await liveUnits(root)).map((unit) => [unit.uid, unit.kind as string]));
+      for (const kind of kinds) {
         const done = await refactor(kind, root, config, expected, used, random);
         if (!done) {
-          result.byKind[kind].skipped++;
+          result.byKind[kind]!.skipped++;
           continue;
         }
-        result.byKind[kind].refactors++;
+        result.byKind[kind]!.refactors++;
         for (const uid of done.uids) touched.set(uid, kind);
         for (const uid of done.created) madeByRefactor.add(uid);
         for (const [uid, size] of done.sizes ?? []) sizes.set(uid, size);
@@ -146,9 +173,18 @@ export async function runGate(corpus: CorpusEntry, source: string, options: { ro
 
       const queued = new Set(plan.queued.flatMap((q) => q.uids));
       const store = new Map((await allUnits(root)).map((unit) => [unit.uid, unit]));
-      for (const unit of plan.created) if (!madeByRefactor.has(unit.uid)) result.spuriousCreated++;
+      for (const unit of plan.created) {
+        if (madeByRefactor.has(unit.uid)) continue;
+        result.spuriousCreated++;
+        // A lost uid's code under a new one: refactoring it again would count the same miss twice.
+        use(used, unit.uid);
+      }
       for (const [uid, kind] of touched) {
-        const tally = result.byKind[kind];
+        const tally = result.byKind[kind]!;
+        const unitKind = kindOf.get(uid) ?? store.get(uid)?.kind ?? "function";
+        const byUnit = (result.byUnitKind[unitKind] ??= { kept: 0, touched: 0 });
+        byUnit.touched++;
+        const keptBefore = tally.kept;
         const want = expected.get(uid);
         const unit = store.get(uid);
         const where = (u: Unit | undefined) => (!u ? "nowhere" : isRemoved(u) ? "removed" : `${u.location.file}#${u.name}`);
@@ -171,6 +207,7 @@ export async function runGate(corpus: CorpusEntry, source: string, options: { ro
           tally.misplaced++;
           result.failures.push(`round ${round} ${kind}: ${uid} at ${where(unit)}, should be at ${want ? `${want.file}#${want.name}` : "removed"}`);
         }
+        if (tally.kept > keptBefore) byUnit.kept++;
       }
       // Carry on from what the store now says, so one miss does not count again in later rounds.
       for (const unit of store.values()) {
@@ -197,7 +234,7 @@ async function refactor(
   const units = (await liveUnits(root)).filter((unit) => !used.has(unit.uid) && unit.kind !== "type");
   const declared = await declarationCounts(root, config);
   const pick = <T>(items: T[]) => items[Math.floor(random() * items.length)];
-  const code = async (unit: Unit) => findUnit(root, unit.location.file, unit.name);
+  const code = async (unit: Unit) => findUnit(root, config, unit.location.file, unit.name);
   const blockBody = (found: Found | undefined, min = 1) =>
     found && ts.isFunctionDeclaration(found.unit.declarations[0]!) && found.unit.declarations.length === 1 && (found.unit.declarations[0]!.body?.statements.length ?? 0) >= min;
 
@@ -251,7 +288,7 @@ async function refactor(
       const found = await code(unit);
       const target = pick(files.filter((file) => file !== unit.location.file && sameFamily(file, unit.location.file)));
       // Only a declaration that exports itself moves with its export; one listed in `export { … }` would not.
-      if (!found || !found.text.startsWith("export", found.start) || !target || (await findUnit(root, target, unit.name))) continue;
+      if (!found || !found.text.startsWith("export", found.start) || !target || (await findUnit(root, config, target, unit.name))) continue;
       await writeText(root, unit.location.file, found.text.slice(0, found.start) + found.text.slice(found.end));
       const into = await readFile(join(root, target), "utf8");
       await writeText(root, target, `${into.trimEnd()}\n\n${found.text.slice(found.start, found.end)}\n`);
@@ -281,6 +318,25 @@ async function refactor(
       use(used, unit.uid, part);
       expected.set(part, { file: unit.location.file, name: `${unit.name}Rest` });
       return { uids: [unit.uid, part], created: [part] };
+    }
+    return undefined;
+  }
+
+  if (kind === "wrap") {
+    // A component declared as `export function Name(…) {…}` becomes `export const Name = memo(function Name(…) {…})`,
+    // as someone memoising it would write it; the React adapter sees through the wrapper, so the uid should stay.
+    const components = units.filter((unit) => unit.kind === "component");
+    for (let tries = 0; tries < 20 && components.length > 0; tries++) {
+      const unit = pick(components)!;
+      const found = await code(unit);
+      const head = `export function ${unit.name}`;
+      if (!found || !blockBody(found) || !found.text.startsWith(head, found.start) || /(?<![\w$.])memo(?![\w$])/.test(found.text)) continue;
+      const wrapped = `export const ${unit.name} = memo(function ${unit.name}${found.text.slice(found.start + head.length, found.end)});`;
+      const text = `import { memo } from "react";\n${found.text.slice(0, found.start)}${wrapped}${found.text.slice(found.end)}`;
+      const size = describeSize(found);
+      await writeText(root, unit.location.file, text);
+      use(used, unit.uid);
+      return { uids: [unit.uid], created: [], sizes: new Map([[unit.uid, size]]) };
     }
     return undefined;
   }
@@ -335,11 +391,12 @@ function describeSize(found: Found): string {
   return `${statements}${fingerprint(contentTree(found.unit)).length} fingerprint entries`;
 }
 
-async function findUnit(root: string, file: string, name: string): Promise<Found | undefined> {
+async function findUnit(root: string, config: PoeticsConfig, file: string, name: string): Promise<Found | undefined> {
   const text = await readFile(join(root, file), "utf8").catch(() => undefined);
   if (text === undefined) return undefined;
   const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
-  const unit = detectUnits(source, file).find((u) => u.name === name && u.kind !== "type");
+  // With the same plugins poetics index runs, so a component wrapped in memo is still found.
+  const unit = detectUnits(source, file, pluginsFor(config)).find((u) => u.name === name && u.kind !== "type");
   return unit && { unit, source, text, start: unit.span.start, end: unit.span.end };
 }
 
@@ -348,7 +405,7 @@ async function declarationCounts(root: string, config: PoeticsConfig): Promise<M
   const counts = new Map<string, number>();
   for (const file of (await filesInScope(root, config)).parseable) {
     const text = await readFile(join(root, file), "utf8");
-    for (const unit of detectUnits(ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true), file)) counts.set(unit.name, (counts.get(unit.name) ?? 0) + 1);
+    for (const unit of detectUnits(ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true), file, pluginsFor(config))) counts.set(unit.name, (counts.get(unit.name) ?? 0) + 1);
   }
   return counts;
 }
@@ -368,13 +425,14 @@ async function renameEverywhere(root: string, config: PoeticsConfig, from: strin
 async function declareNew(root: string, config: PoeticsConfig, file: string, name: string, lineage: Unit["lineage"]): Promise<string> {
   const hashes = (await unitHashes(root, config, file)).find((u) => u.name === name);
   if (!hashes) throw new Error(`No unit ${name} in ${file} after the refactor`);
+  const framework = (await findUnit(root, config, file, name))?.unit.framework ?? "none";
   const uid = mintUid();
   await createUnit(
     { paths: storePaths(root), actor: human },
     {
       uid,
       kind: hashes.kind,
-      framework: "none",
+      framework,
       name,
       location: { file },
       versions: [{ contentHash: hashes.contentHash, interfaceHash: hashes.interfaceHash, parent: null, change: "created", actor: human, rationale: "Split out" }],
@@ -387,7 +445,7 @@ async function declareNew(root: string, config: PoeticsConfig, file: string, nam
 /** The gate's results as a Markdown report, one table per corpus. */
 export function formatResults(results: readonly GateResult[], meta: { date: string; rounds: number; seed: number }): string {
   const lines = [
-    "# Phase 1 gate results",
+    "# Gate results",
     "",
     `Generated by \`pnpm gate\` on ${meta.date} (${meta.rounds} rounds, seed ${meta.seed}). Each round applies one refactor of each kind to units not touched before, commits, and runs \`poetics index --write\`; every affected uid is then checked against where it should be. See [README.md](README.md) for what each refactor does.`,
     "",
@@ -396,19 +454,27 @@ export function formatResults(results: readonly GateResult[], meta: { date: stri
     const { corpus } = result;
     const totals = Object.values(result.byKind).reduce((sum, k) => ({ kept: sum.kept + k.kept, all: sum.all + k.kept + k.lost + k.misplaced + k.queued }), { kept: 0, all: 0 });
     const median = [...result.timings.indexMs].sort((a, b) => a - b)[Math.floor(result.timings.indexMs.length / 2)] ?? 0;
+    const kinds = Object.entries(result.unitKinds)
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .map(([kind, n]) => `${n} ${kind}`)
+      .join(", ");
+    const byUnit = Object.entries(result.byUnitKind)
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .map(([kind, k]) => `${kind} ${k.kept} of ${k.touched}`)
+      .join(", ");
     lines.push(
       `## ${corpus.name} (${corpus.kind})`,
       "",
-      `[${corpus.repo}](https://github.com/${corpus.repo}/tree/${corpus.commit}) at \`${corpus.commit.slice(0, 7)}\`: ${result.files.indexed} files indexed, ${result.files.notIndexed} in scope but not readable by the TypeScript indexer (\`.svelte\`), ${result.units} units. Seeding took ${result.timings.seedMs} ms; a round's \`poetics index\` took ${median} ms (median).`,
+      `[${corpus.repo}](https://github.com/${corpus.repo}/tree/${corpus.commit}) at \`${corpus.commit.slice(0, 7)}\`, adapters ${result.adapters.join(", ")}: ${result.files.indexed} files indexed, ${result.files.notIndexed} in scope but not readable by the TypeScript indexer (\`.svelte\`), ${result.units} units (${kinds}). Seeding took ${result.timings.seedMs} ms; a round's \`poetics index\` took ${median} ms (median).`,
       "",
       "| Refactor | Done | Skipped | Uids kept | Lost | Misplaced | Queued |",
       "| --- | --- | --- | --- | --- | --- | --- |",
-      ...REFACTORS.map((kind) => {
-        const k = result.byKind[kind];
+      ...REFACTORS.filter((kind) => result.byKind[kind]).map((kind) => {
+        const k = result.byKind[kind]!;
         return `| ${kind} | ${k.refactors} | ${k.skipped} | ${k.kept} | ${k.lost} | ${k.misplaced} | ${k.queued} |`;
       }),
       "",
-      `Uids kept: **${totals.kept} of ${totals.all}**${totals.all ? ` (${((totals.kept / totals.all) * 100).toFixed(1)}%)` : ""}. Units created that no refactor made: ${result.spuriousCreated}.`,
+      `Uids kept: **${totals.kept} of ${totals.all}**${totals.all ? ` (${((totals.kept / totals.all) * 100).toFixed(1)}%)` : ""}. By unit kind: ${byUnit}. Units created that no refactor made: ${result.spuriousCreated}.`,
       "",
     );
     if (result.failures.length > 0) lines.push("<details><summary>Misses</summary>", "", ...result.failures.map((f) => `- ${f}`), "", "</details>", "");

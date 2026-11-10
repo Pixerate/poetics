@@ -1,11 +1,12 @@
 {
-  "$comment": "Phase 1 gate corpus (#26): real repositories at pinned commits. Fetched by `pnpm gate --fetch` into the gitignored .cache/; never installed or run.",
+  "$comment": "Gate corpus (#26, and phase 2's React gate): real repositories at pinned commits. Fetched by `pnpm gate --fetch` into the gitignored .cache/; never installed or run.",
   "repos": [
     {
       "name": "taxonomy",
       "kind": "react",
       "repo": "shadcn-ui/taxonomy",
       "commit": "298a8857c7128a0d121e7f699dfd729f23b3966d",
+      "adapters": ["typescript", "react"],
       "include": ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.ts", "config/**/*.ts", "hooks/**/*.ts", "types/**/*.ts", "pages/**/*.ts", "middleware.ts"],
       "exclude": ["**/*.test.*", "**/*.d.ts"]
     },
@@ -22,6 +23,7 @@
       "kind": "mixed",
       "repo": "TanStack/query",
       "commit": "b1243facc8b88c4cfe5ea9d7f3b4e1ea550bc91f",
+      "adapters": ["typescript", "react"],
       "include": ["packages/query-core/src/**/*.ts", "packages/react-query/src/**/*.{ts,tsx}", "packages/svelte-query/src/**/*.{ts,svelte}"],
       "exclude": ["**/__tests__/**", "**/*.test.*", "**/*.test-d.*", "**/*.d.ts"]
     }
