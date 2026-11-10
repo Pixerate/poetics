@@ -1,5 +1,22 @@
 # @poetics/core
 
+## 0.3.0
+
+### Minor Changes
+
+- [#51](https://github.com/Pixerate/poetics/pull/51) [`4d52ae2`](https://github.com/Pixerate/poetics/commit/4d52ae2cf980b9e22ff2a02dbd2879b4c8aaa0dc) Thanks [@surrealroad](https://github.com/surrealroad)! - Add `poetics backfill --history` (ADR 0011). It walks the first-parent history, follows each unit through renames and moves with identity matching, and records the versions from before its unit file was committed in a new write-once `prehistory`, each marked `inferred` with rationale from its commit. A unit's prehistory stops where a match would only be queued. `poetics log` and `poetics why` show prehistory, and `poetics verify` and the store's checks enforce its rules. The store gains `setPrehistory` and `extendsPrehistory`.
+
+- [#43](https://github.com/Pixerate/poetics/pull/43) [`25a0219`](https://github.com/Pixerate/poetics/commit/25a021942e58edb41a3569379b9f4277f8316962) Thanks [@surrealroad](https://github.com/surrealroad)! - Add `poetics backfill --snapshot` (ADR 0011). It creates a unit for every export with none, with a rationale inferred from the repository's own commits, changesets, TSDoc, tests and docs, and an `inferred` record with a computed confidence. Units that already have a file are never written to; their gaps are listed instead. Versions gain an optional `inferred` field, which the index records as `inferred_confidence`.
+
+- [#27](https://github.com/Pixerate/poetics/pull/27) [`9fa9bf4`](https://github.com/Pixerate/poetics/commit/9fa9bf41326306e2112c6cea7a373750799b24eb) Thanks [@surrealroad](https://github.com/surrealroad)! - Implement BLAKE3 `contentHash`, `interfaceHash` and `closureHash`, and the composition graph: `createGraph`, `stronglyConnectedComponents`, `computeClosureHashes` and `impactOf`, which takes a new `ImpactOptions` to flag direct callers of an interface change.
+
+- [#34](https://github.com/Pixerate/poetics/pull/34) [`590a911`](https://github.com/Pixerate/poetics/commit/590a911fc1fc56266de9bb833c064c11d32228f3) Thanks [@surrealroad](https://github.com/surrealroad)! - Add identity matching. `matchIdentities` follows tracked units across renames, moves, splits and merges: declared lineage first, then file and name, then content hash, then syntax-tree similarity. Ambiguous matches are queued rather than guessed. The TypeScript indexer now gives each unit a similarity `fingerprint`.
+
+- [#35](https://github.com/Pixerate/poetics/pull/35) [`52fdda8`](https://github.com/Pixerate/poetics/commit/52fdda88e21439e04970902aa5c9ed0e3976c11e) Thanks [@surrealroad](https://github.com/surrealroad)! - Add the rehash (ADR 0014). A new `rehash` change class re-records unchanged code under the indexer's `b3:` hash. `poetics rehash` plans and appends those versions, and `poetics hash` prints a file's unit hashes for hand-written versions. `poetics verify` and `poetics coverage` now compare `b3:` hashes instead of reporting them as unverifiable. `allowProvisionalHashes: false` now applies to each live unit's latest version only, and a note anchored to a unit stays confirmed through a rehash.
+
+- [#13](https://github.com/Pixerate/poetics/pull/13) [`e238728`](https://github.com/Pixerate/poetics/commit/e23872825cff8ea5d63b7a3330f431a1800c5470) Thanks [@surrealroad](https://github.com/surrealroad)! - Record deletions as a final `removed` version instead of deleting unit files
+  (`REMOVED_CONTENT_HASH`, `isRemoved`), and validate them in `checkStore`.
+
 ## 0.2.1
 
 ### Patch Changes

@@ -1,5 +1,38 @@
 # @poetics/mcp
 
+## 0.3.0
+
+### Minor Changes
+
+- [#13](https://github.com/Pixerate/poetics/pull/13) [`4179058`](https://github.com/Pixerate/poetics/commit/41790589c7ba866ebec1c614447dbe207b28ca5f) Thanks [@surrealroad](https://github.com/surrealroad)! - Add the planned `poetics changes` command, `poetics_changes` MCP tool and
+  `changesBetween` store API (stubs) for "what changed, and why" between two refs.
+
+- [#14](https://github.com/Pixerate/poetics/pull/14) [`75c7809`](https://github.com/Pixerate/poetics/commit/75c7809053251aca256a5233df8f549cfc2a6939) Thanks [@surrealroad](https://github.com/surrealroad)! - Implement "what changed, and why" between two refs: `changesBetween` walks the
+  range with git and reports each commit's unit versions with rationale,
+  removals and interface changes first, plus commits that recorded no unit and
+  decisions and notes added. `poetics changes [from] [to]` prints it (or JSON
+  with `--json`), and the MCP server answers `poetics_changes`. `run` takes an
+  optional repository root. `--impact` waits for the indexer.
+
+- [#32](https://github.com/Pixerate/poetics/pull/32) [`a5da380`](https://github.com/Pixerate/poetics/commit/a5da3800ac2ec1d5478f7cc690d413d3bd627622) Thanks [@surrealroad](https://github.com/surrealroad)! - `poetics log <unit>` and `poetics why <unit>` print a unit's version history and the rationale chain behind it. `resolveUnit` moves from `@poetics/mcp` to `@poetics/store` and takes `(paths, db, ref)`.
+
+- [#37](https://github.com/Pixerate/poetics/pull/37) [`2b00ca8`](https://github.com/Pixerate/poetics/commit/2b00ca80421daf47fb1ad3eeb94461bb547f3032) Thanks [@surrealroad](https://github.com/surrealroad)! - The MCP server reads the code. Context packs include the unit's code and signature, and the signatures of its callers and dependencies. `poetics_impact` ranks the units a change reaches through the composition graph, and `poetics_changes` does too with `impact: true`. `poetics_verify` reports what is behind in a path scope. The indexer gives each unit a `signatureText`, and counts what a private helper uses as used by the exported unit that calls it.
+
+- [#31](https://github.com/Pixerate/poetics/pull/31) [`98015d7`](https://github.com/Pixerate/poetics/commit/98015d790d9f42371dc89d87652b1974236ebf4b) Thanks [@surrealroad](https://github.com/surrealroad)! - `poetics-mcp` serves MCP over stdio. It answers `poetics_context_pack` (token-budgeted), `poetics_search`, `poetics_unit`, `poetics_history`, `poetics_changes`, `poetics_tests_for` and `poetics_notes` from the store, and lists only those tools. `PoeticsServer` gains `tools()`, and `listen()` accepts streams. The store adds `readUnit`, a `match: "any"` option on `searchUnits`, and `docs` on `UnitRow`.
+
+- [#47](https://github.com/Pixerate/poetics/pull/47) [`ef7b943`](https://github.com/Pixerate/poetics/commit/ef7b943d35665af1ec21b4bcc7e87b2636804c05) Thanks [@surrealroad](https://github.com/surrealroad)! - Serve the MCP write tools. `poetics_record_rationale` gives the newest uncommitted version its rationale. `poetics_declare_lineage` declares a rename, move, split or merge, checked against the code the way `poetics index` matches. `poetics_record_note` records or re-confirms a note and regenerates `GOTCHAS.md`. Writes are attributed to the calling agent. The store's `recordRationale` is implemented, and it gains `createNote`, `confirmNote` and `buildGotchas`; its `declareLineage` stub moves to `@poetics/cli`, which implements it. `poetics index` takes declarations.
+
+- [#45](https://github.com/Pixerate/poetics/pull/45) [`5fa1e89`](https://github.com/Pixerate/poetics/commit/5fa1e892c4b4f4e3a52f47770beedfae91c9b07a) Thanks [@surrealroad](https://github.com/surrealroad)! - Add the React adapter. `reactPlugin` plugs into the TypeScript indexer through a new `FrameworkPlugin` interface. It detects components (PascalCase functions that return JSX, or are wrapped in `memo`, `forwardRef` or `lazy`) and hooks, gives components their props, default prop values and forwarded ref as their interface, and records JSX tags as `renders` edges. `createReactAdapter` now takes the indexer's options. The CLI and MCP server run the plugin when `.poetics/config.json` lists `react` in `adapters`. `poetics init` now reads tsconfig files with TypeScript's own parser, so `paths` entries such as `"@/*"` no longer break it.
+
+### Patch Changes
+
+- Updated dependencies [[`e47a3d4`](https://github.com/Pixerate/poetics/commit/e47a3d42e5dfc25a8e17e58735b10a528c62b509), [`4d52ae2`](https://github.com/Pixerate/poetics/commit/4d52ae2cf980b9e22ff2a02dbd2879b4c8aaa0dc), [`7253403`](https://github.com/Pixerate/poetics/commit/72534039979cba5cb462cf20511bdd12c3b01c02), [`b51bfcc`](https://github.com/Pixerate/poetics/commit/b51bfccffada77132919a630e5101da136c45459), [`25a0219`](https://github.com/Pixerate/poetics/commit/25a021942e58edb41a3569379b9f4277f8316962), [`4179058`](https://github.com/Pixerate/poetics/commit/41790589c7ba866ebec1c614447dbe207b28ca5f), [`75c7809`](https://github.com/Pixerate/poetics/commit/75c7809053251aca256a5233df8f549cfc2a6939), [`a5da380`](https://github.com/Pixerate/poetics/commit/a5da3800ac2ec1d5478f7cc690d413d3bd627622), [`9cda7f2`](https://github.com/Pixerate/poetics/commit/9cda7f2a092169e462564ccb3e79d821df58464e), [`9fa9bf4`](https://github.com/Pixerate/poetics/commit/9fa9bf41326306e2112c6cea7a373750799b24eb), [`590a911`](https://github.com/Pixerate/poetics/commit/590a911fc1fc56266de9bb833c064c11d32228f3), [`35a768d`](https://github.com/Pixerate/poetics/commit/35a768d4eb418e6efb3ae405abd0eed14521014c), [`f674b0b`](https://github.com/Pixerate/poetics/commit/f674b0ba69d37ef67f6fe168ccaac5835e8cf00c), [`2b00ca8`](https://github.com/Pixerate/poetics/commit/2b00ca80421daf47fb1ad3eeb94461bb547f3032), [`98015d7`](https://github.com/Pixerate/poetics/commit/98015d790d9f42371dc89d87652b1974236ebf4b), [`ef7b943`](https://github.com/Pixerate/poetics/commit/ef7b943d35665af1ec21b4bcc7e87b2636804c05), [`c1c0043`](https://github.com/Pixerate/poetics/commit/c1c0043bd0d0138fd0405e02146612ceed839381), [`4c5b49e`](https://github.com/Pixerate/poetics/commit/4c5b49ed6c0972695c06d07a51e19a218c2457e7), [`5fa1e89`](https://github.com/Pixerate/poetics/commit/5fa1e892c4b4f4e3a52f47770beedfae91c9b07a), [`2d9d2c2`](https://github.com/Pixerate/poetics/commit/2d9d2c2bb204000430a69194741c6837a2bc9d5d), [`4b15948`](https://github.com/Pixerate/poetics/commit/4b159485437b1bbe130d02692ec96b3e3d08e1b9), [`1159e9d`](https://github.com/Pixerate/poetics/commit/1159e9d60b3079056f190ed85e49a580ef46274e), [`52fdda8`](https://github.com/Pixerate/poetics/commit/52fdda88e21439e04970902aa5c9ed0e3976c11e), [`e238728`](https://github.com/Pixerate/poetics/commit/e23872825cff8ea5d63b7a3330f431a1800c5470), [`15dc817`](https://github.com/Pixerate/poetics/commit/15dc817e3a9864b2dfe2c9f51af222abd6426b27), [`faa7163`](https://github.com/Pixerate/poetics/commit/faa71633c0fb4338c059cfe9ec2c54f2af8ca6ba)]:
+  - @poetics/adapter-typescript@0.1.0
+  - @poetics/core@0.3.0
+  - @poetics/store@0.3.0
+  - @poetics/cli@0.2.0
+  - @poetics/adapter-react@0.2.0
+
 ## 0.2.1
 
 ### Patch Changes

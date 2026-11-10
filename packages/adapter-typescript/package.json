@@ -1,6 +1,6 @@
 {
   "name": "@poetics/adapter-typescript",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Poetics indexer for TypeScript: detects functions, hooks and types, normalises their syntax trees, hashes signatures and resolves cross-file edges.",
   "license": "MIT",
   "type": "module",
