@@ -1,5 +1,15 @@
 # @poetics/cli
 
+## 0.5.0
+
+### Minor Changes
+
+- [#63](https://github.com/Pixerate/poetics/pull/63) [`df077c8`](https://github.com/Pixerate/poetics/commit/df077c87d63f1aa44931ac85f9fe2ede3137780d) Thanks [@surrealroad](https://github.com/surrealroad)! - `poetics backfill` gives `high` confidence only when the evidence is about the unit alone: a commit that introduced or changed nothing else, a review comment on its lines, or, in snapshot mode, the unit's own doc comment. A changeset, commit message or pull request that names the unit among others is now `medium` (ADR 0018).
+
+### Patch Changes
+
+- [#63](https://github.com/Pixerate/poetics/pull/63) [`f7afe4a`](https://github.com/Pixerate/poetics/commit/f7afe4a062a0d3ea83a16e30182956b65c71be5b) Thanks [@surrealroad](https://github.com/surrealroad)! - `poetics backfill --snapshot` leads a unit's extracted rationale with its own doc comment when the changeset or commit text is shared with other units the commit introduced (ADR 0019). A one-unit commit's text stays the whole rationale.
+
 ## 0.4.0
 
 ### Minor Changes
