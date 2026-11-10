@@ -50,6 +50,15 @@ describe("detectUnits", () => {
     expect(units.map((u) => [u.name, u.kind, u.framework, ts.isClassDeclaration(u.declarations[0]!)])).toEqual([["Widget", "component", "react", true]]);
   });
 
+  it("tracks an exported variable that holds no function only when a plugin's value hook names its kind", () => {
+    const code = `export const Ctx = makeContext(0);\nexport const LIMIT = 10;\nconst Hidden = makeContext(1);`;
+    expect(detect(code)).toEqual([]);
+    const contexts = { framework: "react" as const, value: (d: ts.VariableDeclaration) => (d.initializer?.getText().startsWith("makeContext") ? ("context" as const) : undefined), claim: () => "component" as const };
+    const units = detectUnits(ts.createSourceFile("src/a.ts", code, ts.ScriptTarget.Latest, true), "src/a.ts", [contexts]);
+    // claim is not asked again: a value keeps the kind its value hook gave.
+    expect(units.map((u) => [u.name, u.kind, u.framework])).toEqual([["Ctx", "context", "react"]]);
+  });
+
   it("names a default export after its declaration", () => {
     expect(detect(`export default function main() {}`).map((u) => [u.name, u.exportedAs])).toEqual([["main", "default"]]);
     expect(detect(`function main() {}\nexport default main;`).map((u) => [u.name, u.exportedAs])).toEqual([["main", "default"]]);

@@ -69,6 +69,30 @@
           "ref": "docs/plan.md#react-ts-tsx"
         }
       ]
+    },
+    {
+      "contentHash": "b3:8f33c9bdd58aef77ceda8cfef501e6253ccf3db1e804715823b175e4179df213",
+      "interfaceHash": "b3:c71a5907a8bd603214fa3aa355d4d8cb6732b91c41cab6c0d4ab694124edaff3",
+      "parent": "b3:e01e1cd4c9a1183568f3cc96e3b3d5317f6c6470bb703787bd2739f376b28b53",
+      "change": "interface",
+      "rationale": "Adds the context signature: the type of the value providers give and consumers read, and the default a consumer reads with no provider.",
+      "deps": {
+        "01M6HNRFMKJGK18JKH37PPJ711": "b3:167f4daf6b6b849a3c90172c988aefdaead3e1e3835dad2d4aa7da4a1159f537",
+        "01M6HNRFMKW9RMTDHE3W0XVGCR": "b3:23b864d94ee768af7fa8ded1026587b1913a2313e7ca87086b5e1a723d46905e",
+        "01M6HNRFMKNA9Q4CSKAYB7S9VR": "b3:df2e28776262877ef98e352e7a88eadba44abf9f489471979213c51100b9f866"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0016-context-units.md"
+        }
+      ]
     }
   ],
   "docs": "What callers depend on: call signatures for functions and hooks, the structure for types.",

@@ -45,7 +45,35 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:310b05240b0bddfa9d2b156478f247c373bc198d7422bdd196ed64e36ca04387",
+      "interfaceHash": "b3:798ea19a3f3f718c97fe89eeea2d028b6346ca4c2bc41c9036c68bc5899e05ae",
+      "parent": "b3:4c3726650f8e2221205ac1514448a07cd31203d53a90a8324d689b3ca2031781",
+      "change": "interface",
+      "rationale": "Adds context: a React context is a value, not a function, hook, component or type, and providers and consumers need a unit to point their uses-context edges at (ADR 0016).",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0016-context-units.md"
+        }
+      ]
     }
   ],
-  "tests": []
+  "tests": [
+    {
+      "file": "packages/adapter-react/src/index.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/adapter-typescript/src/units.test.ts",
+      "via": "static"
+    }
+  ]
 }

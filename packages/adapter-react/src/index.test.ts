@@ -77,8 +77,8 @@ describe("reactPlugin on the React fixture", () => {
 });
 
 describe("reactPlugin version", () => {
-  it("is 3 since class components, so caches indexed with older rules are not reused", () => {
-    expect(reactPlugin().version).toBe(3);
+  it("is 4 since contexts, so caches indexed with older rules are not reused", () => {
+    expect(reactPlugin().version).toBe(4);
   });
 });
 
@@ -190,6 +190,59 @@ describe("reactPlugin on other shapes", () => {
     expect(counter.signatureText).toBe("export class Counter extends Component<CounterProps, { n: number }>");
     expect(counter.edges).toEqual([{ to: "src/b.tsx#PriceTag", kind: "renders" }]);
     expect(units.get("Banner")!.signature).toEqual({ kind: "component", props: null, defaults: [] });
+  });
+
+  it("tracks createContext values as contexts and records providers and consumers as uses-context", () => {
+    const units = project({
+      "src/cart.tsx": [
+        `import * as React from "react";`,
+        `import { createContext, use, useContext, type ReactNode } from "react";`,
+        `export type Cart = { items: string[] };`,
+        `/** The cart the page is showing. */`,
+        `export const CartContext = createContext<Cart | null>(null);`,
+        `export const ThemeContext = React.createContext("light");`,
+        `const Hidden = createContext(0);`,
+        `export const notAContext = makeThing();`,
+        `declare function makeThing(): number;`,
+        `export function CartProvider({ children }: { children: ReactNode }) { return <CartContext.Provider value={{ items: [] }}>{children}</CartContext.Provider>; }`,
+        `export function ThemeProvider({ children }: { children: ReactNode }) { return <ThemeContext value="dark">{children}</ThemeContext>; }`,
+        `export const useCart = () => useContext(CartContext);`,
+        `export function Badge() { const theme = use(ThemeContext); return <b>{theme}{String(useCart())}</b>; }`,
+        `export class Legacy extends React.Component { static contextType = CartContext; render() { return null; } }`,
+      ].join("\n"),
+    });
+    expect([...units.values()].map((u) => [u.name, u.kind, u.framework])).toEqual([
+      ["Cart", "type", "none"],
+      ["CartContext", "context", "react"],
+      ["ThemeContext", "context", "react"],
+      ["CartProvider", "component", "react"],
+      ["ThemeProvider", "component", "react"],
+      ["useCart", "hook", "react"],
+      ["Badge", "component", "react"],
+      ["Legacy", "component", "react"],
+    ]);
+    const cart = units.get("CartContext")!;
+    expect(cart.docs).toBe("The cart the page is showing.");
+    expect(cart.signature).toEqual({ kind: "context", value: { written: ["UnionType", ["TypeReference", ["Identifier", "Cart"]], ["LiteralType", ["NullKeyword"]]] }, default: ["NullKeyword"] });
+    expect(units.get("ThemeContext")!.signature).toEqual({ kind: "context", value: { inferred: "string" }, default: ["StringLiteral", "light"] });
+    expect(cart.edges).toEqual([{ to: "src/cart.tsx#Cart", kind: "references-type" }]);
+    expect(units.get("CartProvider")!.edges).toEqual([{ to: "src/cart.tsx#CartContext", kind: "uses-context" }]);
+    expect(units.get("ThemeProvider")!.edges).toEqual([{ to: "src/cart.tsx#ThemeContext", kind: "uses-context" }]);
+    expect(units.get("useCart")!.edges).toEqual([{ to: "src/cart.tsx#CartContext", kind: "uses-context" }]);
+    expect(units.get("Badge")!.edges).toEqual([
+      { to: "src/cart.tsx#ThemeContext", kind: "uses-context" },
+      { to: "src/cart.tsx#useCart", kind: "uses-hook" },
+    ]);
+    expect(units.get("Legacy")!.edges).toEqual([{ to: "src/cart.tsx#CartContext", kind: "uses-context" }]);
+  });
+
+  it("changes a context's interface hash with its value type or default, not with how it is written", () => {
+    const hash = (type: string, fallback: string, spacing = "") =>
+      project({ "src/a.ts": `import { createContext } from "react";\nexport const Ctx = createContext<${type}>(${spacing}${fallback}${spacing});` }).get("Ctx")!.interfaceHash;
+    const base = hash("number", "0");
+    expect(hash("number", "0", " ")).toBe(base);
+    expect(hash("number", "1")).not.toBe(base);
+    expect(hash("string", "\"0\"")).not.toBe(base);
   });
 
   it("changes a class component's interface hash with its props or defaults, not with its state or render", () => {
