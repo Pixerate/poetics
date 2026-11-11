@@ -1,5 +1,11 @@
 # @poetics/adapter-svelte
 
+## 0.6.0
+
+### Minor Changes
+
+- [#80](https://github.com/Pixerate/poetics/pull/80) [`95cdbff`](https://github.com/Pixerate/poetics/commit/95cdbffb0b88e4fc9bdbaf5fb5635262fdbc2eae) Thanks [@surrealroad](https://github.com/surrealroad)! - Record rune helpers as `hook` units with `framework: "svelte"` ([#73](https://github.com/Pixerate/poetics/issues/73)): functions in `.svelte.ts` / `.svelte.js` modules or component scripts whose own body calls `$state`, `$derived` or `$effect`. Calls to them are `uses-hook` edges. Adds `createsRuneState`. The CLI now runs the Svelte plugin before React's, so a `use*` rune helper is not claimed as a React hook.
+
 ## 0.5.0
 
 ### Minor Changes

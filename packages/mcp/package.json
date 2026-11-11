@@ -1,6 +1,6 @@
 {
   "name": "@poetics/mcp",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "MCP server exposing Poetics context packs, search, impact and validated writes to coding agents.",
   "license": "MIT",
   "type": "module",
