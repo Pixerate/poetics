@@ -1,5 +1,12 @@
 # @poetics/cli
 
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies [[`42b7098`](https://github.com/Pixerate/poetics/commit/42b7098172402970ba4ebb2e2aa10bb028f524c3)]:
+  - @poetics/adapter-svelte@0.3.0
+
 ## 0.7.0
 
 ### Minor Changes

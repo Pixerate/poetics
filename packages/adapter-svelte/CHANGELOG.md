@@ -1,5 +1,11 @@
 # @poetics/adapter-svelte
 
+## 0.3.0
+
+### Minor Changes
+
+- [#77](https://github.com/Pixerate/poetics/pull/77) [`42b7098`](https://github.com/Pixerate/poetics/commit/42b7098172402970ba4ebb2e2aa10bb028f524c3) Thanks [@surrealroad](https://github.com/surrealroad)! - A Svelte component's interface now records each prop's default, `$bindable(…)` included. A props type the component declares for itself is recorded by its structure, so retyping a prop in a local `interface Props` is an interface change and renaming the interface is not. Props that `svelte2tsx` infers, or that a JavaScript component types in JSDoc, are recorded too.
+
 ## 0.2.0
 
 ### Minor Changes

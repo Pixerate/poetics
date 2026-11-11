@@ -1,5 +1,12 @@
 # @poetics/mcp
 
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @poetics/cli@0.7.1
+
 ## 0.4.1
 
 ### Patch Changes
