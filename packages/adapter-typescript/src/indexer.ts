@@ -153,7 +153,7 @@ export function createTypeScriptIndexer(options: TypeScriptIndexerOptions): Type
           const original = plugin ? sources.get(absolute(file)) : undefined;
           const units = plugin?.detect && original ? plugin.detect(source, file, original.text, original.transformed) : detectUnits(source, file, plugins);
           detected.set(file, { source, units, ...(original ? { original } : {}) });
-          for (const unit of units) for (const declaration of unit.declarations) byDeclaration.set(declaration, unit);
+          for (const unit of units) for (const declaration of [...unit.declarations, ...(unit.aliases ?? [])]) byDeclaration.set(declaration, unit);
         }
         const unitAt = (declaration: ts.Declaration) => byDeclaration.get(declaration);
         for (const file of misses) {

@@ -19,6 +19,10 @@ and of the component: give each its own rationale.
   function there that calls `$state`, `$derived` or `$effect` itself is a
   rune helper, recorded as a `hook`: create its state in its own body rather
   than in a function it calls, so the adapter sees it.
+- **Contexts:** prefer `export const [getX, setX] = createContext<T>()` from
+  `svelte`. With `setContext`/`getContext`, use an exported constant key
+  declared in the module that sets and gets it, never a string literal: only
+  those are context units the adapter tracks (ADR 0021).
 - **Avoid `<svelte:component this={x}>`** and dynamic component maps where an
   explicit component works; they become unresolved edges.
 - **Docs** live in a `<!-- @component -->` comment at the top of the file,

@@ -3,6 +3,7 @@ Displays a price with currency and optional sale price.
 -->
 <script lang="ts">
   import { formatPrice } from "./format-price.ts";
+  import { getShop } from "./shop.ts";
 
   interface PriceTagProps {
     amountMinor: number;
@@ -10,7 +11,7 @@ Displays a price with currency and optional sale price.
     currency?: string;
   }
 
-  let { amountMinor, saleAmountMinor, currency = "GBP" }: PriceTagProps = $props();
+  let { amountMinor, saleAmountMinor, currency = getShop().currency }: PriceTagProps = $props();
 </script>
 
 {#if saleAmountMinor !== undefined}

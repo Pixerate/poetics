@@ -34,6 +34,11 @@ export interface DetectedUnit {
   signatureText?: string;
   /** The key of the unit this one is declared inside, such as a function in a Svelte component's script. */
   owner?: string;
+  /**
+   * Other declarations whose uses are uses of this unit, such as the getter and setter a Svelte
+   * `const [getUser, setUser] = createContext()` destructures (ADR 0021).
+   */
+  aliases?: ts.Declaration[];
 }
 
 /**
@@ -76,7 +81,11 @@ export interface FrameworkPlugin {
    * (`fn` undefined, the class its only declaration) is a unit only when a plugin claims it.
    */
   claim?(unit: DetectedUnit, fn: ts.SignatureDeclaration | undefined): UnitKind | undefined;
-  /** The kind of an exported variable that holds no function but that this framework tracks, such as a React context. */
+  /**
+   * The kind of an exported variable that holds no function but that this framework tracks, such as a React context.
+   * A variable that destructures an array, such as Svelte's `const [get, set] = createContext()`, is a unit only when
+   * a plugin claims it here; it is named after its first element.
+   */
   value?(declaration: ts.VariableDeclaration): UnitKind | undefined;
   /** The interface of a unit it claimed, or undefined for the plain function signature. `fn` is undefined for a class or a value. */
   signature?(unit: DetectedUnit, fn: ts.SignatureDeclaration | undefined, checker: ts.TypeChecker): Signature | undefined;
@@ -149,6 +158,7 @@ const TYPE_FORMAT = ts.TypeFormatFlags.NoTruncation;
 export function detectUnits(source: ts.SourceFile, file: string, plugins: readonly FrameworkPlugin[] = []): DetectedUnit[] {
   const exported = exportedNames(source);
   const groups = new Map<string, { name: string; kind: UnitKind; framework?: Framework; declarations: UnitDeclaration[]; statements: ts.Node[] }>();
+  const aliases = new Map<string, ts.BindingElement[]>();
   const add = (name: string, kind: UnitKind, declaration: UnitDeclaration, statement: ts.Node, framework?: Framework) => {
     // Values and types live in separate namespaces, so `type X` and `function X` are two units.
     const space = kind === "type" ? "type" : "value";
@@ -168,6 +178,18 @@ export function detectUnits(source: ts.SourceFile, file: string, plugins: readon
     } else if (ts.isVariableStatement(statement)) {
       const list = statement.declarationList.declarations;
       for (const declaration of list) {
+        if (ts.isArrayBindingPattern(declaration.name)) {
+          // `const [get, set] = …` is a unit only when a framework tracks the value, as one unit named after the first element.
+          const elements = declaration.name.elements.filter((e): e is ts.BindingElement & { name: ts.Identifier } => ts.isBindingElement(e) && ts.isIdentifier(e.name));
+          const value = plugins.map((plugin) => ({ framework: plugin.framework, kind: plugin.value?.(declaration) })).find((v) => v.kind !== undefined);
+          const name = elements[0]?.name.text;
+          if (!value || name === undefined) continue;
+          if (hasExportModifier(statement) || elements.some((e) => exported.has(e.name.text))) {
+            add(name, value.kind!, declaration, list.length === 1 ? statement : declaration, value.framework);
+            aliases.set(name, elements);
+          }
+          continue;
+        }
         if (!ts.isIdentifier(declaration.name)) continue;
         // A function, or a value a framework tracks (a React context); other variables are not units.
         const fn = functionOf(declaration, plugins);
@@ -202,6 +224,8 @@ export function detectUnits(source: ts.SourceFile, file: string, plugins: readon
     };
     if (exportedAs !== undefined && exportedAs !== group.name) unit.exportedAs = exportedAs;
     if (docs) unit.docs = docs;
+    const elements = group.kind === "type" ? undefined : aliases.get(group.name);
+    if (elements) unit.aliases = elements;
     const declaration = group.declarations[0]!;
     const wrappers: string[] = [];
     const fn = ts.isFunctionDeclaration(declaration) ? declaration : ts.isVariableDeclaration(declaration) ? functionOf(declaration, plugins, wrappers) : undefined;

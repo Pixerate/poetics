@@ -446,3 +446,53 @@ describe("sveltePlugin with rune modules (#73)", () => {
     ]);
   });
 });
+
+describe("sveltePlugin with Svelte contexts (ADR 0021, #74)", () => {
+  const CONTEXT = `import { createContext } from "svelte";\n\nexport interface User {\n  name: string;\n}\n\n/** The signed-in user. */\nexport const [getUser, setUser] = createContext<User>();\n\nexport const [getCount, setCount] = createContext<number>();\n`;
+  const KEYS = `import { getContext, setContext } from "svelte";\n\nexport const THEME = Symbol("theme");\nexport const LOCALE = Symbol("locale");\nexport const NOT_A_KEY = Symbol("other");\n\nexport function setTheme(theme: "light" | "dark") {\n  setContext(THEME, theme);\n}\n\nexport function getLocale() {\n  return getContext<string>(LOCALE);\n}\n`;
+  const PARENT = `<script lang="ts">\n  import { setContext } from "svelte";\n  import { setUser } from "./context.ts";\n  import { THEME } from "./keys.ts";\n  setUser({ name: "Ada" });\n  setContext(THEME, "dark");\n  setContext("plain", 1);\n</script>\n\n<slot />\n`;
+  const CHILD = `<script module lang="ts">\n  import { createContext } from "svelte";\n  export const [getTab, setTab] = createContext<string>();\n</script>\n\n<script lang="ts">\n  import { getUser } from "./context.ts";\n  const user = getUser();\n</script>\n\n<p>{user.name}</p>\n`;
+  const FILES = { "src/context.ts": CONTEXT, "src/keys.ts": KEYS, "src/Parent.svelte": PARENT, "src/Child.svelte": CHILD };
+  const index = (root: string) => new Map(createTypeScriptIndexer({ root, files: Object.keys(FILES), plugins: [sveltePlugin()] }).index().units.map((unit) => [unit.key, unit]));
+
+  it("records createContext pairs, and keys their own module uses, as context units with their value type", () => {
+    const units = index(project(FILES));
+    expect(units.get("src/context.ts#getUser")).toMatchObject({
+      name: "getUser",
+      kind: "context",
+      framework: "svelte",
+      docs: "The signed-in user.",
+      signature: { kind: "context", value: { written: ["TypeReference", ["Identifier", "User"]] }, default: null },
+    });
+    expect(units.has("src/context.ts#setUser")).toBe(false);
+    expect(units.get("src/context.ts#getCount")!.signature).toEqual({ kind: "context", value: { written: ["NumberKeyword"] }, default: null });
+    // A key's value type: the type its setContext calls give, or the type its getContext calls name.
+    expect(units.get("src/keys.ts#THEME")).toMatchObject({ kind: "context", framework: "svelte", signature: { value: { inferred: '"light" | "dark"' } } });
+    expect(units.get("src/keys.ts#LOCALE")!.signature).toMatchObject({ value: { written: ["StringKeyword"] } });
+    // A Symbol nothing uses as a key is not a context, and not a unit.
+    expect(units.has("src/keys.ts#NOT_A_KEY")).toBe(false);
+    // A context a component's module script exports is a unit of its file.
+    expect(units.get("src/Child.svelte#getTab")).toMatchObject({ kind: "context", signature: { value: { written: ["StringKeyword"] } } });
+  });
+
+  it("records setters and getters, components and functions alike, as uses-context edges; a literal string key is not tracked", () => {
+    const units = index(project(FILES));
+    expect(units.get("src/Parent.svelte#Parent")!.edges).toEqual([
+      { to: "src/context.ts#getUser", kind: "uses-context" },
+      { to: "src/keys.ts#THEME", kind: "uses-context" },
+    ]);
+    expect(units.get("src/Child.svelte#Child")!.edges).toEqual([{ to: "src/context.ts#getUser", kind: "uses-context" }]);
+    expect(units.get("src/keys.ts#setTheme")!.edges).toEqual([{ to: "src/keys.ts#THEME", kind: "uses-context" }]);
+    expect(units.get("src/keys.ts#getLocale")!.edges).toEqual([{ to: "src/keys.ts#LOCALE", kind: "uses-context" }]);
+  });
+
+  it("changes a context's interface hash with its value type, not with its names", () => {
+    const root = project(FILES);
+    const before = index(root).get("src/context.ts#getUser")!;
+    writeFileSync(join(root, "src/context.ts"), CONTEXT.replace("createContext<User>", "createContext<User | null>"));
+    expect(index(root).get("src/context.ts#getUser")!.interfaceHash).not.toBe(before.interfaceHash);
+    writeFileSync(join(root, "src/context.ts"), CONTEXT.replace("setUser]", "provideUser]"));
+    const renamed = index(root).get("src/context.ts#getUser")!;
+    expect([renamed.contentHash, renamed.interfaceHash]).toEqual([before.contentHash, before.interfaceHash]);
+  });
+});

@@ -1,0 +1,41 @@
+{
+  "uid": "01M75HDDSYPFDM6ND1NPY1X06B",
+  "kind": "function",
+  "framework": "none",
+  "name": "svelteContextKind",
+  "location": {
+    "file": "packages/adapter-svelte/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:ade17e57fc5dbedb2a120d664a858b607713576d95525498b2d72edd9165ef21",
+      "interfaceHash": "b3:c510402c5624fcc699833e0d088f87ed3eb702719af643fb92b257f509f80cea",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Tells which exported variables are Svelte contexts (ADR 0021, #74): what createContext from svelte returns, destructured or whole, or a module-level const the same module passes to setContext, getContext or hasContext as the key. A literal key has no declaration to be a unit of, so it is not tracked.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#74"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0021-svelte-context-units.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Whether an exported variable is a Svelte context (ADR 0021): what `createContext()` from `svelte` returns, whether\ndestructured into its getter and setter or kept whole, or a module-level constant that the same module passes to\n`setContext`, `getContext` or `hasContext` as the key.",
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -91,6 +91,39 @@
           "ref": "#73"
         }
       ]
+    },
+    {
+      "contentHash": "b3:2e008bc68f698797b5279de3f1fc59b185e5c3ea6759b61ea45b71d0910b5c33",
+      "interfaceHash": "b3:08c3982f44b292bce72d1437764191bc90b2f24f1cd2c6e748c08430917b9c4f",
+      "parent": "b3:7e147b04f1e9fa27cfee79154964f4561e5e822fdd26a60dbe9b202047ef87c1",
+      "change": "behaviour",
+      "rationale": "Claims Svelte contexts through value, gives them their value type as interface through signature, and makes every use of one a uses-context edge (ADR 0021, #74). Rules version 6, so cached units are re-indexed.",
+      "deps": {
+        "01M73SRDN5Z4WSJ6TRV2JWFFGG": "b3:350d7613146e665fca668843d40000d9c7a15fa5b970cf4e435950b6ce1059cb",
+        "01M75A95V3JXN2BADGRPYG0RRH": "b3:1042d619bb16c14b7ce4e3e4825ee43748137c82c22b4cb2fc47c77f1d899b32",
+        "01M73SRDN58GD6SPYSEVK6B37R": "b3:bc53f486523f7c7e1d536796651ac195221380286ee45fffa5e7efb4e1b146dc",
+        "01M75HDDSYPFDM6ND1NPY1X06B": "b3:ade17e57fc5dbedb2a120d664a858b607713576d95525498b2d72edd9165ef21",
+        "01M75HDDSYDP8P4KDAN3KNH8P7": "b3:839ecbf5ab6723805b81d7d24c16d23f72224fe65d5764c3099e5b98fd008fdb",
+        "01M5Z1F6MSNEY6PS53AP94XHMJ": "b3:fd8da421ba0b6f8380f965d9047a2a8b68d3791522d589dd0a2dc97ab5895e79",
+        "01M73SRDN591D9C02BN9X1Y7M5": "b3:3c1871f241a66494a0aa93839df950a0ee73e0118f40fd2eff4fe82449c8499f",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:edb73add1559c280c4dcdceb5f3f6bf3dbf06d95ad7a8ce70316aef31405ac59"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#74"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0021-svelte-context-units.md"
+        }
+      ]
     }
   ],
   "docs": "The Svelte plugin for the TypeScript indexer: `.svelte` files, read through svelte2tsx (ADR 0020).",

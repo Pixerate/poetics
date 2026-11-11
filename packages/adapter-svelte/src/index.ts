@@ -7,7 +7,7 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import ts from "typescript";
 import { svelte2tsx } from "svelte2tsx";
-import { contentTree, detectUnits, normaliseNode, signatureText } from "@poetics/adapter-typescript";
+import { contentTree, detectUnits, normaliseNode, signatureText, typeText } from "@poetics/adapter-typescript";
 import type { DetectedUnit, FrameworkPlugin, NormalTree, Signature, Transformed, TypeText } from "@poetics/adapter-typescript";
 import { offsetMapper } from "./source-map.ts";
 
@@ -42,7 +42,7 @@ const require = createRequire(import.meta.url);
 const SVELTE2TSX_VERSION = (JSON.parse(readFileSync(require.resolve("svelte2tsx/package.json"), "utf8")) as { version: string }).version;
 
 /** Bumped when the plugin's own rules change what it records; svelte2tsx's version is added to it. */
-const RULES = 5;
+const RULES = 6;
 
 const SCRIPT = /<script(\s[^>]*)?>([\s\S]*?)<\/script\s*>/gi;
 
@@ -198,8 +198,8 @@ export function detectComponent(source: ts.SourceFile, file: string, original: s
     if (docs) unit.docs = docs;
     units.push(unit);
   }
-  // Exports of the module script are units of their own, like any module's. Generated names are not.
-  for (const unit of detectUnits(source, file)) {
+  // Exports of the module script are units of their own, like any module's, contexts included. Generated names are not.
+  for (const unit of detectUnits(source, file, [{ framework: "svelte", value: svelteContextKind }])) {
     if (unit.exportedAs === "default" || unit.name.includes("__") || unit.name.startsWith("$$")) continue;
     const start = transformed.toOriginal(unit.span.start);
     const end = transformed.toOriginal(unit.span.end);
@@ -208,6 +208,97 @@ export function detectComponent(source: ts.SourceFile, file: string, original: s
   }
   if (component) units.push(...scriptFunctions(source, file, original, `${file}#${name}`, new Set(units.map((unit) => unit.name))));
   return units;
+}
+
+/** Local names of what a module imports from `svelte`, mapped to the names `svelte` exports them as. */
+const svelteImportsOf = new WeakMap<ts.SourceFile, Map<string, string>>();
+
+function svelteImports(source: ts.SourceFile): Map<string, string> {
+  let found = svelteImportsOf.get(source);
+  if (found) return found;
+  found = new Map();
+  for (const statement of source.statements) {
+    if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier) || statement.moduleSpecifier.text !== "svelte") continue;
+    const bindings = statement.importClause?.namedBindings;
+    if (!bindings || !ts.isNamedImports(bindings)) continue;
+    for (const element of bindings.elements) found.set(element.name.text, (element.propertyName ?? element.name).text);
+  }
+  svelteImportsOf.set(source, found);
+  return found;
+}
+
+/** The `svelte` export a call calls, such as `createContext`, when it calls one imported by name. */
+function svelteCall(node: ts.Node): string | undefined {
+  if (!ts.isCallExpression(node) || !ts.isIdentifier(node.expression)) return undefined;
+  return svelteImports(node.getSourceFile()).get(node.expression.text);
+}
+
+const KEYED = new Set(["setContext", "getContext", "hasContext"]);
+
+/** The `setContext`, `getContext` and `hasContext` calls in a module, by the name of the identifier they use as key. */
+const keyedCallsOf = new WeakMap<ts.SourceFile, Map<string, ts.CallExpression[]>>();
+
+function keyedCalls(source: ts.SourceFile): Map<string, ts.CallExpression[]> {
+  let found = keyedCallsOf.get(source);
+  if (found) return found;
+  const calls = new Map<string, ts.CallExpression[]>();
+  const visit = (node: ts.Node): void => {
+    const called = svelteCall(node);
+    if (called && KEYED.has(called)) {
+      const key = (node as ts.CallExpression).arguments[0];
+      if (key && ts.isIdentifier(key)) calls.set(key.text, [...(calls.get(key.text) ?? []), node as ts.CallExpression]);
+    }
+    node.forEachChild(visit);
+  };
+  visit(source);
+  found = calls;
+  keyedCallsOf.set(source, found);
+  return found;
+}
+
+function unwrapped(expression: ts.Expression | undefined): ts.Expression | undefined {
+  while (expression && (ts.isParenthesizedExpression(expression) || ts.isAsExpression(expression) || ts.isSatisfiesExpression(expression))) expression = expression.expression;
+  return expression;
+}
+
+/**
+ * Whether an exported variable is a Svelte context (ADR 0021): what `createContext()` from `svelte` returns, whether
+ * destructured into its getter and setter or kept whole, or a module-level constant that the same module passes to
+ * `setContext`, `getContext` or `hasContext` as the key.
+ */
+export function svelteContextKind(declaration: ts.VariableDeclaration): "context" | undefined {
+  const value = unwrapped(declaration.initializer);
+  if (value && svelteCall(value) === "createContext") return "context";
+  const statement = declaration.parent.parent;
+  if (!ts.isIdentifier(declaration.name) || !(declaration.parent.flags & ts.NodeFlags.Const) || !ts.isSourceFile(statement.parent)) return undefined;
+  return keyedCalls(declaration.getSourceFile()).has(declaration.name.text) ? "context" : undefined;
+}
+
+/**
+ * A Svelte context's interface (ADR 0021): the type of the value setters give and getters read, with no default,
+ * since Svelte has none. For `createContext<T>()`, `T` as written or as its getter returns it. For a key, the type
+ * written on its `setContext`/`getContext` calls in its own module, or the type of the values its `setContext`
+ * calls there give; `unknown` when they say nothing.
+ */
+export function svelteContextSignature(unit: DetectedUnit, checker: ts.TypeChecker): Signature | undefined {
+  const declaration = unit.declarations[0];
+  if (!declaration || !ts.isVariableDeclaration(declaration)) return undefined;
+  const call = unwrapped(declaration.initializer);
+  if (call && ts.isCallExpression(call) && svelteCall(call) === "createContext") {
+    const written = call.typeArguments?.[0];
+    if (written) return { kind: "context", value: typeText(written, call, checker), default: null };
+    const tuple = checker.getTypeAtLocation(call);
+    const getter = tuple.flags & ts.TypeFlags.Object ? checker.getTypeArguments(tuple as ts.TypeReference)[0] : undefined;
+    const returns = getter?.getCallSignatures()[0]?.getReturnType();
+    return { kind: "context", value: { inferred: returns ? checker.typeToString(returns, call, ts.TypeFormatFlags.NoTruncation) : "unknown" }, default: null };
+  }
+  if (!ts.isIdentifier(declaration.name)) return undefined;
+  const calls = keyedCalls(declaration.getSourceFile()).get(declaration.name.text) ?? [];
+  const written = calls.map((c) => c.typeArguments?.[0]).find((t) => t !== undefined);
+  if (written) return { kind: "context", value: typeText(written, written, checker), default: null };
+  const given = calls.filter((c) => svelteCall(c) === "setContext" && c.arguments[1]).map((c) => checker.typeToString(checker.getTypeAtLocation(c.arguments[1]!), c, ts.TypeFormatFlags.NoTruncation));
+  const types = [...new Set(given)].sort();
+  return { kind: "context", value: { inferred: types.length > 0 ? types.join(" | ") : "unknown" }, default: null };
 }
 
 const RUNES = new Set(["$state", "$derived", "$effect"]);
@@ -452,10 +543,14 @@ export function sveltePlugin(options: { svelteVersion?: string } = {}): Framewor
       if (!fn || svelteFileKind(unit.span.file) !== "rune-module") return undefined;
       return createsRuneState(fn) ? "hook" : undefined;
     },
+    value: svelteContextKind,
     signature(unit, _fn, checker) {
-      return unit.framework === "svelte" ? componentSignature(unit, checker) : undefined;
+      if (unit.framework !== "svelte") return undefined;
+      return unit.kind === "context" ? svelteContextSignature(unit, checker) : componentSignature(unit, checker);
     },
     edgeKind(node, target) {
+      // Setters and getters alike depend on a context: its value type is what they agree on (ADR 0021).
+      if (target.kind === "context" && target.framework === "svelte") return "uses-context";
       if (target.framework !== "svelte" || target.kind !== "component") return undefined;
       // svelte2tsx turns `<PriceTag … />` into `__sveltets_2_ensureComponent(PriceTag)`, and a closing `</PriceTag>` into a bare `PriceTag;`.
       const parent = node.parent;

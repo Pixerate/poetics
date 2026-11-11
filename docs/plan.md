@@ -94,6 +94,7 @@ Both adapters feed the same TypeScript type checker, so a Svelte component calli
 - **Interface, Svelte 5:** the type of the `$props()` destructure, including callback props and snippet props.
 - **Interface, Svelte 4:** `export let` declarations, `createEventDispatcher` event types, and named slots. Supporting both keeps mixed-version codebases working during migration.
 - **Edges:** components used in markup, functions called in template expressions and `{@render}` targets all resolve through the generated TSX.
+- **Contexts:** what `createContext()` from `svelte` returns, and an exported key that its own module passes to `setContext` or `getContext`, are `context` units whose interface is the value type; setting or reading one is a `uses-context` edge. A literal string key is not tracked ([ADR 0021](decisions/0021-svelte-context-units.md)).
 - **`.svelte.ts` files** with runes are indexed as ordinary TypeScript modules, with the runes typed through svelte2tsx's shims.
 - **Rune helpers:** a function in a rune module or a component's script whose own body calls `$state`, `$derived` or `$effect` (or a variant such as `$derived.by`) is a `hook` unit with `framework: "svelte"`, the kind React's `use*` functions have, since both are functions that hand callers reactive state (#73). Calls to one are `uses-hook` edges. Detection is syntactic: a function that only returns another helper's state, without calling a rune itself, stays a `function`.
 

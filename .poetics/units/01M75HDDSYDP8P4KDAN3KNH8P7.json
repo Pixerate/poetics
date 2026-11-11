@@ -1,0 +1,46 @@
+{
+  "uid": "01M75HDDSYDP8P4KDAN3KNH8P7",
+  "kind": "function",
+  "framework": "none",
+  "name": "svelteContextSignature",
+  "location": {
+    "file": "packages/adapter-svelte/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:839ecbf5ab6723805b81d7d24c16d23f72224fe65d5764c3099e5b98fd008fdb",
+      "interfaceHash": "b3:e100e4c58c39ba54f384bbd6e4e27d468280ad92b0bf589e41801960fdeb18ab",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A Svelte context's interface (ADR 0021, #74): the value type setters give and getters read, with no default since Svelte has none. For createContext<T>, T as written or as the getter returns it; for a key, the type its own module's setContext/getContext calls write or give.",
+      "deps": {
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:dd7f34dffbb027cb9dfdaf869d5d1d72b78e27c06d79d7e52e94bf331d7a5412",
+        "01M6HNRFMKWZ43X614N1PYFS0S": "b3:8935e9214a1c1201442baab7e3ec53045191eeeaa941c5c08fac299e9ad983e0",
+        "01M6ME83DBQ587PPY9D0A4T6M3": "b3:ce113f0c9f1166b5261da3b08b781439dc518d14c3fefab1b573426cb57b0cf6"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#74"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0021-svelte-context-units.md"
+        }
+      ]
+    }
+  ],
+  "docs": "A Svelte context's interface (ADR 0021): the type of the value setters give and getters read, with no default,\nsince Svelte has none. For `createContext<T>()`, `T` as written or as its getter returns it. For a key, the type\nwritten on its `setContext`/`getContext` calls in its own module, or the type of the values its `setContext`\ncalls there give; `unknown` when they say nothing.",
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}
