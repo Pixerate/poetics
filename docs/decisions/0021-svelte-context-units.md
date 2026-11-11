@@ -1,6 +1,6 @@
 # 0021. Svelte contexts are context units, keyed by what declares them
 
-- Status: Proposed
+- Status: Accepted (2026-11-11)
 - Date: 2026-11-11
 
 ## Context
