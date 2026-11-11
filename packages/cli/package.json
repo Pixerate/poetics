@@ -1,6 +1,6 @@
 {
   "name": "@poetics/cli",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "The poetics command-line interface, with --json output for agents.",
   "license": "MIT",
   "type": "module",
