@@ -2,16 +2,16 @@ import ts from "typescript";
 import { describe, expect, it } from "vitest";
 import { contentHash, interfaceHash } from "@poetics/core";
 import { contentTree, detectUnits, edgesOf, signatureOf, signatureText } from "./units.ts";
-import type { DetectedUnit } from "./units.ts";
+import type { DetectedUnit, FrameworkPlugin } from "./units.ts";
 import { createTypeScriptIndexer } from "./indexer.ts";
 import { makeProject } from "./test-helpers.ts";
 
 const detect = (code: string, file = "src/a.ts") => detectUnits(ts.createSourceFile(file, code, ts.ScriptTarget.Latest, true), file);
 
 /** Indexes one or more files and returns their units by name. */
-function indexed(files: Record<string, string>) {
+function indexed(files: Record<string, string>, plugins: FrameworkPlugin[] = []) {
   const root = makeProject(files);
-  const { units } = createTypeScriptIndexer({ root, files: Object.keys(files) }).index();
+  const { units } = createTypeScriptIndexer({ root, files: Object.keys(files), plugins }).index();
   return new Map(units.map((unit) => [unit.key.split("#")[1]!, unit]));
 }
 
@@ -172,6 +172,28 @@ describe("signatureText", () => {
     expect(text(`export function f(a: string): string;\nexport function f(a: number): number;\nexport function f(a: any) { return a; }`)).toEqual([
       "export function f(a: string): string;\nexport function f(a: number): number;",
     ]);
+  });
+});
+
+describe("detectUnits with array-destructured values", () => {
+  // As Svelte's plugin claims `const [get, set] = createContext()` (ADR 0021).
+  const plugin = { framework: "svelte" as const, value: (d: ts.VariableDeclaration) => (d.initializer && ts.isCallExpression(d.initializer) && d.initializer.expression.getText() === "pair" ? ("context" as const) : undefined) };
+
+  it("makes one unit named after the first element, with every element as an alias, only when a plugin claims it", () => {
+    const code = "export const [getUser, setUser] = pair();\nexport const [a, b] = other();\nconst [getHidden] = pair();\n";
+    const source = ts.createSourceFile("src/a.ts", code, ts.ScriptTarget.Latest, true);
+    const units = detectUnits(source, "src/a.ts", [plugin]);
+    expect(units.map((u) => [u.key, u.kind, u.framework])).toEqual([["src/a.ts#getUser", "context", "svelte"]]);
+    expect(units[0]!.aliases!.map((e) => (e as ts.BindingElement).name.getText())).toEqual(["getUser", "setUser"]);
+    expect(detectUnits(source, "src/a.ts")).toEqual([]);
+  });
+
+  it("resolves uses of any element to the one unit", () => {
+    const units = indexed({
+      "src/ctx.ts": "declare function pair(): [() => number, (n: number) => void];\nexport const [getCount, setCount] = pair();\n",
+      "src/use.ts": 'import { getCount, setCount } from "./ctx.ts";\nexport function bump() {\n  setCount(getCount() + 1);\n}\n',
+    }, [plugin]);
+    expect(units.get("bump")!.edges).toEqual([{ to: "src/ctx.ts#getCount", kind: "calls" }]);
   });
 });
 

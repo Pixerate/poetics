@@ -22,4 +22,16 @@ describe("pluginsFor", () => {
       ["useToggle", "hook", "react"],
     ]);
   });
+
+  it("records Svelte's createContext as a Svelte context when both adapters are on (ADR 0021)", () => {
+    const root = mkdtempSync(join(tmpdir(), "poetics-frameworks-"));
+    writeFileSync(join(root, "user.ts"), 'import { createContext } from "svelte";\nexport const [getUser, setUser] = createContext<string>();\n');
+    writeFileSync(join(root, "theme.tsx"), 'import { createContext } from "react";\nexport const Theme = createContext("light");\n');
+    const plugins = pluginsFor({ adapters: ["typescript", "react", "svelte"] });
+    const units = createTypeScriptIndexer({ root, files: ["user.ts", "theme.tsx"], plugins }).index().units;
+    expect(units.map((unit) => [unit.name, unit.kind, unit.framework])).toEqual([
+      ["getUser", "context", "svelte"],
+      ["Theme", "context", "react"],
+    ]);
+  });
 });

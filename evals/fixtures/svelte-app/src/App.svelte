@@ -2,6 +2,9 @@
   import { createCart } from "./lib/cart.svelte.ts";
   import PriceTag from "./lib/PriceTag.svelte";
   import LegacyNote from "./lib/LegacyNote.svelte";
+  import { setShop } from "./lib/shop.ts";
+
+  const shop = setShop({ name: "Poetics fixture shop", currency: "GBP" });
 
   const cart = createCart([
     { sku: "TEE-1", name: "T-shirt", priceMinor: 2000, salePriceMinor: 1500, quantity: 1 },
@@ -10,7 +13,7 @@
 </script>
 
 <main>
-  <h1>Poetics fixture shop</h1>
+  <h1>{shop.name}</h1>
   <ul>
     {#each cart.lines as line (line.sku)}
       <li>{line.name} × {line.quantity}: <PriceTag amountMinor={line.priceMinor} saleAmountMinor={line.salePriceMinor} /></li>

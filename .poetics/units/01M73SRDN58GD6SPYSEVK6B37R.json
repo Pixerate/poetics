@@ -72,6 +72,42 @@
           "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:bc53f486523f7c7e1d536796651ac195221380286ee45fffa5e7efb4e1b146dc",
+      "interfaceHash": "b3:43e77cfadc5577e5f2787e65d619c9e6fc104a83bfdd3b253a42e10d1d07d8f4",
+      "parent": "b3:aa3ae42a18d8f8d75cfb21cc6807c55c204eb50178f3484de7405741edc89b9b",
+      "change": "behaviour",
+      "rationale": "Passes a context claim to the module script's detection, so a context a component's <script module> exports, such as a createContext pair, is a context unit of its file (ADR 0021, #74).",
+      "deps": {
+        "01M73SRDN5CTXWFGKNB2G3404A": "b3:2c25020520e7dd2163730a4fb56e388b0c884fcf1429f96063b80ae4d8441216",
+        "01M5Z1F6MT6KFRP1T02GX9TZ4F": "b3:8c6a252c19586ceac3a640ea1c676096a2dc3b9560277269124601fa94952864",
+        "01M73SRDN5FH57E7YM7MCP8NW1": "b3:adb7846daa8c17e6c57f93a311756ce37333d5173d3286a4bcd5a6c1145c415d",
+        "01M75A95V3JXN2BADGRPYG0RRH": "b3:1042d619bb16c14b7ce4e3e4825ee43748137c82c22b4cb2fc47c77f1d899b32",
+        "01M73SRDN4XTANXDSC7PD4D882": "b3:7eba5a9875e82e24ba34440ec88b1cd89e35b4ceca0b2a791d5a0032bbb8298a",
+        "01M75HDDSYPFDM6ND1NPY1X06B": "b3:ade17e57fc5dbedb2a120d664a858b607713576d95525498b2d72edd9165ef21",
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:dd7f34dffbb027cb9dfdaf869d5d1d72b78e27c06d79d7e52e94bf331d7a5412",
+        "01M73SRDN5MTY9HZ3XBRQ9WJG1": "b3:980e655943e1a6ab73488f8a049c9649074a2f926d877889e8dce99a1141ab01",
+        "01M6HNRFMKW8GXW0YMCVY67N4A": "b3:1d24ec831164b4800ab2ef100dd1b4e382fdc4d1ec5d5ce599f8eab5ccd7c43c",
+        "01M6HNRFMKSSPK73VN3DNDX6B3": "b3:e400026690da0e7ecccfabaa530549d249d25426b644f53ef479183113224f97",
+        "01M6HYTZKT7RKWE7EFQ74ASSN8": "b3:aa673e5faac465803b12d6cd059d5d9243b72699f9872ca33512d5281f660a89"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#74"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0021-svelte-context-units.md"
+        }
+      ]
     }
   ],
   "docs": "A component's units: the component itself, spanning the whole file,\nanything its module script exports, with spans mapped back to the file, and\nthe functions its scripts declare without exporting, owned by the component.",
