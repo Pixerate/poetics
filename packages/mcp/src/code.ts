@@ -57,7 +57,7 @@ export function joinCode(
   const uidOfKey = new Map<string, Uid>();
   const missing: Uid[] = [];
   for (const unit of units) {
-    if (isRemoved(unit) || unit.owner !== undefined) continue;
+    if (isRemoved(unit)) continue;
     const code = byPlace.get(place(unit.location.file, unit.name, unit.kind));
     if (code) {
       byUid.set(unit.uid, code);

@@ -1,0 +1,31 @@
+{
+  "uid": "01M758V5EMJ3M51NFNYZ4FNYA1",
+  "kind": "function",
+  "framework": "none",
+  "name": "unitName",
+  "location": {
+    "file": "site/src/components/Notes.svelte"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:08e53c4db59e81e0562f1544948528e55bab0388375104e81aca2afe32ebefd2",
+      "interfaceHash": "b3:49278b2e88cfffb1e8f8e60fb64d69cc4c5e29da9f6a07ef07ae0a05e935a417",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Recorded when the Svelte adapter began tracking functions declared in a component's script as child units (#72). Shows a note's unit by name, falling back to its uid.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#72"
+        }
+      ]
+    }
+  ],
+  "owner": "01M73SRDN5JVTDZ7HG7VR7XK1V"
+}

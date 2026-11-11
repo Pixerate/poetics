@@ -181,3 +181,25 @@ describe("codeView with React", () => {
     expect(view.graph.edges).toEqual([{ from: units[1]!.uid, to: units[0]!.uid, kind: "renders" }]);
   });
 });
+
+describe("codeView with Svelte", () => {
+  it("joins functions in a component's script to the units it owns (#72)", async () => {
+    const root = await mkdtemp(join(tmpdir(), "poetics-mcp-svelte-"));
+    await write(root, ".poetics/config.json", JSON.stringify({ version: 1, adapters: ["typescript", "svelte"], include: ["src/**/*.svelte"] }));
+    await write(root, "src/Counter.svelte", `<script lang="ts">\n  let count = $state(0);\n  function bump() {\n    count += 1;\n  }\n</script>\n\n<button onclick={bump}>{count}</button>\n`);
+    const component: Unit = {
+      uid: "01JB8K000000000000000000S0",
+      kind: "component",
+      framework: "svelte",
+      name: "Counter",
+      location: { file: "src/Counter.svelte", export: "default" },
+      versions: [{ contentHash: `b3:${"0".repeat(64)}`, parent: null, change: "created", actor: { kind: "human" }, rationale: "Counter" }],
+    };
+    const bump: Unit = { ...component, uid: "01JB8K000000000000000000S1", kind: "function", framework: "none", name: "bump", owner: component.uid, location: { file: "src/Counter.svelte" } };
+    const view = await codeView(root, [component, bump]);
+    expect(view.untracked).toEqual([]);
+    expect(view.missing).toEqual([]);
+    expect(view.linesOf(view.byUid.get(bump.uid)!)).toEqual({ startLine: 3, endLine: 5 });
+    expect(view.graph.edges).toEqual([{ from: component.uid, to: bump.uid, kind: "calls" }]);
+  });
+});

@@ -48,7 +48,7 @@ export function compareCodeWithStore(
   const findings: DriftFinding[] = [];
   const byKey = new Map<string, Unit>();
   for (const unit of units) {
-    if (unit.owner !== undefined || isRemoved(unit)) continue;
+    if (isRemoved(unit)) continue;
     const k = key(unit.location.file, unit.location.export ?? unit.name);
     const existing = byKey.get(k);
     if (existing) {

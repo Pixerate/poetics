@@ -5,8 +5,10 @@ description: Use when creating or editing Svelte components or .svelte.ts rune m
 
 # Svelte components the adapter can read
 
-Each `.svelte` file is one component unit. Functions in its `<script>` are
-child units with `owner` set to the component's uid.
+Each `.svelte` file is one component unit. Functions its scripts declare
+without exporting (`function x() {}` or `const x = () => {}`) are child units
+with `owner` set to the component's uid. Editing one records a version of it
+and of the component: give each its own rationale.
 
 - **Svelte 5 for new code.** Type `$props()` with a named type:
   `let { amount, onSelect }: PriceTagProps = $props();`. That type is the

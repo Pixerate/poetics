@@ -33,6 +33,36 @@
         "01M5XDBC898NK9SFW67483HRZP": "b3:e7700ce887b5ee465cedbcd55a226dbc989c7aad2a73e4e5bfb5545b86880520",
         "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981"
       }
+    },
+    {
+      "contentHash": "b3:9b18bb5cd3af69e7ecb5d3e356b4447e8a7186f808033a6c0b7236dfde58c61b",
+      "interfaceHash": "b3:e3e374343aad64e8d0461e6a3cf7008b899f8458671c0ecb478097b0fd5aa4fb",
+      "parent": "b3:c84e0bd900761ef7ebbbbee9b23a2b3b4d4efbdfc0112ef955ffd9ee7ca6e618",
+      "change": "interface",
+      "rationale": "Takes the owner the unit moves under and clears it when none is given, since owner is part of where a unit is: a function moved out of a component's script has none (#72).",
+      "deps": {
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC777RN8YV0NBHRBXR3Y": "b3:c728ec79ae2af36596a032d15eca00fa56ff655bde1dfe678b1717b84a191eef",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M5XDBC8407QXDZJZG6GGWVT1": "b3:63f5e0e2ddcc3214d18ad97176b1affad1db318f2344faf5df2b085f48ae9246",
+        "01M5XDBC898NK9SFW67483HRZP": "b3:e7700ce887b5ee465cedbcd55a226dbc989c7aad2a73e4e5bfb5545b86880520",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC88CMF854R75G7BYSSG": "b3:627d4c9245f05b016bc0b027245ee463a6644f23fdf8b4876bd559ac71b44709",
+        "01M5XDBC8GZ5WSS0KJMF08SPJ9": "b3:d8ec2c1af3288dbe92e7066f79bba2940e4e914ce93c32d1dfe17df754df2c36",
+        "01M5XDBC8J6X886TQM2BP73D20": "b3:d920fe27bfd4b3709078fdbc9efa589ffb45a4f4857d0461be9e1ab26f6c8603"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#72"
+        }
+      ]
     }
   ],
   "docs": "Records that a unit now lives at `to`, appending the lineage entries that say\nhow it got there. Versions are untouched; a move with no lineage is refused,\nsince identity must never rest on an unexplained change of place.",

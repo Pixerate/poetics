@@ -53,6 +53,58 @@ describe("planIndex and applyIndex", () => {
     expect(again).toMatchObject({ fresh: 1, created: [], removed: [] });
   });
 
+  it("records functions in a component's script as units it owns, and an edit to one as a version of it and of its component (#72)", async () => {
+    const root = await mkdtemp(join(tmpdir(), "poetics-index-svelte-"));
+    runGit(root, "init", "-q", "-b", "main");
+    const config = { adapters: ["typescript", "svelte"], include: ["src/**/*.{ts,svelte}"] };
+    await write(root, ".poetics/config.json", JSON.stringify({ version: 1, ...config }));
+    await write(root, ".gitignore", ".poetics/cache/\n");
+    const counter = `<script lang="ts">\n  let count = $state(0);\n  function bump(by: number) {\n    count += by;\n  }\n  function reset() {\n    count = 0;\n  }\n</script>\n\n<button onclick={() => bump(1)}>{count}</button>\n`;
+    await write(root, "src/Counter.svelte", counter);
+    await applyIndex(root, await planIndex(root, config, { rationale: "Seed" }), human);
+    runGit(root, "add", "-A");
+    runGit(root, "commit", "-q", "-m", "Seed");
+    const seededUnits = await store(root);
+    const component = seededUnits.get("Counter")!;
+    expect(seededUnits.get("bump")).toMatchObject({ kind: "function", owner: component.uid, location: { file: "src/Counter.svelte" } });
+    expect(seededUnits.get("reset")!.owner).toBe(component.uid);
+    // The component's version names its children's hashes, called from its markup or not.
+    expect(Object.keys(component.versions[0]!.deps ?? {}).sort()).toEqual([seededUnits.get("bump")!.uid, seededUnits.get("reset")!.uid].sort());
+    expect(await planIndex(root, config)).toMatchObject({ fresh: 3, created: [], versions: [] });
+
+    await write(root, "src/Counter.svelte", counter.replace("count += by;", "count += by * 2;"));
+    const plan = await planIndex(root, config, { rationale: "Bump twice as fast" });
+    expect(plan.versions.map((v) => [v.key, v.version.change])).toEqual([
+      ["src/Counter.svelte#Counter", "behaviour"],
+      ["src/Counter.svelte#bump", "behaviour"],
+    ]);
+    const bump = plan.versions.find((v) => v.key.endsWith("#bump"))!;
+    const own = plan.versions.find((v) => v.key.endsWith("#Counter"))!;
+    expect(own.version.deps![bump.uid]).toBe(bump.version.contentHash);
+  });
+
+  it("clears a script function's owner when it moves out of the component (#72)", async () => {
+    const root = await mkdtemp(join(tmpdir(), "poetics-index-svelte-"));
+    runGit(root, "init", "-q", "-b", "main");
+    const config = { adapters: ["typescript", "svelte"], include: ["src/**/*.{ts,svelte}"] };
+    await write(root, ".poetics/config.json", JSON.stringify({ version: 1, ...config }));
+    await write(root, ".gitignore", ".poetics/cache/\n");
+    const body = "function double(n: number): number {\n    const twice = n * 2;\n    return twice;\n  }";
+    await write(root, "src/Twice.svelte", `<script lang="ts">\n  ${body}\n</script>\n\n<p>{double(2)}</p>\n`);
+    await applyIndex(root, await planIndex(root, config, { rationale: "Seed" }), human);
+    runGit(root, "add", "-A");
+    runGit(root, "commit", "-q", "-m", "Seed");
+    const uid = (await store(root)).get("double")!.uid;
+    await write(root, "src/double.ts", `export ${body}\n`);
+    await write(root, "src/Twice.svelte", `<script lang="ts">\n  import { double } from "./double.ts";\n</script>\n\n<p>{double(2)}</p>\n`);
+    const plan = await planIndex(root, config, { rationale: "Share double" });
+    expect(plan.moves.map((m) => [m.uid, m.to])).toEqual([[uid, { file: "src/double.ts", name: "double" }]]);
+    await applyIndex(root, plan, human);
+    const moved = (await store(root)).get("double")!;
+    expect(moved.owner).toBeUndefined();
+    expect(moved.location).toEqual({ file: "src/double.ts" });
+  });
+
   it("creates units for new code, with docs, hashes, deps and sibling tests", async () => {
     const root = await seeded({
       "src/price.ts": `/** Formats cents. */\n${PRICE}`,

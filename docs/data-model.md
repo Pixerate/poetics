@@ -14,6 +14,23 @@ type. It has three identifiers:
 A unit's **closure hash** also covers everything it depends on, so a component's
 closure version changes when any function it uses changes.
 
+### Owned units
+
+A unit declared inside another one has `owner` set to that unit's uid. Today
+that means a function a Svelte component's `<script>` or `<script module>`
+declares without exporting (#72); what a module script exports is a unit of its
+own, with no owner. An owned unit is named and placed like any other
+(`location.file` is the component's file, with no `export`), has its own content
+and interface hashes, taken from the function as written, and its own versions.
+
+An edit to an owned unit is also an edit to its owner, since the owner's
+content hash covers its whole source. So one edit records two versions: one of
+the function and one of the component, and the component's version lists each
+of its children in `deps` with the content hash it had, whether the markup
+calls it or not. That is how a component's version names the child versions it
+contains. A child moved out of its component (into a `.ts` file, say) keeps its
+uid and loses its `owner`; one moved into a component gains it.
+
 ## Versions
 
 `versions` is an append-only array, oldest first. Each entry has:
