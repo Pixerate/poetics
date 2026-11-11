@@ -7,7 +7,7 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import ts from "typescript";
 import { svelte2tsx } from "svelte2tsx";
-import { detectUnits, normaliseNode } from "@poetics/adapter-typescript";
+import { contentTree, detectUnits, normaliseNode, signatureText } from "@poetics/adapter-typescript";
 import type { DetectedUnit, FrameworkPlugin, NormalTree, Signature, Transformed, TypeText } from "@poetics/adapter-typescript";
 import { offsetMapper } from "./source-map.ts";
 
@@ -42,7 +42,7 @@ const require = createRequire(import.meta.url);
 const SVELTE2TSX_VERSION = (JSON.parse(readFileSync(require.resolve("svelte2tsx/package.json"), "utf8")) as { version: string }).version;
 
 /** Bumped when the plugin's own rules change what it records; svelte2tsx's version is added to it. */
-const RULES = 3;
+const RULES = 4;
 
 const SCRIPT = /<script(\s[^>]*)?>([\s\S]*?)<\/script\s*>/gi;
 
@@ -51,6 +51,8 @@ interface ScriptBlock {
   module: boolean;
   start: number;
   end: number;
+  /** Where `body` starts in the component's text. */
+  bodyStart: number;
   body: string;
 }
 
@@ -61,6 +63,7 @@ function scriptBlocks(text: string): ScriptBlock[] {
       module: /\bmodule\b|context\s*=\s*["']module["']/.test(attributes),
       start: m.index!,
       end: m.index! + m[0].length,
+      bodyStart: m.index! + `<script${attributes}>`.length,
       body: m[2] ?? "",
     };
   });
@@ -171,8 +174,9 @@ function defaultExport(source: ts.SourceFile): ts.VariableDeclaration | ts.Class
 }
 
 /**
- * A component's units: the component itself, spanning the whole file, and
- * anything its module script exports, with spans mapped back to the file.
+ * A component's units: the component itself, spanning the whole file,
+ * anything its module script exports, with spans mapped back to the file, and
+ * the functions its scripts declare without exporting, owned by the component.
  */
 export function detectComponent(source: ts.SourceFile, file: string, original: string, transformed: Transformed): DetectedUnit[] {
   const units: DetectedUnit[] = [];
@@ -201,6 +205,68 @@ export function detectComponent(source: ts.SourceFile, file: string, original: s
     const end = transformed.toOriginal(unit.span.end);
     if (start === undefined) continue;
     units.push({ ...unit, span: { file, start, end: Math.max(start, end ?? start) } });
+  }
+  if (component) units.push(...scriptFunctions(source, file, original, `${file}#${name}`, new Set(units.map((unit) => unit.name))));
+  return units;
+}
+
+/** A function declaration, or a variable statement whose one declaration holds a function. */
+function declaredFunction(statement: ts.Statement): { name: string; declaration: ts.FunctionDeclaration | ts.VariableDeclaration } | undefined {
+  if (ts.isFunctionDeclaration(statement) && statement.name && statement.body) return { name: statement.name.text, declaration: statement };
+  if (!ts.isVariableStatement(statement) || statement.declarationList.declarations.length !== 1) return undefined;
+  const declaration = statement.declarationList.declarations[0]!;
+  let value = declaration.initializer;
+  while (value && (ts.isParenthesizedExpression(value) || ts.isAsExpression(value) || ts.isSatisfiesExpression(value))) value = value.expression;
+  if (!ts.isIdentifier(declaration.name) || !value || !(ts.isArrowFunction(value) || ts.isFunctionExpression(value))) return undefined;
+  return { name: declaration.name.text, declaration };
+}
+
+/**
+ * The functions a component's scripts declare without exporting, as child units
+ * owned by it (#72). Each is found twice: in the script as written, which gives
+ * its span, docs and content hash, and in svelte2tsx's output, which the checker
+ * reads for its signature and edges. Instance-script functions sit in the render
+ * function svelte2tsx generates; module-script functions at its top level.
+ */
+function scriptFunctions(source: ts.SourceFile, file: string, original: string, owner: string, taken: ReadonlySet<string>): DetectedUnit[] {
+  const render = source.statements.find((s): s is ts.FunctionDeclaration => ts.isFunctionDeclaration(s) && s.name?.text === "$$render");
+  const generated = (module: boolean) => {
+    const found = new Map<string, ts.FunctionDeclaration | ts.VariableDeclaration>();
+    for (const statement of module ? source.statements : (render?.body?.statements ?? [])) {
+      const fn = declaredFunction(statement);
+      if (fn && !isExported(statement)) found.set(fn.name, fn.declaration);
+    }
+    return found;
+  };
+  const units: DetectedUnit[] = [];
+  const seen = new Set(taken);
+  for (const block of scriptBlocks(original)) {
+    const written = ts.createSourceFile("script.ts", block.body, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+    const inGenerated = generated(block.module);
+    for (const statement of written.statements) {
+      const fn = declaredFunction(statement);
+      if (!fn || isExported(statement) || seen.has(fn.name)) continue;
+      const declaration = inGenerated.get(fn.name);
+      if (!declaration) continue;
+      seen.add(fn.name);
+      // The hashes and the signature text come from the script as written, the same trees a function in a .ts file gives.
+      const asWritten: DetectedUnit = { key: "", name: fn.name, kind: "function", span: { file, start: 0, end: 0 }, declarations: [fn.declaration], framework: "none" };
+      const unit: DetectedUnit = {
+        key: `${file}#${fn.name}`,
+        name: fn.name,
+        kind: "function",
+        span: { file, start: block.bodyStart + statement.getStart(written), end: block.bodyStart + statement.end },
+        declarations: [declaration],
+        framework: "none",
+        content: { tree: contentTree(asWritten), runtime: contentTree(asWritten, true) },
+        signatureText: signatureText(asWritten, written),
+        owner,
+      };
+      const docs = ts.getJSDocCommentsAndTags(statement).find(ts.isJSDoc);
+      const text = docs ? ts.getTextOfJSDocComment(docs.comment)?.trim() : undefined;
+      if (text) unit.docs = text;
+      units.push(unit);
+    }
   }
   return units;
 }

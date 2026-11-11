@@ -349,6 +349,62 @@
           "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:37befd4a71e67c2721a5c6d4a2cc3eed6d4bea947288b5f17b28618218c49f63",
+      "interfaceHash": "b3:a04df6aa2c2960b718e71b9ae318240cd7d023cd673a7777305e8402ba650d57",
+      "parent": "b3:881725fe713acb9f1bc84c9ec6b17ced636a598a2c580da861027992912d45ef",
+      "change": "behaviour",
+      "rationale": "Indexes owned units, records each new one's owner by uid, carries the owner through moves, and lists a unit's children in its version's deps, so a component's version names the child versions it contains (#72).",
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:9d50a5bc83981531e65f1542461ae5c20d8d8b79151d4abce76d76ea9672a184",
+        "01M6HNRFMK1WQP8F6MRK9FMJY0": "b3:67117641da7d54b36f45edaf64675c7f9d6191ffdbe33ca2d0b0f77573d6c132",
+        "01M6HS3HPGSA1NB2JTM6ZM903R": "b3:dbb56abfafffa1a6af99b5f802532bed33a61a89ad8e7a7bbdb12c4f73443a5e",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:edb73add1559c280c4dcdceb5f3f6bf3dbf06d95ad7a8ce70316aef31405ac59",
+        "01M6HNRFMKW8GXW0YMCVY67N4A": "b3:1d24ec831164b4800ab2ef100dd1b4e382fdc4d1ec5d5ce599f8eab5ccd7c43c",
+        "01M73SYHXDKHFFGXMW34YR7Y3P": "b3:52a252893ddce32174861c7cd65a2c4b4b46efd416d1dd5410ee9607286a8f2b",
+        "01M6ME83DBRXTEJAFTHD4TY1R0": "b3:e785e7902ae83fdddf735d45dcfccf08fe6bac9d6525091d4d11599921e0bf1f",
+        "01M5Z1F6NSEZG78RH31S5GZANP": "b3:6f1bd4d062f93cf88e1b3e890edcadcbb79a8311e3f82efce3a6250f7308a575",
+        "01M5Z1F6NP3C1KG9NNND31TPSJ": "b3:dd4eb578ac15dbcb0dcf9645b932f78a8a124faebe26255799f186266636ddbb",
+        "01M5Z1F6NQR9T376HTSH2ZYP8C": "b3:85859a81a9f157d7de29c1cfe6fed88d978006bd3ed9ea8645bd87f785770203",
+        "01M6HXEYDD4MHGVQEYFBGW2ZHF": "b3:91393e02ffb95d399bb1b3e9b8a7a2493f93eea229fc9f7428a0cf38d4d55998",
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:5c0aec475867a9db35ef70a70161f9506aa95580da3ee4bfa8ebf3ccfd433c7e",
+        "01M6HXEYDEF480EDP3WX2271SV": "b3:947119cca169fc103a36a91b7450ddcaed892d30c2d46f2be86988aa084f60d0",
+        "01M5XDBC6TWJ0A59K9ER71Q88Y": "b3:19dd1d269306d1c7edc17d860a6674f7831d3d232ba7b067020f558ad0488a11",
+        "01M6HS3HPGZVH440C5ZV7AYGMS": "b3:fee65a0014cedc3229df6817f1070051f134600d1d9804f246940a818bf956d0",
+        "01M6HS3HPGWQSVQ3NJ5VJ8WEVV": "b3:a758a3287b7cca85cd56fe02fba2800684980f7cc5add38bc15e193ea8a406e2",
+        "01M6HS3HPGM7XKCBTGKAJ8RCSH": "b3:a8be2a1254b37843e5c66268ede92743b2389cd10ae516755fef228ec00911de",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC71JDZ5ANVBKKB168EW": "b3:15b02c3dbcc5b7c1d93a89f604dbb5aa20e8b6b319338904d3189c6c1305ed69",
+        "01M5XDBC6YYK0M5RPS3YMPYSPM": "b3:a9d8f9922d57a2b242a17ff15b364a707eb1b721d5ced5d96e4ec2f62342087d",
+        "01M5XDBC74RY8DRPAXNTM7KM0W": "b3:2256d971b742e8b5a6ad40714f082f993c4521518fb083ae3238e8e5edc1f79b",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b",
+        "01M5XDBC7FTZ5GY3BX711BWGN6": "b3:3cf0225787144e59edd01ec041de70443d024e2b9e55b22dfceabec9025b44b7",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:f04382f791d67f79900893b6db74030ac78e675b2251f687fcf757012032b781",
+        "01M5Z1F6NV9Q4BF2C1KBZD09MQ": "b3:73bb120c04ff81df07603ebd00c8a7b85a52b560589afe2ec8b7691c4be3c18a",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:a50623c392fe2033d26911146b4a8e6a15556a3e824b0e0f1a7799513f92f113",
+        "01M73SYHXD5TXVNXQN4ZXTNDGT": "b3:42ddd8d193318c2f4e3f78ebede08dc745c70b057e3bbb0e2a16ef4b9784c858"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#72"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
     }
   ],
   "docs": "What poetics index would record: nothing is written until `applyIndex`.",

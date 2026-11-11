@@ -29,6 +29,28 @@
       "deps": {
         "01M5XDBC777RN8YV0NBHRBXR3Y": "b3:c728ec79ae2af36596a032d15eca00fa56ff655bde1dfe678b1717b84a191eef"
       }
+    },
+    {
+      "contentHash": "b3:947119cca169fc103a36a91b7450ddcaed892d30c2d46f2be86988aa084f60d0",
+      "interfaceHash": "b3:a8486952c02700ec5daf2350e03b0ec9273988990ab0cf5f92b27c25a6f6a1c4",
+      "parent": "b3:2626760e870c99f3d56ec520929eeeba2367441ee532e62daeceec10d5c73c70",
+      "change": "interface",
+      "rationale": "Adds owner to where a move goes, so a script function that moves out of its component loses its owner and one that moves in gains it (#72).",
+      "deps": {
+        "01M5XDBC777RN8YV0NBHRBXR3Y": "b3:c728ec79ae2af36596a032d15eca00fa56ff655bde1dfe678b1717b84a191eef"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#72"
+        }
+      ]
     }
   ],
   "docs": "A unit that moved or was renamed, and the lineage that says so.",

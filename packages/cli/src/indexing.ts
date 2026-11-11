@@ -39,7 +39,7 @@ export interface PlannedMove {
   uid: string;
   from: string;
   key: string;
-  to: { file: string; name: string; export?: string };
+  to: { file: string; name: string; export?: string; owner?: string };
   lineage: LineageEntry[];
   via: string;
   score?: number;
@@ -97,7 +97,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     .map(parseUnit)
     .filter((unit) => !isRemoved(unit))
     .sort((a, b) => (a.uid < b.uid ? -1 : 1));
-  const units = live.filter((unit) => unit.owner === undefined && indexable(unit.location.file));
+  const units = live.filter((unit) => indexable(unit.location.file));
 
   const plan: IndexPlan = { base, rationale, fresh: 0, moves: [], versions: [], created: [], removed: [], relinks: [], reclassified: [], queued: [], rejected: [] };
   // A declared unit goes through matching even when its old place still has code, as a split's original does.
@@ -159,6 +159,8 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     if (lineage.length > 0) {
       const to: PlannedMove["to"] = { file: at.span.file, name: at.name };
       if (at.exportedAs !== undefined) to.export = at.exportedAs;
+      const owner = at.owner !== undefined ? uidOfKey.get(at.owner) : undefined;
+      if (owner !== undefined) to.owner = owner;
       const move: PlannedMove = { uid: unit.uid, from: `${unit.location.file}#${unit.name}`, key: at.key, to, lineage, via: match.via };
       if (match.score !== undefined) move.score = match.score;
       plan.moves.push(move);
@@ -167,6 +169,11 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     }
     reclassify(unit, at);
     if (unit.versions.at(-1)!.contentHash !== at.contentHash) pending.push({ unit, at });
+  }
+  // Owners are named by uid, known now that every unit in the code has one.
+  for (const { unit, at } of createdFrom) {
+    const owner = at.owner !== undefined ? uidOfKey.get(at.owner) : undefined;
+    if (owner !== undefined) unit.owner = owner;
   }
   plan.created = createdFrom.map(({ unit }) => unit);
   plan.queued = result.queued;
@@ -180,12 +187,19 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     const found = [...explicit, ...commits.filter((c) => files.some((file) => c.files.has(file))).flatMap((c) => c.links)];
     return found.filter((link, i) => found.findIndex((other) => linkKey(other) === linkKey(link)) === i);
   };
+  // A unit's own children are part of its source, so its version names theirs, whether or not it calls them.
+  const childrenOf = new Map<string, IndexedUnit[]>();
+  for (const unit of code) if (unit.owner !== undefined) childrenOf.set(unit.owner, [...(childrenOf.get(unit.owner) ?? []), unit]);
   const depsOf = (at: IndexedUnit) => {
     const deps: Record<string, Hash> = {};
     for (const edge of at.edges) {
       const uid = uidOfKey.get(edge.to);
       const target = codeByKey.get(edge.to);
       if (uid && target) deps[uid] = target.contentHash;
+    }
+    for (const child of childrenOf.get(at.key) ?? []) {
+      const uid = uidOfKey.get(child.key);
+      if (uid) deps[uid] = child.contentHash;
     }
     return Object.keys(deps).length > 0 ? deps : undefined;
   };

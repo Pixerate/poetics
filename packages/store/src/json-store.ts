@@ -140,7 +140,7 @@ export async function createUnit(ctx: WriteContext, unit: Unit, layout: StoreLay
 export async function relocateUnit(
   ctx: WriteContext,
   uid: string,
-  to: { file: string; name: string; export?: string },
+  to: { file: string; name: string; export?: string; owner?: string },
   lineage: readonly LineageEntry[],
 ): Promise<void> {
   const file = await readUnitFile(ctx.paths, uid);
@@ -152,7 +152,9 @@ export async function relocateUnit(
   if (isRemoved(unit)) fail("its latest version is removed");
   const location: Unit["location"] = { file: to.file };
   if (to.export !== undefined) location.export = to.export;
-  await writeUnit(ctx, file.path, { ...unit, name: to.name, location, lineage: [...(unit.lineage ?? []), ...lineage] }, fail);
+  // A unit's owner is part of where it is: a function moved out of a component's script has none.
+  const { owner: _owner, ...rest } = unit;
+  await writeUnit(ctx, file.path, { ...rest, name: to.name, ...(to.owner !== undefined ? { owner: to.owner } : {}), location, lineage: [...(unit.lineage ?? []), ...lineage] }, fail);
 }
 
 /**

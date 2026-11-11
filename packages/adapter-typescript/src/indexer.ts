@@ -30,6 +30,8 @@ export interface IndexedUnit {
   key: string;
   name: string;
   exportedAs?: string;
+  /** The key of the unit this one is declared inside, such as the Svelte component whose script declares it. */
+  owner?: string;
   kind: UnitKind;
   framework: Framework;
   span: Span;
@@ -63,7 +65,7 @@ export interface TypeScriptIndexer {
 }
 
 // Bump when the shape of cached units or the normalisation changes, so old caches are dropped.
-const CACHE_VERSION = 5;
+const CACHE_VERSION = 6;
 const LOCKFILES = ["pnpm-lock.yaml", "package-lock.json", "yarn.lock", "bun.lock"];
 
 const DEFAULT_OPTIONS: ts.CompilerOptions = {
@@ -185,6 +187,7 @@ function indexUnit(
     unresolved,
   };
   if (unit.exportedAs !== undefined) indexed.exportedAs = unit.exportedAs;
+  if (unit.owner !== undefined) indexed.owner = unit.owner;
   if (unit.docs !== undefined) indexed.docs = unit.docs;
   return indexed;
 }

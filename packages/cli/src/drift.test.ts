@@ -85,14 +85,13 @@ describe("compareCodeWithStore", () => {
     expect(drift.findings).toEqual([]);
   });
 
-  it("matches default exports by location.export and skips owned units", () => {
-    const drift = compareCodeWithStore(
-      [decl("default")],
-      [unit(U1, "Page", h("1"), "src/a.ts", { location: { file: "src/a.ts", export: "default" } }), unit(U2, "inner", h("1"), "src/a.ts", { owner: U1 })],
-      all,
-    );
+  // Owned units were skipped while no adapter detected them; Svelte script functions are now detected (#72), so they are compared like any unit.
+  it("matches default exports by location.export, and owned units by name like any other", () => {
+    const units = [unit(U1, "Page", h("1"), "src/a.ts", { location: { file: "src/a.ts", export: "default" } }), unit(U2, "inner", h("1"), "src/a.ts", { owner: U1 })];
+    const drift = compareCodeWithStore([decl("default"), decl("inner")], units, all);
     expect(drift.findings).toEqual([]);
-    expect(drift.fresh).toBe(1);
+    expect(drift.fresh).toBe(2);
+    expect(compareCodeWithStore([decl("default")], units, all).findings).toMatchObject([{ kind: "orphaned", uid: U2 }]);
   });
 
   it("matches a named default export, such as a Svelte component, by the name it is exported as", () => {

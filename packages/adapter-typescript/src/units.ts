@@ -32,6 +32,8 @@ export interface DetectedUnit {
   content?: { tree: NormalTree; runtime: NormalTree };
   /** What a caller reads, when the declarations are generated code. */
   signatureText?: string;
+  /** The key of the unit this one is declared inside, such as a function in a Svelte component's script. */
+  owner?: string;
 }
 
 /**
@@ -320,7 +322,13 @@ export function edgesOf(
   const source = unit.declarations[0]!.getSourceFile();
   const helpers = new Set<ts.Node>();
   const visit = (node: ts.Node, root: ts.Node) => {
-    if (ts.isIdentifier(node) && !own.has(node)) {
+    // Another unit declared inside this one, such as a function in a component's script, uses things through its own edges.
+    if (node !== root && (ts.isFunctionDeclaration(node) || ts.isVariableDeclaration(node))) {
+      const inner = unitAt(node);
+      if (inner && inner !== unit) return;
+    }
+    // A declaration's own name defines it rather than using it: a component's walk passes the functions its script declares.
+    if (ts.isIdentifier(node) && !own.has(node) && !isDeclarationName(node)) {
       const symbol = resolve(node, checker);
       const targets = new Set((symbol?.declarations ?? []).map(unitAt).filter((target) => target !== undefined));
       for (const target of targets) {
@@ -363,6 +371,11 @@ function privateHelper(declaration: ts.Declaration, source: ts.SourceFile, plugi
   if (ts.isFunctionDeclaration(declaration) && declaration.body && ts.isSourceFile(declaration.parent)) return declaration;
   if (ts.isVariableDeclaration(declaration) && functionOf(declaration, plugins) && ts.isSourceFile(declaration.parent.parent.parent)) return declaration;
   return undefined;
+}
+
+function isDeclarationName(node: ts.Identifier): boolean {
+  const parent = node.parent;
+  return (ts.isFunctionDeclaration(parent) || ts.isVariableDeclaration(parent) || ts.isClassDeclaration(parent) || ts.isInterfaceDeclaration(parent) || ts.isTypeAliasDeclaration(parent)) && parent.name === node;
 }
 
 function resolve(node: ts.Identifier, checker: ts.TypeChecker): ts.Symbol | undefined {

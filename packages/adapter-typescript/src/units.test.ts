@@ -1,7 +1,8 @@
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
 import { contentHash, interfaceHash } from "@poetics/core";
-import { contentTree, detectUnits, signatureOf, signatureText } from "./units.ts";
+import { contentTree, detectUnits, edgesOf, signatureOf, signatureText } from "./units.ts";
+import type { DetectedUnit } from "./units.ts";
 import { createTypeScriptIndexer } from "./indexer.ts";
 import { makeProject } from "./test-helpers.ts";
 
@@ -222,6 +223,32 @@ describe("edgesOf", () => {
   it("does not count recursion or untracked declarations as edges", () => {
     const units = indexed({ "src/a.ts": `const helper = 1;\nexport function f(n: number): number { return n ? f(n - helper) : Math.max(0, n); }` });
     expect(units.get("f")!.edges).toEqual([]);
+  });
+
+  it("stops at a unit declared inside the one it walks, and counts only uses of it, not its declaration (#72)", () => {
+    const code = [
+      `export function helper() {}`,
+      `export function other() {}`,
+      `export function outer() {`,
+      `  function inner() { helper(); }`,
+      `  function unused() { other(); }`,
+      `  return inner;`,
+      `}`,
+    ].join("\n");
+    const root = makeProject({ "src/a.ts": code });
+    const program = ts.createProgram({ rootNames: [`${root}/src/a.ts`], options: { strict: true, noEmit: true } });
+    const source = program.getSourceFile(`${root}/src/a.ts`)!;
+    const checker = program.getTypeChecker();
+    const top = detectUnits(source, "src/a.ts");
+    const body = (top.find((u) => u.name === "outer")!.declarations[0] as ts.FunctionDeclaration).body!.statements;
+    // As a framework plugin such as Svelte's declares them: units owned by the function they sit in.
+    const nested = body.filter(ts.isFunctionDeclaration).map((fn): DetectedUnit => ({ key: `src/a.ts#${fn.name!.text}`, name: fn.name!.text, kind: "function", span: { file: "src/a.ts", start: fn.pos, end: fn.end }, declarations: [fn], framework: "none", owner: "src/a.ts#outer" }));
+    const units = [...top, ...nested];
+    const unitAt = (declaration: ts.Declaration) => units.find((u) => (u.declarations as ts.Declaration[]).includes(declaration));
+    const edges = (name: string) => edgesOf(units.find((u) => u.name === name)!, checker, unitAt).edges;
+    expect(edges("outer")).toEqual([{ to: "src/a.ts#inner", kind: "calls" }]);
+    expect(edges("inner")).toEqual([{ to: "src/a.ts#helper", kind: "calls" }]);
+    expect(edges("unused")).toEqual([{ to: "src/a.ts#other", kind: "calls" }]);
   });
 
   it("records calls that resolve to nothing as unresolved, with their span", () => {

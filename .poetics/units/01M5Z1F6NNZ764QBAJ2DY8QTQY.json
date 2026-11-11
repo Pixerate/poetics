@@ -99,6 +99,33 @@
           "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:01858c5a7e4434f72ec59027f2d11ed15ae15e35ab7dd4496374a9ebf73910a7",
+      "interfaceHash": "b3:d2d1956c9b7817646951f6053f428dde41a5909d80a27c0d347baf2685573bfa",
+      "parent": "b3:fc58c2311acd00f5c2dd70dd2f7b818ca4a33e345391aef05ff077ed7823decb",
+      "change": "behaviour",
+      "rationale": "Compares owned units like any other. They were skipped while no adapter detected them; Svelte script functions are detected now (#72), so skipping them reported them untracked.",
+      "deps": {
+        "01M5Z1F6ND8XM1DD3V2T49XSGD": "b3:9fc05d69431271176899fb4c0582763056c6b96a555ec5082f709bd060a45369",
+        "01M5Z1F6NMW390SQAA6B8HBZ5P": "b3:ab862aea96c09e1aa9b3ed6f33cbe8a3aaa734cd270362a354c29afed80f0a5a",
+        "01M5Z1F6NK819WQ9VN8TJ8PDV8": "b3:1db8162048a7155d352b2a45e7bb49c06c3b9f6988df6765e3fe1a42f62bca62",
+        "01M5XDBC6R15PA0T08670RYQVW": "b3:c7034313ef971387c011fbcdcf06bfe2f467ae890db397d3a5de9836190a5313",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#72"
+        }
+      ]
     }
   ],
   "docs": "Matches declarations to units by file and name (lineage keeps these current across renames and moves). Only units whose file satisfies `covers` can be orphaned: pass the set of files that were scanned, so units for files outside the scan (or that the parser cannot read yet, like .svelte) are left alone. Removed units are history, not code, so they never match: an export that reappears under a removed unit's name gets a new unit.",

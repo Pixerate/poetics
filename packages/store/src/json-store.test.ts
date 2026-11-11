@@ -174,6 +174,15 @@ describe("relocateUnit", () => {
     expect(unit.versions).toEqual(makeUnit(UID_A).versions);
   });
 
+  it("sets the owner the unit moved under, and clears it when the unit moves out", async () => {
+    const root = await makeRepo([makeUnit(UID_A), { ...makeUnit(UID_B), owner: UID_A }]);
+    const ctx = { paths: storePaths(root), actor: human };
+    await relocateUnit(ctx, UID_B, { file: "src/b.ts", name: "fnB" }, [{ kind: "move", from: "src/a.ts" }]);
+    expect((await readUnit(storePaths(root), UID_B)).owner).toBeUndefined();
+    await relocateUnit(ctx, UID_B, { file: "src/a.ts", name: "fnB", owner: UID_A }, [{ kind: "move", from: "src/b.ts" }]);
+    expect((await readUnit(storePaths(root), UID_B)).owner).toBe(UID_A);
+  });
+
   it("refuses a move without lineage, or of a removed unit", async () => {
     const removed = makeUnit(UID_B);
     removed.versions.push({ contentHash: REMOVED_CONTENT_HASH, provisional: true, parent: removed.versions[0]!.contentHash, change: "removed", actor: human, rationale: "Gone." });

@@ -226,6 +226,72 @@ describe("sveltePlugin with the TypeScript indexer", () => {
     expect(APP["src/App.svelte"].slice(label.span.start, label.span.end)).toMatch(/^export function label[\s\S]*\}$/);
   });
 
+  const COUNTER = `<script module lang="ts">
+  /** Clamps a count to the counter's range. */
+  function clamp(n: number, max = 10): number {
+    return Math.min(n, max);
+  }
+</script>
+
+<script lang="ts">
+  import { formatPrice } from "./lib/format-price.ts";
+  let { start = 0 }: { start?: number } = $props();
+  let count = $state(start);
+  const step = (by: number) => {
+    count = clamp(count + by);
+  };
+  function show(): string {
+    return formatPrice(count);
+  }
+  const doubled = $derived(count * 2);
+</script>
+
+<button onclick={() => step(1)}>{show()} {doubled}</button>
+`;
+
+  it("records functions declared in a component's scripts as child units it owns, placed and hashed as written", () => {
+    const root = project({ ...APP, "src/Counter.svelte": COUNTER });
+    const units = byKey(index(root, [...Object.keys(APP), "src/Counter.svelte"]).units);
+    const children = [...units.values()].filter((unit) => unit.owner === "src/Counter.svelte#Counter");
+    expect(children.map((unit) => unit.name).sort()).toEqual(["clamp", "show", "step"]);
+    const clamp = units.get("src/Counter.svelte#clamp")!;
+    expect(clamp).toMatchObject({ kind: "function", framework: "none", docs: "Clamps a count to the counter's range.", startLine: 3, endLine: 5, signatureText: "function clamp(n: number, max = 10): number" });
+    expect(COUNTER.slice(clamp.span.start, clamp.span.end)).toMatch(/^function clamp[\s\S]*\}$/);
+    expect(clamp.signature).toMatchObject({ kind: "function", overloads: [{ parameters: [{ optional: false }, { optional: true, default: ["NumericLiteral", "10"] }], returns: { written: ["NumberKeyword"] } }] });
+    // Edges come from the checker's view: the instance script's functions call each other and other modules.
+    expect(units.get("src/Counter.svelte#step")!.edges).toEqual([{ to: "src/Counter.svelte#clamp", kind: "calls" }]);
+    expect(units.get("src/Counter.svelte#show")!.edges).toEqual([{ to: "src/lib/format-price.ts#formatPrice", kind: "calls" }]);
+    expect(units.get("src/Counter.svelte#show")!.signature).toMatchObject({ overloads: [{ returns: { written: ["StringKeyword"] } }] });
+    // The component uses what its markup calls; what those functions use is theirs.
+    expect(units.get("src/Counter.svelte#Counter")!.edges).toEqual([
+      { to: "src/Counter.svelte#show", kind: "calls" },
+      { to: "src/Counter.svelte#step", kind: "calls" },
+    ]);
+    // Variables holding values, like a $derived, are not units.
+    expect(units.has("src/Counter.svelte#doubled")).toBe(false);
+  });
+
+  it("hashes a script function like the same function in a .ts file, and changes only it and its component when it is edited", () => {
+    const root = project({ ...APP, "src/Counter.svelte": COUNTER, "src/clamp.ts": "function clamp(n: number, max = 10): number {\n  return Math.min(n, max);\n}\nexport { clamp };\n" });
+    const files = [...Object.keys(APP), "src/Counter.svelte", "src/clamp.ts"];
+    const before = byKey(index(root, files).units);
+    expect(before.get("src/Counter.svelte#clamp")!.contentHash).toBe(before.get("src/clamp.ts#clamp")!.contentHash);
+    writeFileSync(join(root, "src/Counter.svelte"), COUNTER.replace("count + by", "count + by * 2"));
+    const after = byKey(index(root, files).units);
+    const changed = [...after.values()].filter((unit) => before.get(unit.key)?.contentHash !== unit.contentHash).map((unit) => unit.key);
+    expect(changed.sort()).toEqual(["src/Counter.svelte#Counter", "src/Counter.svelte#step"]);
+    // Reformatting a function changes nothing.
+    writeFileSync(join(root, "src/Counter.svelte"), COUNTER.replace("const step = (by: number) => {", "const step = (by: number) =>   {"));
+    expect(byKey(index(root, files).units).get("src/Counter.svelte#step")!.contentHash).toBe(before.get("src/Counter.svelte#step")!.contentHash);
+  });
+
+  it("records the functions of a Svelte 4 component's script", () => {
+    const root = project({ "src/Old.svelte": `<script>\n  export let n = 1;\n  function twice() {\n    return n * 2;\n  }\n</script>\n\n<p>{twice()}</p>\n` });
+    const units = byKey(createTypeScriptIndexer({ root, files: ["src/Old.svelte"], plugins: [sveltePlugin({ svelteVersion: "4.2.0" })] }).index().units);
+    expect(units.get("src/Old.svelte#twice")).toMatchObject({ owner: "src/Old.svelte#Old", startLine: 3, endLine: 5 });
+    expect(units.get("src/Old.svelte#Old")!.edges).toEqual([{ to: "src/Old.svelte#twice", kind: "calls" }]);
+  });
+
   it("keeps a component's content hash through reformatting, and changes it with the markup", () => {
     const root = project(APP);
     const before = byKey(index(root).units).get("src/lib/PriceTag.svelte#PriceTag")!;
