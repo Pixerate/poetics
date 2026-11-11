@@ -246,3 +246,67 @@ describe("sveltePlugin with the TypeScript indexer", () => {
     expect(index(root, undefined, cacheFile).stats).toEqual({ cached: 2, indexed: 3 });
   });
 });
+
+const LEGACY = `<script lang="ts">
+  import { createEventDispatcher } from "svelte";
+  export let amount: number;
+  export let currency = "GBP";
+  const dispatch = createEventDispatcher<{ pick: { id: string } }>();
+</script>
+
+<button on:click={() => dispatch("pick", { id: "x" })} on:focus>{amount} {currency}</button>
+<slot />
+<slot name="footer" total={amount} />
+`;
+
+describe("sveltePlugin with Svelte 4 components", () => {
+  const sig = (text: string, svelteVersion?: string) => {
+    const root = project({ "src/Legacy.svelte": text });
+    const plugin = sveltePlugin(svelteVersion ? { svelteVersion } : {});
+    return createTypeScriptIndexer({ root, files: ["src/Legacy.svelte"], plugins: [plugin] }).index().units.find((u) => u.name === "Legacy")!;
+  };
+
+  it("records export let props with their defaults, the events it dispatches or forwards, and its slots", () => {
+    for (const version of ["4.2.19", "5.57.3"]) {
+      const unit = sig(LEGACY, version);
+      expect(unit, version).toMatchObject({ kind: "component", framework: "svelte", exportedAs: "default" });
+      expect(unit.signature, version).toMatchObject({
+        kind: "component",
+        props: { written: ["TypeLiteral", expect.anything(), expect.anything()] },
+        defaults: [{ name: "currency", value: ["StringLiteral", "GBP"] }],
+        events: [
+          { name: "focus", type: { inferred: "FocusEvent" } },
+          { name: "pick", type: { inferred: "CustomEvent<{ id: string; }>" } },
+        ],
+        slots: [
+          { name: "default", props: { inferred: "{}" } },
+          { name: "footer", props: { inferred: "{ total: number; }" } },
+        ],
+      });
+      expect(unit.signatureText).toBe("export let amount: number;\nexport let currency = \"GBP\";");
+    }
+  });
+
+  it("records rendering a component with content as one renders edge", () => {
+    const root = project({
+      "src/Legacy.svelte": LEGACY,
+      "src/Page.svelte": `<script lang="ts">\n  import Legacy from "./Legacy.svelte";\n</script>\n\n<Legacy amount={1}>Hello</Legacy>\n`,
+    });
+    const page = createTypeScriptIndexer({ root, files: ["src/Legacy.svelte", "src/Page.svelte"], plugins: [sveltePlugin()] }).index().units.find((u) => u.name === "Page")!;
+    expect(page.edges).toEqual([{ to: "src/Legacy.svelte#Legacy", kind: "renders" }]);
+  });
+
+  it("changes the interface hash when an event's type or a slot's props change", () => {
+    const before = sig(LEGACY).interfaceHash;
+    expect(sig(LEGACY.replace("{ pick: { id: string } }", "{ pick: { id: number } }")).interfaceHash).not.toBe(before);
+    expect(sig(LEGACY.replace("total={amount}", "total={currency}")).interfaceHash).not.toBe(before);
+    expect(sig(LEGACY.replace('currency = "GBP"', 'currency = "EUR"')).interfaceHash).not.toBe(before);
+  });
+
+  it("leaves events and slots out of a Svelte 5 component's interface", () => {
+    const root = project({ "src/Badge.svelte": `<script lang="ts">\n  let { label }: { label: string } = $props();\n</script>\n\n<b>{label}</b>\n` });
+    const badge = createTypeScriptIndexer({ root, files: ["src/Badge.svelte"], plugins: [sveltePlugin()] }).index().units[0]!;
+    expect(badge.signature).not.toHaveProperty("events");
+    expect(badge.signature).not.toHaveProperty("slots");
+  });
+});

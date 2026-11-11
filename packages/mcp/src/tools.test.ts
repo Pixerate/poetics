@@ -109,7 +109,8 @@ describe("createServer", () => {
     expect(off.missing[0]).toMatch(/turned off for this server/);
   });
 
-  it("answers poetics_changes from the repository's git history", async () => {
+  // With impact, this indexes the whole repository, its Svelte components included; on a cold cache in CI that takes several seconds.
+  it("answers poetics_changes from the repository's git history", { timeout: 30_000 }, async () => {
     const server = createServer({ root: process.cwd() });
     // An empty range: the store's own tests cover what a non-empty one returns.
     await expect(server.callTool("poetics_changes", { from: "HEAD", to: "HEAD" })).resolves.toMatchObject({

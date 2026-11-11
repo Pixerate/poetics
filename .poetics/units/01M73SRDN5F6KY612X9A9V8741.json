@@ -35,6 +35,35 @@
           "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:f178f2f44954e8f4c8fef1a529c99bbf4bd36703d852e7ccd5fd5a85f02fb85f",
+      "interfaceHash": "b3:08c3982f44b292bce72d1437764191bc90b2f24f1cd2c6e748c08430917b9c4f",
+      "parent": "b3:2b9cdb1b9e7c4539ee0e1647b82e96c1fe5e86c7455e5bf0edffea322b2838ca",
+      "change": "interface",
+      "rationale": "Takes an optional svelteVersion, since svelte2tsx emits a class for Svelte 4 and a function component for Svelte 5; tests and repositories whose Svelte cannot be resolved from a component can set it. A closing tag's bare reference is a renders edge too, so a component rendered with content is not also recorded as called. Rules version 3 re-indexes components.",
+      "deps": {
+        "01M73SRDN5Z4WSJ6TRV2JWFFGG": "b3:350d7613146e665fca668843d40000d9c7a15fa5b970cf4e435950b6ce1059cb",
+        "01M73SRDN58GD6SPYSEVK6B37R": "b3:c7d70267b64c0495465139c4cbce0013bab34506975b018bc9ecabd046d74cae",
+        "01M73SRDN591D9C02BN9X1Y7M5": "b3:3c1871f241a66494a0aa93839df950a0ee73e0118f40fd2eff4fe82449c8499f",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:edb73add1559c280c4dcdceb5f3f6bf3dbf06d95ad7a8ce70316aef31405ac59"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#71"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
     }
   ],
   "docs": "The Svelte plugin for the TypeScript indexer: `.svelte` files, read through svelte2tsx (ADR 0020).",

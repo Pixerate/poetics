@@ -8,7 +8,7 @@ import { dirname, join } from "node:path";
 import ts from "typescript";
 import { svelte2tsx } from "svelte2tsx";
 import { detectUnits, normaliseNode } from "@poetics/adapter-typescript";
-import type { DetectedUnit, FrameworkPlugin, NormalTree, Signature, Transformed } from "@poetics/adapter-typescript";
+import type { DetectedUnit, FrameworkPlugin, NormalTree, Signature, Transformed, TypeText } from "@poetics/adapter-typescript";
 import { offsetMapper } from "./source-map.ts";
 
 export { decodeMappings, offsetMapper } from "./source-map.ts";
@@ -42,7 +42,7 @@ const require = createRequire(import.meta.url);
 const SVELTE2TSX_VERSION = (JSON.parse(readFileSync(require.resolve("svelte2tsx/package.json"), "utf8")) as { version: string }).version;
 
 /** Bumped when the plugin's own rules change what it records; svelte2tsx's version is added to it. */
-const RULES = 2;
+const RULES = 3;
 
 const SCRIPT = /<script(\s[^>]*)?>([\s\S]*?)<\/script\s*>/gi;
 
@@ -155,7 +155,10 @@ export function transformComponent(file: string, text: string, svelteVersion?: s
 }
 
 /** The variable svelte2tsx exports as the component: the target of `export default`. */
-function defaultExport(source: ts.SourceFile): ts.VariableDeclaration | undefined {
+function defaultExport(source: ts.SourceFile): ts.VariableDeclaration | ts.ClassDeclaration | undefined {
+  // For Svelte 4, svelte2tsx exports a class instead.
+  const component = source.statements.find((s): s is ts.ClassDeclaration => ts.isClassDeclaration(s) && isExported(s) && (ts.getModifiers(s) ?? []).some((m) => m.kind === ts.SyntaxKind.DefaultKeyword));
+  if (component) return component;
   const assignment = source.statements.find((s): s is ts.ExportAssignment => ts.isExportAssignment(s) && !s.isExportEquals);
   if (!assignment || !ts.isIdentifier(assignment.expression)) return undefined;
   const name = assignment.expression.text;
@@ -205,8 +208,8 @@ export function detectComponent(source: ts.SourceFile, file: string, original: s
 /**
  * A component's interface: its props type, read from what svelte2tsx's render
  * function returns. For Svelte 5 that is the `$props()` type as written; for
- * Svelte 4, the props svelte2tsx gathers from `export let`. Defaults are part
- * of it. Svelte 4 events and slots come later (#71).
+ * Svelte 4, the props svelte2tsx gathers from `export let`, with the events
+ * the component dispatches or forwards and its slots. Defaults are part of it.
  */
 export function componentSignature(unit: DetectedUnit, checker: ts.TypeChecker): Signature | undefined {
   if (unit.kind !== "component") return undefined;
@@ -214,13 +217,14 @@ export function componentSignature(unit: DetectedUnit, checker: ts.TypeChecker):
   const render = source.statements.find((s): s is ts.FunctionDeclaration => ts.isFunctionDeclaration(s) && s.name?.text === "$$render");
   const returned = render?.body?.statements.find(ts.isReturnStatement)?.expression;
   const props = returned && ts.isObjectLiteralExpression(returned) ? returned.properties.find((p): p is ts.PropertyAssignment => ts.isPropertyAssignment(p) && p.name.getText(source) === "props") : undefined;
-  if (!props) return { kind: "component", props: null, defaults: [] };
+  const withMembers = (signature: Signature): Signature => (returned && ts.isObjectLiteralExpression(returned) && signature.kind === "component" ? { ...signature, ...legacyMembers(returned, checker) } : signature);
+  if (!props) return withMembers({ kind: "component", props: null, defaults: [] });
   let written: ts.TypeNode | undefined;
   for (let expression: ts.Expression = props.initializer; ts.isAsExpression(expression); expression = expression.expression) {
     written ??= expression.type;
   }
   // svelte2tsx says a component takes no props with `Record<string, never>`.
-  if (written && written.getText(source).replace(/\s/g, "") === "Record<string,never>") return { kind: "component", props: null, defaults: [] };
+  if (written && written.getText(source).replace(/\s/g, "") === "Record<string,never>") return withMembers({ kind: "component", props: null, defaults: [] });
   // A props type declared in the component itself is not a unit, so its structure, not its name, is the interface.
   // That covers svelte2tsx's hoisted alias for inline types (inside the render function when it inferred them)
   // and an interface the script declares without exporting it.
@@ -245,12 +249,58 @@ export function componentSignature(unit: DetectedUnit, checker: ts.TypeChecker):
     const generated = type.aliasSymbol?.name.startsWith("$$") ?? false;
     inferred = checker.typeToString(type, generated ? undefined : props, ts.TypeFormatFlags.NoTruncation | (generated ? ts.TypeFormatFlags.InTypeAlias : 0));
   }
-  return {
+  return withMembers({
     kind: "component",
     // The interface's own name is left out, so renaming it is not an interface change.
     props: local ? { written: normaliseNode(local, { omit: new Set([local.name]) }) } : written ? { written: normaliseNode(written) } : { inferred: inferred! },
-    defaults: render ? propDefaults(render) : [],
-  };
+    defaults: render ? [...propDefaults(render), ...exportLetDefaults(render, props.initializer)].sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0)) : [],
+  });
+}
+
+/**
+ * A Svelte 4 component's `export let` defaults. svelte2tsx turns each prop
+ * into a plain `let` in its render function and lists the props in the object
+ * it returns, so a `let` named there with a value is a prop's default.
+ */
+function exportLetDefaults(render: ts.FunctionDeclaration, props: ts.Expression): Array<{ name: string; value: NormalTree }> {
+  let literal: ts.Expression = props;
+  while (ts.isAsExpression(literal) || ts.isParenthesizedExpression(literal)) literal = literal.expression;
+  if (!ts.isObjectLiteralExpression(literal)) return [];
+  const names = new Set(literal.properties.flatMap((p) => (p.name && ts.isIdentifier(p.name) ? [p.name.text] : [])));
+  const defaults: Array<{ name: string; value: NormalTree }> = [];
+  for (const statement of render.body?.statements ?? []) {
+    if (!ts.isVariableStatement(statement)) continue;
+    for (const declaration of statement.declarationList.declarations) {
+      if (ts.isIdentifier(declaration.name) && names.has(declaration.name.text) && declaration.initializer) {
+        defaults.push({ name: declaration.name.text, value: normaliseNode(declaration.initializer) });
+      }
+    }
+  }
+  return defaults;
+}
+
+/**
+ * A Svelte 4 component's events and slots, from the object svelte2tsx's render
+ * function returns: each event a listener can receive with its type, and each
+ * slot with the props it passes. Left out when there are none, as for a
+ * Svelte 5 component, so its interface is unchanged.
+ */
+function legacyMembers(returned: ts.ObjectLiteralExpression, checker: ts.TypeChecker): { events?: Array<{ name: string; type: TypeText }>; slots?: Array<{ name: string; props: TypeText }> } {
+  const member = (name: string) => returned.properties.find((p): p is ts.PropertyAssignment => ts.isPropertyAssignment(p) && p.name.getText() === name);
+  const byName = <T extends { name: string }>(items: T[]) => items.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+  const typeOf = (symbol: ts.Symbol, at: ts.Node): TypeText => ({ inferred: checker.typeToString(checker.getTypeOfSymbolAtLocation(symbol, at), at, ts.TypeFormatFlags.NoTruncation) });
+  const out: { events?: Array<{ name: string; type: TypeText }>; slots?: Array<{ name: string; props: TypeText }> } = {};
+  const events = member("events");
+  if (events) {
+    const found = checker.getTypeAtLocation(events.initializer).getProperties().map((symbol) => ({ name: symbol.name, type: typeOf(symbol, events) }));
+    if (found.length > 0) out.events = byName(found);
+  }
+  const slots = member("slots");
+  if (slots) {
+    const found = checker.getTypeAtLocation(slots.initializer).getProperties().map((symbol) => ({ name: symbol.name, props: typeOf(symbol, slots) }));
+    if (found.length > 0) out.slots = byName(found);
+  }
+  return out;
 }
 
 function isExported(statement: ts.Statement): boolean {
@@ -287,8 +337,12 @@ function shims(): string[] {
   return ["svelte2tsx/svelte-shims-v4.d.ts", "svelte2tsx/svelte-jsx-v4.d.ts"].map((path) => require.resolve(path));
 }
 
-/** The Svelte plugin for the TypeScript indexer: `.svelte` files, read through svelte2tsx (ADR 0020). */
-export function sveltePlugin(): FrameworkPlugin {
+/**
+ * The Svelte plugin for the TypeScript indexer: `.svelte` files, read through
+ * svelte2tsx (ADR 0020). svelte2tsx's output depends on the Svelte version, read
+ * from each component's project unless `svelteVersion` says otherwise.
+ */
+export function sveltePlugin(options: { svelteVersion?: string } = {}): FrameworkPlugin {
   const versions = new Map<string, string | undefined>();
   return {
     framework: "svelte",
@@ -296,16 +350,18 @@ export function sveltePlugin(): FrameworkPlugin {
     extensions: [".svelte"],
     ambient: shims(),
     transform(file, text) {
-      return transformComponent(file, text, svelteVersionFor(file, versions));
+      return transformComponent(file, text, options.svelteVersion ?? svelteVersionFor(file, versions));
     },
     detect: detectComponent,
     signature(unit, _fn, checker) {
       return unit.framework === "svelte" ? componentSignature(unit, checker) : undefined;
     },
     edgeKind(node, target) {
-      // svelte2tsx turns `<PriceTag … />` into `__sveltets_2_ensureComponent(PriceTag)`.
-      const call = node.parent;
-      if (target.framework === "svelte" && target.kind === "component" && ts.isCallExpression(call) && call.arguments[0] === node && /^__sveltets_\d+_ensureComponent$/.test(call.expression.getText())) return "renders";
+      if (target.framework !== "svelte" || target.kind !== "component") return undefined;
+      // svelte2tsx turns `<PriceTag … />` into `__sveltets_2_ensureComponent(PriceTag)`, and a closing `</PriceTag>` into a bare `PriceTag;`.
+      const parent = node.parent;
+      if (ts.isCallExpression(parent) && parent.arguments[0] === node && /^__sveltets_\d+_ensureComponent$/.test(parent.expression.getText())) return "renders";
+      if (ts.isExpressionStatement(parent) && parent.expression === node) return "renders";
       return undefined;
     },
   };

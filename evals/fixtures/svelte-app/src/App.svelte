@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createCart } from "./lib/cart.svelte.ts";
   import PriceTag from "./lib/PriceTag.svelte";
+  import LegacyNote from "./lib/LegacyNote.svelte";
 
   const cart = createCart([
     { sku: "TEE-1", name: "T-shirt", priceMinor: 2000, salePriceMinor: 1500, quantity: 1 },
@@ -16,6 +17,7 @@
     {/each}
   </ul>
   <p>Total: <PriceTag amountMinor={cart.totalMinor} /></p>
+  <LegacyNote tone="sale">Free delivery over £30</LegacyNote>
   <button onclick={() => cart.add({ sku: `X-${cart.lines.length}`, name: "Sticker", priceMinor: 150, quantity: 1 })}>
     Add sticker
   </button>
