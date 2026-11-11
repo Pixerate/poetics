@@ -111,6 +111,10 @@ export type Signature =
       defaults: Array<{ name: string; value: NormalTree }>;
       /** The ref type, for components that forward one. */
       ref?: TypeText;
+      /** Events a Svelte 4 component dispatches or forwards, by name, with the event type a listener receives. */
+      events?: Array<{ name: string; type: TypeText }>;
+      /** A Svelte 4 component's slots, by name, with the props each passes to its content. */
+      slots?: Array<{ name: string; props: TypeText }>;
     }
   | {
       kind: "context";
