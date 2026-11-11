@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-10",
+  "date": "2026-11-11",
   "rounds": 10,
   "seed": 26,
   "results": [
@@ -118,18 +118,18 @@
       },
       "spuriousCreated": 0,
       "timings": {
-        "seedMs": 748,
+        "seedMs": 767,
         "indexMs": [
-          438,
-          490,
-          374,
-          413,
-          390,
-          399,
-          404,
-          344,
+          472,
+          532,
+          412,
+          414,
+          412,
+          379,
+          388,
+          346,
           415,
-          547
+          488
         ]
       },
       "failures": []
@@ -140,6 +140,10 @@
         "kind": "svelte",
         "repo": "huntabyte/shadcn-svelte",
         "commit": "3c4152d7d3904e76f6f756ec8ffca7c9ec72f977",
+        "adapters": [
+          "typescript",
+          "svelte"
+        ],
         "include": [
           "docs/src/**/*.{ts,svelte}",
           "packages/*/src/**/*.{ts,svelte}"
@@ -152,17 +156,19 @@
         ]
       },
       "adapters": [
-        "typescript"
+        "typescript",
+        "svelte"
       ],
       "files": {
-        "indexed": 1099,
-        "notIndexed": 2128
+        "indexed": 3227,
+        "notIndexed": 0
       },
-      "units": 512,
+      "units": 2912,
       "unitKinds": {
-        "function": 273,
-        "type": 228,
-        "hook": 11
+        "function": 501,
+        "type": 271,
+        "component": 2128,
+        "hook": 12
       },
       "rounds": 10,
       "byKind": {
@@ -176,24 +182,24 @@
         },
         "move-file": {
           "refactors": 10,
-          "kept": 31,
+          "kept": 17,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
         },
         "move-unit": {
-          "refactors": 10,
-          "kept": 10,
+          "refactors": 8,
+          "kept": 8,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
-          "skipped": 0
+          "skipped": 2
         },
         "rename-edit": {
           "refactors": 10,
-          "kept": 8,
-          "lost": 2,
+          "kept": 6,
+          "lost": 4,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
@@ -213,37 +219,51 @@
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
+        },
+        "rename-file": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
         }
       },
       "byUnitKind": {
         "function": {
-          "kept": 93,
-          "touched": 95
+          "kept": 69,
+          "touched": 72
+        },
+        "component": {
+          "kept": 20,
+          "touched": 20
         },
         "hook": {
-          "kept": 6,
-          "touched": 6
+          "kept": 2,
+          "touched": 3
         }
       },
-      "spuriousCreated": 2,
+      "spuriousCreated": 4,
       "timings": {
-        "seedMs": 1616,
+        "seedMs": 8036,
         "indexMs": [
-          809,
-          901,
-          804,
-          792,
-          839,
-          847,
-          763,
-          894,
-          983,
-          869
+          3833,
+          25547,
+          4212,
+          3783,
+          4183,
+          3562,
+          3865,
+          4165,
+          3930,
+          4605
         ]
       },
       "failures": [
-        "round 1 rename-edit: 01M72H95RA0ADQQCZ6C3H3ZSQT removed, should be at packages/primitives/src/lib/questionnaire/fixtures/questionnaire-ssr-vite.ts#closeQuestionnaireSsrViteGate (3 statement(s), 11 fingerprint entries)",
-        "round 3 rename-edit: 01M72H95RAVCSFF6FJEXRN79YX removed, should be at packages/primitives/src/lib/questionnaire/fixtures/questionnaire-test-utils.ts#unmountAppGate (3 statement(s), 9 fingerprint entries)"
+        "round 2 rename-edit: 01M75BCS3EGRF0WS44T4RKFB2C removed, should be at docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate (1 statement(s), 7 fingerprint entries)",
+        "round 3 rename-edit: 01M75BCS3FWKNW2MNNQF4J7H5N removed, should be at docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate (1 statement(s), 13 fingerprint entries)",
+        "round 4 rename-edit: 01M75BCS3MZBYNKJ3KQX5AS0BB removed, should be at packages/cli/src/utils/utils.ts#isUrlGate (2 statement(s), 13 fingerprint entries)",
+        "round 8 rename-edit: 01M75BCS3NCEH7GQ89ZGQ6HD0Z removed, should be at packages/primitives/src/lib/message-scroller/message-scroller.svelte.ts#useMessageScrollerScrollableGate (1 statement(s), 8 fingerprint entries)"
       ]
     },
     {
@@ -254,7 +274,8 @@
         "commit": "b1243facc8b88c4cfe5ea9d7f3b4e1ea550bc91f",
         "adapters": [
           "typescript",
-          "react"
+          "react",
+          "svelte"
         ],
         "include": [
           "packages/query-core/src/**/*.ts",
@@ -270,18 +291,20 @@
       },
       "adapters": [
         "typescript",
-        "react"
+        "react",
+        "svelte"
       ],
       "files": {
-        "indexed": 65,
-        "notIndexed": 2
+        "indexed": 67,
+        "notIndexed": 0
       },
-      "units": 284,
+      "units": 287,
       "unitKinds": {
         "type": 196,
-        "function": 63,
-        "hook": 23,
-        "component": 2
+        "function": 58,
+        "component": 5,
+        "hook": 27,
+        "context": 1
       },
       "rounds": 10,
       "byKind": {
@@ -295,7 +318,7 @@
         },
         "move-file": {
           "refactors": 10,
-          "kept": 13,
+          "kept": 15,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
@@ -311,8 +334,8 @@
         },
         "rename-edit": {
           "refactors": 10,
-          "kept": 6,
-          "lost": 4,
+          "kept": 7,
+          "lost": 3,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
@@ -326,12 +349,12 @@
           "skipped": 2
         },
         "merge": {
-          "refactors": 6,
-          "kept": 12,
+          "refactors": 7,
+          "kept": 14,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
-          "skipped": 4
+          "skipped": 3
         },
         "wrap": {
           "refactors": 0,
@@ -340,43 +363,54 @@
           "misplaced": 0,
           "queued": 0,
           "skipped": 10
+        },
+        "rename-file": {
+          "refactors": 2,
+          "kept": 2,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 8
         }
       },
       "byUnitKind": {
         "function": {
-          "kept": 50,
-          "touched": 54
+          "kept": 45,
+          "touched": 48
         },
         "hook": {
-          "kept": 16,
-          "touched": 16
+          "kept": 24,
+          "touched": 24
         },
         "component": {
+          "kept": 4,
+          "touched": 4
+        },
+        "context": {
           "kept": 1,
           "touched": 1
         }
       },
-      "spuriousCreated": 4,
+      "spuriousCreated": 3,
       "timings": {
-        "seedMs": 695,
+        "seedMs": 663,
         "indexMs": [
-          371,
-          378,
-          408,
-          349,
-          352,
-          389,
-          327,
-          336,
-          325,
-          340
+          446,
+          454,
+          406,
+          442,
+          522,
+          496,
+          465,
+          426,
+          457,
+          447
         ]
       },
       "failures": [
-        "round 1 rename-edit: 01M72HA9NT8SVAWQ9SZH6PCEC3 removed, should be at packages/query-core/src/utils.ts#timeUntilStaleGate (1 statement(s), 13 fingerprint entries)",
-        "round 3 rename-edit: 01M72HA9NTHPX8CJC8ZFG91HEE removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)",
-        "round 5 rename-edit: 01M72HA9NSH3JTSXNDRDM57J2W removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate (1 statement(s), 9 fingerprint entries)",
-        "round 8 rename-edit: 01M72HA9NTCGEJ4203D0WV3ZE2 removed, should be at packages/query-core/src/utils.ts#keepPreviousDataGate (1 statement(s), 10 fingerprint entries)"
+        "round 1 rename-edit: 01M75BKWB9T1Q174YYZD69A3WA removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)",
+        "round 2 rename-edit: 01M75BKWB8GT9TT6TGC7J2MN7K removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate (1 statement(s), 9 fingerprint entries)",
+        "round 7 rename-edit: 01M75BKWB880XE6K9PC7ZKH9Q0 removed, should be at packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate (1 statement(s), 7 fingerprint entries)"
       ]
     }
   ]

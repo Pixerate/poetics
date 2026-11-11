@@ -1,11 +1,12 @@
 # Identity gate: uids survive real refactors
 
 Issue [#26](https://github.com/Pixerate/poetics/issues/26) (closed), continued for
-`.svelte` files in [#66](https://github.com/Pixerate/poetics/issues/66). The plan's phase 1
+`.svelte` files in [#66](https://github.com/Pixerate/poetics/issues/66) (phase 3). The plan's phase 1
 gate asks that a unit's uid survive renames, moves, splits and merges on real
 code: a React app, a Svelte app and a repository mixing both around shared
 utilities. Phase 2's gate asks the same of a React app with the React adapter
-on, so components and hooks are recorded as such. [`results.md`](results.md)
+on, so components and hooks are recorded as such, and phase 3's asks it of
+`.svelte` components with the Svelte adapter on. [`results.md`](results.md)
 has the latest measurements.
 
 ## Corpus
@@ -46,6 +47,7 @@ content hashes and fingerprints that identity matching uses.
 | `split` | Moves the second half of a function's body into a new `…Rest` function | Declared by hand, as the `poetics-refactor` skill says |
 | `merge` | Moves one function's body into another's in the same file and deletes it | Declared by hand |
 | `wrap` | Wraps a component declared as `export function Name` in `memo`, as `export const Name = memo(function Name …)` | Inferred; only with the React adapter |
+| `rename-file` | Renames a Svelte component's file, `X.svelte` to `XGate.svelte`, which renames the component; its script's functions move with it | Inferred; only with the Svelte adapter |
 
 Splits and merges are never inferred (#20), so the gate declares them the way
 an agent following the skill would, and then checks that `poetics index`
@@ -53,11 +55,45 @@ leaves them alone. A queued match is resolved the way a person would, so later
 rounds start from a correct store. Picks are seeded and made by place, not by
 uid, so a run is repeatable.
 
-Each corpus lists its adapters in [`corpus.json`](corpus.json): taxonomy and
-TanStack Query run with `typescript, react`, shadcn-svelte with `typescript`
-until the Svelte adapter exists. `--adapters typescript` reruns phase 1's
+A `.svelte` file's units are found in the TypeScript svelte2tsx makes of it, so
+the refactors that edit text at a declaration's offsets (`rename-edit`,
+`split`, `merge`, `wrap`) leave `.svelte` files alone, and `move-unit` moves
+only between TypeScript files. `rename` renames a component's script functions
+like any function, but never a component, whose name is its file's;
+`rename-file` covers that. `move-file` moves `.svelte` files like any other.
+Like `move-file`, `rename-file` does not rewrite imports: identity matching
+reads each file on its own.
+
+Each corpus lists its adapters in [`corpus.json`](corpus.json): taxonomy runs
+with `typescript, react`, shadcn-svelte with `typescript, svelte`, and TanStack
+Query with all three. `--adapters typescript` reruns phase 1's
 configuration. The report counts the seeded units by kind and the uids kept by
 the kind of unit each refactor picked.
+
+## Phase 3 findings (2026-11-11)
+
+- **Every `.svelte` component kept its uid:** 20 of 20 on shadcn-svelte and 4
+  of 4 on TanStack Query, across 12 `rename-file` refactors and the files
+  `move-file` moved. Nothing was queued or misplaced.
+- With the Svelte adapter on, shadcn-svelte reads all 3,227 files in scope,
+  where phase 2 left 2,128 `.svelte` files unread. It tracks **2,912 units
+  where phase 2 tracked 512**: 2,128 components, plus 228 functions and 43
+  types declared in `.svelte` files (functions in component scripts, which the
+  components own, #72, and module-script exports).
+- shadcn-svelte kept 91 of 95 uids and TanStack Query 74 of 77. Every miss is
+  still a `rename-edit` of a one- or two-statement function in a `.ts` or
+  `.svelte.ts` file, explained under phase 1. Each miss created one unit, so
+  the units created that no refactor made (4 and 3) are those misses' new
+  uids, not lost components.
+- TanStack Query's Svelte package has two components, so `rename-file` ran
+  twice there and was skipped for the other rounds. It has no `export
+  function` React component, so `wrap` was skipped, as in phase 2.
+- **Cost:** running svelte2tsx over 2,128 components makes shadcn-svelte's
+  seeding take 8.0 s (1.6 s without the adapter), and a round's
+  `poetics index` 4.2 s (0.8 s). Each round re-transforms every component; the
+  indexer's per-file cache skips the checker for unchanged files, but not the
+  transform. That is the cost to watch on large Svelte repositories.
+- taxonomy (React only) is unchanged: 82 of 82.
 
 ## Phase 2 findings (2026-11-10)
 
@@ -97,7 +133,8 @@ the kind of unit each refactor picked.
 
 ## What this gate does not cover yet
 
-- `.svelte` files: the TypeScript indexer cannot read them until the Svelte
-  adapter (phase 3), so they are counted as in scope but not indexed.
-  [#66](https://github.com/Pixerate/poetics/issues/66) adds them to the gate
-  once the adapter exists.
+- Edits inside `.svelte` files: `rename-edit`, `split` and `merge` only edit
+  TypeScript, so a component or script function edited as it is renamed or
+  moved is not measured.
+- Svelte contexts ([#74](https://github.com/Pixerate/poetics/issues/74)), which
+  are not units yet.

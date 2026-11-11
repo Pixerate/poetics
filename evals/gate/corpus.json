@@ -1,5 +1,5 @@
 {
-  "$comment": "Gate corpus (#26, and phase 2's React gate): real repositories at pinned commits. Fetched by `pnpm gate --fetch` into the gitignored .cache/; never installed or run.",
+  "$comment": "Gate corpus (#26, phase 2's React gate and phase 3's Svelte gate, #66): real repositories at pinned commits. Fetched by `pnpm gate --fetch` into the gitignored .cache/; never installed or run.",
   "repos": [
     {
       "name": "taxonomy",
@@ -15,6 +15,7 @@
       "kind": "svelte",
       "repo": "huntabyte/shadcn-svelte",
       "commit": "3c4152d7d3904e76f6f756ec8ffca7c9ec72f977",
+      "adapters": ["typescript", "svelte"],
       "include": ["docs/src/**/*.{ts,svelte}", "packages/*/src/**/*.{ts,svelte}"],
       "exclude": ["**/*.test.*", "**/*.spec.*", "**/__tests__/**", "**/*.d.ts"]
     },
@@ -23,7 +24,7 @@
       "kind": "mixed",
       "repo": "TanStack/query",
       "commit": "b1243facc8b88c4cfe5ea9d7f3b4e1ea550bc91f",
-      "adapters": ["typescript", "react"],
+      "adapters": ["typescript", "react", "svelte"],
       "include": ["packages/query-core/src/**/*.ts", "packages/react-query/src/**/*.{ts,tsx}", "packages/svelte-query/src/**/*.{ts,svelte}"],
       "exclude": ["**/__tests__/**", "**/*.test.*", "**/*.test-d.*", "**/*.d.ts"]
     }

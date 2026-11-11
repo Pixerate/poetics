@@ -77,7 +77,7 @@ describe("runGate", () => {
     const result = await runGate(ENTRY, await corpus(), { rounds: 2, seed: 26 });
     expect(result.units).toBe(12);
     expect(result.files).toEqual({ indexed: 4, notIndexed: 1 });
-    expect(Object.keys(result.byKind)).toEqual(REFACTORS.filter((kind) => kind !== "wrap"));
+    expect(Object.keys(result.byKind)).toEqual(REFACTORS.filter((kind) => kind !== "wrap" && kind !== "rename-file"));
     for (const kind of refactorsFor({})) expect(result.byKind[kind]!.refactors + result.byKind[kind]!.skipped).toBe(2);
     const missed = Object.values(result.byKind).reduce((n, k) => n + k.lost + k.misplaced + k.queued, 0);
     expect(result.failures).toEqual([]);
@@ -110,10 +110,12 @@ async function reactCorpus(): Promise<string> {
 const REACT_ENTRY: CorpusEntry = { name: "react", kind: "react", repo: "example/react", commit: "0".repeat(40), include: ["src/**/*.tsx"], exclude: [], adapters: ["typescript", "react"] };
 
 describe("refactorsFor", () => {
-  it("measures wraps only when the React adapter is on", () => {
+  it("measures wraps only with the React adapter, and file renames only with the Svelte adapter", () => {
     expect(refactorsFor({ adapters: ["typescript"] })).not.toContain("wrap");
     expect(refactorsFor({})).not.toContain("wrap");
-    expect(refactorsFor({ adapters: ["typescript", "react"] })).toEqual(REFACTORS);
+    expect(refactorsFor({ adapters: ["typescript", "react"] })).toEqual(REFACTORS.filter((kind) => kind !== "rename-file"));
+    expect(refactorsFor({ adapters: ["typescript", "svelte"] })).toEqual(REFACTORS.filter((kind) => kind !== "wrap"));
+    expect(refactorsFor({ adapters: ["typescript", "react", "svelte"] })).toEqual(REFACTORS);
   });
 });
 
@@ -132,6 +134,41 @@ describe("runGate with the React adapter", () => {
     expect(result.adapters).toEqual(["typescript"]);
     expect(result.unitKinds).toEqual({ function: 12 });
     expect(result.byKind.wrap).toBeUndefined();
+  }, GATE_TIMEOUT_MS);
+});
+
+/** A Svelte corpus: components with functions in their scripts, beside TypeScript the refactors can edit. */
+async function svelteCorpus(): Promise<string> {
+  const root = await mkdtemp(join(tmpdir(), "poetics-gate-svelte-"));
+  const component = (name: string, tag: string) =>
+    `<script lang="ts">\n  let { label }: { label: string } = $props();\n  let count = $state(${name.length});\n  function bump${name}(by: number) {\n    count += by * ${name.length};\n    if (count > 100) console.info("${name}", count);\n  }\n</script>\n\n<${tag} class="${name.toLowerCase()}">\n  <button onclick={() => bump${name}(1)}>{label}: {count}</button>\n</${tag}>\n`;
+  const files: Record<string, string> = {
+    "src/AlphaCard.svelte": component("AlphaCard", "section"),
+    "src/BravoList.svelte": component("BravoList", "article"),
+    "src/CharliePanel.svelte": component("CharliePanel", "aside"),
+    "src/DeltaRow.svelte": component("DeltaRow", "div"),
+    "src/alpha.ts": fn("computeAlpha") + fn("computeBravo") + fn("computeCharlie"),
+    "src/delta.ts": fn("computeDelta") + fn("computeEcho") + fn("computeFoxtrot"),
+  };
+  for (const [file, text] of Object.entries(files)) {
+    await mkdir(dirname(join(root, file)), { recursive: true });
+    await writeFile(join(root, file), text);
+  }
+  return root;
+}
+
+const SVELTE_ENTRY: CorpusEntry = { name: "svelte", kind: "svelte", repo: "example/svelte", commit: "0".repeat(40), include: ["src/**/*.{ts,svelte}"], exclude: [], adapters: ["typescript", "svelte"] };
+
+describe("runGate with the Svelte adapter (#66)", () => {
+  it("indexes .svelte files and keeps components' uids, and their script functions', through renames and moves", async () => {
+    const result = await runGate(SVELTE_ENTRY, await svelteCorpus(), { rounds: 3, seed: 26 });
+    expect(result.files).toEqual({ indexed: 6, notIndexed: 0 });
+    expect(result.unitKinds).toEqual({ component: 4, function: 10 });
+    expect(result.byKind["rename-file"]!.refactors).toBeGreaterThan(0);
+    expect(result.byKind["rename-file"]!.kept).toBe(result.byKind["rename-file"]!.refactors);
+    expect(result.failures).toEqual([]);
+    expect(result.spuriousCreated).toBe(0);
+    expect(result.byUnitKind["component"]!.kept).toBe(result.byUnitKind["component"]!.touched);
   }, GATE_TIMEOUT_MS);
 });
 
