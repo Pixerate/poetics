@@ -1,5 +1,11 @@
 # @poetics/cli
 
+## 0.8.2
+
+### Patch Changes
+
+- [#81](https://github.com/Pixerate/poetics/pull/81) [`21f1312`](https://github.com/Pixerate/poetics/commit/21f1312d06bd0078c3514358e332dc426bbebd7a) Thanks [@surrealroad](https://github.com/surrealroad)! - Export `detectIn` from `@poetics/cli`, so tools such as the identity gate find units in `.svelte` files the way `poetics index` does ([#66](https://github.com/Pixerate/poetics/issues/66)).
+
 ## 0.8.1
 
 ### Patch Changes

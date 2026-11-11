@@ -1,5 +1,12 @@
 # @poetics/mcp
 
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies [[`21f1312`](https://github.com/Pixerate/poetics/commit/21f1312d06bd0078c3514358e332dc426bbebd7a)]:
+  - @poetics/cli@0.8.2
+
 ## 0.4.5
 
 ### Patch Changes
