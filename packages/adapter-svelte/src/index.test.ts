@@ -152,7 +152,8 @@ describe("sveltePlugin with the TypeScript indexer", () => {
       startLine: 1,
       endLine: PRICE_TAG.split("\n").length,
       docs: "Displays a price.",
-      signature: { kind: "component", props: { written: ["TypeReference", ["Identifier", "Props"]] }, defaults: [] },
+      // Props is declared in the component, not exported, so its structure is the interface.
+      signature: { kind: "component", props: { written: ["InterfaceDeclaration", expect.anything(), expect.anything()] }, defaults: [{ name: "currency", value: ["StringLiteral", "GBP"] }] },
       signatureText: 'let { amountMinor, currency = "GBP" }: Props = $props();',
       edges: [{ to: "src/lib/format-price.ts#formatPrice", kind: "calls" }],
       unresolved: [],
@@ -174,6 +175,48 @@ describe("sveltePlugin with the TypeScript indexer", () => {
       { to: "src/App.svelte#App", kind: "calls" },
       { to: "src/App.svelte#App", kind: "references-type" },
     ]);
+  });
+
+  it("records defaults, bindable props, snippet and callback props, and props svelte2tsx infers", () => {
+    const root = project({
+      "src/Picker.svelte": `<script lang="ts">\n  import type { Snippet } from "svelte";\n  let { children, onpick, size = "md", value = $bindable(0) }: { children: Snippet; onpick?: (id: string) => void; size?: "sm" | "md"; value?: number } = $props();\n</script>\n\n{@render children()}\n<button onclick={() => onpick?.(size)}>{value}</button>\n`,
+      "src/Loose.svelte": `<script lang="ts">\n  let { a, b = 1 } = $props();\n</script>\n\n<p>{a}{b}</p>\n`,
+      "src/Plain.svelte": `<script>\n  let { a = 2 } = $props();\n</script>\n\n<p>{a}</p>\n`,
+    });
+    const units = byKey(index(root, ["src/Picker.svelte", "src/Loose.svelte", "src/Plain.svelte"]).units);
+    const picker = units.get("src/Picker.svelte#Picker")!.signature;
+    expect(picker).toMatchObject({
+      kind: "component",
+      props: { written: ["TypeLiteral", ["PropertySignature", ["Identifier", "children"], ["TypeReference", ["Identifier", "Snippet"]]], expect.anything(), expect.anything(), expect.anything()] },
+      defaults: [
+        { name: "size", value: ["StringLiteral", "md"] },
+        { name: "value", value: ["CallExpression", ["Identifier", "$bindable"], ["NumericLiteral", "0"]] },
+      ],
+    });
+    // Unannotated: svelte2tsx infers the props and hoists them into an alias inside its render function.
+    expect(units.get("src/Loose.svelte#Loose")!.signature).toMatchObject({
+      props: { written: ["TypeLiteral", expect.anything(), expect.anything()] },
+      defaults: [{ name: "b", value: ["NumericLiteral", "1"] }],
+    });
+    // JavaScript: svelte2tsx types the props in a JSDoc typedef, read as written.
+    expect(units.get("src/Plain.svelte#Plain")!.signature).toEqual({
+      kind: "component",
+      props: { written: ["TypeLiteral", ["PropertySignature", ["Identifier", "a"], ["QuestionToken"], ["NumberKeyword"]]] },
+      defaults: [{ name: "a", value: ["NumericLiteral", "2"] }],
+    });
+  });
+
+  it("changes a component's interface hash when a prop's type or default changes, but not when its props type is renamed", () => {
+    const root = project(APP);
+    const before = byKey(index(root).units);
+    writeFileSync(join(root, "src/lib/PriceTag.svelte"), PRICE_TAG.replace("amountMinor: number;", "amountMinor: bigint;"));
+    const retyped = byKey(index(root).units);
+    expect(retyped.get("src/lib/PriceTag.svelte#PriceTag")!.interfaceHash).not.toBe(before.get("src/lib/PriceTag.svelte#PriceTag")!.interfaceHash);
+    expect(retyped.get("src/App.svelte#App")!.edges).toContainEqual({ to: "src/lib/PriceTag.svelte#PriceTag", kind: "renders" });
+    writeFileSync(join(root, "src/lib/PriceTag.svelte"), PRICE_TAG.replace('currency = "GBP"', 'currency = "EUR"'));
+    expect(byKey(index(root).units).get("src/lib/PriceTag.svelte#PriceTag")!.interfaceHash).not.toBe(before.get("src/lib/PriceTag.svelte#PriceTag")!.interfaceHash);
+    writeFileSync(join(root, "src/lib/PriceTag.svelte"), PRICE_TAG.replaceAll("Props", "PriceTagProps"));
+    expect(byKey(index(root).units).get("src/lib/PriceTag.svelte#PriceTag")!.interfaceHash).toBe(before.get("src/lib/PriceTag.svelte#PriceTag")!.interfaceHash);
   });
 
   it("records what the module script exports as units of their own, placed in the component's file", () => {
