@@ -9,7 +9,7 @@ export { filesInScope, readConfig } from "@poetics/store";
 export type { CoverageMetrics, CoverageReport, Ratio } from "./coverage.ts";
 export { METRICS, areaOf, computeCoverage, coverageFor, formatCoverage } from "./coverage.ts";
 export type { Declaration } from "./declarations.ts";
-export { declarationsIn, discoverDeclarations } from "./declarations.ts";
+export { declarationsIn, detectIn, discoverDeclarations } from "./declarations.ts";
 export type { Drift, DriftFinding, DriftKind } from "./drift.ts";
 export { DRIFT_SEVERITY, compareCodeWithStore } from "./drift.ts";
 export { formatLog, formatWhy } from "./history.ts";

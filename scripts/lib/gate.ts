@@ -1,16 +1,17 @@
-// The identity gate (#26, and phase 2's React gate): scripted renames, moves,
-// splits, merges and component wraps on real repositories, recorded by poetics
-// index, and checked uid by uid against where each unit should have ended up.
+// The identity gate (#26, phase 2's React gate and phase 3's Svelte gate, #66):
+// scripted renames, moves, splits, merges, component wraps and component file
+// renames on real repositories, recorded by poetics index, and checked uid by
+// uid against where each unit should have ended up.
 import { execFileSync } from "node:child_process";
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, posix } from "node:path";
 import ts from "typescript";
-import { contentTree, detectUnits, fingerprint } from "@poetics/adapter-typescript";
+import { contentTree, fingerprint } from "@poetics/adapter-typescript";
 import type { DetectedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, isRemoved, mintUid } from "@poetics/core";
 import type { Unit } from "@poetics/core";
-import { applyIndex, planIndex, pluginsFor, unitHashes } from "@poetics/cli";
+import { applyIndex, detectIn, planIndex, pluginsFor, unitHashes } from "@poetics/cli";
 import { appendVersion, createUnit, filesInScope, parseUnit, readUnitFiles, relocateUnit, storePaths } from "@poetics/store";
 import type { PoeticsConfig } from "@poetics/store";
 
@@ -25,13 +26,16 @@ export interface CorpusEntry {
   adapters?: string[];
 }
 
-export type RefactorKind = "rename" | "move-file" | "move-unit" | "rename-edit" | "split" | "merge" | "wrap";
+export type RefactorKind = "rename" | "move-file" | "move-unit" | "rename-edit" | "split" | "merge" | "wrap" | "rename-file";
 
-export const REFACTORS: readonly RefactorKind[] = ["rename", "move-file", "move-unit", "rename-edit", "split", "merge", "wrap"];
+export const REFACTORS: readonly RefactorKind[] = ["rename", "move-file", "move-unit", "rename-edit", "split", "merge", "wrap", "rename-file"];
 
-/** The refactors a config can be measured on: wrapping a component in `memo` needs the React adapter to see through it. */
+/**
+ * The refactors a config can be measured on: wrapping a component in `memo` needs the React adapter to see through
+ * it, and renaming a component's file needs the Svelte adapter to read it.
+ */
 export function refactorsFor(config: { adapters?: readonly string[] }): RefactorKind[] {
-  return REFACTORS.filter((kind) => kind !== "wrap" || config.adapters?.includes("react"));
+  return REFACTORS.filter((kind) => (kind !== "wrap" || config.adapters?.includes("react")) && (kind !== "rename-file" || config.adapters?.includes("svelte")));
 }
 
 /** How one kind of refactor fared. A refactor counts once per uid it should have kept. */
@@ -232,6 +236,11 @@ async function refactor(
   random: () => number,
 ): Promise<{ uids: string[]; created: string[]; sizes?: Map<string, string> } | undefined> {
   const units = (await liveUnits(root)).filter((unit) => !used.has(unit.uid) && unit.kind !== "type");
+  // A .svelte file's units are found in the TypeScript svelte2tsx makes of it, so edits by their declarations' offsets
+  // would land in the wrong place; only renames, moves and file renames touch them. A component is named after its
+  // file, so it is renamed by renaming the file, not its identifier.
+  const editable = units.filter((unit) => !unit.location.file.endsWith(".svelte"));
+  const svelteComponent = (unit: Unit) => unit.framework === "svelte" && unit.kind === "component";
   const declared = await declarationCounts(root, config);
   const pick = <T>(items: T[]) => items[Math.floor(random() * items.length)];
   const code = async (unit: Unit) => findUnit(root, config, unit.location.file, unit.name);
@@ -239,7 +248,7 @@ async function refactor(
     found && ts.isFunctionDeclaration(found.unit.declarations[0]!) && found.unit.declarations.length === 1 && (found.unit.declarations[0]!.body?.statements.length ?? 0) >= min;
 
   if (kind === "rename" || kind === "rename-edit") {
-    const candidates = units.filter((unit) => unit.name.length >= 4 && declared.get(unit.name) === 1 && unit.name !== "default");
+    const candidates = (kind === "rename" ? units : editable).filter((unit) => !svelteComponent(unit) && unit.name.length >= 4 && declared.get(unit.name) === 1 && unit.name !== "default");
     for (let tries = 0; tries < 20 && candidates.length > 0; tries++) {
       const unit = pick(candidates)!;
       const found = await code(unit);
@@ -299,9 +308,25 @@ async function refactor(
     return undefined;
   }
 
+  if (kind === "rename-file") {
+    // A Svelte component is named after its file, so renaming the file renames the unit; its script's functions move with it.
+    const components = units.filter((unit) => svelteComponent(unit) && !declared.has(`${unit.name}Gate`));
+    const unit = pick(components);
+    if (!unit) return undefined;
+    const file = unit.location.file;
+    const to = posix.join(posix.dirname(file), `${unit.name}Gate.svelte`);
+    git(root, "mv", file, to);
+    for (const inFile of (await liveUnits(root)).filter((u) => u.location.file === file)) {
+      use(used, inFile.uid);
+      const want = expected.get(inFile.uid);
+      if (want) expected.set(inFile.uid, { file: to, name: inFile.uid === unit.uid ? `${unit.name}Gate` : want.name });
+    }
+    return { uids: [unit.uid], created: [] };
+  }
+
   if (kind === "split") {
     for (let tries = 0; tries < 30; tries++) {
-      const unit = pick(units);
+      const unit = pick(editable);
       if (!unit) return undefined;
       const found = await code(unit);
       if (!blockBody(found, 4) || declared.has(`${unit.name}Rest`)) continue;
@@ -325,7 +350,7 @@ async function refactor(
   if (kind === "wrap") {
     // A component declared as `export function Name(…) {…}` becomes `export const Name = memo(function Name(…) {…})`,
     // as someone memoising it would write it; the React adapter sees through the wrapper, so the uid should stay.
-    const components = units.filter((unit) => unit.kind === "component");
+    const components = editable.filter((unit) => unit.kind === "component");
     for (let tries = 0; tries < 20 && components.length > 0; tries++) {
       const unit = pick(components)!;
       const found = await code(unit);
@@ -343,7 +368,7 @@ async function refactor(
 
   // merge: two block-bodied functions in one file become the first.
   const byFile = new Map<string, Unit[]>();
-  for (const unit of units) byFile.set(unit.location.file, [...(byFile.get(unit.location.file) ?? []), unit]);
+  for (const unit of editable) byFile.set(unit.location.file, [...(byFile.get(unit.location.file) ?? []), unit]);
   for (const [file, inFile] of [...byFile].sort(() => random() - 0.5)) {
     if (inFile.length < 2) continue;
     const [first, second] = [...inFile].sort(() => random() - 0.5);
@@ -394,9 +419,9 @@ function describeSize(found: Found): string {
 async function findUnit(root: string, config: PoeticsConfig, file: string, name: string): Promise<Found | undefined> {
   const text = await readFile(join(root, file), "utf8").catch(() => undefined);
   if (text === undefined) return undefined;
-  const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
-  // With the same plugins poetics index runs, so a component wrapped in memo is still found.
-  const unit = detectUnits(source, file, pluginsFor(config)).find((u) => u.name === name && u.kind !== "type");
+  // With the same plugins poetics index runs, so a component wrapped in memo, or a .svelte file, is still found.
+  const { units, source } = detectIn(file, text, pluginsFor(config));
+  const unit = units.find((u) => u.name === name && u.kind !== "type");
   return unit && { unit, source, text, start: unit.span.start, end: unit.span.end };
 }
 
@@ -405,7 +430,7 @@ async function declarationCounts(root: string, config: PoeticsConfig): Promise<M
   const counts = new Map<string, number>();
   for (const file of (await filesInScope(root, config)).parseable) {
     const text = await readFile(join(root, file), "utf8");
-    for (const unit of detectUnits(ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true), file, pluginsFor(config))) counts.set(unit.name, (counts.get(unit.name) ?? 0) + 1);
+    for (const unit of detectIn(file, text, pluginsFor(config)).units) counts.set(unit.name, (counts.get(unit.name) ?? 0) + 1);
   }
   return counts;
 }
@@ -465,7 +490,7 @@ export function formatResults(results: readonly GateResult[], meta: { date: stri
     lines.push(
       `## ${corpus.name} (${corpus.kind})`,
       "",
-      `[${corpus.repo}](https://github.com/${corpus.repo}/tree/${corpus.commit}) at \`${corpus.commit.slice(0, 7)}\`, adapters ${result.adapters.join(", ")}: ${result.files.indexed} files indexed, ${result.files.notIndexed} in scope but not readable by the TypeScript indexer (\`.svelte\`), ${result.units} units (${kinds}). Seeding took ${result.timings.seedMs} ms; a round's \`poetics index\` took ${median} ms (median).`,
+      `[${corpus.repo}](https://github.com/${corpus.repo}/tree/${corpus.commit}) at \`${corpus.commit.slice(0, 7)}\`, adapters ${result.adapters.join(", ")}: ${result.files.indexed} files indexed, ${result.files.notIndexed} in scope but not readable with these adapters (\`.svelte\` without the Svelte adapter), ${result.units} units (${kinds}). Seeding took ${result.timings.seedMs} ms; a round's \`poetics index\` took ${median} ms (median).`,
       "",
       "| Refactor | Done | Skipped | Uids kept | Lost | Misplaced | Queued |",
       "| --- | --- | --- | --- | --- | --- | --- |",

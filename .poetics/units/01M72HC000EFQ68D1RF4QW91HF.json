@@ -29,6 +29,28 @@
           "url": "https://github.com/Pixerate/poetics/milestone/2"
         }
       ]
+    },
+    {
+      "contentHash": "b3:978fe22dd555e8830ef1919aafece75946430869e4e12bc1b4ac81c08085b218",
+      "interfaceHash": "b3:07552d49ebcd438d5564b285d3834a1227d07c7c455b67f02cbdee17f2e2ec45",
+      "parent": "b3:3b1fdfd6d6353c051ea0160e8d8f6c23d040e15ed188a6f6348b02c4f737ccca",
+      "change": "behaviour",
+      "rationale": "Measures rename-file only with the Svelte adapter on, as wrap needs React's (#66). With Svelte on, the gate's refactors also keep text edits by offset (rename-edit, split, merge, wrap) out of .svelte files, whose units are found in svelte2tsx's output, and rename components by renaming their file rather than their identifier.",
+      "deps": {
+        "01M6J0611RXDG1J0DGPDSS1GZS": "b3:5388ff7fe6160966911b3f8b82cf30651b97c391504fe7bb61b26eec7fce3569"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#66"
+        }
+      ]
     }
   ],
   "docs": "The refactors a config can be measured on: wrapping a component in `memo` needs the React adapter to see through it.",

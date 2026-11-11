@@ -46,6 +46,25 @@
           "url": "https://github.com/Pixerate/poetics/milestone/2"
         }
       ]
+    },
+    {
+      "contentHash": "b3:5388ff7fe6160966911b3f8b82cf30651b97c391504fe7bb61b26eec7fce3569",
+      "interfaceHash": "b3:37346b6b6f3b52dc9703dca3cf96de7277b535de09e03dc29ba56219cb09e462",
+      "parent": "b3:6e487112eb663dc0079cf368f75027c9a966b97e453265eeb824d5b12197c432",
+      "change": "interface",
+      "rationale": "Adds rename-file, phase 3's refactor (#66): renaming a Svelte component's file, which renames the component, since it is named after its file. Its script's functions move with it.",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#66"
+        }
+      ]
     }
   ],
   "docs": "The refactors the phase 1 gate applies.",
