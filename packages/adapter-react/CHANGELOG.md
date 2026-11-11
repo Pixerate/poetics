@@ -1,5 +1,12 @@
 # @poetics/adapter-react
 
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies [[`5ed117c`](https://github.com/Pixerate/poetics/commit/5ed117cff779ccb2a8e5428066851f6bf10a8f51)]:
+  - @poetics/adapter-typescript@0.4.0
+
 ## 0.3.4
 
 ### Patch Changes

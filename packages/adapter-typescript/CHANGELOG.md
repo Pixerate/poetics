@@ -1,5 +1,11 @@
 # @poetics/adapter-typescript
 
+## 0.4.0
+
+### Minor Changes
+
+- [#78](https://github.com/Pixerate/poetics/pull/78) [`5ed117c`](https://github.com/Pixerate/poetics/commit/5ed117cff779ccb2a8e5428066851f6bf10a8f51) Thanks [@surrealroad](https://github.com/surrealroad)! - Svelte 4 components record their full interface: `export let` props with their defaults, the events they dispatch or forward with the type a listener receives, and their named slots with the props each passes. The component signature gains optional `events` and `slots`, which Svelte 5 and React components leave out. A component rendered with content is one `renders` edge, and `sveltePlugin` takes an optional `svelteVersion`.
+
 ## 0.3.0
 
 ### Minor Changes
