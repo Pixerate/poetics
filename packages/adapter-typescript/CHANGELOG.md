@@ -1,5 +1,11 @@
 # @poetics/adapter-typescript
 
+## 0.6.0
+
+### Minor Changes
+
+- [#83](https://github.com/Pixerate/poetics/pull/83) [`eb94bf6`](https://github.com/Pixerate/poetics/commit/eb94bf607589f217ba13cdc28e0f41a03d9e3f58) Thanks [@surrealroad](https://github.com/surrealroad)! - Record Svelte contexts as `context` units (ADR 0021, [#74](https://github.com/Pixerate/poetics/issues/74)): what `createContext()` from `svelte` returns, destructured into its getter and setter or kept whole, and an exported constant that its own module passes to `setContext`, `getContext` or `hasContext` as the key. A context's interface is its value type; setting or reading it is a `uses-context` edge. The TypeScript indexer accepts an array-destructured variable as a unit when a plugin claims it, and `DetectedUnit` gains `aliases`. Adds `svelteContextKind` and `svelteContextSignature`.
+
 ## 0.5.1
 
 ### Patch Changes
