@@ -1,5 +1,13 @@
 # @poetics/adapter-typescript
 
+## 0.3.0
+
+### Minor Changes
+
+- [#76](https://github.com/Pixerate/poetics/pull/76) [`6c48ba7`](https://github.com/Pixerate/poetics/commit/6c48ba70a55ffd521055226e4896a910a48d05e0) Thanks [@surrealroad](https://github.com/surrealroad)! - Svelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.
+  
+  `FrameworkPlugin` gains `extensions`, `transform`, `ambient` and `detect` for files that are not TypeScript, and `version` may be a string. `filesInScope` reads `.svelte` files when the `svelte` adapter is configured, and `poetics index`, `verify`, `coverage`, `backfill` and the MCP tools use the Svelte plugin when it is.
+
 ## 0.2.3
 
 ### Patch Changes
