@@ -42,7 +42,7 @@ const require = createRequire(import.meta.url);
 const SVELTE2TSX_VERSION = (JSON.parse(readFileSync(require.resolve("svelte2tsx/package.json"), "utf8")) as { version: string }).version;
 
 /** Bumped when the plugin's own rules change what it records; svelte2tsx's version is added to it. */
-const RULES = 4;
+const RULES = 5;
 
 const SCRIPT = /<script(\s[^>]*)?>([\s\S]*?)<\/script\s*>/gi;
 
@@ -210,14 +210,40 @@ export function detectComponent(source: ts.SourceFile, file: string, original: s
   return units;
 }
 
+const RUNES = new Set(["$state", "$derived", "$effect"]);
+
+/**
+ * Whether `fn` creates rune state itself: its own body, not a function nested
+ * in it, calls `$state`, `$derived` or `$effect`, or one of their variants such
+ * as `$state.raw` or `$derived.by`. Such a function is a rune helper.
+ */
+export function createsRuneState(fn: ts.SignatureDeclaration): boolean {
+  const visit = (node: ts.Node): boolean => {
+    if (node !== fn && ts.isFunctionLike(node)) return false;
+    if (ts.isCallExpression(node)) {
+      let callee: ts.Expression = node.expression;
+      if (ts.isPropertyAccessExpression(callee)) callee = callee.expression;
+      if (ts.isIdentifier(callee) && RUNES.has(callee.text)) return true;
+    }
+    return node.forEachChild(visit) ?? false;
+  };
+  return visit(fn);
+}
+
+/** The function a declaration is or holds, seeing through parentheses and casts. */
+function functionIn(declaration: ts.FunctionDeclaration | ts.VariableDeclaration): ts.FunctionLikeDeclaration | undefined {
+  if (ts.isFunctionDeclaration(declaration)) return declaration;
+  let value = declaration.initializer;
+  while (value && (ts.isParenthesizedExpression(value) || ts.isAsExpression(value) || ts.isSatisfiesExpression(value))) value = value.expression;
+  return value && (ts.isArrowFunction(value) || ts.isFunctionExpression(value)) ? value : undefined;
+}
+
 /** A function declaration, or a variable statement whose one declaration holds a function. */
 function declaredFunction(statement: ts.Statement): { name: string; declaration: ts.FunctionDeclaration | ts.VariableDeclaration } | undefined {
   if (ts.isFunctionDeclaration(statement) && statement.name && statement.body) return { name: statement.name.text, declaration: statement };
   if (!ts.isVariableStatement(statement) || statement.declarationList.declarations.length !== 1) return undefined;
   const declaration = statement.declarationList.declarations[0]!;
-  let value = declaration.initializer;
-  while (value && (ts.isParenthesizedExpression(value) || ts.isAsExpression(value) || ts.isSatisfiesExpression(value))) value = value.expression;
-  if (!ts.isIdentifier(declaration.name) || !value || !(ts.isArrowFunction(value) || ts.isFunctionExpression(value))) return undefined;
+  if (!ts.isIdentifier(declaration.name) || !functionIn(declaration)) return undefined;
   return { name: declaration.name.text, declaration };
 }
 
@@ -251,13 +277,14 @@ function scriptFunctions(source: ts.SourceFile, file: string, original: string, 
       seen.add(fn.name);
       // The hashes and the signature text come from the script as written, the same trees a function in a .ts file gives.
       const asWritten: DetectedUnit = { key: "", name: fn.name, kind: "function", span: { file, start: 0, end: 0 }, declarations: [fn.declaration], framework: "none" };
+      const helper = createsRuneState(functionIn(fn.declaration)!);
       const unit: DetectedUnit = {
         key: `${file}#${fn.name}`,
         name: fn.name,
-        kind: "function",
+        kind: helper ? "hook" : "function",
         span: { file, start: block.bodyStart + statement.getStart(written), end: block.bodyStart + statement.end },
         declarations: [declaration],
-        framework: "none",
+        framework: helper ? "svelte" : "none",
         content: { tree: contentTree(asWritten), runtime: contentTree(asWritten, true) },
         signatureText: signatureText(asWritten, written),
         owner,
@@ -419,6 +446,12 @@ export function sveltePlugin(options: { svelteVersion?: string } = {}): Framewor
       return transformComponent(file, text, options.svelteVersion ?? svelteVersionFor(file, versions));
     },
     detect: detectComponent,
+    // A function in a rune module that creates rune state is a rune helper, recorded as a hook (#73). Runes only work in
+    // .svelte.ts and .svelte.js files, so elsewhere a `$state` call is someone else's function.
+    claim(unit, fn) {
+      if (!fn || svelteFileKind(unit.span.file) !== "rune-module") return undefined;
+      return createsRuneState(fn) ? "hook" : undefined;
+    },
     signature(unit, _fn, checker) {
       return unit.framework === "svelte" ? componentSignature(unit, checker) : undefined;
     },

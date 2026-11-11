@@ -27,7 +27,7 @@ Everything Poetics tracks is a **unit** with one stable identity and a chain of 
 | Unit kind | React | Svelte | Interface (what callers depend on) |
 | --- | --- | --- | --- |
 | Function | Any exported or module-level function | Functions in `<script>`, `<script module>` and `.svelte.ts` files | Parameter and return types |
-| Hook / rune helper | `use*` functions | Functions that create or return runes state | Parameters and returned shape |
+| Hook / rune helper | `use*` functions | Functions in `.svelte.ts` / `.svelte.js` modules or component scripts whose own body calls `$state`, `$derived` or `$effect` | Parameters and returned shape |
 | Component | Function or class components, including `memo` and `forwardRef` wrappers | Each `.svelte` file | Props, events or callback props, slots or snippets, ref type |
 | Type | Exported `type` and `interface` | Same | The type's structure |
 
@@ -94,7 +94,8 @@ Both adapters feed the same TypeScript type checker, so a Svelte component calli
 - **Interface, Svelte 5:** the type of the `$props()` destructure, including callback props and snippet props.
 - **Interface, Svelte 4:** `export let` declarations, `createEventDispatcher` event types, and named slots. Supporting both keeps mixed-version codebases working during migration.
 - **Edges:** components used in markup, functions called in template expressions and `{@render}` targets all resolve through the generated TSX.
-- **`.svelte.ts` files** with runes are indexed as ordinary TypeScript modules.
+- **`.svelte.ts` files** with runes are indexed as ordinary TypeScript modules, with the runes typed through svelte2tsx's shims.
+- **Rune helpers:** a function in a rune module or a component's script whose own body calls `$state`, `$derived` or `$effect` (or a variant such as `$derived.by`) is a `hook` unit with `framework: "svelte"`, the kind React's `use*` functions have, since both are functions that hand callers reactive state (#73). Calls to one are `uses-hook` edges. Detection is syntactic: a function that only returns another helper's state, without calling a rune itself, stays a `function`.
 
 ### Where neither adapter can see
 
