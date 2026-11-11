@@ -4,7 +4,8 @@ import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 import { createTypeScriptIndexer } from "@poetics/adapter-typescript";
 import type { IndexedUnit } from "@poetics/adapter-typescript";
-import { componentDocs, componentNameFromFile, componentSignatureText, detectSvelteMajor, svelteContent, svelteFileKind, sveltePlugin, transformComponent } from "./index.ts";
+import ts from "typescript";
+import { componentDocs, componentNameFromFile, componentSignatureText, createsRuneState, detectSvelteMajor, svelteContent, svelteFileKind, sveltePlugin, transformComponent } from "./index.ts";
 
 describe("svelteFileKind", () => {
   it("separates components from rune modules", () => {
@@ -374,5 +375,53 @@ describe("sveltePlugin with Svelte 4 components", () => {
     const badge = createTypeScriptIndexer({ root, files: ["src/Badge.svelte"], plugins: [sveltePlugin()] }).index().units[0]!;
     expect(badge.signature).not.toHaveProperty("events");
     expect(badge.signature).not.toHaveProperty("slots");
+  });
+});
+
+describe("createsRuneState", () => {
+  const fn = (code: string) => {
+    const source = ts.createSourceFile("a.svelte.ts", code, ts.ScriptTarget.Latest, true);
+    const statement = source.statements[0]!;
+    if (ts.isFunctionDeclaration(statement)) return statement;
+    return (statement as ts.VariableStatement).declarationList.declarations[0]!.initializer as ts.ArrowFunction;
+  };
+
+  it("sees $state, $derived and $effect and their variants called in the function's own body", () => {
+    expect(createsRuneState(fn("function a() { let n = $state(0); }"))).toBe(true);
+    expect(createsRuneState(fn("const a = () => { const d = $derived.by(() => 1); };"))).toBe(true);
+    expect(createsRuneState(fn("function a() { const s = $state.raw([]); }"))).toBe(true);
+    expect(createsRuneState(fn("function a() { $effect(() => {}); }"))).toBe(true);
+  });
+
+  it("ignores runes in nested functions, and other calls", () => {
+    expect(createsRuneState(fn("function a() { return () => $state(0); }"))).toBe(false);
+    expect(createsRuneState(fn("function a() { return state(0) + $props; }"))).toBe(false);
+  });
+});
+
+describe("sveltePlugin with rune modules (#73)", () => {
+  const CART = `export interface Line { priceMinor: number }\n\n/** Cart state. */\nexport function createCart(initial: Line[] = []) {\n  let lines = $state(initial);\n  const total = $derived(lines.reduce((sum, line) => sum + line.priceMinor, 0));\n  return {\n    get total() {\n      return total;\n    },\n  };\n}\n\nexport function sum(lines: Line[]): number {\n  return lines.reduce((n, line) => n + line.priceMinor, 0);\n}\n`;
+  const COMPONENT = `<script lang="ts">\n  import { createCart } from "./cart.svelte.ts";\n  const cart = createCart();\n  function local() {\n    let open = $state(false);\n    return { get open() { return open; } };\n  }\n</script>\n\n<p>{cart.total} {local().open}</p>\n`;
+
+  it("indexes a .svelte.ts module as TypeScript with the runes' types resolved, without a tsconfig", () => {
+    const root = project({ "src/cart.svelte.ts": CART });
+    const units = new Map(createTypeScriptIndexer({ root, files: ["src/cart.svelte.ts"], plugins: [sveltePlugin()] }).index().units.map((unit) => [unit.name, unit]));
+    expect(units.get("createCart")!.unresolved).toEqual([]);
+    expect(units.get("createCart")!.signature).toMatchObject({ overloads: [{ returns: { inferred: "{ readonly total: number; }" } }] });
+  });
+
+  it("records a function that creates rune state as a Svelte hook, and plain functions as functions", () => {
+    const root = project({ "src/cart.svelte.ts": CART, "src/Cart.svelte": COMPONENT, "src/plain.ts": "export function createThing() {\n  return $state(0);\n}\n" });
+    const units = new Map(createTypeScriptIndexer({ root, files: ["src/cart.svelte.ts", "src/Cart.svelte", "src/plain.ts"], plugins: [sveltePlugin()] }).index().units.map((unit) => [unit.name, unit]));
+    expect(units.get("createCart")).toMatchObject({ kind: "hook", framework: "svelte", docs: "Cart state." });
+    expect(units.get("sum")).toMatchObject({ kind: "function", framework: "none" });
+    // Runes only work in Svelte files, so a $state call in a .ts file is not one.
+    expect(units.get("createThing")).toMatchObject({ kind: "function", framework: "none" });
+    // A function in a component's script that creates rune state is a helper too.
+    expect(units.get("local")).toMatchObject({ kind: "hook", framework: "svelte", owner: "src/Cart.svelte#Cart" });
+    expect(units.get("Cart")!.edges).toEqual([
+      { to: "src/Cart.svelte#local", kind: "uses-hook" },
+      { to: "src/cart.svelte.ts#createCart", kind: "uses-hook" },
+    ]);
   });
 });

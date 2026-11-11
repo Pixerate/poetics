@@ -58,12 +58,40 @@
           "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:61aa4d6faccbe86a7546543ebd39ccbe51268d598d7b877a8a9b819501fe1eb9",
+      "interfaceHash": "b3:20cd0e1e8e3aabb28204c25dfc8a9dda65550bc67e2b235ed3580093d19c14f6",
+      "parent": "b3:e785e7902ae83fdddf735d45dcfccf08fe6bac9d6525091d4d11599921e0bf1f",
+      "change": "behaviour",
+      "rationale": "Runs the Svelte plugin before React's. The first plugin to claim a unit wins, and React's claims every use* function as its hook, so a use* rune helper in a .svelte.ts module was recorded as React's in a repository listing both (#73). Svelte's claims only in Svelte files, so going first changes nothing elsewhere.",
+      "deps": {
+        "01M6ME83DB7CZMB7TW8W4YE6PZ": "b3:1dd83970f2ffc92c08a31fa813e45797464a2663afc5358e1d85627c3649eefa",
+        "01M73SRDN5F6KY612X9A9V8741": "b3:7e147b04f1e9fa27cfee79154964f4561e5e822fdd26a60dbe9b202047ef87c1",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:edb73add1559c280c4dcdceb5f3f6bf3dbf06d95ad7a8ce70316aef31405ac59"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#73"
+        }
+      ]
     }
   ],
   "docs": "The plugins for `config.adapters`: React's when `react` is listed. Svelte's arrives with its adapter.",
   "tests": [
     {
       "file": "packages/adapter-react/src/index.test.ts",
+      "via": "static"
+    },
+    {
+      "file": "packages/cli/src/frameworks.test.ts",
       "via": "static"
     }
   ]

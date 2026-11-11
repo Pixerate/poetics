@@ -15,7 +15,10 @@ and of the component: give each its own rationale.
   component's interface.
 - **Callback props for events** (`onSelect`), not `createEventDispatcher`.
 - **Snippets over slots** (`{@render children?.()}`), typed in the props.
-- **Rune modules** go in `.svelte.ts` files and are indexed as TypeScript.
+- **Rune modules** go in `.svelte.ts` files and are indexed as TypeScript. A
+  function there that calls `$state`, `$derived` or `$effect` itself is a
+  rune helper, recorded as a `hook`: create its state in its own body rather
+  than in a function it calls, so the adapter sees it.
 - **Avoid `<svelte:component this={x}>`** and dynamic component maps where an
   explicit component works; they become unresolved edges.
 - **Docs** live in a `<!-- @component -->` comment at the top of the file,
