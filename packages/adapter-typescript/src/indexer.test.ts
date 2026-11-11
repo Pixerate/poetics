@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { createTypeScriptIndexer } from "./indexer.ts";
+import type { FrameworkPlugin } from "./units.ts";
 import { makeProject, writeFiles } from "./test-helpers.ts";
 
 const FILES = {
@@ -108,5 +109,43 @@ describe("createTypeScriptIndexer", () => {
   it("gives no units for a file in scope that does not exist", () => {
     const { options } = setup();
     expect(createTypeScriptIndexer(options).index(["src/gone.ts"]).units).toEqual([]);
+  });
+});
+
+describe("transformed files", () => {
+  // A toy framework: `.box` files hold TypeScript after a `---` header line, which the transform drops.
+  const boxPlugin = (): FrameworkPlugin => ({
+    framework: "svelte",
+    version: "box-1",
+    extensions: [".box"],
+    transform(_file, text) {
+      const header = text.indexOf("---\n") + 4;
+      return { code: text.slice(header), toOriginal: (offset) => offset + header };
+    },
+  });
+  const BOX = {
+    "src/price.box": `price box\n---\nexport function formatPrice(n: number) { return n.toFixed(2); }\nexport function broken() { return missing(); }\n`,
+    "src/cart.ts": `import { formatPrice } from "./price.box";\nexport function total(ns: number[]) { return formatPrice(ns.length); }`,
+  };
+
+  it("reads a file through its plugin's transform, resolves imports of it, and maps uses back", () => {
+    const root = makeProject(BOX);
+    const units = createTypeScriptIndexer({ root, files: Object.keys(BOX), plugins: [boxPlugin()] }).index().units;
+    const named = byName(units);
+    expect(named.get("total")!.edges).toEqual([{ to: "src/price.box#formatPrice", kind: "calls" }]);
+    const broken = named.get("broken")!;
+    const text = BOX["src/price.box"];
+    expect(broken.unresolved).toMatchObject([{ reason: "missing does not resolve to a declaration" }]);
+    expect(text.slice(broken.unresolved[0]!.span.start, broken.unresolved[0]!.span.end)).toBe("missing()");
+  });
+
+  it("re-indexes a file's importers when the transformed file changes", () => {
+    const root = makeProject(BOX);
+    const cacheFile = join(root, ".poetics/cache/typescript.json");
+    const options = { root, files: Object.keys(BOX), cacheFile, plugins: [boxPlugin()] };
+    createTypeScriptIndexer(options).index();
+    expect(createTypeScriptIndexer(options).index().stats).toEqual({ cached: 2, indexed: 0 });
+    writeFiles(root, { "src/price.box": BOX["src/price.box"].replace("toFixed(2)", "toFixed(3)") });
+    expect(createTypeScriptIndexer(options).index().stats).toEqual({ cached: 0, indexed: 2 });
   });
 });

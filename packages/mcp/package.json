@@ -41,7 +41,6 @@
     "poetics-mcp": "./dist/bin.js"
   },
   "dependencies": {
-    "@poetics/adapter-react": "workspace:*",
     "@poetics/adapter-typescript": "workspace:*",
     "@poetics/cli": "workspace:*",
     "@poetics/core": "workspace:*",

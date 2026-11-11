@@ -1,0 +1,44 @@
+{
+  "uid": "01M73SRDN5SB5S82SMJPB1SBJC",
+  "kind": "function",
+  "framework": "none",
+  "name": "offsetMapper",
+  "location": {
+    "file": "packages/adapter-svelte/src/source-map.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:f8b5c9cd61b860be121f212a7a8b15b661d0ef2cdbde405bb15045b22b37a251",
+      "interfaceHash": "b3:b4dc4273768e21b7555ca45f613943a0b3be03621173d9f2616403ad5972df2f",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Maps a generated offset to the component's own text through the nearest segment on its line; generated-only code maps to nothing, so uses the author never wrote are not reported.",
+      "deps": {
+        "01M73SRDN5N0V98E6W6KKSBVBR": "b3:bb0e0e8118c708906349ce92f93228aec87c5390a4d10510d44d4cad2f4cb46d"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Maps offsets in `generated` back to offsets in `original`. An offset maps\nthrough the nearest segment at or before it on its line, moved by the same\ndistance; an offset with no segment before it on its line is generated-only\ncode and maps to undefined.",
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/source-map.test.ts",
+      "via": "static"
+    }
+  ]
+}

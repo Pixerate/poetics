@@ -6,19 +6,30 @@ import { createMatcher } from "./glob.ts";
 export interface Scope {
   include: readonly string[];
   exclude?: readonly string[];
+  /** The adapters that read the code: with `svelte`, `.svelte` components are parseable too (ADR 0020). */
+  adapters?: readonly string[];
 }
 
 const PARSEABLE = /\.(ts|tsx|mts|cts)$/;
 const IGNORED_DIRS = new Set(["node_modules", "dist", ".git", ".poetics", ".svelte-kit"]);
 
-/** Repo-relative files in scope, sorted. Files the parser cannot read yet (e.g. .svelte) are listed separately. */
+/**
+ * Whether the configured adapters read `file`: TypeScript sources other than
+ * declaration files, and `.svelte` components when `svelte` is configured (ADR 0020).
+ */
+export function isParseable(file: string, adapters?: readonly string[]): boolean {
+  if (file.endsWith(".svelte")) return adapters?.includes("svelte") ?? false;
+  return PARSEABLE.test(file) && !file.endsWith(".d.ts");
+}
+
+/** Repo-relative files in scope, sorted. Files no configured adapter reads (e.g. .svelte without `svelte`) are listed separately. */
 export async function filesInScope(root: string, scope: Scope): Promise<{ parseable: string[]; unsupported: string[] }> {
   const match = createMatcher(scope.include, scope.exclude ?? []);
   const parseable: string[] = [];
   const unsupported: string[] = [];
   for (const file of await walk(root, root)) {
     if (!match(file)) continue;
-    (PARSEABLE.test(file) && !file.endsWith(".d.ts") ? parseable : unsupported).push(file);
+    (isParseable(file, scope.adapters) ? parseable : unsupported).push(file);
   }
   return { parseable, unsupported };
 }

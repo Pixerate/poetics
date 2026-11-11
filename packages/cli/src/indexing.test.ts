@@ -40,6 +40,19 @@ async function store(root: string): Promise<Map<string, Unit>> {
 }
 
 describe("planIndex and applyIndex", () => {
+  it("records a Svelte component once and matches it on the next run (ADR 0020)", async () => {
+    const root = await mkdtemp(join(tmpdir(), "poetics-index-svelte-"));
+    runGit(root, "init", "-q", "-b", "main");
+    const config = { adapters: ["typescript", "svelte"], include: ["src/**/*.{ts,svelte}"] };
+    await write(root, ".poetics/config.json", JSON.stringify({ version: 1, ...config }));
+    await write(root, "src/Tag.svelte", `<script lang="ts">\n  let { label }: { label: string } = $props();\n</script>\n\n<b>{label}</b>\n`);
+    const first = await planIndex(root, config, { rationale: "Seed" });
+    expect(first.created.map((u) => [u.name, u.kind, u.framework, u.location])).toEqual([["Tag", "component", "svelte", { file: "src/Tag.svelte", export: "default" }]]);
+    await applyIndex(root, first, human);
+    const again = await planIndex(root, config);
+    expect(again).toMatchObject({ fresh: 1, created: [], removed: [] });
+  });
+
   it("creates units for new code, with docs, hashes, deps and sibling tests", async () => {
     const root = await seeded({
       "src/price.ts": `/** Formats cents. */\n${PRICE}`,

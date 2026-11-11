@@ -1,0 +1,47 @@
+{
+  "uid": "01M73SRDN5F6KY612X9A9V8741",
+  "kind": "function",
+  "framework": "none",
+  "name": "sveltePlugin",
+  "location": {
+    "file": "packages/adapter-svelte/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:2b9cdb1b9e7c4539ee0e1647b82e96c1fe5e86c7455e5bf0edffea322b2838ca",
+      "interfaceHash": "b3:09a459cba2bcc451812415b0b4e824a76afc8de4e3e96986f4b1b343c95ca90d",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The Svelte plugin for the TypeScript indexer (ADR 0020): .svelte files through svelte2tsx, one component unit each, props as the interface and renders edges for components used in markup. Its version carries svelte2tsx's, so an upgrade re-indexes components.",
+      "deps": {
+        "01M73SRDN5Z4WSJ6TRV2JWFFGG": "b3:7b1b0ee3672237ed8355fccc952b0e00a0f60a6f9930ab57407e21766a136395",
+        "01M73SRDN58GD6SPYSEVK6B37R": "b3:c7d70267b64c0495465139c4cbce0013bab34506975b018bc9ecabd046d74cae",
+        "01M73SRDN591D9C02BN9X1Y7M5": "b3:3c1871f241a66494a0aa93839df950a0ee73e0118f40fd2eff4fe82449c8499f",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:edb73add1559c280c4dcdceb5f3f6bf3dbf06d95ad7a8ce70316aef31405ac59"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ],
+  "docs": "The Svelte plugin for the TypeScript indexer: `.svelte` files, read through svelte2tsx (ADR 0020).",
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "uid": "01M73SRDN4XTANXDSC7PD4D882",
+  "kind": "function",
+  "framework": "none",
+  "name": "svelteContent",
+  "location": {
+    "file": "packages/adapter-svelte/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:7eba5a9875e82e24ba34440ec88b1cd89e35b4ceca0b2a791d5a0032bbb8298a",
+      "interfaceHash": "b3:84ed12d0b83bae1544d6180e6195d11d7f1802836a8bce3e41ceb932582d3f3f",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Hashes a component from its source as written, never the generated TSX (ADR 0020), so a svelte2tsx upgrade or reformatting mints no version. Scripts are normalised as TypeScript; markup and styles drop comments and formatting whitespace.",
+      "deps": {
+        "01M6HNRFMKJGK18JKH37PPJ711": "b3:167f4daf6b6b849a3c90172c988aefdaead3e1e3835dad2d4aa7da4a1159f537",
+        "01M6HNRFMKY02B40EEEAPZ66BP": "b3:30556d396c90f369fc9496e82b92c4e327d78359c0bda51c36d33639523c8d2d"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ],
+  "docs": "The content and runtime trees of a component, from its source as written:\neach script normalised as TypeScript, so formatting and comments never count;\nmarkup and styles with comments dropped and whitespace collapsed. The\nTypeScript svelte2tsx generates never enters them (ADR 0020).",
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

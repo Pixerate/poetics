@@ -49,6 +49,33 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:9fc05d69431271176899fb4c0582763056c6b96a555ec5082f709bd060a45369",
+      "interfaceHash": "b3:5823a1740d6c2375ae0000e1f9b95270c4550bbb82cac0ff2ce0e9003b39dadf",
+      "parent": "b3:61e0decd4f3c2ee8c2bcbeec36371a6dc4c9aab4ba968f52b7976fc60d6af2b5",
+      "change": "interface",
+      "rationale": "Gains exportedAs, so a named default export such as a Svelte component matches its unit, whose location.export is default.",
+      "deps": {
+        "01M5XDBC6YYK0M5RPS3YMPYSPM": "b3:a9d8f9922d57a2b242a17ff15b364a707eb1b721d5ced5d96e4ec2f62342087d",
+        "01M5XDBC6Z8PGANPEC147TCK3S": "b3:310b05240b0bddfa9d2b156478f247c373bc198d7422bdd196ed64e36ca04387"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
     }
   ],
   "tests": [

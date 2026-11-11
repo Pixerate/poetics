@@ -95,6 +95,13 @@ describe("compareCodeWithStore", () => {
     expect(drift.fresh).toBe(1);
   });
 
+  it("matches a named default export, such as a Svelte component, by the name it is exported as", () => {
+    const component = { ...decl("App"), exportedAs: "default" };
+    const drift = compareCodeWithStore([component], [unit(U1, "App", h("1"), "src/a.ts", { location: { file: "src/a.ts", export: "default" } })], all);
+    expect(drift.findings).toEqual([]);
+    expect(drift.tracked).toBe(1);
+  });
+
   it("reports duplicate units", () => {
     const drift = compareCodeWithStore([decl("a")], [unit(U1, "a"), unit(U2, "a")], all);
     expect(drift.findings.map((f) => f.kind)).toEqual(["duplicate"]);

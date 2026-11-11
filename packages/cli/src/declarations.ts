@@ -10,13 +10,15 @@ import { contentHash, gitBlobHash } from "@poetics/core";
 import type { Hash, UnitKind } from "@poetics/core";
 import { filesInScope } from "@poetics/store";
 import type { Scope } from "@poetics/store";
-import type { FrameworkPlugin } from "@poetics/adapter-typescript";
+import type { DetectedUnit, FrameworkPlugin } from "@poetics/adapter-typescript";
 import { pluginsFor } from "./frameworks.ts";
 
 export interface Declaration {
   /** Repo-relative POSIX path. */
   file: string;
   name: string;
+  /** The name the module exports it as, when that differs from `name`, such as `default`. */
+  exportedAs?: string;
   kind: UnitKind;
   /** Provisional hash of the declaration text, from `export` to its end, without leading TSDoc. */
   hash: Hash;
@@ -27,17 +29,31 @@ export interface Declaration {
   endLine: number;
 }
 
-/** The units the TypeScript indexer detects in one source text: exported functions, hooks and types. */
+/**
+ * The units in one file's text, found syntactically. A file a framework
+ * transforms, such as a .svelte component, is detected in the TypeScript it
+ * becomes; spans and lines still index `text` (ADR 0020).
+ */
+export function detectIn(file: string, text: string, plugins: readonly FrameworkPlugin[] = []): { units: DetectedUnit[]; source: ts.SourceFile; lineOf(offset: number): number } {
+  const plugin = plugins.find((p) => p.transform && p.detect && p.extensions?.some((ext) => file.endsWith(ext)));
+  const transformed = plugin?.transform!(file, text);
+  const source = ts.createSourceFile(transformed ? `${file}.tsx` : file, transformed?.code ?? text, ts.ScriptTarget.Latest, true);
+  const units = plugin && transformed ? plugin.detect!(source, file, text, transformed) : detectUnits(source, file, plugins);
+  return { units, source, lineOf: (offset) => text.slice(0, offset).split("\n").length };
+}
+
+/** The units the TypeScript indexer detects in one source text: exported functions, hooks, types and framework components. */
 export function declarationsIn(file: string, text: string, plugins: readonly FrameworkPlugin[] = []): Declaration[] {
-  const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
-  return detectUnits(source, file, plugins).map((unit) => ({
+  const { units, lineOf } = detectIn(file, text, plugins);
+  return units.map((unit) => ({
     file,
     name: unit.name,
+    ...(unit.exportedAs !== undefined ? { exportedAs: unit.exportedAs } : {}),
     kind: unit.kind,
     hash: gitBlobHash(text.slice(unit.span.start, unit.span.end)),
     contentHash: contentHash(contentTree(unit)),
-    startLine: source.getLineAndCharacterOfPosition(unit.span.start).line + 1,
-    endLine: source.getLineAndCharacterOfPosition(unit.span.end).line + 1,
+    startLine: lineOf(unit.span.start),
+    endLine: lineOf(unit.span.end),
   }));
 }
 

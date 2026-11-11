@@ -45,6 +45,31 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:471977d1c45be5ccd061ed2ea743a416f9da6e9efe23b48c45f0f0220570a778",
+      "interfaceHash": "b3:599100b842cc60b17a86d2c44f1b9a6f240965486c755af2ab26ba06e731eb09",
+      "parent": "b3:5d684fa05a4e390036844809c3b369c59e5acb5f816bf73aa7e80eaea390effc",
+      "change": "behaviour",
+      "rationale": "Looks declarations up by the name they are exported as, matching how units are keyed, so the demo site shows the source of Svelte components, which are named after their file but exported as default.",
+      "deps": {
+        "01M5Z1F6NAV1BBC8YWAYEHDZT1": "b3:0f915f41dcc8cf09e722002e37fe5ee91501a39f901cddd32cbb209182314039",
+        "01M5Z1YVZXWS7J1T9H7BAGD36T": "b3:fa6d25522c545e514cda7858dcd166756b1d2ea6c33996bffc31b539c903e952",
+        "01M5Z1YW0J4X5G0AS6KTYG2S4X": "b3:528c2212f1626533bc0790c9184c41984091a9d6710c54a5ff48e2b6e2d6b2a8",
+        "01M5Z1YW0G6EX3CYT5B1S0KWXK": "b3:4db75d548cfbea47db504cee2df0b0224e4bb78997b9014385637a00c7afbc32"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        }
+      ]
     }
   ],
   "tests": [

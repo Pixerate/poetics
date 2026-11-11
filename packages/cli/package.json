@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@poetics/adapter-react": "workspace:*",
+    "@poetics/adapter-svelte": "workspace:*",
     "@poetics/adapter-typescript": "workspace:*",
     "@poetics/core": "workspace:*",
     "@poetics/store": "workspace:*",

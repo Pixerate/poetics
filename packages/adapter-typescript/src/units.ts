@@ -25,6 +25,23 @@ export interface DetectedUnit {
   framework: Framework;
   /** Wrapper calls the unit's function was found inside, such as `memo`, outermost first. */
   wrappers?: string[];
+  /**
+   * The content and runtime trees, when they are not the declarations': a Svelte component's hashes
+   * cover its source as written, not the TypeScript generated from it (ADR 0020).
+   */
+  content?: { tree: NormalTree; runtime: NormalTree };
+  /** What a caller reads, when the declarations are generated code. */
+  signatureText?: string;
+}
+
+/**
+ * A file a framework turns into TypeScript for the checker, such as a `.svelte`
+ * component, with the way back from the generated text to what was written.
+ */
+export interface Transformed {
+  code: string;
+  /** The offset in the original text that a generated offset came from, or undefined for generated-only code. */
+  toOriginal(offset: number): number | undefined;
 }
 
 /**
@@ -34,8 +51,22 @@ export interface DetectedUnit {
  */
 export interface FrameworkPlugin {
   framework: Framework;
-  /** Bumped whenever the plugin's rules change what it claims or records, so cached units made by older rules are indexed again. */
-  version?: number;
+  /**
+   * Changed whenever the plugin's rules, or a tool it runs, change what it claims or records, so cached
+   * units made by older rules are indexed again.
+   */
+  version?: number | string;
+  /** Extensions of files this framework turns into TypeScript, such as `.svelte` (ADR 0020). */
+  extensions?: readonly string[];
+  /** The TypeScript the checker reads for a file with one of `extensions`. */
+  transform?(file: string, text: string): Transformed;
+  /** Absolute paths of declaration files the generated code needs, such as svelte2tsx's shims. */
+  ambient?: readonly string[];
+  /**
+   * The units of a file this plugin transformed, in place of plain detection. Their spans are in the
+   * original text; their declarations are nodes of the generated `source`.
+   */
+  detect?(source: ts.SourceFile, file: string, original: string, transformed: Transformed): DetectedUnit[];
   /** The function a call such as `memo(fn)` wraps, when this framework knows the wrapper. */
   unwrap?(call: ts.CallExpression): ts.Expression | undefined;
   /**
@@ -185,6 +216,7 @@ export function detectUnits(source: ts.SourceFile, file: string, plugins: readon
 
 /** The unit's whole tree, its own name left out so a rename alone keeps the hash. */
 export function contentTree(unit: DetectedUnit, eraseTypes = false): NormalTree {
+  if (unit.content) return eraseTypes ? unit.content.runtime : unit.content.tree;
   return ["Unit", ...unit.declarations.map((declaration) => declarationTree(declaration, eraseTypes))];
 }
 
@@ -250,6 +282,7 @@ function callSignature(fn: ts.SignatureDeclaration, checker: ts.TypeChecker): Ca
  * overloads, only the overload signatures.
  */
 export function signatureText(unit: DetectedUnit, source: ts.SourceFile, plugins: readonly FrameworkPlugin[] = []): string {
+  if (unit.signatureText !== undefined) return unit.signatureText;
   const texts = unit.declarations.flatMap((declaration) => {
     const list = ts.isVariableDeclaration(declaration) ? declaration.parent : undefined;
     const statement = list && ts.isVariableDeclarationList(list) && list.declarations.length === 1 ? list.parent : declaration;

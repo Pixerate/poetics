@@ -6,12 +6,12 @@
 // test files that git saw renamed.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import ts from "typescript";
-import { contentTree, createTypeScriptIndexer, detectUnits, fingerprint } from "@poetics/adapter-typescript";
+import { contentTree, createTypeScriptIndexer, fingerprint } from "@poetics/adapter-typescript";
+import { detectIn } from "./declarations.ts";
 import type { FrameworkPlugin, IndexedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
 import type { Actor, ChangeClass, CodeUnit, Hash, LineageDeclaration, LineageEntry, Link, QueuedMatch, RejectedDeclaration, TrackedUnit, Unit, Version } from "@poetics/core";
-import { appendVersion, createMatcher, createUnit, filesInScope, parseUnit, readUnitFiles, reclassifyUnit, relinkTests, relocateUnit, storePaths } from "@poetics/store";
+import { appendVersion, createMatcher, createUnit, filesInScope, isParseable, parseUnit, readUnitFiles, reclassifyUnit, relinkTests, relocateUnit, storePaths } from "@poetics/store";
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { pluginsFor } from "./frameworks.ts";
 import { changesSince, git, showAt } from "./git.ts";
@@ -92,7 +92,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   const code = createTypeScriptIndexer({ root, files: parseable, cacheFile: join(paths.cache, CACHE), plugins, ...(tsconfig ? { tsconfig } : {}) }).index().units;
   // By scope, not by what exists now: a unit whose file was deleted or moved is exactly what matching is for.
   const inScope = createMatcher(config.include, config.exclude ?? []);
-  const indexable = (file: string) => inScope(file) && /\.(ts|tsx|mts|cts)$/.test(file) && !file.endsWith(".d.ts");
+  const indexable = (file: string) => inScope(file) && isParseable(file, config.adapters);
   const live = (await readUnitFiles(paths))
     .map(parseUnit)
     .filter((unit) => !isRemoved(unit))
@@ -368,7 +368,7 @@ function baseSnapshot(root: string, base: string | null, plugins: readonly Frame
       const found = new Map<string, CodeUnit & { runtimeHash: Hash }>();
       const text = base === null ? undefined : showAt(root, base, file);
       if (text !== undefined) {
-        for (const unit of detectUnits(ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true), file, plugins)) {
+        for (const unit of detectIn(file, text, plugins).units) {
           const tree = contentTree(unit);
           found.set(place(file, unit.name, unit.kind), {
             key: unit.key,

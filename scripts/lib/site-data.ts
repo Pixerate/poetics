@@ -19,7 +19,8 @@ export interface SiteInputs {
 }
 
 export function buildSiteData(inputs: SiteInputs): SiteData {
-  const byKey = new Map(inputs.declarations.map((d) => [`${d.file}#${d.name}`, d]));
+  // Units of default exports are keyed by `location.export`, as drift keys them.
+  const byKey = new Map(inputs.declarations.map((d) => [`${d.file}#${d.exportedAs ?? d.name}`, d]));
   const units: SiteUnit[] = inputs.units
     .map((unit) => {
       const decl = byKey.get(`${unit.location.file}#${unit.location.export ?? unit.name}`);

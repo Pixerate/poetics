@@ -1,0 +1,45 @@
+{
+  "uid": "01M73SRDN591D9C02BN9X1Y7M5",
+  "kind": "function",
+  "framework": "none",
+  "name": "transformComponent",
+  "location": {
+    "file": "packages/adapter-svelte/src/index.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:3c1871f241a66494a0aa93839df950a0ee73e0118f40fd2eff4fe82449c8499f",
+      "interfaceHash": "b3:6ff79c90292d9f9d40ece8cc79558529313eff31e0fe17b71ddd7e7eb0c435f1",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Runs svelte2tsx with the project's own Svelte version and maps generated offsets back. A component svelte2tsx cannot read gets a stand-in default export, so it stays a unit and is still hashed from its source.",
+      "deps": {
+        "01M73SRDN5SB5S82SMJPB1SBJC": "b3:f8b5c9cd61b860be121f212a7a8b15b661d0ef2cdbde405bb15045b22b37a251",
+        "01M73SRDN5MTY9HZ3XBRQ9WJG1": "b3:980e655943e1a6ab73488f8a049c9649074a2f926d877889e8dce99a1141ab01"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Turns a component into TypeScript with svelte2tsx. A component svelte2tsx\ncannot read still gets a stand-in default export, so it stays one unit and\nits source is still hashed.",
+  "tests": [
+    {
+      "file": "packages/adapter-svelte/src/index.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "uid": "01M73SYHXD5TXVNXQN4ZXTNDGT",
+  "kind": "function",
+  "framework": "none",
+  "name": "isParseable",
+  "location": {
+    "file": "packages/store/src/scope.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:42ddd8d193318c2f4e3f78ebede08dc745c70b057e3bbb0e2a16ef4b9784c858",
+      "interfaceHash": "b3:170391b8aba3bf3836fe63065caaa4eba57091a69726e9a3057fbfb78a4ca6f7",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "One rule for which files the configured adapters read, shared by scope, poetics index, verify's change check, backfill and the MCP code view. Each had its own TypeScript-only regex, which left .svelte units out of matching and made index mint duplicates.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Whether the configured adapters read `file`: TypeScript sources other than\ndeclaration files, and `.svelte` components when `svelte` is configured (ADR 0020)."
+}

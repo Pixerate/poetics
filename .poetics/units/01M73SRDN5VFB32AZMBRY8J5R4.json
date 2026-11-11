@@ -1,0 +1,42 @@
+{
+  "uid": "01M73SRDN5VFB32AZMBRY8J5R4",
+  "kind": "component",
+  "framework": "svelte",
+  "name": "Overview",
+  "location": {
+    "file": "site/src/components/Overview.svelte",
+    "export": "default"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:7f08ff248c942f20b9ecdc4f818fc2faf799940c658315397d4ba01f4b207f97",
+      "interfaceHash": "b3:bbd995f8e3fdfa3cab453fb68d9abc7b0ea382e27551a72bc3713aa9b821731b",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "First recorded when the Svelte adapter began reading .svelte files (#69). It was written with the demo site (e7dd8e8), whose commit records why the site exists, not why this component does; it is the landing view: coverage meters against policy and the most recent recorded changes.",
+      "deps": {
+        "01M73SRDN5BC1CBG32JRJZN1BX": "b3:a910d0ef1fa4198022f978b30cf97913d48d5c73b26dc17bba5d2c175237002f",
+        "01M73SRDN5ENQXJYKNCQH7KR7A": "b3:ce7b33a7982ba7e90a142458f2d600f028071380322cbadf1605c4224dc6b2ac",
+        "01M5Z1YW0948EDNF3R7WHWTTS3": "b3:6eb858dfabe2c5157a6be735dc5e5f59262898f5183342af987d4b1ebe363206",
+        "01M5Z1YW06R7K97JARHZWSYY40": "b3:cf11f4b331921fbca5bcdf3c24c0b30df5f976a03251999e258afddc2d0eb653",
+        "01M5Z1YW0DS75QQQ302MA2NAVG": "b3:b933ab758a720073ee7de7544b01b0939239a415853433d8dadd931b8a7ade84"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#69"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
+    }
+  ]
+}
