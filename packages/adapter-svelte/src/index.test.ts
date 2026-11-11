@@ -312,6 +312,27 @@ describe("sveltePlugin with the TypeScript indexer", () => {
     // PriceTag, App that renders it, and main.ts that imports App.
     expect(index(root, undefined, cacheFile).stats).toEqual({ cached: 2, indexed: 3 });
   });
+
+  it("runs svelte2tsx only on the components a re-index reads, with units unchanged", () => {
+    const root = project(APP);
+    const cacheFile = join(root, ".poetics/cache/typescript.json");
+    const transformed: string[] = [];
+    const counting = () => {
+      const plugin = sveltePlugin();
+      return { ...plugin, transform: (file: string, text: string) => (transformed.push(file.slice(root.length + 1)), plugin.transform!(file, text)) };
+    };
+    const run = () => createTypeScriptIndexer({ root, files: Object.keys(APP), cacheFile, plugins: [counting()] }).index();
+    const first = run();
+    expect(transformed.sort()).toEqual(["src/App.svelte", "src/lib/Badge.svelte", "src/lib/PriceTag.svelte"]);
+    transformed.length = 0;
+    expect(run().units).toEqual(first.units);
+    expect(transformed).toEqual([]);
+    // Badge imports nothing and nothing imports it: editing it reads it alone.
+    writeFileSync(join(root, "src/lib/Badge.svelte"), APP["src/lib/Badge.svelte"].replace("<b>", "<strong>").replace("</b>", "</strong>"));
+    const edited = run();
+    expect(transformed).toEqual(["src/lib/Badge.svelte"]);
+    expect(edited.units).toEqual(index(root).units);
+  });
 });
 
 const LEGACY = `<script lang="ts">

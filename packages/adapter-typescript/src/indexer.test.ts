@@ -106,6 +106,24 @@ describe("createTypeScriptIndexer", () => {
     expect(() => createTypeScriptIndexer({ root, files: [], tsconfig: "missing.json" })).toThrow(/Cannot read missing\.json/);
   });
 
+  it("still sees globals declared in unchanged files when it re-indexes only a changed one", () => {
+    const files = {
+      "src/globals.d.ts": `declare function now(): number;`,
+      "src/augment.ts": `export {};\ndeclare global { function later(): string }`,
+      "src/clock.ts": `export function tick() { return now(); }\nexport function tock() { return later(); }`,
+      "src/other.ts": `export function other() { return 1; }`,
+    };
+    const root = makeProject(files);
+    const options = { root, files: Object.keys(files), cacheFile: join(root, ".poetics/cache/typescript.json") };
+    createTypeScriptIndexer(options).index();
+    writeFiles(root, { "src/clock.ts": `// Edited.\n${files["src/clock.ts"]}` });
+    const result = createTypeScriptIndexer(options).index();
+    expect(result.stats).toEqual({ cached: 3, indexed: 1 });
+    const named = byName(result.units);
+    expect(named.get("tick")!.signature).toMatchObject({ overloads: [{ returns: { inferred: "number" } }] });
+    expect(named.get("tock")!.signature).toMatchObject({ overloads: [{ returns: { inferred: "string" } }] });
+  });
+
   it("gives no units for a file in scope that does not exist", () => {
     const { options } = setup();
     expect(createTypeScriptIndexer(options).index(["src/gone.ts"]).units).toEqual([]);
@@ -137,6 +155,41 @@ describe("transformed files", () => {
     const text = BOX["src/price.box"];
     expect(broken.unresolved).toMatchObject([{ reason: "missing does not resolve to a declaration" }]);
     expect(text.slice(broken.unresolved[0]!.span.start, broken.unresolved[0]!.span.end)).toBe("missing()");
+  });
+
+  it("transforms nothing again when nothing changed, across indexers, with identical units", () => {
+    const root = makeProject(BOX);
+    const cacheFile = join(root, ".poetics/cache/typescript.json");
+    const transformed: string[] = [];
+    const counting = (): FrameworkPlugin => {
+      const plugin = boxPlugin();
+      return { ...plugin, transform: (file, text) => (transformed.push(file.slice(root.length + 1)), plugin.transform!(file, text)) };
+    };
+    const first = createTypeScriptIndexer({ root, files: Object.keys(BOX), cacheFile, plugins: [counting()] }).index();
+    expect(transformed).toEqual(["src/price.box"]);
+    transformed.length = 0;
+    const second = createTypeScriptIndexer({ root, files: Object.keys(BOX), cacheFile, plugins: [counting()] }).index();
+    expect(transformed).toEqual([]);
+    expect(second.units).toEqual(first.units);
+  });
+
+  it("transforms only the files a re-index reads: the changed ones and what they import", () => {
+    const files = { ...BOX, "src/other.box": `other box\n---\nexport function other() { return 1; }\n` };
+    const root = makeProject(files);
+    const cacheFile = join(root, ".poetics/cache/typescript.json");
+    const transformed: string[] = [];
+    const plugin = boxPlugin();
+    const counting: FrameworkPlugin = { ...plugin, transform: (file, text) => (transformed.push(file.slice(root.length + 1)), plugin.transform!(file, text)) };
+    const options = { root, files: Object.keys(files), cacheFile, plugins: [counting] };
+    createTypeScriptIndexer(options).index();
+    transformed.length = 0;
+    writeFiles(root, { "src/cart.ts": BOX["src/cart.ts"].replace("ns.length", "ns.length + 1") });
+    const result = createTypeScriptIndexer(options).index();
+    expect(result.stats).toEqual({ cached: 2, indexed: 1 });
+    // cart.ts's types need price.box; other.box is neither changed nor imported.
+    expect(transformed).toEqual(["src/price.box"]);
+    // Exactly what indexing everything afresh gives.
+    expect(result.units).toEqual(createTypeScriptIndexer({ root, files: Object.keys(files), plugins: [boxPlugin()] }).index().units);
   });
 
   it("re-indexes a file's importers when the transformed file changes", () => {

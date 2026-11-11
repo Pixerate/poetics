@@ -165,7 +165,14 @@ When you add a column or table, bump `INDEX_SCHEMA_VERSION` and add it to the
 holds the file's units, with their hashes, signatures and edges, under a key:
 a Merkle hash of the file's path, its text and whether it is in scope, over
 every project file it imports, directly or not. Unchanged keys skip the
-checker. The whole cache is dropped when its environment changes: the cache
+checker. Beside the entries, the cache keeps each file's facts under its own
+hash: the specifiers it imports (read from the transformed code for a file a
+plugin transforms, such as a `.svelte` component) and whether it can change
+globals (a script, or a `declare global` or `declare module` augmentation). An
+unchanged file is then neither read for its imports nor transformed to find
+them, and when some files miss, the program is rooted at those files and the
+ones that change globals: whatever they import loads by itself, and every
+other file, transformed or not, stays unread. The whole cache is dropped when its environment changes: the cache
 format (`CACHE_VERSION` in `indexer.ts`), the TypeScript version, the compiler
 options or the lockfile. Like `index.db`, it is disposable.
 

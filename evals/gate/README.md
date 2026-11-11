@@ -93,6 +93,18 @@ the kind of unit each refactor picked.
   `poetics index` 4.2 s (0.8 s). Each round re-transforms every component; the
   indexer's per-file cache skips the checker for unchanged files, but not the
   transform. That is the cost to watch on large Svelte repositories.
+- **Transform cache (2026-11-11):** the indexer now caches each file's
+  imports and whether it changes globals, and roots a re-index's program at
+  the files that changed and the files that declare globals, so a component
+  that neither changed nor is imported by a changed file is never transformed.
+  On the same machine, `pnpm gate --only shadcn-svelte` took a round's
+  `poetics index` from 3.9 s to **1.3 s** (median; 1.4 s on a second run),
+  with the same 91 of 95 uids kept and the same four misses. Indexing the
+  corpus again with nothing changed takes 0.44 s instead of 1.95 s, and runs
+  svelte2tsx on no component instead of all 2,128. Seeding still transforms
+  everything: the indexer's share went from 5.6 s to 5.8–6.2 s (recording the
+  new facts), and the gate's seeding, which also writes 2,912 unit files and
+  commits them, measured 7.8 s before and 9.2–9.4 s after.
 - taxonomy (React only) is unchanged: 82 of 82.
 
 ## Phase 2 findings (2026-11-10)
