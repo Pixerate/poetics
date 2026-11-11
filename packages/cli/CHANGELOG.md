@@ -1,5 +1,14 @@
 # @poetics/cli
 
+## 0.8.3
+
+### Patch Changes
+
+- Updated dependencies [[`d25b259`](https://github.com/Pixerate/poetics/commit/d25b2595e13495a49505972bdecdb6bcbf576b8f)]:
+  - @poetics/adapter-typescript@0.5.1
+  - @poetics/adapter-react@0.3.7
+  - @poetics/adapter-svelte@0.6.1
+
 ## 0.8.2
 
 ### Patch Changes
