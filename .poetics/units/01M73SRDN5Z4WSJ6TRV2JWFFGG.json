@@ -34,6 +34,35 @@
           "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:c655172a11c5e295014cf1e666c3bea8ae7c9d103509c5d92bdb17e0f16e8d1d",
+      "interfaceHash": "b3:e100e4c58c39ba54f384bbd6e4e27d468280ad92b0bf589e41801960fdeb18ab",
+      "parent": "b3:7b1b0ee3672237ed8355fccc952b0e00a0f60a6f9930ab57407e21766a136395",
+      "change": "behaviour",
+      "rationale": "Records each prop's default, $bindable included, since a caller that omits the prop gets it. A props type the component declares for itself is not a unit, so its structure is the interface rather than its name; otherwise retyping a prop in a local interface changed no interface hash. Inline and inferred props follow svelte2tsx's alias, and JavaScript components' props are read from its JSDoc typedef, which a TypeScript file's checker ignores.",
+      "deps": {
+        "01M6HNRFMKJGK18JKH37PPJ711": "b3:167f4daf6b6b849a3c90172c988aefdaead3e1e3835dad2d4aa7da4a1159f537",
+        "01M6HNRFMKY02B40EEEAPZ66BP": "b3:30556d396c90f369fc9496e82b92c4e327d78359c0bda51c36d33639523c8d2d",
+        "01M6HNRFMK6YQDCYX32NMQVWQ6": "b3:41e882d59fca82afb877f729e898113e5de5ed19cc05737c63cff20bc0598823",
+        "01M6HNRFMKWZ43X614N1PYFS0S": "b3:8f33c9bdd58aef77ceda8cfef501e6253ccf3db1e804715823b175e4179df213"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#70"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
+        }
+      ]
     }
   ],
   "docs": "A component's interface: its props type, read from what svelte2tsx's render\nfunction returns. For Svelte 5 that is the `$props()` type as written; for\nSvelte 4, the props svelte2tsx gathers from `export let`. Defaults, events\nand slots come later (#70, #71).",

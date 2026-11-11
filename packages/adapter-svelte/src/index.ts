@@ -42,7 +42,7 @@ const require = createRequire(import.meta.url);
 const SVELTE2TSX_VERSION = (JSON.parse(readFileSync(require.resolve("svelte2tsx/package.json"), "utf8")) as { version: string }).version;
 
 /** Bumped when the plugin's own rules change what it records; svelte2tsx's version is added to it. */
-const RULES = 1;
+const RULES = 2;
 
 const SCRIPT = /<script(\s[^>]*)?>([\s\S]*?)<\/script\s*>/gi;
 
@@ -205,8 +205,8 @@ export function detectComponent(source: ts.SourceFile, file: string, original: s
 /**
  * A component's interface: its props type, read from what svelte2tsx's render
  * function returns. For Svelte 5 that is the `$props()` type as written; for
- * Svelte 4, the props svelte2tsx gathers from `export let`. Defaults, events
- * and slots come later (#70, #71).
+ * Svelte 4, the props svelte2tsx gathers from `export let`. Defaults are part
+ * of it. Svelte 4 events and slots come later (#71).
  */
 export function componentSignature(unit: DetectedUnit, checker: ts.TypeChecker): Signature | undefined {
   if (unit.kind !== "component") return undefined;
@@ -221,17 +221,65 @@ export function componentSignature(unit: DetectedUnit, checker: ts.TypeChecker):
   }
   // svelte2tsx says a component takes no props with `Record<string, never>`.
   if (written && written.getText(source).replace(/\s/g, "") === "Record<string,never>") return { kind: "component", props: null, defaults: [] };
-  // Props typed inline are hoisted into a generated alias; its structure, not its name, is the interface.
-  if (written && ts.isTypeReferenceNode(written) && ts.isIdentifier(written.typeName) && written.typeName.text.startsWith("$$")) {
+  // A props type declared in the component itself is not a unit, so its structure, not its name, is the interface.
+  // That covers svelte2tsx's hoisted alias for inline types (inside the render function when it inferred them)
+  // and an interface the script declares without exporting it.
+  let local: ts.InterfaceDeclaration | undefined;
+  if (written && ts.isTypeReferenceNode(written) && ts.isIdentifier(written.typeName) && !written.typeArguments) {
     const name = written.typeName.text;
-    const alias = source.statements.find((s): s is ts.TypeAliasDeclaration => ts.isTypeAliasDeclaration(s) && s.name.text === name);
-    if (alias) written = alias.type;
+    const declared = [...source.statements, ...(render?.body?.statements ?? [])].find(
+      (s): s is ts.TypeAliasDeclaration | ts.InterfaceDeclaration => (ts.isTypeAliasDeclaration(s) || ts.isInterfaceDeclaration(s)) && s.name.text === name && !isExported(s),
+    );
+    if (declared && ts.isTypeAliasDeclaration(declared)) written = declared.type;
+    else if (declared) local = declared;
+  }
+  // A JavaScript component's props are typed in a JSDoc typedef, which a TypeScript file's checker ignores, so it is read as written.
+  const typedef = !written ? /@typedef\s*\{([\s\S]*?)\}\s*\$\$ComponentProps\b/.exec(source.text)?.[1] : undefined;
+  if (typedef !== undefined) {
+    const parsed = ts.createSourceFile("props.ts", `type P = ${typedef};`, ts.ScriptTarget.Latest, true).statements[0];
+    if (parsed && ts.isTypeAliasDeclaration(parsed)) written = parsed.type;
+  }
+  let inferred: string | undefined;
+  if (!written) {
+    const type = checker.getTypeAtLocation(props.initializer);
+    const generated = type.aliasSymbol?.name.startsWith("$$") ?? false;
+    inferred = checker.typeToString(type, generated ? undefined : props, ts.TypeFormatFlags.NoTruncation | (generated ? ts.TypeFormatFlags.InTypeAlias : 0));
   }
   return {
     kind: "component",
-    props: written ? { written: normaliseNode(written) } : { inferred: checker.typeToString(checker.getTypeAtLocation(props.initializer), props, ts.TypeFormatFlags.NoTruncation) },
-    defaults: [],
+    // The interface's own name is left out, so renaming it is not an interface change.
+    props: local ? { written: normaliseNode(local, { omit: new Set([local.name]) }) } : written ? { written: normaliseNode(written) } : { inferred: inferred! },
+    defaults: render ? propDefaults(render) : [],
   };
+}
+
+function isExported(statement: ts.Statement): boolean {
+  return ts.canHaveModifiers(statement) && (ts.getModifiers(statement) ?? []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
+}
+
+/**
+ * The default value of each prop that has one, from the `$props()` destructure:
+ * a caller that leaves the prop out gets it, so it is interface. A
+ * `$bindable(…)` default is kept whole, since whether a prop binds is
+ * interface too.
+ */
+function propDefaults(render: ts.FunctionDeclaration): Array<{ name: string; value: NormalTree }> {
+  const defaults: Array<{ name: string; value: NormalTree }> = [];
+  const visit = (node: ts.Node): void => {
+    if (ts.isVariableDeclaration(node) && node.initializer && ts.isCallExpression(node.initializer) && ts.isIdentifier(node.initializer.expression) && node.initializer.expression.text === "$props" && ts.isObjectBindingPattern(node.name)) {
+      for (const element of node.name.elements) {
+        if (!element.initializer || element.dotDotDotToken) continue;
+        const name = element.propertyName && !ts.isComputedPropertyName(element.propertyName) ? element.propertyName.getText() : element.name.getText();
+        defaults.push({ name: name.replace(/^["']|["']$/g, ""), value: normaliseNode(element.initializer) });
+      }
+      return;
+    }
+    // Nested functions are the component's own code, not its props.
+    if (ts.isFunctionLike(node) && node !== render) return;
+    node.forEachChild(visit);
+  };
+  visit(render);
+  return defaults.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
 }
 
 /** The svelte2tsx shims the generated code is typed against. */
