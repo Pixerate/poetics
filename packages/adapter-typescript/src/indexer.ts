@@ -1,5 +1,6 @@
-// The indexer: one TypeScript program over the files in scope, reused between
-// runs, and a per-file cache so unchanged files skip the checker entirely.
+// The indexer: one TypeScript program over the files a run must check, reused
+// between runs, and a per-file cache so unchanged files skip the checker, and
+// unchanged transformed files their transform, entirely.
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import ts from "typescript";
@@ -65,7 +66,7 @@ export interface TypeScriptIndexer {
 }
 
 // Bump when the shape of cached units or the normalisation changes, so old caches are dropped.
-const CACHE_VERSION = 6;
+const CACHE_VERSION = 7;
 const LOCKFILES = ["pnpm-lock.yaml", "package-lock.json", "yarn.lock", "bun.lock"];
 
 const DEFAULT_OPTIONS: ts.CompilerOptions = {
@@ -83,10 +84,24 @@ interface CachedFile {
   units: IndexedUnit[];
 }
 
+/** What keying needs from a file, kept so an unchanged file is neither transformed nor parsed again. */
+interface FileFacts {
+  /** The file's own hash (path, scope and text) these facts were read from. */
+  own: Hash;
+  /** Module specifiers its code imports or references, as `ts.preProcessFile` reports them. */
+  imports: string[];
+  /**
+   * Whether it can change other files' types without being imported: a script, or a global or module
+   * augmentation. Read from the program, which loads every file whose facts are new; unknown counts as global.
+   */
+  global?: boolean;
+}
+
 interface Cache {
   version: number;
   environment: string;
   files: Record<string, CachedFile>;
+  facts: Record<string, FileFacts>;
 }
 
 /** Creates an indexer whose program and cache carry over from one `index` call to the next. */
@@ -112,12 +127,22 @@ export function createTypeScriptIndexer(options: TypeScriptIndexerOptions): Type
   return {
     index(files = options.files) {
       const scope = [...new Set(files)];
-      const keys = fileKeys(scope, root, (path) => sources.code(path), resolveImport, relativeTo);
+      const { keys, facts } = fileKeys(scope, root, (path) => sources.code(path), resolveImport, relativeTo, cache.facts);
       const misses = scope.filter((file) => cache.files[file]?.key !== keys.get(file));
       const next: Record<string, CachedFile> = {};
 
       if (misses.length > 0) {
-        program = ts.createProgram({ rootNames: [...scope.map(programPath), ...ambient], options: compilerOptions, host, ...(program ? { oldProgram: program } : {}) });
+        // A miss's types and edges depend only on what it imports, which the program loads by itself, and on
+        // files that change globals. Rooting the program there, not at the whole scope, leaves every other
+        // file unread: for a transformed one, untransformed.
+        const missed = new Set(misses);
+        const globals = scope.filter((file) => facts[file]?.global !== false && !missed.has(file));
+        const rootNames = [...misses, ...globals].map(programPath);
+        program = ts.createProgram({ rootNames: [...rootNames, ...ambient], options: compilerOptions, host, ...(program ? { oldProgram: program } : {}) });
+        for (const [file, found] of Object.entries(facts)) {
+          const source = program.getSourceFile(programPath(file));
+          if (source) found.global = changesGlobals(source);
+        }
         const checker = program.getTypeChecker();
         const detected = new Map<string, { source: ts.SourceFile; units: DetectedUnit[]; original?: { text: string; transformed: Transformed } }>();
         const byDeclaration = new Map<ts.Node, DetectedUnit>();
@@ -139,7 +164,7 @@ export function createTypeScriptIndexer(options: TypeScriptIndexerOptions): Type
       }
       for (const file of scope) next[file] ??= cache.files[file]!;
 
-      cache = { version: CACHE_VERSION, environment, files: next };
+      cache = { version: CACHE_VERSION, environment, files: next, facts };
       if (options.cacheFile) writeCache(options.cacheFile, cache);
       return {
         units: scope.flatMap((file) => next[file]!.units),
@@ -286,7 +311,8 @@ function pathCandidates(specifier: string, options: ts.CompilerOptions, root: st
  * is in scope, over every project file it imports, directly or not. A file's
  * signatures and edges can only depend on what it imports, so an unchanged key
  * means its cached units still hold. A transformed file's imports are read from
- * the code it is transformed into.
+ * the code it is transformed into, and kept in `known` facts so an unchanged
+ * file is not transformed again to find them.
  */
 function fileKeys(
   scope: readonly string[],
@@ -294,17 +320,23 @@ function fileKeys(
   codeAt: (path: string) => string,
   resolveImport: ImportResolver,
   relativeTo: (path: string) => string,
-): Map<string, Hash> {
+  known: Record<string, FileFacts> = {},
+): { keys: Map<string, Hash>; facts: Record<string, FileFacts> } {
   const inScope = new Set(scope);
   const own = new Map<string, Hash>();
+  const facts: Record<string, FileFacts> = {};
   const edges: Edge[] = [];
   const queue = [...scope];
   for (let file = queue.shift(); file !== undefined; file = queue.shift()) {
     if (own.has(file)) continue;
     const path = join(root, file);
     const text = existsSync(path) ? readFileSync(path, "utf8") : "";
-    own.set(file, gitBlobHash(`${file}\0${inScope.has(file) ? "scope" : "dependency"}\0${text}`));
-    for (const { fileName } of ts.preProcessFile(codeAt(path), true, true).importedFiles) {
+    const hash = gitBlobHash(`${file}\0${inScope.has(file) ? "scope" : "dependency"}\0${text}`);
+    own.set(file, hash);
+    const cached = known[file];
+    const found: FileFacts = cached?.own === hash ? cached : { own: hash, imports: ts.preProcessFile(codeAt(path), true, true).importedFiles.map((imported) => imported.fileName) };
+    facts[file] = found;
+    for (const fileName of found.imports) {
       const resolved = resolveImport(fileName, path).resolvedModule;
       // Packages are covered by the lockfile in the cache's environment.
       if (!resolved || resolved.isExternalLibraryImport) continue;
@@ -317,7 +349,15 @@ function fileKeys(
       queue.push(target);
     }
   }
-  return computeClosureHashes(createGraph(edges), own);
+  return { keys: computeClosureHashes(createGraph(edges), own), facts };
+}
+
+/** Whether a file can change other files' types without being imported. Erring towards true only costs a file read. */
+function changesGlobals(source: ts.SourceFile): boolean {
+  return (
+    !ts.isExternalModule(source) ||
+    source.statements.some((statement) => ts.isModuleDeclaration(statement) && (ts.isStringLiteral(statement.name) || (statement.flags & ts.NodeFlags.GlobalAugmentation) !== 0))
+  );
 }
 
 /**
@@ -366,11 +406,11 @@ function lockfileHash(root: string): string | null {
 }
 
 function readCache(file: string | undefined, environment: string): Cache {
-  const empty: Cache = { version: CACHE_VERSION, environment, files: {} };
+  const empty: Cache = { version: CACHE_VERSION, environment, files: {}, facts: {} };
   if (!file || !existsSync(file)) return empty;
   try {
     const cache = JSON.parse(readFileSync(file, "utf8")) as Cache;
-    return cache.version === CACHE_VERSION && cache.environment === environment ? cache : empty;
+    return cache.version === CACHE_VERSION && cache.environment === environment && cache.files && cache.facts ? cache : empty;
   } catch {
     // The cache is disposable: a torn or hand-edited file just means a full index.
     return empty;
