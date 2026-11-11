@@ -1,6 +1,6 @@
 {
   "name": "@poetics/adapter-svelte",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Poetics adapter that indexes Svelte components through svelte2tsx in the TypeScript indexer's program.",
   "license": "MIT",
   "type": "module",
