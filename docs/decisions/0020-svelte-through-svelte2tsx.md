@@ -1,6 +1,6 @@
 # 0020. Svelte components enter the TypeScript program through svelte2tsx
 
-- Status: Proposed
+- Status: Accepted (2026-11-11)
 - Date: 2026-11-10
 
 ## Context

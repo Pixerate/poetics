@@ -89,7 +89,7 @@ Both adapters feed the same TypeScript type checker, so a Svelte component calli
 
 ### Svelte (`.svelte`, `.svelte.ts`)
 
-- **Parsing:** `svelte2tsx` (the same transform `svelte-check` uses) turns each component into TSX with source maps. Poetics indexes that output with the same checker, served by the indexer's compiler host rather than written to disk, then maps spans back to the original file. Content hashes cover the `.svelte` source as written, never the generated TSX, so a `svelte2tsx` upgrade mints no versions ([ADR 0020](decisions/0020-svelte-through-svelte2tsx.md), proposed).
+- **Parsing:** `svelte2tsx` (the same transform `svelte-check` uses) turns each component into TSX with source maps. Poetics indexes that output with the same checker, served by the indexer's compiler host rather than written to disk, then maps spans back to the original file. Content hashes cover the `.svelte` source as written, never the generated TSX, so a `svelte2tsx` upgrade mints no versions ([ADR 0020](decisions/0020-svelte-through-svelte2tsx.md)).
 - **Component detection:** each `.svelte` file is one component unit. Functions declared in its scripts become child units owned by it.
 - **Interface, Svelte 5:** the type of the `$props()` destructure, including callback props and snippet props.
 - **Interface, Svelte 4:** `export let` declarations, `createEventDispatcher` event types, and named slots. Supporting both keeps mixed-version codebases working during migration.
