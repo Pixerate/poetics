@@ -1,0 +1,34 @@
+{
+  "uid": "01M78RGF1KD1X07N9Y7PJ0Z1CB",
+  "kind": "type",
+  "framework": "none",
+  "name": "VersionStats",
+  "location": {
+    "file": "scripts/lib/backfill-corpus.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:031b725f25a82ff517335c1f2db3743c8a11af9a28d8d0ab89a85b60ef7ac230",
+      "interfaceHash": "b3:6044bc3b65b6e8a435feeb8813ac31ce1500c4b485669e0a096494b52d998a5a",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The figures the corpus eval gives for a set of inferred versions: confidence, what each rationale rested on, versions with no evidence, and rationale length in content words (#64).",
+      "deps": {
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#64"
+        }
+      ]
+    }
+  ],
+  "docs": "How many versions had each confidence, and what their rationale rested on."
+}

@@ -1,0 +1,49 @@
+{
+  "$comment": "Late-adopting repositories for the backfill eval (#64): full history at a pinned commit, cloned by `pnpm eval:backfill --corpus --fetch` into the gitignored .cache/; never installed or run.",
+  "repos": [
+    {
+      "name": "taxonomy",
+      "repo": "shadcn-ui/taxonomy",
+      "commit": "298a8857c7128a0d121e7f699dfd729f23b3966d",
+      "adapters": [
+        "typescript",
+        "react"
+      ],
+      "include": [
+        "app/**/*.{ts,tsx}",
+        "components/**/*.{ts,tsx}",
+        "lib/**/*.ts",
+        "config/**/*.ts",
+        "hooks/**/*.ts",
+        "types/**/*.ts",
+        "pages/**/*.ts",
+        "middleware.ts"
+      ],
+      "exclude": [
+        "**/*.test.*",
+        "**/*.d.ts"
+      ]
+    },
+    {
+      "name": "tanstack-query",
+      "repo": "TanStack/query",
+      "commit": "b1243facc8b88c4cfe5ea9d7f3b4e1ea550bc91f",
+      "adapters": [
+        "typescript",
+        "react",
+        "svelte"
+      ],
+      "include": [
+        "packages/query-core/src/**/*.ts",
+        "packages/react-query/src/**/*.{ts,tsx}",
+        "packages/svelte-query/src/**/*.{ts,svelte}"
+      ],
+      "exclude": [
+        "**/__tests__/**",
+        "**/*.test.*",
+        "**/*.test-d.*",
+        "**/*.d.ts"
+      ]
+    }
+  ]
+}
