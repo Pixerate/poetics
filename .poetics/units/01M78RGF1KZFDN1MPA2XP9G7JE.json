@@ -1,0 +1,37 @@
+{
+  "uid": "01M78RGF1KZFDN1MPA2XP9G7JE",
+  "kind": "type",
+  "framework": "none",
+  "name": "BackfillCorpus",
+  "location": {
+    "file": "scripts/lib/backfill-corpus.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:4a3c3be9ecfbdaf0a82926e1d6f60fab5a89b4a4ca2be906325281e53aa8104b",
+      "interfaceHash": "b3:630c9ba81aaa36b55dfda83b6e849ada42a4b49ea1595843d5ba5a8d0e24a08f",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A late-adopting repository for the backfill eval: pinned commit, scope and adapters, as evals/backfill/corpus.json lists them (#64).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#64"
+        }
+      ]
+    }
+  ],
+  "docs": "A repository pinned to a commit, with the scope and adapters to backfill it with.",
+  "tests": [
+    {
+      "file": "scripts/lib/backfill-corpus.test.ts",
+      "via": "static"
+    }
+  ]
+}

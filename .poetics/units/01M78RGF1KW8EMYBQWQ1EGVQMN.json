@@ -1,0 +1,35 @@
+{
+  "uid": "01M78RGF1KW8EMYBQWQ1EGVQMN",
+  "kind": "type",
+  "framework": "none",
+  "name": "CorpusBackfillResult",
+  "location": {
+    "file": "scripts/lib/backfill-corpus.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:5843b4795bca2d3b2f78c48d2ce959245655b0de1944b8b2c0936277246f6d46",
+      "interfaceHash": "b3:68a115ac9e7051844ca8c75e63ee08de67b422969fa1f17ed293d74f08dbf871",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "What the backfill eval reports for a repository with no recorded rationale to compare against: units, confidence, evidence, rationale length and time, for the snapshot and the history walk (#64).",
+      "deps": {
+        "01M6KA0K77B6H3RTACRAN4FFTZ": "b3:81ba42c63fbe6b45a9c08dcd0402b1397691323c907f3f88730cc8ae20387582",
+        "01M78RGF1KZFDN1MPA2XP9G7JE": "b3:4a3c3be9ecfbdaf0a82926e1d6f60fab5a89b4a4ca2be906325281e53aa8104b",
+        "01M78RGF1KD1X07N9Y7PJ0Z1CB": "b3:031b725f25a82ff517335c1f2db3743c8a11af9a28d8d0ab89a85b60ef7ac230"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#64"
+        }
+      ]
+    }
+  ]
+}

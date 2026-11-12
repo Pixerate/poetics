@@ -1,0 +1,46 @@
+{
+  "uid": "01M78RGF1KVRAPR0044BT446RF",
+  "kind": "function",
+  "framework": "none",
+  "name": "runCorpusBackfill",
+  "location": {
+    "file": "scripts/lib/backfill-corpus.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:0556e60cb7bd42f6927ede5993b40a26e8518d413135f5d75a8f1d09e084ba58",
+      "interfaceHash": "b3:240c72de4274b9c7a2476b230b2fc869c6c7bd588666f0a01b23f5c433017fec",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Measures backfill on a repository that adopts Poetics late, which #64 asks for: the earlier eval ran only on this repository, whose TSDoc and recorded rationale make its results an upper bound. It runs the snapshot offline in a throwaway clone, then records and commits the units and times a full first-parent history walk, deletions included.",
+      "deps": {
+        "01M6KA0K778RFNVAQG8WWE4VGF": "b3:dd9a80a8d4bbf0862d3f7c5f567e0a2e3af02baf23a62857b471a9eff5606da5",
+        "01M6KA0K772CHR6J5B39TCRDNW": "b3:11d5741841208687f012101da2faffcd7862aacdf55cce515d05d14ae7732615",
+        "01M7197DPXKMRJDWGAXMJGGE7Z": "b3:1e55f317c479b405433acb825c0cfd5a5a773bede9f85d2470786117d823c2c0",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:f04382f791d67f79900893b6db74030ac78e675b2251f687fcf757012032b781",
+        "01M78RGF1KZFDN1MPA2XP9G7JE": "b3:4a3c3be9ecfbdaf0a82926e1d6f60fab5a89b4a4ca2be906325281e53aa8104b",
+        "01M78RGF1KW8EMYBQWQ1EGVQMN": "b3:5843b4795bca2d3b2f78c48d2ce959245655b0de1944b8b2c0936277246f6d46",
+        "01M78RGF1K3TFF92F2BKEJ2CWX": "b3:e3166d8a6819eaef5d9e9bcc11dd0284e6e43e5cf0b8d017ae0fe725dfa1af08"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#64"
+        }
+      ]
+    }
+  ],
+  "docs": "Clones `source` (a full clone of the corpus repository) at the corpus commit,\nwrites a config for its scope, and runs the snapshot backfill offline. Then\nit records and commits the units and walks the first-parent history for\ntheir prehistory, deletions included. The clone is thrown away.",
+  "tests": [
+    {
+      "file": "scripts/lib/backfill-corpus.test.ts",
+      "via": "static"
+    }
+  ]
+}

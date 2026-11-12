@@ -1,0 +1,41 @@
+{
+  "uid": "01M78RGF1MWCFNBSD8M2QAWS47",
+  "kind": "function",
+  "framework": "none",
+  "name": "formatCorpusBackfill",
+  "location": {
+    "file": "scripts/lib/backfill-corpus.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:a45ab078455612d5b9694726c5b1f964c7f791931975426e08656f928460d581",
+      "interfaceHash": "b3:439e7e3526ebd2862a9621740bd5bb482cbf823e0dd140a7a61cfae1a64650c4",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Writes the corpus eval's results as Markdown, one section per repository, with the snapshot and history walk side by side (#64).",
+      "deps": {
+        "01M78RGF1KW8EMYBQWQ1EGVQMN": "b3:5843b4795bca2d3b2f78c48d2ce959245655b0de1944b8b2c0936277246f6d46",
+        "01M78RGF1KD1X07N9Y7PJ0Z1CB": "b3:031b725f25a82ff517335c1f2db3743c8a11af9a28d8d0ab89a85b60ef7ac230"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#64"
+        }
+      ]
+    }
+  ],
+  "docs": "The corpus results as Markdown.",
+  "tests": [
+    {
+      "file": "scripts/lib/backfill-corpus.test.ts",
+      "via": "static"
+    }
+  ]
+}

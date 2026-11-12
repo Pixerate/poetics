@@ -1,0 +1,209 @@
+{
+  "date": "2026-11-12",
+  "commit": "b899139ccb65e834659dafbaf80941813458d204",
+  "results": [
+    {
+      "corpus": {
+        "name": "taxonomy",
+        "repo": "shadcn-ui/taxonomy",
+        "commit": "298a8857c7128a0d121e7f699dfd729f23b3966d",
+        "adapters": [
+          "typescript",
+          "react"
+        ]
+      },
+      "history": {
+        "commits": 134,
+        "firstParent": 96
+      },
+      "snapshot": {
+        "versions": 209,
+        "byConfidence": {
+          "high": 8,
+          "medium": 201,
+          "low": 0
+        },
+        "bySources": {
+          "commit": 209
+        },
+        "fallback": 0,
+        "words": {
+          "mean": 2.5023923444976077,
+          "median": 2
+        },
+        "units": 209,
+        "byKind": {
+          "component": 169,
+          "function": 26,
+          "type": 11,
+          "hook": 3
+        },
+        "candidateNotes": 0,
+        "ms": 3295
+      },
+      "walk": {
+        "versions": 456,
+        "byConfidence": {
+          "high": 13,
+          "medium": 443,
+          "low": 0
+        },
+        "bySources": {
+          "commit": 456
+        },
+        "fallback": 0,
+        "words": {
+          "mean": 2.638157894736842,
+          "median": 2
+        },
+        "commits": 97,
+        "withPrehistory": 209,
+        "stopped": 0,
+        "removed": 35,
+        "ms": 16903
+      },
+      "examples": [
+        {
+          "unit": "app/(editor)/editor/[postId]/loading.tsx#Loading",
+          "confidence": "high",
+          "sources": [
+            "commit"
+          ],
+          "rationale": "implement loading for editor pages"
+        },
+        {
+          "unit": "app/(marketing)/[...slug]/page.tsx#generateStaticParams",
+          "confidence": "high",
+          "sources": [
+            "commit"
+          ],
+          "rationale": "implement mdx pages"
+        },
+        {
+          "unit": "app/(auth)/layout.tsx#AuthLayout",
+          "confidence": "medium",
+          "sources": [
+            "commit"
+          ],
+          "rationale": "* feat: implement blog and doc sites"
+        },
+        {
+          "unit": "app/(auth)/login/page.tsx#LoginPage",
+          "confidence": "medium",
+          "sources": [
+            "commit"
+          ],
+          "rationale": "initial commit"
+        }
+      ]
+    },
+    {
+      "corpus": {
+        "name": "tanstack-query",
+        "repo": "TanStack/query",
+        "commit": "b1243facc8b88c4cfe5ea9d7f3b4e1ea550bc91f",
+        "adapters": [
+          "typescript",
+          "react",
+          "svelte"
+        ]
+      },
+      "history": {
+        "commits": 6015,
+        "firstParent": 5627
+      },
+      "snapshot": {
+        "versions": 287,
+        "byConfidence": {
+          "high": 266,
+          "medium": 21,
+          "low": 0
+        },
+        "bySources": {
+          "changeset + comment + commit + doc": 26,
+          "changeset + comment + commit": 11,
+          "comment + commit + doc": 155,
+          "comment + commit": 69,
+          "commit": 18,
+          "commit + doc": 7,
+          "changeset + commit": 1
+        },
+        "fallback": 0,
+        "words": {
+          "mean": 15.041811846689896,
+          "median": 14
+        },
+        "units": 287,
+        "byKind": {
+          "type": 196,
+          "function": 58,
+          "component": 5,
+          "hook": 27,
+          "context": 1
+        },
+        "candidateNotes": 28,
+        "ms": 8123
+      },
+      "walk": {
+        "versions": 898,
+        "byConfidence": {
+          "high": 133,
+          "medium": 765,
+          "low": 0
+        },
+        "bySources": {
+          "commit": 898
+        },
+        "fallback": 0,
+        "words": {
+          "mean": 4.455456570155902,
+          "median": 4
+        },
+        "commits": 5628,
+        "withPrehistory": 287,
+        "stopped": 0,
+        "removed": 72,
+        "ms": 156243
+      },
+      "examples": [
+        {
+          "unit": "packages/query-core/src/environmentManager.ts#IsServerValue",
+          "confidence": "high",
+          "sources": [
+            "changeset",
+            "commit",
+            "comment",
+            "doc"
+          ],
+          "rationale": "feat: environmentManager"
+        },
+        {
+          "unit": "packages/query-core/src/environmentManager.ts#isServer",
+          "confidence": "high",
+          "sources": [
+            "changeset",
+            "commit",
+            "comment"
+          ],
+          "rationale": "Returns whether the current runtime should be treated as a server environment.\n\nReduce the Query Core bundle size by removing unused symbol descriptions and simplifying internal helpers."
+        },
+        {
+          "unit": "packages/query-core/src/retryer.ts#RetryDelayValue",
+          "confidence": "medium",
+          "sources": [
+            "commit"
+          ],
+          "rationale": "* v4 alpha (#3060)"
+        },
+        {
+          "unit": "packages/query-core/src/retryer.ts#RetryValue",
+          "confidence": "medium",
+          "sources": [
+            "commit"
+          ],
+          "rationale": "* v4 alpha (#3060)"
+        }
+      ]
+    }
+  ]
+}

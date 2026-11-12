@@ -126,6 +126,59 @@ The recorded rationale averages 15 content words.
 - This repository requires TSDoc, so the gain here is an upper bound: on a
   repository with little TSDoc most versions keep the change's text.
 
+## Late-adopting repositories (2026-11-12, #64)
+
+`pnpm eval:backfill --corpus [--fetch] [--only name]` backfills the repositories
+in [`corpus.json`](corpus.json), which never used Poetics, at a pinned commit.
+`--fetch` clones each with its full history into `.cache/` (gitignored; nothing
+is installed or run). In a throwaway clone it writes a config for the corpus's
+scope, runs the snapshot backfill offline, then records and commits the units
+and walks the whole first-parent history for their prehistory, deleted exports
+included. With no recorded rationale to compare against, it reports what
+backfill infers: confidence, the evidence each rationale rests on, its length
+in content words, and run time. [`corpus-results.md`](corpus-results.md) has
+the latest run. The corpora are two of the identity gate's:
+
+| | taxonomy | TanStack Query |
+| --- | --- | --- |
+| Commits (first-parent) | 134 (96) | 6,015 (5,627) |
+| Units | 209 | 287 |
+| Snapshot `high` / `medium` | 4% / 96% | 93% / 7% |
+| Snapshot rationale, content words (median) | 2 | 14 |
+| Snapshot evidence | commit message only | doc comment on 261 of 287 units; changesets on 38 |
+| History walk: versions, `high` | 456, 3% | 898, 15% |
+| History rationale, content words (median) | 2 | 4 |
+| Deleted exports recovered | 35 | 72 |
+| Snapshot / history walk time | 3.3 s / 16.9 s | 8.1 s / 156 s |
+
+- **Without doc comments or changesets, backfill has little to say.**
+  taxonomy has no TSDoc and terse commit messages, so every rationale is a
+  message such as "initial commit" or "implement mdx pages": two content words
+  at the median, against 15 for the rationale this repository records. No
+  version fell back to "nothing says why", and none was `low`: a commit
+  message always exists, however empty.
+- **Doc comments carry TanStack Query's snapshot,** as they carry this
+  repository's (ADR 0019): 261 of 287 units have one, and 93% of versions are
+  `high`. Its history walk has only commit messages to go on (doc comments
+  are read at the snapshot only), so history rationale is 4 words at the
+  median and 85% `medium`.
+- **Confidence still overrates empty messages.** A commit counts as about one
+  unit when it introduced only one unit that still exists, so a large
+  "initial commit" whose other exports were later deleted gives its survivor
+  `high` (the eval's synthetic repository shows it). And a one-unit commit's
+  message stands alone even when the unit has a doc comment: TanStack Query's
+  `IsServerValue` is `high` with "feat: environmentManager". Both are left for
+  a decision of their own, measured against this repository's record.
+- **Pull requests were not read.** Both runs are offline. TanStack Query
+  merges through pull requests (`v4 alpha (#3060)`), so a run with a GitHub
+  token would give its history walk more than commit messages; that is the
+  next corpus measurement.
+- **History mode scales with the walk, without a default limit:** 5,628
+  commits took 2.6 minutes (28 ms a commit), and taxonomy's 97 took 17 s
+  (175 ms a commit, since most of its commits touch many components). That
+  answers #64's question for repositories of this size: a full walk is
+  affordable, and `poetics backfill --history <from>` already bounds one.
+
 ## What this eval cannot say yet
 
 - **The recorded rationale is not human ground truth.** All 303 recorded
@@ -135,6 +188,6 @@ The recorded rationale averages 15 content words.
 - **Lexical scores miss meaning.** Two rationales can agree in different
   words. A drafted run (`--draft` with a configured command) and a semantic
   judgment, by people or by a judging command, are the next measurements.
-- **One repository.** This one records rationale per unit from its first
-  commit, which is the case backfill exists to make unnecessary. Repositories
-  adopting Poetics later have no such record to compare with.
+- **Agreement on late-adopting repositories.** The corpus runs show what
+  backfill infers there, not whether it is right: those repositories have no
+  recorded rationale to compare with.

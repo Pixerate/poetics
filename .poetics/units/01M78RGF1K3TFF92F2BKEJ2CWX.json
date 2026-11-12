@@ -1,0 +1,42 @@
+{
+  "uid": "01M78RGF1K3TFF92F2BKEJ2CWX",
+  "kind": "function",
+  "framework": "none",
+  "name": "versionStats",
+  "location": {
+    "file": "scripts/lib/backfill-corpus.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:e3166d8a6819eaef5d9e9bcc11dd0284e6e43e5cf0b8d017ae0fe725dfa1af08",
+      "interfaceHash": "b3:c79668dd2546f7f09de0460cf4b38f8e2d9a60185c437d9d27cc6c3ba857ddef",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Summarises inferred versions for the corpus eval (#64). Test links are left out of the evidence, since they say where a unit is tested, not why it exists.",
+      "deps": {
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b",
+        "01M78RGF1KD1X07N9Y7PJ0Z1CB": "b3:031b725f25a82ff517335c1f2db3743c8a11af9a28d8d0ab89a85b60ef7ac230",
+        "01M7355N26WJ54EWRMZ994J33Y": "b3:fe663bd41319e51dad73c4a337bcff50ba28aa7fd1220dcb030b9fb805661497"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#64"
+        }
+      ]
+    }
+  ],
+  "docs": "Counts, confidence, evidence and length over a list of inferred versions.",
+  "tests": [
+    {
+      "file": "scripts/lib/backfill-corpus.test.ts",
+      "via": "static"
+    }
+  ]
+}
