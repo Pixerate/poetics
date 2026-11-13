@@ -11,8 +11,8 @@ It never writes to a unit that has a file.
 
 1. **Dry run:** `pnpm poetics backfill --snapshot`. Each `+` line is a new
    unit with its confidence and inferred rationale: the commit's changeset or
-   message, led by the unit's TSDoc when that text is shared with other units
-   (ADR 0019). The rest lists what to add
+   message, led by the unit's TSDoc when it has one (ADR 0019, ADR 0022).
+   The rest lists what to add
    by hand: `docs?` (TSDoc the unit file lacks), `tests?` (a sibling test that
    names the unit), `note?` (a comment that reads like a workaround or an
    invariant), and existing units with unrecorded changes.

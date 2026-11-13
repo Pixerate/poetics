@@ -1,9 +1,9 @@
 {
-  "date": "2026-11-10",
-  "commit": "df077c87d63f1aa44931ac85f9fe2ede3137780d",
+  "date": "2026-11-13",
+  "commit": "b51daea3a3f90b033357914d81c312d0a77aaf14",
   "drafted": false,
-  "recorded": 323,
-  "inferred": 323,
+  "recorded": 365,
+  "inferred": 365,
   "pairs": [
     {
       "unit": "packages/adapter-react/src/index.ts#createReactAdapter",
@@ -41,6 +41,220 @@
       "score": {
         "recall": 0.7222222222222222,
         "jaccard": 0.3466666666666667
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/index.ts#componentDocs",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "The component's `<!--\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "Reads the <!-- @component --> comment, which Svelte tooling already shows as a component's docs, so Poetics uses the same text.",
+      "score": {
+        "recall": 0.45454545454545453,
+        "jaccard": 0.12195121951219512
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/index.ts#componentSignature",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "A component's interface: its props type, read from what svelte2tsx's render\nfunction returns. For Svelte 5 that is the `$props()` type as written; for\nSvelte 4, the props svelte2tsx gathers from `export let`, with the events\nthe component dispatches or forwards and its slots. Defaults are part of it.\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "A component's interface is its props type, read from what svelte2tsx's render function returns, so Svelte 4 and 5 both work. Inline prop types are hoisted by svelte2tsx into a $$ alias, which is followed so the structure, not the generated name, is hashed.",
+      "score": {
+        "recall": 0.55,
+        "jaccard": 0.2037037037037037
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/index.ts#componentSignatureText",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "What a caller reads about a component: how it takes its props, as written.\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "Shows callers how a component takes its props, as written (the $props() destructure or export let lines), since the generated declarations mean nothing to a reader.",
+      "score": {
+        "recall": 0.375,
+        "jaccard": 0.125
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/index.ts#createsRuneState",
+      "commit": "95cdbffb0b88e4fc9bdbaf5fb5635262fdbc2eae",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "Whether `fn` creates rune state itself: its own body, not a function nested\nin it, calls `$state`, `$derived` or `$effect`, or one of their variants such\nas `$state.raw` or `$derived.by`. Such a function is a rune helper.\n\nRecord rune helpers as `hook` units with `framework: \"svelte\"` (#73): functions in `.svelte.ts` / `.svelte.js` modules or component scripts whose own body calls `$state`, `$derived` or `$effect`. Calls to them are `uses-hook` edges. Adds `createsRuneState`. The CLI now runs the Svelte plugin before React's, so a `use*` rune helper is not claimed as a React hook.",
+      "recorded": "Tells a rune helper from a plain function: whether the function's own body, not a nested one, calls $state, $derived or $effect or a variant such as $derived.by (#73). Syntactic, so it also works on a component's script as written.",
+      "score": {
+        "recall": 0.75,
+        "jaccard": 0.38461538461538464
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/index.ts#detectComponent",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "A component's units: the component itself, spanning the whole file,\nanything its module script exports, with spans mapped back to the file, and\nthe functions its scripts declare without exporting, owned by the component.\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "A component's units: the component spanning its whole file, hashed from its source, plus anything its module script exports, with spans mapped back so lines point at the .svelte file.",
+      "score": {
+        "recall": 0.8333333333333334,
+        "jaccard": 0.28846153846153844
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/index.ts#svelteContent",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "The content and runtime trees of a component, from its source as written:\neach script normalised as TypeScript, so formatting and comments never count;\nmarkup and styles with comments dropped and whitespace collapsed. The\nTypeScript svelte2tsx generates never enters them (ADR 0020).\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "Hashes a component from its source as written, never the generated TSX (ADR 0020), so a svelte2tsx upgrade or reformatting mints no version. Scripts are normalised as TypeScript; markup and styles drop comments and formatting whitespace.",
+      "score": {
+        "recall": 0.6363636363636364,
+        "jaccard": 0.23728813559322035
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/index.ts#svelteContextKind",
+      "commit": "eb94bf607589f217ba13cdc28e0f41a03d9e3f58",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "Whether an exported variable is a Svelte context (ADR 0021): what `createContext()` from `svelte` returns, whether\ndestructured into its getter and setter or kept whole, or a module-level constant that the same module passes to\n`setContext`, `getContext` or `hasContext` as the key.\n\nRecord Svelte contexts as `context` units (ADR 0021, #74): what `createContext()` from `svelte` returns, destructured into its getter and setter or kept whole, and an exported constant that its own module passes to `setContext`, `getContext` or `hasContext` as the key. A context's interface is its value type; setting or reading it is a `uses-context` edge. The TypeScript indexer accepts an array-destructured variable as a unit when a plugin claims it, and `DetectedUnit` gains `aliases`. Adds `svelteContextKind` and `svelteContextSignature`.",
+      "recorded": "Tells which exported variables are Svelte contexts (ADR 0021, #74): what createContext from svelte returns, destructured or whole, or a module-level const the same module passes to setContext, getContext or hasContext as the key. A literal key has no declaration to be a unit of, so it is not tracked.",
+      "score": {
+        "recall": 0.782608695652174,
+        "jaccard": 0.3829787234042553
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/index.ts#svelteContextSignature",
+      "commit": "eb94bf607589f217ba13cdc28e0f41a03d9e3f58",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "A Svelte context's interface (ADR 0021): the type of the value setters give and getters read, with no default,\nsince Svelte has none. For `createContext<T>()`, `T` as written or as its getter returns it. For a key, the type\nwritten on its `setContext`/`getContext` calls in its own module, or the type of the values its `setContext`\ncalls there give; `unknown` when they say nothing.\n\nRecord Svelte contexts as `context` units (ADR 0021, #74): what `createContext()` from `svelte` returns, destructured into its getter and setter or kept whole, and an exported constant that its own module passes to `setContext`, `getContext` or `hasContext` as the key. A context's interface is its value type; setting or reading it is a `uses-context` edge. The TypeScript indexer accepts an array-destructured variable as a unit when a plugin claims it, and `DetectedUnit` gains `aliases`. Adds `svelteContextKind` and `svelteContextSignature`.",
+      "recorded": "A Svelte context's interface (ADR 0021, #74): the value type setters give and getters read, with no default since Svelte has none. For createContext<T>, T as written or as the getter returns it; for a key, the type its own module's setContext/getContext calls write or give.",
+      "score": {
+        "recall": 0.9565217391304348,
+        "jaccard": 0.44
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/index.ts#sveltePlugin",
+      "commit": "5ed117cff779ccb2a8e5428066851f6bf10a8f51",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test",
+        "doc"
+      ],
+      "drafted": false,
+      "inferred": "The Svelte plugin for the TypeScript indexer: `.svelte` files, read through\nsvelte2tsx (ADR 0020). svelte2tsx's output depends on the Svelte version, read\nfrom each component's project unless `svelteVersion` says otherwise.\n\nSvelte 4 components record their full interface: `export let` props with their defaults, the events they dispatch or forward with the type a listener receives, and their named slots with the props each passes. The component signature gains optional `events` and `slots`, which Svelte 5 and React components leave out. A component rendered with content is one `renders` edge, and `sveltePlugin` takes an optional `svelteVersion`.",
+      "recorded": "Takes an optional svelteVersion, since svelte2tsx emits a class for Svelte 4 and a function component for Svelte 5; tests and repositories whose Svelte cannot be resolved from a component can set it. A closing tag's bare reference is a renders edge too, so a component rendered with content is not also recorded as called. Rules version 3 re-indexes components.",
+      "score": {
+        "recall": 0.36666666666666664,
+        "jaccard": 0.171875
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/index.ts#transformComponent",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "Turns a component into TypeScript with svelte2tsx. A component svelte2tsx\ncannot read still gets a stand-in default export, so it stays one unit and\nits source is still hashed.\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "Runs svelte2tsx with the project's own Svelte version and maps generated offsets back. A component svelte2tsx cannot read gets a stand-in default export, so it stays a unit and is still hashed from its source.",
+      "score": {
+        "recall": 0.6363636363636364,
+        "jaccard": 0.28
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/source-map.ts#decodeMappings",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "Decodes a version 3 `mappings` string into segments per generated line, each line sorted by column.\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "Decodes source map mappings so generated offsets can be traced to the .svelte file. Owned rather than a dependency: it is a few lines and only reading is needed.",
+      "score": {
+        "recall": 0.4375,
+        "jaccard": 0.1320754716981132
+      }
+    },
+    {
+      "unit": "packages/adapter-svelte/src/source-map.ts#offsetMapper",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "Maps offsets in `generated` back to offsets in `original`. An offset maps\nthrough the nearest segment at or before it on its line, moved by the same\ndistance; an offset with no segment before it on its line is generated-only\ncode and maps to undefined.\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "Maps a generated offset to the component's own text through the nearest segment on its line; generated-only code maps to nothing, so uses the author never wrote are not reported.",
+      "score": {
+        "recall": 0.5625,
+        "jaccard": 0.16363636363636364
       }
     },
     {
@@ -239,7 +453,9 @@
       "sources": [
         "changeset",
         "commit",
-        "comment"
+        "comment",
+        "test",
+        "doc"
       ],
       "drafted": false,
       "inferred": "A unit found in one source file, before any checker work.\n\nAdd the TypeScript indexer. It detects exported functions, hooks and types; computes content, runtime and interface hashes over normalised syntax trees; and resolves cross-file edges through the type checker. A reused program and a per-file cache skip unchanged files. `createTypeScriptAdapter` exposes it through `FrameworkAdapter`.",
@@ -257,6 +473,7 @@
         "changeset",
         "commit",
         "comment",
+        "test",
         "doc"
       ],
       "drafted": false,
@@ -315,6 +532,23 @@
       "score": {
         "recall": 0.3076923076923077,
         "jaccard": 0.09090909090909091
+      }
+    },
+    {
+      "unit": "packages/adapter-typescript/src/units.ts#Transformed",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "A file a framework turns into TypeScript for the checker, such as a `.svelte`\ncomponent, with the way back from the generated text to what was written.\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "A transformed file's generated code and the way back to its own text, so the indexer can read .svelte components without knowing Svelte (ADR 0020).",
+      "score": {
+        "recall": 0.7333333333333333,
+        "jaccard": 0.24444444444444444
       }
     },
     {
@@ -554,11 +788,11 @@
         "comment"
       ],
       "drafted": false,
-      "inferred": "`poetics backfill --history [<from>] [<to>]` walks only the first-parent commits after `<from>` up to `<to>`. Code that exists at `<from>` opens its prehistory at its first change in the range, so a later walk from further back extends it. Units recorded after `<to>` are reported rather than given a prehistory that stops short.",
+      "inferred": "Where `poetics backfill --history [from] [to]` walks (refs or commit ids, both optional), and whether to recover deleted exports.\n\n`poetics backfill --history [<from>] [<to>]` walks only the first-parent commits after `<from>` up to `<to>`. Code that exists at `<from>` opens its prehistory at its first change in the range, so a later walk from further back extends it. Units recorded after `<to>` are reported rather than given a prehistory that stops short.",
       "recorded": "The refs that bound a history walk, both optional, so long histories can be backfilled in parts from the newest back.",
       "score": {
-        "recall": 0.25,
-        "jaccard": 0.08823529411764706
+        "recall": 0.5,
+        "jaccard": 0.15
       }
     },
     {
@@ -607,11 +841,11 @@
         "test"
       ],
       "drafted": false,
-      "inferred": "`poetics backfill --history --include-removed` recovers exports deleted before anyone recorded them. Each becomes a unit file with its reconstructed prehistory, a `created` version for the code as it last was, and a `removed` version from the commit that deleted it, all marked `inferred`. Code whose unit file was committed before its deletion is left to `poetics index`, and a rerun does not recover the same deletion twice.",
+      "inferred": "Writes each unit's prehistory, unless it already has exactly that, and a unit file for each recovered deletion. Returns how many unit files changed.\n\n`poetics backfill --history --include-removed` recovers exports deleted before anyone recorded them. Each becomes a unit file with its reconstructed prehistory, a `created` version for the code as it last was, and a `removed` version from the commit that deleted it, all marked `inferred`. Code whose unit file was committed before its deletion is left to `poetics index`, and a rerun does not recover the same deletion twice.",
       "recorded": "Also writes a unit file for each recovered deletion: created through createUnit with the code as it last was, then removed through appendVersion, so the store's own rules check both. Takes the store layout for those new files.",
       "score": {
-        "recall": 0.35,
-        "jaccard": 0.15555555555555556
+        "recall": 0.45,
+        "jaccard": 0.17647058823529413
       }
     },
     {
@@ -626,11 +860,11 @@
         "doc"
       ],
       "drafted": false,
-      "inferred": "`poetics backfill` gives `high` confidence only when the evidence is about the unit alone: a commit that introduced or changed nothing else, a review comment on its lines, or, in snapshot mode, the unit's own doc comment. A changeset, commit message or pull request that names the unit among others is now `medium` (ADR 0018).",
+      "inferred": "Confidence from how specifically the evidence speaks to one unit (ADR 0018): `high` when a reason comes with\nevidence about this unit alone, `medium` when the reason is shared with other units, even one that names this\nunit, and `low` with no reason at all.\n\n`poetics backfill` gives `high` confidence only when the evidence is about the unit alone: a commit that introduced or changed nothing else, a review comment on its lines, or, in snapshot mode, the unit's own doc comment. A changeset, commit message or pull request that names the unit among others is now `medium` (ADR 0018).",
       "recorded": "One rule for both backfill modes: a reason with evidence about this unit alone is high, a reason shared with other units is medium even when it names this unit, and no reason is low (ADR 0018).",
       "score": {
-        "recall": 0.6470588235294118,
-        "jaccard": 0.2972972972972973
+        "recall": 0.8823529411764706,
+        "jaccard": 0.375
       }
     },
     {
@@ -949,11 +1183,28 @@
         "test"
       ],
       "drafted": false,
-      "inferred": "The units the TypeScript indexer detects in one source text: exported functions, hooks and types.\n\nAdd the React adapter. `reactPlugin` plugs into the TypeScript indexer through a new `FrameworkPlugin` interface. It detects components (PascalCase functions that return JSX, or are wrapped in `memo`, `forwardRef` or `lazy`) and hooks, gives components their props, default prop values and forwarded ref as their interface, and records JSX tags as `renders` edges. `createReactAdapter` now takes the indexer's options. The CLI and MCP server run the plugin when `.poetics/config.json` lists `react` in `adapters`. `poetics init` now reads tsconfig files with TypeScript's own parser, so `paths` entries such as `\"@/*\"` no longer break it.",
+      "inferred": "The units the TypeScript indexer detects in one source text: exported functions, hooks, types and framework components.\n\nAdd the React adapter. `reactPlugin` plugs into the TypeScript indexer through a new `FrameworkPlugin` interface. It detects components (PascalCase functions that return JSX, or are wrapped in `memo`, `forwardRef` or `lazy`) and hooks, gives components their props, default prop values and forwarded ref as their interface, and records JSX tags as `renders` edges. `createReactAdapter` now takes the indexer's options. The CLI and MCP server run the plugin when `.poetics/config.json` lists `react` in `adapters`. `poetics init` now reads tsconfig files with TypeScript's own parser, so `paths` entries such as `\"@/*\"` no longer break it.",
       "recorded": "Takes plugins, so memo-wrapped components are declarations too. It is additive: the new parameter is optional and defaults to no plugins, so existing callers behave as before.",
       "score": {
         "recall": 0.4,
-        "jaccard": 0.08823529411764706
+        "jaccard": 0.08695652173913043
+      }
+    },
+    {
+      "unit": "packages/cli/src/declarations.ts#detectIn",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "The units in one file's text, found syntactically. A file a framework\ntransforms, such as a .svelte component, is detected in the TypeScript it\nbecomes; spans and lines still index `text` (ADR 0020).\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "Syntactic detection that reads a transformed file through its plugin, with spans and lines in the file's own text. Shared by declaration discovery, index's base snapshot and backfill's history walk, so all three see .svelte components the same way.",
+      "score": {
+        "recall": 0.38461538461538464,
+        "jaccard": 0.16129032258064516
       }
     },
     {
@@ -1226,14 +1477,15 @@
       "sources": [
         "changeset",
         "commit",
-        "comment"
+        "comment",
+        "test"
       ],
       "drafted": false,
-      "inferred": "The plugins for `config.adapters`: React's when `react` is listed. Svelte's arrives with its adapter.\n\nAdd the React adapter. `reactPlugin` plugs into the TypeScript indexer through a new `FrameworkPlugin` interface. It detects components (PascalCase functions that return JSX, or are wrapped in `memo`, `forwardRef` or `lazy`) and hooks, gives components their props, default prop values and forwarded ref as their interface, and records JSX tags as `renders` edges. `createReactAdapter` now takes the indexer's options. The CLI and MCP server run the plugin when `.poetics/config.json` lists `react` in `adapters`. `poetics init` now reads tsconfig files with TypeScript's own parser, so `paths` entries such as `\"@/*\"` no longer break it.",
+      "inferred": "The plugins for `config.adapters`: Svelte's when `svelte` is listed (ADR 0020), React's when `react` is. The first\nplugin to claim a unit wins, so Svelte's goes first: it claims only in Svelte files, where a rune helper named\n`use*` is Svelte's, not one of React's hooks.\n\nAdd the React adapter. `reactPlugin` plugs into the TypeScript indexer through a new `FrameworkPlugin` interface. It detects components (PascalCase functions that return JSX, or are wrapped in `memo`, `forwardRef` or `lazy`) and hooks, gives components their props, default prop values and forwarded ref as their interface, and records JSX tags as `renders` edges. `createReactAdapter` now takes the indexer's options. The CLI and MCP server run the plugin when `.poetics/config.json` lists `react` in `adapters`. `poetics init` now reads tsconfig files with TypeScript's own parser, so `paths` entries such as `\"@/*\"` no longer break it.",
       "recorded": "Maps the config's adapters to framework plugins in one place, so poetics index, backfill, rehash, hash and the change check all run the same ones.",
       "score": {
         "recall": 0.3125,
-        "jaccard": 0.07352941176470588
+        "jaccard": 0.06493506493506493
       }
     },
     {
@@ -2624,11 +2876,11 @@
         "test"
       ],
       "drafted": false,
-      "inferred": "Record deletions as a final `removed` version instead of deleting unit files (`REMOVED_CONTENT_HASH`, `isRemoved`), and validate them in `checkStore`.",
+      "inferred": "Whether a unit's latest version records its removal from the code.\n\nRecord deletions as a final `removed` version instead of deleting unit files (`REMOVED_CONTENT_HASH`, `isRemoved`), and validate them in `checkStore`.",
       "recorded": "One shared test for whether a unit is history only, used by the store check, drift and coverage so they agree on what a removed unit is.",
       "score": {
-        "recall": 0.18181818181818182,
-        "jaccard": 0.08695652173913043
+        "recall": 0.2727272727272727,
+        "jaccard": 0.11538461538461539
       }
     },
     {
@@ -2642,11 +2894,28 @@
         "doc"
       ],
       "drafted": false,
-      "inferred": "The pull requests behind a commit, and what reviewers said on them.\n\n`poetics backfill` collects pull request evidence (ADR 0011). Pull requests named in merge and squash subjects are linked as `github-pr`, no longer as issues. With a GitHub token (`GITHUB_TOKEN` or `gh auth token`) and an `origin` on github.com, both modes also link the pull requests containing each commit and the issues they close, and raise a version's confidence when a pull request names the unit or a review comment falls on its lines. Pull request and issue text is never written to `.poetics/`; responses are cached in `.poetics/cache/github.json`, a rate limit stops the collectors without failing the backfill, and `--offline` makes no calls. `@poetics/core` adds the `IssueTracker` interface, and a history walk leaves recorded prehistory alone when new evidence would change it.",
+      "inferred": "The pull requests behind a commit, what reviewers said on them, and the issues agents ask about.\n\n`poetics backfill` collects pull request evidence (ADR 0011). Pull requests named in merge and squash subjects are linked as `github-pr`, no longer as issues. With a GitHub token (`GITHUB_TOKEN` or `gh auth token`) and an `origin` on github.com, both modes also link the pull requests containing each commit and the issues they close, and raise a version's confidence when a pull request names the unit or a review comment falls on its lines. Pull request and issue text is never written to `.poetics/`; responses are cached in `.poetics/cache/github.json`, a rate limit stops the collectors without failing the backfill, and `--offline` makes no calls. `@poetics/core` adds the `IssueTracker` interface, and a history walk leaves recorded prehistory alone when new evidence would change it.",
       "recorded": "What backfill asks an issue tracker: the pull requests behind a commit and their review comments. GitHub implements it first; Jira and others follow without changing the collectors (ADR 0011).",
       "score": {
         "recall": 0.6,
-        "jaccard": 0.16666666666666666
+        "jaccard": 0.16
+      }
+    },
+    {
+      "unit": "packages/core/src/tracker.ts#TrackedIssue",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "An issue, or a pull request read as one. Its text is read on demand for agents and never written to `.poetics/`.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "An issue or pull request as a tracker reports it, read on demand for agents. Its text is never written to .poetics/, as the plan's references-not-content rule requires.",
+      "score": {
+        "recall": 0.6470588235294118,
+        "jaccard": 0.24444444444444444
       }
     },
     {
@@ -3186,6 +3455,232 @@
       "score": {
         "recall": 0.6,
         "jaccard": 0.13043478260869565
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#IssueCandidate",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "medium",
+      "sources": [
+        "changeset",
+        "commit"
+      ],
+      "drafted": false,
+      "inferred": "The MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "A unit an issue likely touches, with why and a score, so an agent can tell a linked unit from a search guess.",
+      "score": {
+        "recall": 0.5,
+        "jaccard": 0.11627906976744186
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#IssueMatch",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "Why an issue points at a unit, strongest first.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "The reasons an issue points at a unit, strongest first: already linked, a stack frame inside it, named as code, a file it mentions, or search.",
+      "score": {
+        "recall": 0.5,
+        "jaccard": 0.16326530612244897
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#LinkedSignal",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "An issue or pull request linked from a unit's versions, with what the tracker says about it.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "An issue or pull request a unit's versions link, with the versions that link it and what the tracker says about it.",
+      "score": {
+        "recall": 0.8888888888888888,
+        "jaccard": 0.1951219512195122
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#ReviewSignal",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "A review comment left in a linked pull request on the unit's file.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "A review comment a linked pull request left on the unit's file. Lines are as the pull request saw them, since lines move between versions.",
+      "score": {
+        "recall": 0.5714285714285714,
+        "jaccard": 0.17777777777777778
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#SignalVersion",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "Where a signal was linked from.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "Where a signal was linked from, marking prehistory so inferred links are not mistaken for recorded ones.",
+      "score": {
+        "recall": 0.3,
+        "jaccard": 0.06521739130434782
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#SignalsReport",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "medium",
+      "sources": [
+        "changeset",
+        "commit"
+      ],
+      "drafted": false,
+      "inferred": "The MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "What poetics_signals returns: linked issues and pull requests, review comments, an empty errors list until an error-monitoring integration exists, and what is missing and why.",
+      "score": {
+        "recall": 0.47058823529411764,
+        "jaccard": 0.1702127659574468
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#TrackerAccess",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "The issue tracker for a tool call, or why there is none.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "The issue tracker for a tool call, or why there is none, so tools keep working offline and say what they cannot show.",
+      "score": {
+        "recall": 0.45454545454545453,
+        "jaccard": 0.10638297872340426
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#linkedNumber",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "A version's link to an issue or pull request in this repository, by number.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "Reads a version's link as this repository's issue or pull request number. Links naming another repository are left out, so a number is never looked up in the wrong place.",
+      "score": {
+        "recall": 0.6,
+        "jaccard": 0.19148936170212766
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#linkedSignals",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "The issues and pull requests a unit's versions link, newest first, each once.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "Lists each issue and pull request a unit links once, newest version first, including prehistory, so signals read like the unit's history.",
+      "score": {
+        "recall": 0.6875,
+        "jaccard": 0.22916666666666666
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#parseIssueRef",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "An issue reference as an agent passes it: `#12`, `12`, `owner/name#12`, or a GitHub issue or pull request URL.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "Accepts the forms agents pass for an issue (#12, 12, owner/name#12, an issue or pull request URL) and refuses another repository's issue rather than reading the wrong one.",
+      "score": {
+        "recall": 0.4375,
+        "jaccard": 0.1320754716981132
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#relatedIssues",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test",
+        "doc"
+      ],
+      "drafted": false,
+      "inferred": "Issues linked from these units other than `except`, each with the units that link it.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "Other issues linked from the units an issue touches: past work on the same code, as the plan's issue-driven context asks.",
+      "score": {
+        "recall": 0.6153846153846154,
+        "jaccard": 0.17391304347826086
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#unitSignals",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "A unit's signals: the issues and pull requests its versions link, with\ntitles and states from the tracker, and review comments those pull requests\nleft on its file. Production errors need an error-monitoring integration,\nso they are listed as missing.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "Fills in titles, states and review comments through the tracker, and keeps the references when it cannot. A failing or rate-limited tracker is reported under missing rather than failing the call.",
+      "score": {
+        "recall": 0.3888888888888889,
+        "jaccard": 0.11666666666666667
+      }
+    },
+    {
+      "unit": "packages/mcp/src/issues.ts#unitsForIssue",
+      "commit": "1126038605e3ee809b4bc37ffabefb34f9929353",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "The units an issue likely touches, best first: units whose versions already\nlink it, units a stack frame in it falls inside, units it names as code,\nunits in files it mentions, and units `search` finds from its title.\n\nThe MCP server answers `poetics_signals` (a unit's linked issues and pull requests, with titles, states and review comments on its file) and `poetics_context_pack` with an `issue`: it picks the unit the issue most likely touches, says why, and adds the issue's text and the other issues linked from the same code. Issue text is read through the issue tracker on demand and never written to `.poetics/`. `IssueTracker` gains an optional `issue(number)`, which the GitHub tracker implements.",
+      "recorded": "Ranks the units an issue likely touches, weighting evidence that names the unit over search. Names count only when quoted as code or code-shaped, since prose is full of short words that are also unit names.",
+      "score": {
+        "recall": 0.3684210526315789,
+        "jaccard": 0.109375
       }
     },
     {
@@ -4078,11 +4573,11 @@
         "doc"
       ],
       "drafted": false,
-      "inferred": "`appendVersion` writes a version to a unit file, append-only and optionally schema-validated, and `searchUnits` searches names, docs and rationale through a new FTS5 table in the index (`INDEX_SCHEMA_VERSION` 2). `WriteContext` gains an optional `validator`.",
+      "inferred": "Appends a version to a unit file. Append-only; never rewrites history.\nThe written version's actor is `ctx.actor`: who wrote it is the writer's to\nsay, not the payload's.\n\n`appendVersion` writes a version to a unit file, append-only and optionally schema-validated, and `searchUnits` searches names, docs and rationale through a new FTS5 table in the index (`INDEX_SCHEMA_VERSION` 2). `WriteContext` gains an optional `validator`.",
       "recorded": "Implemented as the indexer's write path: finds the unit file in either layout, refuses a parent other than the latest contentHash, a second created version or anything after removed (ADR 0010), stamps ctx.actor so the writer rather than the payload says who wrote it, validates against the unit schema when given a validator, and writes via a temp file and rename so a crash never leaves half a file.",
       "score": {
-        "recall": 0.15,
-        "jaccard": 0.10714285714285714
+        "recall": 0.3,
+        "jaccard": 0.2
       }
     },
     {
@@ -4596,6 +5091,24 @@
       }
     },
     {
+      "unit": "packages/store/src/scope.ts#isParseable",
+      "commit": "6c48ba70a55ffd521055226e4896a910a48d05e0",
+      "confidence": "high",
+      "sources": [
+        "changeset",
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "Whether the configured adapters read `file`: TypeScript sources other than\ndeclaration files, and `.svelte` components when `svelte` is configured (ADR 0020).\n\nSvelte components are indexed (ADR 0020). `@poetics/adapter-svelte` now exports `sveltePlugin`, a framework plugin for the TypeScript indexer that replaces the `createSvelteAdapter` stub. Each `.svelte` file is turned into TypeScript by `svelte2tsx` and read by the same checker as every other file, so components and `.ts` code resolve to each other. Each component is one `component` unit, hashed from its source as written, with its props type as its interface and `renders` edges to the components it uses.",
+      "recorded": "One rule for which files the configured adapters read, shared by scope, poetics index, verify's change check, backfill and the MCP code view. Each had its own TypeScript-only regex, which left .svelte units out of matching and made index mint duplicates.",
+      "score": {
+        "recall": 0.34615384615384615,
+        "jaccard": 0.16363636363636364
+      }
+    },
+    {
       "unit": "scripts/export-site-data.ts#exportSiteData",
       "commit": "e7dd8e88561bd44b4975744c1cf7687e7ee77ddf",
       "confidence": "medium",
@@ -4641,6 +5154,105 @@
       "score": {
         "recall": 0.3333333333333333,
         "jaccard": 0.07142857142857142
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-corpus.ts#BackfillCorpus",
+      "commit": "e352aaefbbad6f8aee6f2f3b87935f94c0bac69f",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "A repository pinned to a commit, with the scope and adapters to backfill it with.\n\nThe backfill eval ran only on this repository, which has TSDoc on every export and rationale recorded from its first commit, so its results were an upper bound (#64). `pnpm eval:backfill --corpus` now backfills two of the gate's repositories, which never used Poetics, from full clones at pinned commits, offline: the snapshot, then a whole first-parent history walk with deletions.",
+      "recorded": "A late-adopting repository for the backfill eval: pinned commit, scope and adapters, as evals/backfill/corpus.json lists them (#64).",
+      "score": {
+        "recall": 0.6666666666666666,
+        "jaccard": 0.21052631578947367
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-corpus.ts#CorpusBackfillResult",
+      "commit": "e352aaefbbad6f8aee6f2f3b87935f94c0bac69f",
+      "confidence": "medium",
+      "sources": [
+        "commit"
+      ],
+      "drafted": false,
+      "inferred": "The backfill eval ran only on this repository, which has TSDoc on every export and rationale recorded from its first commit, so its results were an upper bound (#64). `pnpm eval:backfill --corpus` now backfills two of the gate's repositories, which never used Poetics, from full clones at pinned commits, offline: the snapshot, then a whole first-parent history walk with deletions.",
+      "recorded": "What the backfill eval reports for a repository with no recorded rationale to compare against: units, confidence, evidence, rationale length and time, for the snapshot and the history walk (#64).",
+      "score": {
+        "recall": 0.5,
+        "jaccard": 0.2
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-corpus.ts#VersionStats",
+      "commit": "e352aaefbbad6f8aee6f2f3b87935f94c0bac69f",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment"
+      ],
+      "drafted": false,
+      "inferred": "How many versions had each confidence, and what their rationale rested on.\n\nThe backfill eval ran only on this repository, which has TSDoc on every export and rationale recorded from its first commit, so its results were an upper bound (#64). `pnpm eval:backfill --corpus` now backfills two of the gate's repositories, which never used Poetics, from full clones at pinned commits, offline: the snapshot, then a whole first-parent history walk with deletions.",
+      "recorded": "The figures the corpus eval gives for a set of inferred versions: confidence, what each rationale rested on, versions with no evidence, and rationale length in content words (#64).",
+      "score": {
+        "recall": 0.42857142857142855,
+        "jaccard": 0.13636363636363635
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-corpus.ts#formatCorpusBackfill",
+      "commit": "e352aaefbbad6f8aee6f2f3b87935f94c0bac69f",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "The corpus results as Markdown.\n\nThe backfill eval ran only on this repository, which has TSDoc on every export and rationale recorded from its first commit, so its results were an upper bound (#64). `pnpm eval:backfill --corpus` now backfills two of the gate's repositories, which never used Poetics, from full clones at pinned commits, offline: the snapshot, then a whole first-parent history walk with deletions.",
+      "recorded": "Writes the corpus eval's results as Markdown, one section per repository, with the snapshot and history walk side by side (#64).",
+      "score": {
+        "recall": 0.7272727272727273,
+        "jaccard": 0.2222222222222222
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-corpus.ts#runCorpusBackfill",
+      "commit": "e352aaefbbad6f8aee6f2f3b87935f94c0bac69f",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "Clones `source` (a full clone of the corpus repository) at the corpus commit,\nwrites a config for its scope, and runs the snapshot backfill offline. Then\nit records and commits the units and walks the first-parent history for\ntheir prehistory, deletions included. The clone is thrown away.\n\nThe backfill eval ran only on this repository, which has TSDoc on every export and rationale recorded from its first commit, so its results were an upper bound (#64). `pnpm eval:backfill --corpus` now backfills two of the gate's repositories, which never used Poetics, from full clones at pinned commits, offline: the snapshot, then a whole first-parent history walk with deletions.",
+      "recorded": "Measures backfill on a repository that adopts Poetics late, which #64 asks for: the earlier eval ran only on this repository, whose TSDoc and recorded rationale make its results an upper bound. It runs the snapshot offline in a throwaway clone, then records and commits the units and times a full first-parent history walk, deletions included.",
+      "score": {
+        "recall": 0.7352941176470589,
+        "jaccard": 0.4807692307692308
+      }
+    },
+    {
+      "unit": "scripts/lib/backfill-corpus.ts#versionStats",
+      "commit": "e352aaefbbad6f8aee6f2f3b87935f94c0bac69f",
+      "confidence": "high",
+      "sources": [
+        "commit",
+        "comment",
+        "test"
+      ],
+      "drafted": false,
+      "inferred": "Counts, confidence, evidence and length over a list of inferred versions.\n\nThe backfill eval ran only on this repository, which has TSDoc on every export and rationale recorded from its first commit, so its results were an upper bound (#64). `pnpm eval:backfill --corpus` now backfills two of the gate's repositories, which never used Poetics, from full clones at pinned commits, offline: the snapshot, then a whole first-parent history walk with deletions.",
+      "recorded": "Summarises inferred versions for the corpus eval (#64). Test links are left out of the evidence, since they say where a unit is tested, not why it exists.",
+      "score": {
+        "recall": 0.3333333333333333,
+        "jaccard": 0.1
       }
     },
     {
@@ -4824,17 +5436,17 @@
     },
     {
       "unit": "scripts/lib/gate.ts#RefactorKind",
-      "commit": "b991abdf3264279d58fdf85a53d0b260bdbd38c1",
-      "confidence": "medium",
+      "commit": "21f1312d06bd0078c3514358e332dc426bbebd7a",
+      "confidence": "high",
       "sources": [
         "commit"
       ],
       "drafted": false,
-      "inferred": "Phase 2's gate asks that uids survive real refactors on a React app with the React adapter on. The gate hard-coded adapters: [\"typescript\"], so it had never measured components as components. Each corpus now lists its adapters (taxonomy and TanStack Query add react; --adapters overrides), the gate finds units with the same plugins poetics index runs, and a new wrap refactor wraps an export function component in memo, which only keeps its uid if the adapter sees through the wrapper.",
-      "recorded": "Adds wrap: wrapping an export function component in memo, which phase 2's gate measures because the React adapter must see through the wrapper for the uid to survive.",
+      "inferred": "Phases 1 and 2 of the gate counted 2,128 .svelte files in shadcn-svelte and TanStack Query as in scope but unread, so they never measured whether a component keeps its uid. With the Svelte adapter built (#69 to #73), both corpora now run with it on.",
+      "recorded": "Adds rename-file, phase 3's refactor (#66): renaming a Svelte component's file, which renames the component, since it is named after its file. Its script's functions move with it.",
       "score": {
-        "recall": 0.7222222222222222,
-        "jaccard": 0.29545454545454547
+        "recall": 0.3076923076923077,
+        "jaccard": 0.12903225806451613
       }
     },
     {
@@ -4881,11 +5493,11 @@
         "test"
       ],
       "drafted": false,
-      "inferred": "The refactors a config can be measured on: wrapping a component in `memo` needs the React adapter to see through it.\n\nPhase 2's gate asks that uids survive real refactors on a React app with the React adapter on. The gate hard-coded adapters: [\"typescript\"], so it had never measured components as components. Each corpus now lists its adapters (taxonomy and TanStack Query add react; --adapters overrides), the gate finds units with the same plugins poetics index runs, and a new wrap refactor wraps an export function component in memo, which only keeps its uid if the adapter sees through the wrapper.",
+      "inferred": "The refactors a config can be measured on: wrapping a component in `memo` needs the React adapter to see through\nit, and renaming a component's file needs the Svelte adapter to read it.\n\nPhase 2's gate asks that uids survive real refactors on a React app with the React adapter on. The gate hard-coded adapters: [\"typescript\"], so it had never measured components as components. Each corpus now lists its adapters (taxonomy and TanStack Query add react; --adapters overrides), the gate finds units with the same plugins poetics index runs, and a new wrap refactor wraps an export function component in memo, which only keeps its uid if the adapter sees through the wrapper.",
       "recorded": "The refactors a config can be measured on: wrap only when the React adapter is listed, since without it a memo-wrapped component is not a unit.",
       "score": {
         "recall": 0.6923076923076923,
-        "jaccard": 0.19148936170212766
+        "jaccard": 0.17647058823529413
       }
     },
     {
@@ -5335,6 +5947,6 @@
       }
     }
   ],
-  "unpaired": 11,
+  "unpaired": 18,
   "fallback": 0
 }

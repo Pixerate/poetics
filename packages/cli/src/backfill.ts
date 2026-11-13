@@ -6,7 +6,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { contentTree, createTypeScriptIndexer, fingerprint, signatureText } from "@poetics/adapter-typescript";
 import { detectIn } from "./declarations.ts";
-import type { IndexedUnit } from "@poetics/adapter-typescript";
+import type { FrameworkPlugin, IndexedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
 import type { Actor, ChangeClass, CodeUnit, Framework, Hash, Inferred, IssueTracker, Link, Unit, Version } from "@poetics/core";
 import { appendVersion, createMatcher, createUnit, extendsPrehistory, filesInScope, isParseable, parseUnit, readUnitFiles, setPrehistory, storePaths } from "@poetics/store";
@@ -89,6 +89,18 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
   }
   const perCommit = new Map<string, number>();
   for (const sha of introducedBy.values()) if (sha) perCommit.set(sha, (perCommit.get(sha) ?? 0) + 1);
+  // Whether a commit is about one unit: it introduced one export when it was made, not just one that survives, since
+  // an "initial commit" whose other exports were deleted since still described all of them (ADR 0022). Read only when
+  // it decides confidence, and only as far as a second export.
+  const plugins = pluginsFor(config);
+  const inScope = createMatcher(config.include, config.exclude ?? []);
+  const indexable = (file: string) => inScope(file) && isParseable(file, config.adapters);
+  const aboutOne = new Map<string, boolean>();
+  const aboutOneUnit = (sha: string) => {
+    if (perCommit.get(sha) !== 1) return false;
+    if (!aboutOne.has(sha)) aboutOne.set(sha, exportsIntroduced(root, sha, indexable, plugins, 2) <= 1);
+    return aboutOne.get(sha)!;
+  };
 
   const plan: BackfillPlan = {
     created: [],
@@ -122,7 +134,7 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
       if (!rationale && (commit.body || commit.subject)) rationale = commit.body || commit.subject;
       // A changeset or commit describes the whole change even when it names this unit (ADR 0018): it speaks to this
       // unit alone only when the change introduced nothing else, or alongside the unit's own doc comment.
-      if (rationale) confidence = confidenceOf({ reason: true, specific: perCommit.get(commit.sha) === 1 || Boolean(unit.docs) });
+      if (rationale) confidence = confidenceOf({ reason: true, specific: Boolean(unit.docs) || aboutOneUnit(commit.sha) });
       // Pull requests are linked and can raise confidence; their text never becomes the rationale.
       const at = codeAt.get(place(unit.location.file, unit.name, unit.kind));
       found = await pulls.read(commit.sha);
@@ -133,11 +145,9 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
     }
     if (unit.docs) {
       evidence.push({ source: "comment", ref: unit.location.file, text: unit.docs });
-      // Text shared with other units describes the whole change; the unit's own doc comment says what this one is
-      // for, so it leads (ADR 0019). A one-unit commit's text is already about this unit and stands alone.
-      const shared = !commit || perCommit.get(commit.sha) !== 1;
-      if (rationale && shared) rationale = `${unit.docs}\n\n${rationale}`;
-      rationale ??= unit.docs;
+      // The unit's own doc comment says what it is for and the change's text why it was added, so the comment leads
+      // (ADR 0019). It leads a one-unit commit's text too, which is often a few words (ADR 0022).
+      rationale = rationale ? `${unit.docs}\n\n${rationale}` : unit.docs;
     }
     for (const test of unit.tests ?? []) evidence.push({ source: "test", ref: test.file });
     for (const doc of docsMentioning(unit.name)) {
@@ -233,6 +243,28 @@ function listGaps(root: string, parseable: readonly string[], existing: readonly
 }
 
 /** Line-by-line authorship from `git blame`, one run per file; undefined for uncommitted lines or untracked files. */
+/**
+ * How many exports a commit added to the files in scope, counting ones deleted since: each file it added, changed
+ * or renamed is read as the commit left it and as its parent had it (under its old name, for a rename), and an export
+ * is new when the parent's file had none of that name and kind. A root commit's every export is new. Counting stops
+ * at `atMost`.
+ */
+export function exportsIntroduced(root: string, sha: string, indexable: (file: string) => boolean, plugins: readonly FrameworkPlugin[] = [], atMost = Infinity): number {
+  const parent = git(root, ["rev-list", "--parents", "-n", "1", sha]).trim().split(" ")[1];
+  const changes = git(root, ["diff-tree", "--no-commit-id", "--name-status", "-r", "-M", "--root", sha]).split("\n").filter(Boolean);
+  const names = (file: string, text: string | undefined) => new Set(text === undefined ? [] : detectIn(file, text, plugins).units.map((unit) => `${unit.name}#${unit.kind === "type"}`));
+  let added = 0;
+  for (const line of changes) {
+    const [status = "", first = "", second] = line.split("\t");
+    if (status.startsWith("D")) continue;
+    const file = second ?? first;
+    if (!indexable(file)) continue;
+    const before = names(first, parent ? showAt(root, parent, first) : undefined);
+    for (const name of names(file, showAt(root, sha, file))) if (!before.has(name) && ++added >= atMost) return added;
+  }
+  return added;
+}
+
 function blameLines(root: string): (file: string, line: number) => string | undefined {
   const files = new Map<string, string[]>();
   return (file, line) => {

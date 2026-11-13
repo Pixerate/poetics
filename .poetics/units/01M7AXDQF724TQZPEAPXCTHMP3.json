@@ -1,0 +1,47 @@
+{
+  "uid": "01M7AXDQF724TQZPEAPXCTHMP3",
+  "kind": "function",
+  "framework": "none",
+  "name": "exportsIntroduced",
+  "location": {
+    "file": "packages/cli/src/backfill.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:599f080211eb3e9a9083b189910b823868055f2ffd543a38b67e55b3a72e9085",
+      "interfaceHash": "b3:3dcfb5c897df3bf4bb52395be474eb871733d9bb35cfe63e5e1794fb253448d7",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Counts the exports a commit added to the files in scope, deleted since or not, so backfill can tell a one-unit commit from a large one whose other exports were removed later (ADR 0022, #64). Renames are read against the old name, and counting stops at a limit, since backfill only needs to know whether it was more than one.",
+      "deps": {
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:edb73add1559c280c4dcdceb5f3f6bf3dbf06d95ad7a8ce70316aef31405ac59",
+        "01M73SYHXDKHFFGXMW34YR7Y3P": "b3:52a252893ddce32174861c7cd65a2c4b4b46efd416d1dd5410ee9607286a8f2b",
+        "01M5Z1F6NP3C1KG9NNND31TPSJ": "b3:dd4eb578ac15dbcb0dcf9645b932f78a8a124faebe26255799f186266636ddbb",
+        "01M5Z1F6NQR9T376HTSH2ZYP8C": "b3:85859a81a9f157d7de29c1cfe6fed88d978006bd3ed9ea8645bd87f785770203"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#64"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0022-backfill-thin-commit-evidence.md"
+        }
+      ]
+    }
+  ],
+  "docs": "How many exports a commit added to the files in scope, counting ones deleted since: each file it added, changed\nor renamed is read as the commit left it and as its parent had it (under its old name, for a rename), and an export\nis new when the parent's file had none of that name and kind. A root commit's every export is new. Counting stops\nat `atMost`.",
+  "tests": [
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    }
+  ]
+}

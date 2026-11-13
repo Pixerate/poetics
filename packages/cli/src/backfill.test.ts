@@ -7,7 +7,7 @@ import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { IssueTracker, TrackedPullRequest, TrackedReviewComment, Unit } from "@poetics/core";
 import { checkStore, createValidator, loadSchemaSet, storePaths } from "@poetics/store";
 import type { DraftRequest, Drafter } from "./draft.ts";
-import { applyBackfill, applyPrehistory, confidenceOf, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
+import { applyBackfill, applyPrehistory, confidenceOf, exportsIntroduced, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
 import { applyIndex, planIndex } from "./indexing.ts";
 import { runGit, write } from "./test-helpers.ts";
 
@@ -105,17 +105,30 @@ describe("planBackfill", { timeout: GIT_TIMEOUT_MS }, () => {
     expect(units.get("sizeOf")!.versions[0]).toMatchObject({ rationale: "counting", inferred: { confidence: "medium", sources: ["commit"] } });
   });
 
-  it("keeps a one-unit commit's text as the whole rationale, even with a doc comment", async () => {
+  // ADR 0019 kept a one-unit commit's text as the whole rationale; ADR 0022 leads it with the doc comment too, since
+  // on repositories that adopt Poetics late that text is often a few words ("feat: environmentManager").
+  it("leads a one-unit commit's text with the unit's doc comment as well", async () => {
     const root = await adopted();
     await write(root, "src/trim.ts", "/** Trims whitespace from both ends. */\nexport function trimBoth(s: string) {\n  return s.trim();\n}\n");
     // Only this file: adopted() leaves src/new.ts uncommitted.
     runGit(root, "add", "src/trim.ts");
     runGit(root, "commit", "-q", "-m", "feat: trim pasted codes\n\nPasted coupon codes carry stray spaces.");
-    // The commit introduced trimBoth alone, so its text already speaks to this unit: the most specific evidence wins.
     expect(byName(await planBackfill(root, CONFIG)).get("trimBoth")!.versions[0]).toMatchObject({
-      rationale: "Pasted coupon codes carry stray spaces.",
+      rationale: "Trims whitespace from both ends.\n\nPasted coupon codes carry stray spaces.",
       inferred: { confidence: "high", sources: ["commit", "comment"] },
     });
+  });
+
+  it("counts what a commit introduced when it was made, so a survivor of a large commit is not about it alone (ADR 0022)", async () => {
+    const root = await adopted();
+    await write(root, "src/legacy.ts", "export function keepMe() {\n  return 1;\n}\nexport function dropMe() {\n  return 2;\n}\n");
+    runGit(root, "add", "src/legacy.ts");
+    runGit(root, "commit", "-q", "-m", "initial commit");
+    await write(root, "src/legacy.ts", "export function keepMe() {\n  return 1;\n}\n");
+    runGit(root, "add", "src/legacy.ts");
+    runGit(root, "commit", "-q", "-m", "chore: drop dropMe");
+    // keepMe is the only unit left from "initial commit", but that commit introduced two exports.
+    expect(byName(await planBackfill(root, CONFIG)).get("keepMe")!.versions[0]).toMatchObject({ rationale: "initial commit", inferred: { confidence: "medium", sources: ["commit"] } });
   });
 
   it("never stores author names or emails", async () => {
@@ -572,5 +585,26 @@ describe("planPrehistory", { timeout: GIT_TIMEOUT_MS }, () => {
       const from = sha(root, "Add formatPrice");
       expect(formatPrehistoryPlan(await planPrehistory(root, CONFIG, { from }))).toContain(`from 3 commit(s) after ${from.slice(0, 7)}.`);
     });
+  });
+});
+
+describe("exportsIntroduced", { timeout: GIT_TIMEOUT_MS }, () => {
+  it("counts the exports a commit added in scope, deleted since or not, following renames and skipping deletions", async () => {
+    const root = await adopted();
+    const head = (subject: string) => runGit(root, "log", "--format=%H", `--grep=${subject}`).trim();
+    const all = () => true;
+    expect(exportsIntroduced(root, head("add formatPrice"), all)).toBe(1);
+    expect(exportsIntroduced(root, head("initial import"), all)).toBe(2);
+    expect(exportsIntroduced(root, head("initial import"), (file) => file !== "src/util.ts")).toBe(0);
+    expect(exportsIntroduced(root, head("initial import"), all, [], 1)).toBe(1);
+    runGit(root, "mv", "src/util.ts", "src/utils.ts");
+    await write(root, "src/utils.ts", "export function one() {\n  return 1;\n}\nexport function two() {\n  return 2;\n}\nexport function three() {\n  return 3;\n}\n");
+    runGit(root, "add", "src/utils.ts");
+    runGit(root, "commit", "-q", "-m", "refactor: rename util and add three");
+    // A rename is read against the file's old name, so only three is new.
+    expect(exportsIntroduced(root, head("rename util"), all)).toBe(1);
+    runGit(root, "rm", "-q", "src/tax.ts");
+    runGit(root, "commit", "-q", "-m", "chore: drop tax");
+    expect(exportsIntroduced(root, head("drop tax"), all)).toBe(0);
   });
 });
