@@ -69,8 +69,9 @@ describe("runCorpusBackfill", () => {
     const result = await runCorpusBackfill(root, corpus);
     expect(result.history).toEqual({ commits: 3, firstParent: 3 });
     expect(result.snapshot).toMatchObject({ units: 2, versions: 2, byKind: { function: 2 }, fallback: 0 });
-    // Each commit introduced one unit that still exists, so both are about that unit alone.
-    expect(result.snapshot.byConfidence.high).toBe(2);
+    // addTax has a doc comment, so it is high. formatPrice survives "initial commit", which also introduced the
+    // since-deleted legacyTotal, so that message is not about it alone (ADR 0022).
+    expect(result.snapshot.byConfidence).toEqual({ high: 1, medium: 1, low: 0 });
     expect(result.snapshot.bySources).toEqual({ commit: 1, "comment + commit": 1 });
     // The walk reaches HEAD, the commit that recorded the snapshot, as well as the three before it.
     expect(result.walk.commits).toBe(4);

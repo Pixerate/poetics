@@ -162,13 +162,16 @@ the latest run. The corpora are two of the identity gate's:
   `high`. Its history walk has only commit messages to go on (doc comments
   are read at the snapshot only), so history rationale is 4 words at the
   median and 85% `medium`.
-- **Confidence still overrates empty messages.** A commit counts as about one
-  unit when it introduced only one unit that still exists, so a large
-  "initial commit" whose other exports were later deleted gives its survivor
-  `high` (the eval's synthetic repository shows it). And a one-unit commit's
-  message stands alone even when the unit has a doc comment: TanStack Query's
-  `IsServerValue` is `high` with "feat: environmentManager". Both are left for
-  a decision of their own, measured against this repository's record.
+- **Confidence overrated empty messages** in two ways, fixed by
+  [ADR 0022](../../docs/decisions/0022-backfill-thin-commit-evidence.md).
+  A commit counted as about one unit when it introduced only one unit that
+  still exists, so a large "initial commit" whose other exports were later
+  deleted gave its survivor `high`: 4 of taxonomy's 8 `high` versions. And a
+  one-unit commit's message stood alone even when the unit had a doc comment:
+  TanStack Query's `IsServerValue` was `high` with "feat: environmentManager".
+  Now a commit is about one unit only if it introduced one export when it was
+  made, and the doc comment always leads. The table above is from before the
+  change; `corpus-results.md` is after.
 - **Pull requests were not read.** Both runs are offline. TanStack Query
   merges through pull requests (`v4 alpha (#3060)`), so a run with a GitHub
   token would give its history walk more than commit messages; that is the
@@ -178,6 +181,25 @@ the latest run. The corpora are two of the identity gate's:
   (175 ms a commit, since most of its commits touch many components). That
   answers #64's question for repositories of this size: a full walk is
   affordable, and `poetics backfill --history <from>` already bounds one.
+
+## Thin commit evidence (2026-11-13, ADR 0022)
+
+[ADR 0022](../../docs/decisions/0022-backfill-thin-commit-evidence.md) counts
+what a commit introduced when it was made, not what survives, and leads every
+rationale with the unit's doc comment, a one-unit commit's included. Both evals
+before and after, at `b51daea`:
+
+| | Before | After |
+| --- | --- | --- |
+| This repository, 347 pairs: mean recall / overlap | 42% / 13% | 42% / 13% |
+| The 7 rationales the doc-comment rule changed: recall / overlap | 35% / 17% | 50% / 22% |
+| taxonomy snapshot: `high` / `medium` | 8 / 201 | 4 / 205 |
+| TanStack Query snapshot: `high` / `medium` | 266 / 21 | 265 / 22 |
+| Snapshot time, taxonomy / TanStack Query | 4.4 s / 9.2 s | 5.7 s / 9.6 s |
+
+A commit's files are read only for a unit with no doc comment whose commit
+has one surviving unit, and only as far as a second export, which keeps the
+snapshot within about a second of before.
 
 ## What this eval cannot say yet
 

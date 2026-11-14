@@ -28,5 +28,6 @@ new record here.
 | [0019](0019-backfill-rationale-leads-with-the-doc-comment.md) | Backfill rationale leads with the unit's doc comment when the change's text is shared | Accepted |
 | [0020](0020-svelte-through-svelte2tsx.md) | Svelte components enter the TypeScript program through svelte2tsx | Accepted |
 | [0021](0021-svelte-context-units.md) | Svelte contexts are context units, keyed by what declares them | Accepted |
+| [0022](0022-backfill-thin-commit-evidence.md) | Backfill counts what a commit introduced when it was made, and always leads with the doc comment | Proposed |
 
 New records copy [`template.md`](template.md).
