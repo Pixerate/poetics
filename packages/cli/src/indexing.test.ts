@@ -146,6 +146,36 @@ describe("planIndex and applyIndex", () => {
     expect(total.versions[1]!.parent).toBe(total.versions[0]!.contentHash);
   });
 
+  it("re-records an interface hash older adapter rules computed, so a later text edit is not an interface change (ADR 0024)", async () => {
+    const root = await mkdtemp(join(tmpdir(), "poetics-index-svelte-"));
+    runGit(root, "init", "-q", "-b", "main");
+    const config = { adapters: ["typescript", "svelte"], include: ["src/**/*.{ts,svelte}"] };
+    await write(root, ".poetics/config.json", JSON.stringify({ version: 1, ...config }));
+    const overview = (word: string) => `<script lang="ts">\n  let { title }: { title: string } = $props();\n</script>\n\n<h2>{title}</h2>\n<p>${word} text.</p>\n`;
+    await write(root, "src/Overview.svelte", overview("Some"));
+    await applyIndex(root, await planIndex(root, config, { rationale: "Seed" }), human);
+    // Recorded under older rules: the same content hash, a different interface hash.
+    const file = join(root, ".poetics/units", (await readdir(join(root, ".poetics/units")))[0]!);
+    const recorded = JSON.parse(await readFile(file, "utf8")) as Unit;
+    const current = recorded.versions[0]!.interfaceHash!;
+    recorded.versions[0]!.interfaceHash = `b3:${"0".repeat(64)}`;
+    await write(root, `.poetics/units/${recorded.uid}.json`, `${JSON.stringify(recorded, null, 2)}\n`);
+    runGit(root, "add", "-A");
+    runGit(root, "commit", "-q", "-m", "Seed");
+
+    const heal = await planIndex(root, config);
+    expect(heal).toMatchObject({ fresh: 0, rationale: undefined });
+    expect(heal.versions).toMatchObject([
+      { uid: recorded.uid, key: "src/Overview.svelte#Overview", version: { change: "rehash", contentHash: recorded.versions[0]!.contentHash, parent: recorded.versions[0]!.contentHash, interfaceHash: current } },
+    ]);
+    expect(formatIndexPlan(heal)).toContain("~ src/Overview.svelte#Overview rehash");
+    expect(await applyIndex(root, heal, human)).toBe(1);
+    expect((await planIndex(root, config)).fresh).toBe(1);
+
+    await write(root, "src/Overview.svelte", overview("Other"));
+    expect((await planIndex(root, config, { rationale: "Reword" })).versions.map(({ version }) => version.change)).toEqual(["behaviour"]);
+  });
+
   it("keeps the uid through a move, a rename with an edit, and records a deletion as removed", async () => {
     const root = await seeded({ "src/cart.ts": TOTAL, "src/price.ts": PRICE, "src/gone.ts": `export function gone() {\n  return 1;\n}\n` });
     const before = await store(root);
@@ -252,7 +282,7 @@ describe("planIndex and applyIndex", () => {
     expect(Object.keys(made.get("Page")!.versions[0]!.deps ?? {})).toEqual([made.get("PriceTag")!.uid]);
   });
 
-  it("reclassifies units an adapter now claims, without a rationale or a version", async () => {
+  it("reclassifies units an adapter now claims, without a rationale, re-recording the interface hash it now has", async () => {
     const plain = { ...CONFIG, include: ["src/**/*.{ts,tsx}"] };
     const root = await mkdtemp(join(tmpdir(), "poetics-index-reclassify-"));
     runGit(root, "init", "-q", "-b", "main");
@@ -269,11 +299,13 @@ describe("planIndex and applyIndex", () => {
     expect(plan.reclassified).toEqual([
       { uid: (await store(root)).get("Page")!.uid, key: "src/Page.tsx#Page", from: { kind: "function", framework: "none" }, to: { kind: "component", framework: "react" } },
     ]);
-    expect(plan).toMatchObject({ fresh: 2, versions: [], moves: [], created: [], rationale: undefined });
+    // A component's interface is its props, not a function signature: the same code, rehashed under the adapter's rules (ADR 0024).
+    expect(plan).toMatchObject({ fresh: 1, moves: [], created: [], rationale: undefined });
+    expect(plan.versions.map(({ key, version }) => [key, version.change])).toEqual([["src/Page.tsx#Page", "rehash"]]);
     expect(formatIndexPlan(plan)).toContain("* src/Page.tsx#Page function (none) -> component (react)");
     expect(await applyIndex(root, plan, human)).toBe(1);
     const page = (await store(root)).get("Page")!;
-    expect([page.kind, page.framework, page.versions.length]).toEqual(["component", "react", 1]);
+    expect([page.kind, page.framework, page.versions.map((v) => v.change)]).toEqual(["component", "react", ["created", "rehash"]]);
     expect((await planIndex(root, react)).reclassified).toEqual([]);
   });
 

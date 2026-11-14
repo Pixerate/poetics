@@ -15,6 +15,7 @@ import { appendVersion, createMatcher, createUnit, filesInScope, isParseable, pa
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { pluginsFor } from "./frameworks.ts";
 import { changesSince, git, showAt } from "./git.ts";
+import { rulesRehash } from "./rehash.ts";
 
 export interface IndexOptions {
   /** The ref whose code the store was last in step with. Default `HEAD`. */
@@ -113,6 +114,14 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   const claimed = new Set<string>();
   const orphans: Unit[] = [];
   const pending: Array<{ unit: Unit; at: IndexedUnit }> = [];
+  // Unchanged code whose interface hash the adapters' rules now compute differently is re-recorded, so the next
+  // edit is classified against the current rules rather than the ones it was recorded under (ADR 0024).
+  const rehashed: PlannedVersion[] = [];
+  const upToDate = (unit: Unit, at: IndexedUnit) => {
+    const version = rulesRehash(unit.versions.at(-1)!, at);
+    if (version) rehashed.push({ uid: unit.uid, key: at.key, version });
+    else plan.fresh++;
+  };
 
   // 1. Units at their recorded place: recorded already, or edited in place.
   for (const unit of units) {
@@ -124,7 +133,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     claimed.add(at.key);
     uidOfKey.set(at.key, unit.uid);
     reclassify(unit, at);
-    if (unit.versions.at(-1)!.contentHash === at.contentHash) plan.fresh++;
+    if (unit.versions.at(-1)!.contentHash === at.contentHash) upToDate(unit, at);
     else pending.push({ unit, at });
   }
 
@@ -165,7 +174,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
       if (match.score !== undefined) move.score = match.score;
       plan.moves.push(move);
     } else if (unit.versions.at(-1)!.contentHash === at.contentHash) {
-      plan.fresh++;
+      upToDate(unit, at);
     }
     reclassify(unit, at);
     if (unit.versions.at(-1)!.contentHash !== at.contentHash) pending.push({ unit, at });
@@ -219,6 +228,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     if (deps) version.deps = deps;
     plan.versions.push({ uid: unit.uid, key: at.key, version });
   }
+  plan.versions.push(...rehashed);
   for (const { unit, at, splitFrom } of createdFrom) {
     const first = unit.versions[0]!;
     // A declared split says where the part came from; that is its reason to exist.
@@ -289,7 +299,7 @@ export function formatIndexPlan(plan: IndexPlan, written?: number): string {
 
 /** Whether applying the plan would write anything. */
 export function hasWrites(plan: IndexPlan): boolean {
-  return needsRationale(plan) || plan.reclassified.length > 0;
+  return needsRationale(plan) || plan.reclassified.length > 0 || plan.versions.some(({ version }) => version.change === "rehash");
 }
 
 /**

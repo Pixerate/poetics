@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { isDeepStrictEqual } from "node:util";
 import { createMatcher, extendsPrehistory, isParseable, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
 import type { Scope } from "@poetics/store";
+import { isProvisional } from "@poetics/core";
 import type { Unit } from "@poetics/core";
 import { declarationsIn } from "./declarations.ts";
 import { pluginsFor } from "./frameworks.ts";
@@ -129,17 +130,19 @@ export async function checkChange(root: string, since: string, scope: Scope & { 
   };
 
   for (const { unit, file, version } of newVersions) {
-    // A rehash claims the code did not change: it must sit on the code's own provisional hash (ADR 0014).
+    // A rehash claims the code did not change: it must sit on the code's own provisional hash (ADR 0014), or on
+    // the code's own b3: hash when the adapters' rules changed its interface hash (ADR 0024).
     if (version.change === "rehash" && version === unit.versions.at(-1)) {
       const name = unit.location.export ?? unit.name;
       const decl = (await declarationsOf(unit.location.file)).find((d) => d.name === name && (d.kind === "type") === (unit.kind === "type"));
-      if (decl && (decl.hash !== version.parent || decl.contentHash !== version.contentHash)) {
+      const parentIsCode = decl !== undefined && version.parent != null && (isProvisional(version.parent) ? decl.hash : decl.contentHash) === version.parent;
+      if (decl && (!parentIsCode || decl.contentHash !== version.contentHash)) {
         findings.push({
           severity: "error",
           kind: "changed-rehash",
           file,
           message:
-            decl.hash !== version.parent
+            !parentIsCode
               ? `${unit.name}: rehash recorded, but the code changed since ${version.parent ?? "its parent"}; record a behaviour, interface or cosmetic version instead`
               : `${unit.name}: rehash contentHash ${version.contentHash} is not the code's ${decl.contentHash}`,
         });

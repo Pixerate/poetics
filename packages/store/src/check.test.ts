@@ -150,6 +150,25 @@ describe("checkStore", () => {
     expect(result).toContain("versions[1] is a rehash but its hashes are not all b3:");
   });
 
+  it("allows a rehash of the same b3: code only when it changes the interface hash (ADR 0024)", async () => {
+    const b3 = (n: string) => hash(n, "b3");
+    const base = (): Version[] => [{ contentHash: b3("1"), interfaceHash: b3("a"), parent: null, change: "created", actor: { kind: "human" }, rationale: "Made." }];
+    const good = makeUnit(UID_A, {
+      versions: [...base(), { contentHash: b3("1"), interfaceHash: b3("b"), parent: b3("1"), change: "rehash", actor: { kind: "human" }, rationale: "Rules changed." }],
+    });
+    expect(messages(await check(await makeRepo([good])))).toEqual([]);
+
+    const same = makeUnit(UID_B, {
+      versions: [...base(), { contentHash: b3("1"), interfaceHash: b3("a"), parent: b3("1"), change: "rehash", actor: { kind: "human" }, rationale: "Nothing changed." }],
+    });
+    const repeat = makeUnit(UID_C, {
+      versions: [...base(), { contentHash: b3("1"), interfaceHash: b3("b"), parent: b3("1"), change: "behaviour", actor: { kind: "human" }, rationale: "Not a rehash." }],
+    });
+    const result = messages(await check(await makeRepo([same, repeat])));
+    expect(result).toContain("versions[1] is a rehash of the same contentHash but does not change the interfaceHash");
+    expect(result).toContain(`versions[1] repeats contentHash ${b3("1")}`);
+  });
+
   it("checks references to files and units", async () => {
     const unit = makeUnit(UID_A, {
       owner: UID_B,

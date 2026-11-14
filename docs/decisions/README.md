@@ -29,5 +29,6 @@ new record here.
 | [0020](0020-svelte-through-svelte2tsx.md) | Svelte components enter the TypeScript program through svelte2tsx | Accepted |
 | [0021](0021-svelte-context-units.md) | Svelte contexts are context units, keyed by what declares them | Accepted |
 | [0022](0022-backfill-thin-commit-evidence.md) | Backfill counts what a commit introduced when it was made, and always leads with the doc comment | Accepted |
+| [0024](0024-rehash-after-rule-changes.md) | A rehash also follows an adapter rule change | Proposed |
 
 New records copy [`template.md`](template.md).

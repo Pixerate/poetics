@@ -49,7 +49,7 @@ before you commit.
 | `repeated-rationale` | warning | Three or more new versions share one rationale. Say what changed for each unit. |
 | `unverified` | warning | A `behaviour` or `interface` version, but none of the unit's linked tests changed (or it has none). |
 | `callers-not-updated` | warning | An `interface` or `removed` version, but units depending on it got no version. |
-| `changed-rehash` | error | A new `rehash` version, but the code changed since its parent, or its hash is not the code's. A rehash only re-records unchanged code ([ADR 0014](decisions/0014-rehash-versions.md)). |
+| `changed-rehash` | error | A new `rehash` version, but the code changed since its parent, or its hash is not the code's. A rehash only re-records unchanged code ([ADR 0014](decisions/0014-rehash-versions.md), [ADR 0024](decisions/0024-rehash-after-rule-changes.md)). |
 
 Exit code 1 on any error. A unit whose latest version has a `b3:` hash is
 compared with the hash of its normalised syntax tree, so formatting and

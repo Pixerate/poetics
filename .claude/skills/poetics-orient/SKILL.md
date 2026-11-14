@@ -41,7 +41,9 @@ not available, use the fallback at the end.
    Active notes are known pitfalls; read their `fix` first.
 7. **Check flags.** `provisional: true` marks a `git:` hash recorded before the
    indexer; a `rehash` version after it re-records the same code under a `b3:`
-   hash, so it is bookkeeping, not a change. `reviewed: false` on an agent actor
+   hash, so it is bookkeeping, not a change. A `rehash` with the same
+   `contentHash` as the version before it re-records an interface hash the
+   adapters' rules now compute differently (ADR 0024); also bookkeeping. `reviewed: false` on an agent actor
    means a human has not approved that rationale yet; weigh it accordingly.
 
 To catch up on a whole branch or range rather than one unit, call

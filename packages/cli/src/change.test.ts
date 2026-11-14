@@ -205,6 +205,28 @@ describe("checkChange", () => {
       await writeUnitFile(root, rehashOf(unitFor(UID, "a", FN_A), FN_A2));
       expect((await checkChange(root, "HEAD", SCOPE)).findings).toMatchObject([{ kind: "changed-rehash", message: expect.stringMatching(/is not the code's/) }]);
     });
+
+    it("accepts a rehash of unchanged b3: code after a rule change, but not of changed code (ADR 0024)", async () => {
+      const root = await makeGitRepo(UID);
+      const [decl] = declarationsIn("src/a.ts", FN_A);
+      const indexed = unitFor(UID, "a", FN_A);
+      indexed.versions = [{ contentHash: decl!.contentHash, interfaceHash: `b3:${"1".repeat(64)}`, parent: null, change: "created", actor: { kind: "human" }, rationale: "Made." }];
+      await writeUnitFile(root, indexed);
+      runGit(root, "add", "-A");
+      runGit(root, "commit", "-q", "-m", "indexed");
+      const rulesRehash = (unit: Unit): Unit => {
+        const latest = unit.versions.at(-1)!;
+        unit.versions.push({ ...latest, interfaceHash: `b3:${"2".repeat(64)}`, parent: latest.contentHash, change: "rehash", rationale: "Rules changed.", links: ["ADR 0024"] });
+        return unit;
+      };
+      await writeUnitFile(root, rulesRehash(structuredClone(indexed)));
+      expect((await checkChange(root, "HEAD", SCOPE)).findings).toEqual([]);
+
+      await write(root, "src/a.ts", `${FN_A2}\n`);
+      const changed = await checkChange(root, "HEAD", SCOPE);
+      expect(kinds(changed)).toEqual(["error:stale", "error:changed-rehash"]);
+      expect(changed.findings[1]!.message).toMatch(/the code changed since b3:/);
+    });
   });
 
   it("sees an unrecorded memo component when the scope lists react", async () => {
