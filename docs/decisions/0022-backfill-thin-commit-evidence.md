@@ -1,6 +1,6 @@
 # 0022. Backfill counts what a commit introduced when it was made, and always leads with the doc comment
 
-- Status: Proposed
+- Status: Accepted (2026-11-14)
 - Date: 2026-11-13
 - Amends: [ADR 0018](0018-backfill-confidence-is-unit-specific.md) (when a
   change is about one unit) and [ADR 0019](0019-backfill-rationale-leads-with-the-doc-comment.md)
