@@ -44,7 +44,7 @@ by hand as below.
      },
      "check": { "kind": "test", "ref": "path/to/file.test.ts", "name": "test name" },
      "status": "active",
-     "actor": { "kind": "agent", "tool": "claude-code", "model": "<your model id>", "reviewed": false }
+     "actor": { "kind": "agent", "tool": "<your agent tool>", "model": "<your model id>", "reviewed": false }
    }
    ```
 

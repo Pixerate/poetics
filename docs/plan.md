@@ -298,7 +298,7 @@ Write rules: every write is append-only, attributed to the calling agent session
 | `poetics-debug` | Tracking down a regression | Walk a component's closure versions to find which unit version changed behaviour |
 | `poetics-gotcha` | Something cost real time and will recur | Search notes, prefer a check over a note, record an anchored note with verbatim symptoms, regenerate `GOTCHAS.md` |
 
-`poetics init --agents` installs the skills into the repo (for example `.claude/skills/`), adds a short `AGENTS.md` pointer for agents that read that convention, and registers the MCP server. An example skill:
+`poetics init --agents` installs the skills into the repo in the Agent Skills format, at `.agents/skills/` (mirrored to a runtime's own directory, such as `.claude/skills/`, when asked; [ADR 0023](decisions/0023-agent-runtimes.md)), adds a short `AGENTS.md` pointer for agents that read that convention, and registers the MCP server. An example skill:
 
 ```markdown
 ---
@@ -336,7 +336,7 @@ Each version records who produced it: a human, or an agent with its tool, model,
 
 ### Measuring it
 
-Poetics ships an eval suite: benchmark tasks on sample React, Svelte and mixed repos (feature changes, refactors, regression hunts), run by agents with and without Poetics. It compares task success, tokens used and whether lineage and rationale survive. Every skill and tool-description change is gated on it.
+Poetics ships an eval suite: benchmark tasks on sample React, Svelte and mixed repos (feature changes, refactors, regression hunts), run by agents with and without Poetics. It compares task success, tokens used and whether lineage and rationale survive. Every skill and tool-description change is gated on it. The harness starts the agent through a command the user configures and names no runtime or model ([ADR 0023](decisions/0023-agent-runtimes.md)).
 
 ## Integrations
 
@@ -431,7 +431,7 @@ This document becomes the repo's seed, with each part stored in the format where
 ```
 poetics/
   AGENTS.md
-  .claude/skills/          # poetics-orient, poetics-change, poetics-refactor, …
+  .agents/skills/          # poetics-orient, poetics-change, poetics-refactor, …
   .poetics/
     config.json
     units/                 # hand-written from commit one
@@ -485,4 +485,4 @@ Open questions, each tracked as an issue labelled `question`:
 - When to build the Swift adapter, and what the out-of-process adapter contract looks like? See [ADR 0008](decisions/0008-out-of-process-adapters.md) (proposed). ([#11](https://github.com/Pixerate/poetics/issues/11))
 - Should assumptions, considerations and planned work be note kinds, with `TODO` comments required to reference one or a tracker item? See [ADR 0012](decisions/0012-open-items-as-notes.md) (proposed).
 - Should Poetics find contradictions between recorded intents, with the calling agent judging pairs chosen from the graph? See [ADR 0015](decisions/0015-contradictions-in-intent.md) (proposed).
-- Which agent runtimes to target first for skills and evals, and whether to ship skills in one format or generate per-runtime variants? ([#7](https://github.com/Pixerate/poetics/issues/7))
+- ~~Which agent runtimes to target first for skills and evals, and whether to ship skills in one format or generate per-runtime variants?~~ Resolved: one copy in the Agent Skills format at `.agents/skills/`, mirrored for runtimes that read only their own directory, and evals that run whatever agent command is configured. See [ADR 0023](decisions/0023-agent-runtimes.md). ([#7](https://github.com/Pixerate/poetics/issues/7))

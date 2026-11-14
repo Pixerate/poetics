@@ -2,7 +2,7 @@
 
 Rules for every agent and human working in this repository. Poetics is built
 with Poetics: the code's history, rationale and tests are recorded in
-`.poetics/`, and the skills in `.claude/skills/` say how.
+`.poetics/`, and the skills in `.agents/skills/` say how.
 
 ## Before you start
 
@@ -24,9 +24,10 @@ pnpm typecheck        # tsc -b, then tests and scripts
 pnpm check            # sv check (Svelte fixture) + tsc (React fixture)
 pnpm validate         # .poetics/ against schemas/ and store rules
 pnpm gotchas          # regenerate GOTCHAS.md from .poetics/notes/
+pnpm skills           # copy .agents/skills/ to .claude/skills/ (edit .agents/ only)
 pnpm poetics:check    # did this change record itself in .poetics/? (vs HEAD; --since <ref>)
 pnpm poetics:coverage # how well .poetics/ covers the code, against policy thresholds
-pnpm preflight        # all of the above (gotchas --check), then build: what CI runs
+pnpm preflight        # all of the above (gotchas and skills --check), then build: what CI runs
 ```
 
 `pnpm ci` is a built-in pnpm command (clean install), not our checks. Use

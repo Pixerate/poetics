@@ -1,0 +1,48 @@
+{
+  "uid": "01M7D1DGYSWEPVXXCNP5ETDR4E",
+  "kind": "function",
+  "framework": "none",
+  "name": "syncSkills",
+  "location": {
+    "file": "scripts/skills.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:442997341f29d716f057ee5c210204bdcc432ec7802caff284cd5d04d7eba96a",
+      "interfaceHash": "b3:89e8e5b2d7bf4fb5f1d717c9ffbdf213826dc81d43d4ff55fd2479e2e7cee1a3",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Skills ship once from .agents/skills/ (ADR 0023), but some runtimes read only their own directory, so this keeps each mirror a byte-for-byte copy, or with check reports drift without writing, for pnpm preflight to fail on.",
+      "deps": {
+        "01M7D1DGYRTFTHRTCKN1WVNQVG": "b3:7b0d643371b89e147614c84b4a5d03e8838b30c621ce5e80470453c5cbd453da"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#7"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0023-agent-runtimes.md"
+        },
+        {
+          "kind": "test",
+          "ref": "scripts/skills.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "Returns the drifted paths per mirror. Without `check`, rewrites each drifted mirror from the source first.",
+  "tests": [
+    {
+      "file": "scripts/skills.test.ts",
+      "via": "static"
+    }
+  ]
+}
