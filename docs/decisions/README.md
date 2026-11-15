@@ -29,5 +29,6 @@ new record here.
 | [0020](0020-svelte-through-svelte2tsx.md) | Svelte components enter the TypeScript program through svelte2tsx | Accepted |
 | [0021](0021-svelte-context-units.md) | Svelte contexts are context units, keyed by what declares them | Accepted |
 | [0022](0022-backfill-thin-commit-evidence.md) | Backfill counts what a commit introduced when it was made, and always leads with the doc comment | Accepted |
+| [0023](0023-agent-runtimes.md) | Skills ship once in the Agent Skills format, and evals run an agent through a configured command | Proposed |
 
 New records copy [`template.md`](template.md).

@@ -7,7 +7,7 @@ description: Use when editing a function, hook, component or type in a Poetics r
 
 Run `poetics-orient` first. `pnpm poetics index` does steps 2, 4, 5 and 7 for
 you: run it without `--write` to see what it would record, then
-`pnpm poetics index --write --rationale "<why>" --agent claude-code --model <id>`.
+`pnpm poetics index --write --rationale "<why>" --agent <your agent tool> --model <id>`.
 It classifies each change from its hashes and writes one rationale for every
 unit, so then give each new version its own reason: call
 `poetics_record_rationale` with the unit and what changed for it (with links
@@ -44,7 +44,7 @@ does, and what to do by hand.
      "interfaceHash": "b3:<interfaceHash>",
      "parent": "<previous version's contentHash>",
      "change": "behaviour",
-     "actor": { "kind": "agent", "tool": "claude-code", "model": "<your model id>", "reviewed": false },
+     "actor": { "kind": "agent", "tool": "<your agent tool>", "model": "<your model id>", "reviewed": false },
      "rationale": "<one or two sentences: what changed for this unit and why>",
      "links": [{ "kind": "github-issue", "ref": "#123" }]
    }

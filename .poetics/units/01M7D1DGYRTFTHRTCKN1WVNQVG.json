@@ -1,0 +1,45 @@
+{
+  "uid": "01M7D1DGYRTFTHRTCKN1WVNQVG",
+  "kind": "function",
+  "framework": "none",
+  "name": "skillsDrift",
+  "location": {
+    "file": "scripts/skills.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:7b0d643371b89e147614c84b4a5d03e8838b30c621ce5e80470453c5cbd453da",
+      "interfaceHash": "b3:43c9f58112835e8a2905d37a1a0d211b5453f56aa50c0f48206519a3d05668a7",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Lists the files that differ between .agents/skills/ and a mirror (changed, missing or extra), so the preflight check can name exactly what drifted when someone edits the copy instead of the source (ADR 0023).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#7"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0023-agent-runtimes.md"
+        },
+        {
+          "kind": "test",
+          "ref": "scripts/skills.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "The paths that differ between source and mirror: changed, missing from the mirror, or extra in it.",
+  "tests": [
+    {
+      "file": "scripts/skills.test.ts",
+      "via": "static"
+    }
+  ]
+}
