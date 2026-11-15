@@ -29,6 +29,7 @@ pnpm install
 | `pnpm check` | `sv check` on the Svelte fixture, `tsc` on the React fixture |
 | `pnpm validate` | Validate `.poetics/` (units and notes) against `schemas/` and the store rules |
 | `pnpm gotchas [--check]` | Generate `GOTCHAS.md` from `.poetics/notes/`, or check it is up to date |
+| `pnpm skills [--check]` | Copy `.agents/skills/` to `.claude/skills/`, or check the copy matches |
 | `pnpm poetics log <unit> [--json]` | Every version of a unit, newest first, with hash, commit, author, rationale and links. A unit is a uid, a name, or `file#name` when a name is shared |
 | `pnpm poetics why <unit> [--json]` | The rationale chain that led to a unit's current version, oldest first |
 | `pnpm poetics changes [from] [to] [--json]` | What changed and why: every recorded unit change between two refs, grouped by commit (default: your branch since it forked, plus uncommitted work) |
@@ -100,14 +101,15 @@ sends them, so pick one your team is allowed to share the repository with.
 ```
 AGENTS.md                 rules for agents and humans
 GOTCHAS.md                pitfalls and workarounds (generated from notes)
-.claude/skills/           poetics-orient, poetics-change, poetics-refactor, …
+.agents/skills/           poetics-orient, poetics-change, poetics-refactor, …
+.claude/skills/           a copy, for runtimes that read only this (pnpm skills)
 .poetics/
   config.json             adapters, globs, policy
   units/                  one JSON file per unit (source of truth, in git)
   notes/                  one JSON file per gotcha, workaround or invariant
   cache/index.db          SQLite index (gitignored, rebuilt)
 schemas/                  JSON Schemas for unit files, config and lock
-scripts/                  validate, reindex, mint-uid, gotchas, site data
+scripts/                  validate, reindex, mint-uid, gotchas, skills, site data
 packages/
   core/                   unit model, uids, hashes, graph (stubs)
   store/                  JSON store, validation, SQLite index

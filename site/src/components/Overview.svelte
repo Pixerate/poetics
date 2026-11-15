@@ -126,7 +126,7 @@
       survives renames, and an append-only list of versions with change class, rationale, links and who made it.
     </li>
     <li>
-      <strong>Agents follow skills</strong> in <code>.claude/skills/</code> to read that history before a change and to
+      <strong>Agents follow skills</strong> in <code>.agents/skills/</code> to read that history before a change and to
       record a version after it. Agent-written entries stay unreviewed until a human approves them.
     </li>
     <li>

@@ -1,0 +1,69 @@
+---
+name: poetics-change
+description: Use when editing a function, hook, component or type in a Poetics repo, to classify the change, update tests and docs, and record per-unit rationale in .poetics/units.
+---
+
+# Change a unit and record why
+
+Run `poetics-orient` first. `pnpm poetics index` does steps 2, 4, 5 and 7 for
+you: run it without `--write` to see what it would record, then
+`pnpm poetics index --write --rationale "<why>" --agent <your agent tool> --model <id>`.
+It classifies each change from its hashes and writes one rationale for every
+unit, so then give each new version its own reason: call
+`poetics_record_rationale` with the unit and what changed for it (with links
+to the issue or task), or edit the version's `rationale` by hand if you have
+no MCP server. Only a version not yet committed can be changed. Check each
+`change` class (a refactor that cannot alter results is
+classified `behaviour`; say so in the rationale). The steps below are what it
+does, and what to do by hand.
+
+1. **Make the code change**, and add or update unit tests for it. Every change
+   ships with tests (see `AGENTS.md`).
+2. **Classify it** for each unit you touched:
+   - `interface` — the public signature changed (parameters, return type,
+     props, events, snippets, default prop values). Breaking for callers.
+   - `behaviour` — the body changed in a way that can alter results.
+   - `cosmetic` — types or docs only.
+   - `removed` — the export was deleted. Keep the unit file; see step 5.
+   Formatting and comment-only edits are not a new version; skip steps 4–5.
+3. **Handle callers** for `interface` changes: `poetics_impact` with the
+   changed `units` lists every `interface-caller`. Update each, and give each
+   its own version entry.
+4. **Get the unit's hashes** from the indexer:
+   `pnpm poetics hash <file>#<name>`. It prints the `b3:` `contentHash` (the
+   normalised syntax tree, so formatting and comments never change it) and the
+   `interfaceHash`. `pnpm poetics:check` prints the same `contentHash` for any
+   unit that is behind. Provisional `git:` hashes are history only
+   ([ADR 0014](../../../docs/decisions/0014-rehash-versions.md)).
+5. **Append a version** to `.poetics/units/<uid>.json`. Never edit or remove
+   earlier entries.
+
+   ```json
+   {
+     "contentHash": "b3:<contentHash>",
+     "interfaceHash": "b3:<interfaceHash>",
+     "parent": "<previous version's contentHash>",
+     "change": "behaviour",
+     "actor": { "kind": "agent", "tool": "<your agent tool>", "model": "<your model id>", "reviewed": false },
+     "rationale": "<one or two sentences: what changed for this unit and why>",
+     "links": [{ "kind": "github-issue", "ref": "#123" }]
+   }
+   ```
+
+   Rationale describes this unit's change, not the whole commit, and cites
+   where it came from: an issue, the task, a decision record or the plan.
+6. **Update `docs`** on the unit if its behaviour or interface changed, and the
+   matching TSDoc or `<!-- @component -->` comment in source.
+7. **New units** (a new exported function, hook, component or type): mint a uid
+   with `pnpm mint-uid`, create `.poetics/units/<uid>.json` with a single
+   `"change": "created"` version and `"parent": null`, and link its tests.
+8. **Notes:** if `pnpm validate` or `poetics_verify` says a note anchored to a
+   unit you changed needs re-checking, confirm it still holds and call
+   `poetics_record_note` with `confirm` and its id, or retire it
+   (`poetics-gotcha`). If the change hit
+   a pitfall that cost you time, record it with `poetics-gotcha`.
+9. **Check**: `poetics_verify` with the paths you changed as `scope` (`ok`
+   false means code with no version, an export with no unit, or a unit whose
+   code is gone), then `pnpm validate`, `pnpm poetics:check` and `pnpm test`.
+   `poetics:check` prints the line range and new hash for any export whose
+   unit is missing or behind, so you can fix each finding directly.

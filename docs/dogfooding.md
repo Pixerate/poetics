@@ -2,7 +2,7 @@
 
 Poetics records its own history from the first commit. Until the tools exist,
 you (human or agent) write `.poetics/` by hand, following the skills in
-`.claude/skills/`. Each tool, as it lands, takes over a job the skills already
+`.agents/skills/`. Each tool, as it lands, takes over a job the skills already
 describe.
 
 | Job | Today, by hand | Taken over by | Phase |
@@ -28,7 +28,7 @@ can index them.
 ## Recipes
 
 **Changed a function's body:** append a `behaviour` version. See
-[`poetics-change`](../.claude/skills/poetics-change/SKILL.md).
+[`poetics-change`](../.agents/skills/poetics-change/SKILL.md).
 
 **Added an exported function:**
 
@@ -64,7 +64,7 @@ Then create `.poetics/units/<uid>.json`:
 Humans use `"actor": { "kind": "human" }`.
 
 **Renamed or moved something:** keep the uid; see
-[`poetics-refactor`](../.claude/skills/poetics-refactor/SKILL.md).
+[`poetics-refactor`](../.agents/skills/poetics-refactor/SKILL.md).
 
 **Deleted an exported function:** keep the unit file and append a final version
 with `"change": "removed"`, `"contentHash": "git:e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"`
