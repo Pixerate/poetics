@@ -1,6 +1,6 @@
 # 0025. Out-of-process adapters answer batched JSON requests on stdin and stdout
 
-- Status: Proposed
+- Status: Accepted (2026-11-16)
 - Date: 2026-11-15
 - Completes: [ADR 0008](0008-out-of-process-adapters.md), which deferred the
   contract until the React adapter gate had passed

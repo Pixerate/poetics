@@ -1,6 +1,6 @@
 # 0008. Non-TypeScript adapters run out of process
 
-- Status: Proposed
+- Status: Accepted (2026-11-16)
 - Date: 2026-10-28
 
 ## Context

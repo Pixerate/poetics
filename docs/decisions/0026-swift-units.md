@@ -1,6 +1,6 @@
 # 0026. Swift units are non-private declarations, with SwiftUI views as components
 
-- Status: Proposed
+- Status: Accepted (2026-11-16)
 - Date: 2026-11-15
 
 ## Context
