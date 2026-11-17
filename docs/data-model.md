@@ -160,6 +160,35 @@ Guarantees, covered by tests in `packages/store/src/index-db.test.ts`:
 When you add a column or table, bump `INDEX_SCHEMA_VERSION` and add it to the
 `TABLES` list so `dumpIndex` compares it.
 
+## The adapter protocol
+
+Adapters for languages the TypeScript checker cannot read run out of process
+([ADR 0025](decisions/0025-out-of-process-adapter-contract.md)). For each batch
+the core writes a request on the adapter's stdin and reads a response from its
+stdout:
+
+- [`schemas/adapter-request.schema.json`](../schemas/adapter-request.schema.json):
+  `protocol`, the repository `root`, and `files`, each a relative `path` with
+  an optional `text` (the file as it was at a commit).
+- [`schemas/adapter-response.schema.json`](../schemas/adapter-response.schema.json):
+  `protocol`, the `adapter`'s name, version and `rules`, and one entry per
+  file with its `units` or an `error`. Each unit has a `key` (`path#name`),
+  kind, framework, lines, hashes (`b3:` only), fingerprint, `signatureText`,
+  `edges` (each with a `resolution`, `exact` or `name`) and `unresolved` uses.
+
+The `kind` and `framework` of a unit come from the unit schema, so an adapter
+can only report what the store can hold. `checkAdapterResponse` in
+`@poetics/core` checks what the schemas cannot: every path was requested and
+answered once, keys are unique and start with their file, and owners and edge
+targets are units in the batch. A requested file with no units, an error or
+no entry is reported as not read, and its units are kept.
+
+Example batches live in
+[`schemas/fixtures/adapter/`](../schemas/fixtures/adapter/README.md), for
+adapters in other repositories to test against. When you change the protocol,
+bump `ADAPTER_PROTOCOL` and the schemas' `protocol` together, and update the
+fixtures.
+
 ## The TypeScript indexer's cache
 
 `@poetics/adapter-typescript` keeps what it found per file in a JSON cache

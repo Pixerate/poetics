@@ -64,6 +64,36 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:90d38bb662ac17eaca30f29bdd9780c35dc2274c7960cacc466edb07aa91de07",
+      "interfaceHash": "b3:1ad911e5e931d440b01933e627be50c08a58fe061661bd531efb541d0567124e",
+      "parent": "b3:9926a46992c80177f761485e1d0d39d05fa9ad1ac5ee985ec48d7a65511acaa2",
+      "change": "interface",
+      "rationale": "Adds adapterRequest and adapterResponse, so the core and an adapter's own repository can check protocol messages against the schemas this repository owns (ADR 0025).",
+      "deps": {
+        "01M5XDBC8MMX8HZ26P0EFRVYC3": "b3:45efcec160477b33a3abd60136f3e57813882d530cbc7399b7e1006a389c7775"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/store/src/schemas.test.ts"
+        }
+      ]
     }
   ],
   "tests": [

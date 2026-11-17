@@ -1,0 +1,47 @@
+{
+  "uid": "01M7MQ4DBE8YHTA9X1V29E3DTR",
+  "kind": "type",
+  "framework": "none",
+  "name": "AdapterResponse",
+  "location": {
+    "file": "packages/core/src/adapter-protocol.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:8740b8ac7930e632093ddaac6578a5576ad713aa7f58467041dde425d7f36fdc",
+      "interfaceHash": "b3:4ae22ec0787844629fc2f2e01254c5b179fc61fcdc295a25f5e418b3839fb4bc",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "What an out-of-process adapter answers, with its rules version so the core can tell when unchanged code's hashes went stale (ADR 0025, ADR 0024).",
+      "deps": {
+        "01M7MQ4DBE7ZDWW3NHRVN5VC6M": "b3:3861bb0ac472532d5b0ce8b3dea3a4fed689f20b3ed2348185779f5eef82d1dd"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/core/src/adapter-protocol.test.ts"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/core/src/adapter-protocol.test.ts",
+      "via": "static"
+    }
+  ]
+}

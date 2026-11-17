@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://poetics.dev/schemas/adapter-response.schema.json",
+  "title": "Poetics adapter response",
+  "description": "What an out-of-process adapter writes on stdout for one request: the units in each file, with their hashes and edges (ADR 0025).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "adapter",
+    "files"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "protocol": {
+      "const": 1
+    },
+    "adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version",
+        "rules"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rules": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Raised whenever a change to the adapter's normalisation changes the hashes of unchanged code."
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "description": "One entry per requested path. A path that is missing, or has an error, counts as not read: its units are kept, never removed.",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "units"
+            ],
+            "properties": {
+              "path": {
+                "$ref": "adapter-request.schema.json#/$defs/path"
+              },
+              "units": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/unit"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "error"
+            ],
+            "properties": {
+              "path": {
+                "$ref": "adapter-request.schema.json#/$defs/path"
+              },
+              "error": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Why the file could not be read."
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^b3:[0-9a-f]{64}$",
+      "description": "A BLAKE3 hash under the adapter's own normalisation. The core treats it as opaque."
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[^#]+#.+$",
+      "description": "path#name, unique in the batch, with whatever the language needs to keep it unique (such as Swift argument labels)."
+    },
+    "edgeKind": {
+      "enum": [
+        "renders",
+        "calls",
+        "uses-hook",
+        "uses-context",
+        "references-type"
+      ]
+    },
+    "unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "name",
+        "kind",
+        "framework",
+        "startLine",
+        "endLine",
+        "contentHash",
+        "interfaceHash",
+        "fingerprint",
+        "signatureText",
+        "edges",
+        "unresolved"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "$ref": "#/$defs/key",
+          "description": "The key of the unit this one is declared inside."
+        },
+        "kind": {
+          "$ref": "unit.schema.json#/properties/kind"
+        },
+        "framework": {
+          "$ref": "unit.schema.json#/properties/framework"
+        },
+        "startLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "endLine": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "1-based and inclusive."
+        },
+        "docs": {
+          "type": "string"
+        },
+        "contentHash": {
+          "$ref": "#/$defs/hash"
+        },
+        "interfaceHash": {
+          "$ref": "#/$defs/hash"
+        },
+        "runtimeHash": {
+          "$ref": "#/$defs/hash",
+          "description": "Only for languages with erasable types: the content with types erased."
+        },
+        "fingerprint": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Subtree hashes of the content, for matching code that moved while it was edited."
+        },
+        "signatureText": {
+          "type": "string",
+          "description": "The declaration up to its body, as written."
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "to",
+              "kind",
+              "resolution"
+            ],
+            "properties": {
+              "to": {
+                "$ref": "#/$defs/key"
+              },
+              "kind": {
+                "$ref": "#/$defs/edgeKind"
+              },
+              "resolution": {
+                "enum": [
+                  "exact",
+                  "name"
+                ],
+                "description": "exact: resolved by a compiler or build index. name: the only unit in the batch with that name."
+              }
+            }
+          }
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "line",
+              "name",
+              "reason"
+            ],
+            "properties": {
+              "kind": {
+                "$ref": "#/$defs/edgeKind"
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

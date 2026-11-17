@@ -1,0 +1,41 @@
+{
+  "uid": "01M7MQ4DBE7ZDWW3NHRVN5VC6M",
+  "kind": "type",
+  "framework": "none",
+  "name": "AdapterFile",
+  "location": {
+    "file": "packages/core/src/adapter-protocol.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:3861bb0ac472532d5b0ce8b3dea3a4fed689f20b3ed2348185779f5eef82d1dd",
+      "interfaceHash": "b3:854fb1b0557a394ebdf687aebdbe2a8bfa98ff3a38055930e2833fe550d5ceb0",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A response entry is a file's units or why it could not be read, so a failing file is kept as not read instead of being taken as having no units (ADR 0025).",
+      "deps": {
+        "01M7MQ4DBEG9QSH6VHH2V8NE5B": "b3:bdd2639bc9176053013d368fb6e891992858564c190f59f9d30ee079bca26013"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/core/src/adapter-protocol.test.ts"
+        }
+      ]
+    }
+  ]
+}

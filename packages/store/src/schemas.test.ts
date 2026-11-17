@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import { createValidator, loadSchemaSet } from "./schemas.ts";
@@ -131,5 +133,65 @@ describe("config coverage policy", () => {
     expect(validator.config(withCoverage({ tracked: 1, tested: 0.75 })).valid).toBe(true);
     expect(validator.config(withCoverage({ tracked: 1.5 })).valid).toBe(false);
     expect(validator.config(withCoverage({ lines: 0.5 })).valid).toBe(false);
+  });
+});
+
+describe("adapter protocol schemas", () => {
+  const fixture = async (file: string) => JSON.parse(await readFile(join(REPO_SCHEMAS, "fixtures/adapter/swift-basic", file), "utf8")) as Record<string, unknown>;
+  const B3 = `b3:${"a".repeat(64)}`;
+  const unit = (extra: Record<string, unknown> = {}) => ({
+    key: "a.swift#f()",
+    name: "f()",
+    kind: "function",
+    framework: "none",
+    startLine: 1,
+    endLine: 2,
+    contentHash: B3,
+    interfaceHash: B3,
+    fingerprint: [],
+    signatureText: "func f()",
+    edges: [],
+    unresolved: [],
+    ...extra,
+  });
+  const response = (files: unknown[]) => ({ protocol: 1, adapter: { name: "swift", version: "0.1.0", rules: 1 }, files });
+
+  it("accepts the swift-basic fixture", async () => {
+    expect(validator.adapterRequest(await fixture("request.json"))).toEqual({ valid: true, errors: [] });
+    expect(validator.adapterResponse(await fixture("response.json"))).toEqual({ valid: true, errors: [] });
+  });
+
+  it("rejects request paths that are absolute, leave the root or use backslashes", () => {
+    for (const path of ["/abs.swift", "../out.swift", "a/../../out.swift", "a\\b.swift", ""]) {
+      expect(validator.adapterRequest({ protocol: 1, root: "/r", files: [{ path }] }).valid, path).toBe(false);
+    }
+    expect(validator.adapterRequest({ protocol: 1, root: "/r", files: [{ path: "a/..b/c.swift" }] }).valid).toBe(true);
+  });
+
+  it("rejects another protocol version", () => {
+    expect(validator.adapterRequest({ protocol: 2, root: "/r", files: [] }).valid).toBe(false);
+    expect(validator.adapterResponse({ ...response([]), protocol: 2 }).valid).toBe(false);
+  });
+
+  it("needs exactly one of units and error for each file", () => {
+    expect(validator.adapterResponse(response([{ path: "a.swift" }])).valid).toBe(false);
+    expect(validator.adapterResponse(response([{ path: "a.swift", units: [], error: "x" }])).valid).toBe(false);
+    expect(validator.adapterResponse(response([{ path: "a.swift", error: "x" }])).valid).toBe(true);
+  });
+
+  it("rejects git: hashes, keys without a file, unknown resolutions and unknown fields", () => {
+    for (const bad of [
+      unit({ contentHash: `git:${"a".repeat(40)}` }),
+      unit({ key: "f()" }),
+      unit({ edges: [{ to: "a.swift#g()", kind: "calls", resolution: "guessed" }] }),
+      unit({ extra: true }),
+    ]) {
+      expect(validator.adapterResponse(response([{ path: "a.swift", units: [bad] }])).valid).toBe(false);
+    }
+  });
+
+  it("takes kinds and frameworks from the unit schema, so a framework the store does not know is refused", () => {
+    expect(validator.adapterResponse(response([{ path: "a.swift", units: [unit({ kind: "component", framework: "react" })] }])).valid).toBe(true);
+    expect(validator.adapterResponse(response([{ path: "a.swift", units: [unit({ framework: "swiftui" })] }])).valid).toBe(false);
   });
 });

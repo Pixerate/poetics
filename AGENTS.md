@@ -131,4 +131,5 @@ is about. [`GOTCHAS.md`](GOTCHAS.md) is generated from the notes by
 | An MCP tool | `packages/mcp/src/tools.ts`, the skills that mention it, `docs/agents.md` |
 | A CLI command | `packages/cli/src/commands.ts`, `docs/getting-started.md` |
 | A design decision | A new record in `docs/decisions/`, and `docs/plan.md` |
+| The adapter protocol | `schemas/adapter-*.schema.json`, `packages/core/src/adapter-protocol.ts`, `schemas/fixtures/adapter/`, `docs/data-model.md` |
 | A note field | `schemas/note.schema.json`, the `Note` type in `packages/core/src/types.ts`, `renderGotchas`, the `poetics-gotcha` skill |

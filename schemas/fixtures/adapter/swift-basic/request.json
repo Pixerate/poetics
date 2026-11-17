@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../adapter-request.schema.json",
+  "protocol": 1,
+  "root": "/work/app",
+  "files": [
+    {
+      "path": "Sources/Paint/Canvas.swift"
+    },
+    {
+      "path": "Sources/Paint/Canvas+Export.swift"
+    },
+    {
+      "path": "Sources/Paint/Brush.swift",
+      "text": "struct Brush {\n  var width: Double\n}\n"
+    },
+    {
+      "path": "Sources/Paint/Generated.swift"
+    }
+  ]
+}
