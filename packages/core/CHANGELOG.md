@@ -1,5 +1,11 @@
 # @poetics/core
 
+## 0.8.0
+
+### Minor Changes
+
+- [#94](https://github.com/Pixerate/poetics/pull/94) [`afb6e69`](https://github.com/Pixerate/poetics/commit/afb6e6933344ab3af3ea2bd6a0fa1816d67a1245) Thanks [@surrealroad](https://github.com/surrealroad)! - Add the out-of-process adapter protocol (ADR 0025): `AdapterRequest`, `AdapterResponse` and `checkAdapterResponse` in `@poetics/core`, and `adapterRequest` and `adapterResponse` validators in `@poetics/store`, backed by `schemas/adapter-request.schema.json` and `schemas/adapter-response.schema.json`.
+
 ## 0.7.0
 
 ### Minor Changes
