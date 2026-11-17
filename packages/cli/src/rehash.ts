@@ -5,9 +5,8 @@
 // compute differently gets one too (ADR 0024).
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { createTypeScriptIndexer } from "@poetics/adapter-typescript";
-import type { IndexedUnit } from "@poetics/adapter-typescript";
-import { pluginsFor } from "./frameworks.ts";
+import { adaptersFor, indexWith } from "./adapters.ts";
+import type { AdaptedUnit } from "./adapters.ts";
 import { gitBlobHash, isProvisional, isRemoved } from "@poetics/core";
 import type { Actor, Hash, Link, Version } from "@poetics/core";
 import { appendVersion, filesInScope, parseUnit, readUnitFiles, storePaths } from "@poetics/store";
@@ -45,7 +44,7 @@ const RATIONALE = {
  * content hash but whose interface hash the adapters now compute differently,
  * or undefined when there is none to write (ADR 0024).
  */
-export function rulesRehash(latest: Version, code: Pick<IndexedUnit, "contentHash" | "interfaceHash">): Omit<Version, "actor"> | undefined {
+export function rulesRehash(latest: Version, code: Pick<AdaptedUnit, "contentHash" | "interfaceHash">): Omit<Version, "actor"> | undefined {
   if (latest.change === "removed" || isProvisional(latest.contentHash) || latest.contentHash !== code.contentHash) return undefined;
   if (latest.interfaceHash === undefined || latest.interfaceHash === code.interfaceHash) return undefined;
   return { contentHash: code.contentHash, interfaceHash: code.interfaceHash, parent: latest.contentHash, change: "rehash", rationale: RATIONALE.rules, links: RULES_LINKS };
@@ -54,8 +53,7 @@ export function rulesRehash(latest: Version, code: Pick<IndexedUnit, "contentHas
 /** Which units the rehash would touch, and which it must leave until their code is recorded. */
 export async function planRehash(root: string, config: PoeticsConfig): Promise<RehashPlan> {
   const { parseable } = await filesInScope(root, config);
-  const tsconfig = config.typescript?.tsconfig;
-  const indexed = createTypeScriptIndexer({ root, files: parseable, plugins: pluginsFor(config), ...(tsconfig ? { tsconfig } : {}) }).index().units;
+  const indexed = indexWith(adaptersFor(root, config), parseable);
   const byPlace = new Map(indexed.map((unit) => [place(unit.span.file, unit.name, unit.kind === "type"), unit]));
   const texts = new Map<string, string>();
   const textOf = async (file: string) => {
@@ -71,7 +69,7 @@ export async function planRehash(root: string, config: PoeticsConfig): Promise<R
     const latest = latestVersion.contentHash;
     const where = { uid: unit.uid, name: unit.name, file: unit.location.file };
     // By the unit's own name, as poetics index matches: a component's `export` is `default`, not what the indexer calls it.
-    const code: IndexedUnit | undefined = byPlace.get(place(unit.location.file, unit.name, unit.kind === "type"));
+    const code: AdaptedUnit | undefined = byPlace.get(place(unit.location.file, unit.name, unit.kind === "type"));
     if (!isProvisional(latest)) {
       const rules = code && rulesRehash(latestVersion, code);
       if (rules) plan.rehash.push({ ...where, parent: latest, reason: "rules", contentHash: rules.contentHash, interfaceHash: rules.interfaceHash! });
@@ -110,10 +108,8 @@ export async function applyRehash(root: string, plan: RehashPlan, actor: Actor, 
 }
 
 /** The indexer's hashes for the units in one file, for writing a version by hand. */
-export async function unitHashes(root: string, config: PoeticsConfig, file: string): Promise<Array<Pick<IndexedUnit, "name" | "kind" | "startLine" | "endLine" | "contentHash" | "interfaceHash">>> {
-  const tsconfig = config.typescript?.tsconfig;
-  const { units } = createTypeScriptIndexer({ root, files: [file], plugins: pluginsFor(config), ...(tsconfig ? { tsconfig } : {}) }).index();
-  return units.map(({ name, kind, startLine, endLine, contentHash, interfaceHash }) => ({ name, kind, startLine, endLine, contentHash, interfaceHash }));
+export async function unitHashes(root: string, config: PoeticsConfig, file: string): Promise<Array<Pick<AdaptedUnit, "name" | "kind" | "startLine" | "endLine" | "contentHash" | "interfaceHash">>> {
+  return indexWith(adaptersFor(root, config), [file]).map(({ name, kind, startLine, endLine, contentHash, interfaceHash }) => ({ name, kind, startLine, endLine, contentHash, interfaceHash }));
 }
 
 function place(file: string, name: string, isType: boolean): string {

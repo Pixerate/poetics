@@ -6,14 +6,12 @@
 // test files that git saw renamed.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { contentTree, createTypeScriptIndexer, fingerprint } from "@poetics/adapter-typescript";
-import { detectIn } from "./declarations.ts";
-import type { FrameworkPlugin, IndexedUnit } from "@poetics/adapter-typescript";
-import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
+import { adaptersFor, indexWith, readTextsWith, readsAny } from "./adapters.ts";
+import type { AdaptedUnit, CodeAdapter } from "./adapters.ts";
+import { REMOVED_CONTENT_HASH, isRemoved, matchIdentities, mintUid } from "@poetics/core";
 import type { Actor, ChangeClass, CodeUnit, Hash, LineageDeclaration, LineageEntry, Link, QueuedMatch, RejectedDeclaration, TrackedUnit, Unit, Version } from "@poetics/core";
-import { appendVersion, createMatcher, createUnit, filesInScope, isParseable, parseUnit, readUnitFiles, reclassifyUnit, relinkTests, relocateUnit, storePaths } from "@poetics/store";
+import { appendVersion, createMatcher, createUnit, filesInScope, parseUnit, readUnitFiles, reclassifyUnit, relinkTests, relocateUnit, storePaths } from "@poetics/store";
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
-import { pluginsFor } from "./frameworks.ts";
 import { changesSince, git, showAt } from "./git.ts";
 import { rulesRehash } from "./rehash.ts";
 
@@ -79,7 +77,6 @@ export interface IndexPlan {
   rejected: RejectedDeclaration[];
 }
 
-const CACHE = "typescript.json";
 
 /** What poetics index would record: nothing is written until `applyIndex`. */
 export async function planIndex(root: string, config: PoeticsConfig, options: IndexOptions = {}): Promise<IndexPlan> {
@@ -87,13 +84,12 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   const base = since?.base ?? null;
   const rationale = options.rationale?.trim() || (base ? commitMessages(root, base) : "") || undefined;
   const { parseable } = await filesInScope(root, config);
-  const tsconfig = config.typescript?.tsconfig;
   const paths = storePaths(root);
-  const plugins = pluginsFor(config);
-  const code = createTypeScriptIndexer({ root, files: parseable, cacheFile: join(paths.cache, CACHE), plugins, ...(tsconfig ? { tsconfig } : {}) }).index().units;
+  const adapters = adaptersFor(root, config, { cache: true });
+  const code = indexWith(adapters, parseable);
   // By scope, not by what exists now: a unit whose file was deleted or moved is exactly what matching is for.
   const inScope = createMatcher(config.include, config.exclude ?? []);
-  const indexable = (file: string) => inScope(file) && isParseable(file, config.adapters);
+  const indexable = (file: string) => inScope(file) && readsAny(adapters, file);
   const live = (await readUnitFiles(paths))
     .map(parseUnit)
     .filter((unit) => !isRemoved(unit))
@@ -104,20 +100,20 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   // A declared unit goes through matching even when its old place still has code, as a split's original does.
   const declared = new Set((options.declarations ?? []).flatMap((declaration) => declaration.uids));
   // A store recorded before an adapter existed calls its components functions; the code now says otherwise.
-  const reclassify = (unit: Unit, at: IndexedUnit) => {
+  const reclassify = (unit: Unit, at: AdaptedUnit) => {
     if (unit.kind === at.kind && unit.framework === at.framework) return;
     plan.reclassified.push({ uid: unit.uid, key: at.key, from: { kind: unit.kind, framework: unit.framework }, to: { kind: at.kind, framework: at.framework } });
   };
-  const baseCode = baseSnapshot(root, base, plugins);
+  const baseCode = baseSnapshot(root, base, adapters);
   const codeByPlace = new Map(code.map((unit) => [place(unit.span.file, unit.name, unit.kind), unit]));
   const uidOfKey = new Map<string, string>();
   const claimed = new Set<string>();
   const orphans: Unit[] = [];
-  const pending: Array<{ unit: Unit; at: IndexedUnit }> = [];
+  const pending: Array<{ unit: Unit; at: AdaptedUnit }> = [];
   // Unchanged code whose interface hash the adapters' rules now compute differently is re-recorded, so the next
   // edit is classified against the current rules rather than the ones it was recorded under (ADR 0024).
   const rehashed: PlannedVersion[] = [];
-  const upToDate = (unit: Unit, at: IndexedUnit) => {
+  const upToDate = (unit: Unit, at: AdaptedUnit) => {
     const version = rulesRehash(unit.versions.at(-1)!, at);
     if (version) rehashed.push({ uid: unit.uid, key: at.key, version });
     else plan.fresh++;
@@ -148,7 +144,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   const unitByUid = new Map(units.map((unit) => [unit.uid, unit]));
   const codeByKey = new Map(code.map((unit) => [unit.key, unit]));
   // New units first, so a declared split's original can name its parts' uids.
-  const createdFrom: Array<{ unit: Unit; at: IndexedUnit; splitFrom?: Unit }> = [];
+  const createdFrom: Array<{ unit: Unit; at: AdaptedUnit; splitFrom?: Unit }> = [];
   for (const created of result.created) {
     const at = codeByKey.get(created.key)!;
     const uid = mintUid();
@@ -197,9 +193,9 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     return found.filter((link, i) => found.findIndex((other) => linkKey(other) === linkKey(link)) === i);
   };
   // A unit's own children are part of its source, so its version names theirs, whether or not it calls them.
-  const childrenOf = new Map<string, IndexedUnit[]>();
+  const childrenOf = new Map<string, AdaptedUnit[]>();
   for (const unit of code) if (unit.owner !== undefined) childrenOf.set(unit.owner, [...(childrenOf.get(unit.owner) ?? []), unit]);
-  const depsOf = (at: IndexedUnit) => {
+  const depsOf = (at: AdaptedUnit) => {
     const deps: Record<string, Hash> = {};
     for (const edge of at.edges) {
       const uid = uidOfKey.get(edge.to);
@@ -348,13 +344,13 @@ export async function declareLineage(
  * same runtime tree (types and docs aside) is `cosmetic`; anything else, or a
  * previous version whose runtime tree is unknown, is `behaviour`.
  */
-function classify(previous: Version, at: IndexedUnit, previousRuntime: Hash | undefined): ChangeClass {
+function classify(previous: Version, at: AdaptedUnit, previousRuntime: Hash | undefined): ChangeClass {
   if (previous.interfaceHash !== undefined && previous.interfaceHash !== at.interfaceHash) return "interface";
   if (previousRuntime !== undefined && previousRuntime === at.runtimeHash) return "cosmetic";
   return "behaviour";
 }
 
-function newUnit(root: string, uid: string, at: IndexedUnit): Unit {
+function newUnit(root: string, uid: string, at: AdaptedUnit): Unit {
   const unit: Unit = {
     uid,
     kind: at.kind,
@@ -385,24 +381,17 @@ function changesFromBase(root: string, since: string): ReturnType<typeof changes
 }
 
 /** The units of a file as it was at `base`, read syntactically: enough for content hashes and fingerprints. */
-function baseSnapshot(root: string, base: string | null, plugins: readonly FrameworkPlugin[]) {
-  const files = new Map<string, Map<string, CodeUnit & { runtimeHash: Hash }>>();
+function baseSnapshot(root: string, base: string | null, adapters: readonly CodeAdapter[]) {
+  const files = new Map<string, Map<string, CodeUnit & { runtimeHash?: Hash }>>();
   return (file: string, name: string, kind: Unit["kind"]) => {
     if (!files.has(file)) {
-      const found = new Map<string, CodeUnit & { runtimeHash: Hash }>();
+      const found = new Map<string, CodeUnit & { runtimeHash?: Hash }>();
       const text = base === null ? undefined : showAt(root, base, file);
       if (text !== undefined) {
-        for (const unit of detectIn(file, text, plugins).units) {
-          const tree = contentTree(unit);
-          found.set(place(file, unit.name, unit.kind), {
-            key: unit.key,
-            file,
-            name: unit.name,
-            kind: unit.kind,
-            contentHash: contentHash(tree),
-            runtimeHash: contentHash(contentTree(unit, true)),
-            fingerprint: fingerprint(tree),
-          });
+        for (const unit of readTextsWith(adapters, [{ path: file, text }]).get(file) ?? []) {
+          const at: CodeUnit & { runtimeHash?: Hash } = { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: unit.contentHash, fingerprint: unit.fingerprint };
+          if (unit.runtimeHash !== undefined) at.runtimeHash = unit.runtimeHash;
+          found.set(place(file, unit.name, unit.kind), at);
         }
       }
       files.set(file, found);
@@ -411,7 +400,7 @@ function baseSnapshot(root: string, base: string | null, plugins: readonly Frame
   };
 }
 
-function codeUnit(unit: IndexedUnit): CodeUnit {
+function codeUnit(unit: AdaptedUnit): CodeUnit {
   return { key: unit.key, file: unit.span.file, name: unit.name, kind: unit.kind, contentHash: unit.contentHash, fingerprint: unit.fingerprint };
 }
 

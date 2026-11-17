@@ -10,6 +10,8 @@ export type { CoverageMetrics, CoverageReport, Ratio } from "./coverage.ts";
 export { METRICS, areaOf, computeCoverage, coverageFor, formatCoverage } from "./coverage.ts";
 export type { Declaration } from "./declarations.ts";
 export { declarationsIn, detectIn, discoverDeclarations } from "./declarations.ts";
+export type { AdaptedUnit, AdapterOptions, CodeAdapter, TextUnit } from "./adapters.ts";
+export { adaptersFor, indexWith, readTextsWith, readsAny } from "./adapters.ts";
 export type { Drift, DriftFinding, DriftKind } from "./drift.ts";
 export { DRIFT_SEVERITY, compareCodeWithStore } from "./drift.ts";
 export { formatLog, formatWhy } from "./history.ts";

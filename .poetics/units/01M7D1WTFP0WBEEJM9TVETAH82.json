@@ -30,6 +30,38 @@
           "ref": "docs/decisions/0024-rehash-after-rule-changes.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:df87c807b072ec48d9eac59728f92ba53cf47725813255702e91112796694a6c",
+      "interfaceHash": "b3:2bdd852f543bfb6f0160c548eb94433b2616dc145a927be475eaee60ddf8f0bc",
+      "parent": "b3:dda6045de9a37b27dc803df5b90e4e75be99f20e265d23d18b39042825357288",
+      "change": "interface",
+      "rationale": "Takes AdaptedUnit hashes instead of the TypeScript IndexedUnit, so rules rehashes (ADR 0024) work for any adapter (ADR 0025).",
+      "deps": {
+        "01M7MRHZ80JM8HJC0A1SNB23AB": "b3:980af9eeb2406741fc52b16825982520b1f9f09a7e2bfdcf6d52737a4974f48e",
+        "01M5XDBC6R15PA0T08670RYQVW": "b3:c7034313ef971387c011fbcdcf06bfe2f467ae890db397d3a5de9836190a5313",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/rehash.test.ts"
+        }
+      ]
     }
   ],
   "docs": "The `rehash` version for a unit whose code still has its latest version's b3:\ncontent hash but whose interface hash the adapters now compute differently,\nor undefined when there is none to write (ADR 0024).",

@@ -1,0 +1,48 @@
+{
+  "uid": "01M7MRHZ80FGFDYZAVPDTMHA9H",
+  "kind": "type",
+  "framework": "none",
+  "name": "TextUnit",
+  "location": {
+    "file": "packages/cli/src/adapters.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:965d25d59a7dba5dfdd1b838616cd15e00362321f7601d115a22582243097fa2",
+      "interfaceHash": "b3:351aa23ee98768556e25633c1a35b94fe5951804bd5449e750327f5991d39bbc",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A unit read from a file's text on its own: hashes, fingerprint and signature text but no edges or interface hash, what the base snapshot, backfill and the history walk need from any language (ADR 0025).",
+      "deps": {
+        "01M7MRHZ80JM8HJC0A1SNB23AB": "b3:980af9eeb2406741fc52b16825982520b1f9f09a7e2bfdcf6d52737a4974f48e"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/adapters.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "A unit of a file read on its own from text, such as the file at an earlier commit: no edges and no interface hash.",
+  "tests": [
+    {
+      "file": "packages/cli/src/adapters.test.ts",
+      "via": "static"
+    }
+  ]
+}

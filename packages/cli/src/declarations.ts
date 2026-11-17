@@ -11,7 +11,7 @@ import type { Hash, UnitKind } from "@poetics/core";
 import { filesInScope } from "@poetics/store";
 import type { Scope } from "@poetics/store";
 import type { DetectedUnit, FrameworkPlugin } from "@poetics/adapter-typescript";
-import { pluginsFor } from "./frameworks.ts";
+import { adaptersFor, readTextsWith } from "./adapters.ts";
 
 export interface Declaration {
   /** Repo-relative POSIX path. */
@@ -57,11 +57,22 @@ export function declarationsIn(file: string, text: string, plugins: readonly Fra
   }));
 }
 
-/** Every tracked-shape declaration in scope. */
+/** Every tracked-shape declaration in scope, read by the adapters the scope names. */
 export async function discoverDeclarations(root: string, scope: Scope & { adapters?: readonly string[] }): Promise<{ declarations: Declaration[]; unsupported: string[] }> {
   const { parseable, unsupported } = await filesInScope(root, scope);
-  const declarations: Declaration[] = [];
-  const plugins = pluginsFor(scope);
-  for (const file of parseable) declarations.push(...declarationsIn(file, await readFile(join(root, file), "utf8"), plugins));
+  const files = await Promise.all(parseable.map(async (path) => ({ path, text: await readFile(join(root, path), "utf8") })));
+  const unitsIn = readTextsWith(adaptersFor(root, scope), files);
+  const declarations = files.flatMap(({ path, text }) =>
+    (unitsIn.get(path) ?? []).map((unit) => ({
+      file: path,
+      name: unit.name,
+      ...(unit.exportedAs !== undefined ? { exportedAs: unit.exportedAs } : {}),
+      kind: unit.kind,
+      hash: gitBlobHash(text.slice(unit.span.start, unit.span.end)),
+      contentHash: unit.contentHash,
+      startLine: unit.startLine,
+      endLine: unit.endLine,
+    })),
+  );
   return { declarations, unsupported };
 }

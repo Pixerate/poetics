@@ -1,0 +1,49 @@
+{
+  "uid": "01M7MRHZ81AHZQ6SJ5VYY46RZC",
+  "kind": "function",
+  "framework": "none",
+  "name": "readTextsWith",
+  "location": {
+    "file": "packages/cli/src/adapters.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:0141931e30dc7d4efcb850ac9ddc3ff4feb3ebe1f8746ce4a60ec0561258c39b",
+      "interfaceHash": "b3:bd59949bc2745a84e04a79b23b7987a7600ebdf347bf94a547ed5d78d5aa18aa",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Reads files from text, such as a file at an earlier commit, with the adapter that reads each one, so backfill and the index's base snapshot work for any language (ADR 0025).",
+      "deps": {
+        "01M7MRHZ80RNGSBJX617ERS8R6": "b3:66a70ca40a905b633619301f28f32a02c5c2cce7a89d0976c2573ee6eedca2e9",
+        "01M7MRHZ80FGFDYZAVPDTMHA9H": "b3:965d25d59a7dba5dfdd1b838616cd15e00362321f7601d115a22582243097fa2"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/adapters.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "Reads each file from its text with the adapter that reads it. A file no adapter reads has no entry.",
+  "tests": [
+    {
+      "file": "packages/cli/src/adapters.test.ts",
+      "via": "static"
+    }
+  ]
+}

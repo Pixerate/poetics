@@ -1,0 +1,38 @@
+{
+  "uid": "01M7MRHZ800KGF1MVFVXEMXGRY",
+  "kind": "type",
+  "framework": "none",
+  "name": "AdapterOptions",
+  "location": {
+    "file": "packages/cli/src/adapters.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:a4ed6a500a7d73f6ccd93d41029bb5baffef22188ff0fbea23db1468e3634fe9",
+      "interfaceHash": "b3:84dd057ac875d7f326a24e0c28a1c3f413322b3ba14de6949685c270bacaec98",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Whether an adapter reuses the indexer cache, which indexing, backfill and the MCP server share and rehash does not (ADR 0025).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/adapters.test.ts"
+        }
+      ]
+    }
+  ]
+}

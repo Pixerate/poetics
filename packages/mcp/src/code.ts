@@ -1,59 +1,52 @@
-// The code as the read tools see it: the TypeScript indexer's units, each
+// The code as the read tools see it: the units the configured adapters index, each
 // joined to the store unit recorded at its place, with the edges between them
 // as a composition graph over uids.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { pluginsFor } from "@poetics/cli";
-import { createTypeScriptIndexer } from "@poetics/adapter-typescript";
-import type { IndexedUnit } from "@poetics/adapter-typescript";
+import { adaptersFor, indexWith, readsAny } from "@poetics/cli";
+import type { AdaptedUnit } from "@poetics/cli";
 import { createGraph, isRemoved } from "@poetics/core";
 import type { CompositionGraph, Edge, Uid, Unit, UnresolvedEdge } from "@poetics/core";
-import { createMatcher, filesInScope, isParseable, readConfig, storePaths } from "@poetics/store";
+import { createMatcher, filesInScope, readConfig } from "@poetics/store";
 
 export interface CodeView {
   /** The indexed code of every live unit found at its recorded place. */
-  byUid: ReadonlyMap<Uid, IndexedUnit>;
+  byUid: ReadonlyMap<Uid, AdaptedUnit>;
   /** Edges between tracked units, resolved by the indexer. */
   graph: CompositionGraph;
   /** Code no unit is recorded for: unrecorded new exports, or moves not yet indexed. */
-  untracked: IndexedUnit[];
+  untracked: AdaptedUnit[];
   /** Live units with no code at their recorded place, in files the indexer reads. */
   missing: Uid[];
   /** The unit's source text, from its first declaration to the end of its last. */
-  sourceOf(unit: IndexedUnit): string;
+  sourceOf(unit: AdaptedUnit): string;
   /** The 1-based lines that text spans, to place stack frames and review comments. */
-  linesOf(unit: IndexedUnit): { startLine: number; endLine: number };
+  linesOf(unit: AdaptedUnit): { startLine: number; endLine: number };
 }
 
 /** Indexes the files in scope, reusing the cache, and joins the result to `units`. */
 export async function codeView(root: string, units: readonly Unit[]): Promise<CodeView> {
   const config = await readConfig(root);
   const { parseable } = await filesInScope(root, config);
-  const tsconfig = config.typescript?.tsconfig;
-  const indexed = createTypeScriptIndexer({
-    root,
-    files: parseable,
-    cacheFile: join(storePaths(root).cache, "typescript.json"),
-    // The same plugins poetics index runs, so packs and impact see components as it records them.
-    plugins: pluginsFor(config),
-    ...(tsconfig ? { tsconfig } : {}),
-  }).index().units;
+  // The same adapters and cache poetics index uses, so packs and impact see units as it records them.
+  const adapters = adaptersFor(root, config, { cache: true });
+  const indexed = indexWith(adapters, parseable);
   // By scope, not existence: a unit whose file was deleted is missing, not out of scope.
   const inScope = createMatcher(config.include, config.exclude ?? []);
-  const indexable = (file: string) => inScope(file) && isParseable(file, config.adapters);
+  const indexable = (file: string) => inScope(file) && readsAny(adapters, file);
   return joinCode(indexed, units, indexable, (file) => readFileSync(join(root, file), "utf8"));
 }
 
 /** The join itself, apart from the file system, so it can be tested on its own. */
 export function joinCode(
-  indexed: readonly IndexedUnit[],
+  indexed: readonly AdaptedUnit[],
   units: readonly Unit[],
   indexable: (file: string) => boolean,
   read: (file: string) => string,
 ): CodeView {
   const place = (file: string, name: string, kind: string) => `${file}#${name}#${kind === "type" ? "type" : "value"}`;
   const byPlace = new Map(indexed.map((unit) => [place(unit.span.file, unit.name, unit.kind), unit]));
-  const byUid = new Map<Uid, IndexedUnit>();
+  const byUid = new Map<Uid, AdaptedUnit>();
   const uidOfKey = new Map<string, Uid>();
   const missing: Uid[] = [];
   for (const unit of units) {
