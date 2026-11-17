@@ -14,7 +14,7 @@ new record here.
 | [0005](0005-node-24-type-stripping.md) | Node 24, native type stripping and `node:sqlite` | Accepted |
 | [0006](0006-notes-replace-gotchas.md) | Gotchas are anchored notes; GOTCHAS.md is generated | Accepted |
 | [0007](0007-change-check-and-coverage.md) | A per-change check and a coverage report | Accepted |
-| [0008](0008-out-of-process-adapters.md) | Non-TypeScript adapters run out of process | Proposed |
+| [0008](0008-out-of-process-adapters.md) | Non-TypeScript adapters run out of process | Accepted |
 | [0009](0009-changes-between-refs.md) | "What changed, and why" between two refs | Accepted |
 | [0010](0010-removed-versions.md) | Removal is a version; unit files are never deleted | Accepted |
 | [0011](0011-backfill.md) | Backfill: capture the current state, then the history behind it | Accepted |
@@ -31,5 +31,7 @@ new record here.
 | [0022](0022-backfill-thin-commit-evidence.md) | Backfill counts what a commit introduced when it was made, and always leads with the doc comment | Accepted |
 | [0023](0023-agent-runtimes.md) | Skills ship once in the Agent Skills format, and evals run an agent through a configured command | Proposed |
 | [0024](0024-rehash-after-rule-changes.md) | A rehash also follows an adapter rule change | Proposed |
+| [0025](0025-out-of-process-adapter-contract.md) | Out-of-process adapters answer batched JSON requests on stdin and stdout | Accepted |
+| [0026](0026-swift-units.md) | Swift units are non-private declarations, with SwiftUI views as components | Accepted |
 
 New records copy [`template.md`](template.md).
