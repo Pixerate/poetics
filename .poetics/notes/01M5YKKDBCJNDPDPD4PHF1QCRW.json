@@ -3,22 +3,24 @@
   "id": "01M5YKKDBCJNDPDPD4PHF1QCRW",
   "kind": "gotcha",
   "area": "schemas",
-  "title": "Ajv strict mode rejects `required` inside `if`/`then` and `not`",
+  "title": "Ajv strict mode rejects `required` inside `if`/`then`, `not` and `oneOf`",
   "symptoms": [
     "strict mode: required property \"resolvedBy\" is not defined",
-    "strict mode: required property \"interfaceHash\" is not defined at \"https://poetics.dev/schemas/unit.schema.json#/then/not/anyOf/0\" (strictRequired)"
+    "strict mode: required property \"interfaceHash\" is not defined at \"https://poetics.dev/schemas/unit.schema.json#/then/not/anyOf/0\" (strictRequired)",
+    "strict mode: required property \"units\" is not defined at \"https://poetics.dev/schemas/adapter-response.schema.json#/properties/files/items/oneOf/0\" (strictRequired)"
   ],
-  "cause": "Ajv's `strictRequired` wants every required property declared in the same schema object, and a `then` branch, or a `not`/`anyOf` inside it, is its own object.",
-  "fix": "Declare the property in the branch too: `\"then\": { \"properties\": { \"resolvedBy\": true }, \"required\": [\"resolvedBy\"] }`. To forbid a property in a branch, set it to `false` under `properties` (`\"interfaceHash\": false`) instead of `not: { required }`.",
+  "cause": "Ajv's `strictRequired` wants every required property declared in the same schema object, and a `then` branch, a `oneOf` branch, or a `not`/`anyOf` inside one, is its own object.",
+  "fix": "Declare the property in the branch too: `\"then\": { \"properties\": { \"resolvedBy\": true }, \"required\": [\"resolvedBy\"] }`. To forbid a property in a branch, set it to `false` under `properties` (`\"interfaceHash\": false`) instead of `not: { required }`. For alternatives (`oneOf`), write each branch as a full object with its own `properties`, `required` and `additionalProperties`, as `files` items in `adapter-response.schema.json` do.",
   "anchors": {
     "paths": [
       "schemas/note.schema.json",
-      "schemas/unit.schema.json"
+      "schemas/unit.schema.json",
+      "schemas/adapter-response.schema.json"
     ],
     "units": [
       {
         "uid": "01M5XDBC8Q3CFWVE0X24JVG5V7",
-        "observedAt": "git:c84cac0445ce58d7204860ca32c53380507fee5b"
+        "observedAt": "b3:8cfd1c8ea14d13d86b9cc06d974d8939e5e76613ecebc84a44c923389f3de911"
       }
     ]
   },

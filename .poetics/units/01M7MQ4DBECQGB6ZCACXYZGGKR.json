@@ -1,0 +1,50 @@
+{
+  "uid": "01M7MQ4DBECQGB6ZCACXYZGGKR",
+  "kind": "function",
+  "framework": "none",
+  "name": "checkAdapterResponse",
+  "location": {
+    "file": "packages/core/src/adapter-protocol.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:67d98cbd677d0dfb5aa206ed3be084be72aad767dcd210e952145f725997fb38",
+      "interfaceHash": "b3:8921c24a69eefa2d511e9588cd221ca427feb3d25aa51b77811c4fcdb2ed1375",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Checks what the JSON Schemas cannot: every path requested and answered once, keys unique and in their file, owners and edge targets present in the batch. Adapters in other repositories run it on their output to know it conforms (ADR 0025).",
+      "deps": {
+        "01M7MQ4DBE8DNGFJMWW9W6JPVN": "b3:eb9cadd814ab6d47e49991c8c11631faf1052efd86458b364fbfda07d6f689ed",
+        "01M7MQ4DBE8YHTA9X1V29E3DTR": "b3:8740b8ac7930e632093ddaac6578a5576ad713aa7f58467041dde425d7f36fdc",
+        "01M7MQ4DBEWA0HJN05H1YYTSY6": "b3:ccbe23b2d05990eea2e71834c6ac8cd83170f9c5a4fc02406c0bae3420d71600"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/core/src/adapter-protocol.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "Checks a schema-valid response against its request: paths, keys, owners and edge targets.",
+  "tests": [
+    {
+      "file": "packages/core/src/adapter-protocol.test.ts",
+      "via": "static"
+    }
+  ]
+}

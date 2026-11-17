@@ -1,0 +1,45 @@
+{
+  "uid": "01M7MQ4DBE8DNGFJMWW9W6JPVN",
+  "kind": "type",
+  "framework": "none",
+  "name": "AdapterRequest",
+  "location": {
+    "file": "packages/core/src/adapter-protocol.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:eb9cadd814ab6d47e49991c8c11631faf1052efd86458b364fbfda07d6f689ed",
+      "interfaceHash": "b3:14bb7e68c61b8bbb0323effc8a0b624a79bc5224e5510df0dd29822720781b54",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The batch the core sends an out-of-process adapter: paths to read from disk, or with text when the core reads a file as it was at a commit, so backfill and history work for any language (ADR 0025).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/core/src/adapter-protocol.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "One batch of files for an adapter to read as one program.",
+  "tests": [
+    {
+      "file": "packages/core/src/adapter-protocol.test.ts",
+      "via": "static"
+    }
+  ]
+}

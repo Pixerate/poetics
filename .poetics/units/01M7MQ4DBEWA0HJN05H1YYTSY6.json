@@ -1,0 +1,38 @@
+{
+  "uid": "01M7MQ4DBEWA0HJN05H1YYTSY6",
+  "kind": "type",
+  "framework": "none",
+  "name": "AdapterResponseCheck",
+  "location": {
+    "file": "packages/core/src/adapter-protocol.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:ccbe23b2d05990eea2e71834c6ac8cd83170f9c5a4fc02406c0bae3420d71600",
+      "interfaceHash": "b3:49aef3b5f0b96ea9488dcdd56dfc3c2620da32f28c0c455afc61b96e08456a3c",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Separates unusable responses (errors) from files that were simply not read, since failure must never remove units (ADR 0025).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/core/src/adapter-protocol.test.ts"
+        }
+      ]
+    }
+  ]
+}

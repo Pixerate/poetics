@@ -64,6 +64,36 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:9fd6476dacb1b3e7c80db2bd32f8b8c261aae2cba3400a1470878e06137a915f",
+      "interfaceHash": "b3:7b06b3c35f864f17d1774ac188dac0c709b48c8eea063a50b5511214694bdff6",
+      "parent": "b3:bb174137e655cbdeb991aa4c6b5c4e093a9910d432f456823d64c7e376c23078",
+      "change": "behaviour",
+      "rationale": "Reads adapter-request.schema.json and adapter-response.schema.json with the store schemas, for the out-of-process adapter protocol (ADR 0025).",
+      "deps": {
+        "01M5XDBC8K811GV0YB89JTHPV8": "b3:43552ab2186672a8e4f531b47684b82ce717c95a3d81f3cdc217968a8f464826"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/store/src/schemas.test.ts"
+        }
+      ]
     }
   ],
   "docs": "Reads the unit, note, config and lock schemas from a directory.",

@@ -1,4 +1,6 @@
 export type { CandidateEdge, FrameworkAdapter, UnitCandidate } from "./adapter.ts";
+export type { AdapterFile, AdapterRequest, AdapterResponse, AdapterResponseCheck, AdapterUnit } from "./adapter-protocol.ts";
+export { ADAPTER_PROTOCOL, checkAdapterResponse } from "./adapter-protocol.ts";
 export { NotImplementedError, notImplemented } from "./errors.ts";
 export type { CompositionGraph, ImpactEntry, ImpactOptions } from "./graph.ts";
 export { computeClosureHashes, createGraph, impactOf, stronglyConnectedComponents } from "./graph.ts";
