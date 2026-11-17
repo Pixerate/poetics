@@ -45,6 +45,33 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:1d3c63b245b475d4df0d0965c5b2729194bf103e451be8561a067e0a9bde49b1",
+      "interfaceHash": "b3:b6492569030dbddd2163644cca86900627fff47dcd6904e0b8cb07de5a1d3c61",
+      "parent": "b3:92fca5cec93473b7ed775dc834989d4a8e5930ef90f21df9a871a24cc99af249",
+      "change": "interface",
+      "rationale": "Gains conforms-to, a type naming a protocol or superclass it adopts, with the first consumed Swift output (ADR 0026).",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/store/src/schemas.test.ts"
+        }
+      ]
     }
   ],
   "tests": []

@@ -139,6 +139,44 @@
           "ref": "packages/mcp/src/code.test.ts"
         }
       ]
+    },
+    {
+      "contentHash": "b3:f9c5f5ed2cbea450ff16ca32aa5533ce4448b09a8400a22326d3da80fff5e019",
+      "interfaceHash": "b3:2f506bd24b74a7cefb2e518d34a9d8a1ec83e11d233c5cad737b81dd46b14e51",
+      "parent": "b3:23a9ced518ee372f5145f87448f86747f3e5dae0222e124bc30677711d288eca",
+      "change": "behaviour",
+      "rationale": "Leaves units in files an adapter could not read out of the missing list, as poetics index does (ADR 0025).",
+      "deps": {
+        "01M7MRHZ80MC7SFVMXQFYDD0JR": "b3:50ed63fb25c1fb51d3d64c06de822841fd975b2a7a850f24b39ac0acbac7b084",
+        "01M7MT8426B9WXAH8TR8HYE9KB": "b3:5dc1a2331706a6d0e7cd20366fae896de95b1373bd871697a9b78afa57de43cb",
+        "01M7MRHZ810VPR7DQXT4EF9D3X": "b3:2558c14e3ac5dd37c48a3904ed709dce8a2b22c6c7436ed9afd839efdbf6c201",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M6HYTZKT55NHNSV9KRKKHEDT": "b3:e7fb52af7754f145e508a3d973695fb639db9df0a27e2175178fd4456e942cc3",
+        "01M6HYTZKT3JE18TT5C80MGKJ9": "b3:d8ad4299dfe79172830594283318d7204cbc389d4cfb9b1125dfbac8c4ccab46",
+        "01M5Z1F6N6QK49CWHHTZ40TRE6": "b3:26000976264007442ede0a6b852a726e2e1c22c84ca25359cc7f931c75cd8f5c",
+        "01M5Z1F6NV9Q4BF2C1KBZD09MQ": "b3:73bb120c04ff81df07603ebd00c8a7b85a52b560589afe2ec8b7691c4be3c18a",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:a50623c392fe2033d26911146b4a8e6a15556a3e824b0e0f1a7799513f92f113"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/mcp/src/code.test.ts"
+        }
+      ]
     }
   ],
   "docs": "Indexes the files in scope, reusing the cache, and joins the result to `units`.",

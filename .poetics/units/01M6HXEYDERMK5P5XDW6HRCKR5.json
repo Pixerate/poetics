@@ -103,6 +103,37 @@
           "ref": "docs/plan.md#mcp-server-poeticsmcp"
         }
       ]
+    },
+    {
+      "contentHash": "b3:2e44de3a91f48e2730556175690c7b1055c6b74dcf4e7268e5bfd7bbd51d16b9",
+      "interfaceHash": "b3:5e8701ffd9efdde768e39d1fde3e27703d2db2e46bdcbe091e8c36c0255d3539",
+      "parent": "b3:9664b7e6c30a9961554e33a4af1baa2d6b1d457c2ba7c1144e1669163bcd88ca",
+      "change": "behaviour",
+      "rationale": "Lists files an adapter could not read, saying their units were left as they were, so a skipped file is visible rather than silent (ADR 0025).",
+      "deps": {
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:654d96c06aab3913ec5ceeb26e90101a80229799a268fb7b553d7e68ad1f6c51",
+        "01M6NQZ6JW3B0N2SP8YF9M6YF2": "b3:45042c8779fd7387e905af2d91ffa33b3bfef6401015111e03819afd6f476d5a"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
     }
   ],
   "docs": "The plan for people: one line per unit, then a summary. `written` is set after a write.",

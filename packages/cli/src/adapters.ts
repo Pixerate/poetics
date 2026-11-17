@@ -1,14 +1,16 @@
 // Every reader of code goes through a CodeAdapter (ADR 0025), so indexing,
 // rehash, backfill, the MCP server and the evals work the same for any
 // language. The TypeScript indexer, with the React and Svelte plugins, is one
-// adapter running in process; an out-of-process adapter will be another.
+// adapter running in process; each command adapter in the config is another,
+// run out of process (command-adapter.ts).
 import { join } from "node:path";
 import { contentTree, createTypeScriptIndexer, fingerprint, signatureText } from "@poetics/adapter-typescript";
 import type { IndexedEdge, IndexedUnit } from "@poetics/adapter-typescript";
 import { contentHash } from "@poetics/core";
 import type { Hash } from "@poetics/core";
-import { isParseable, storePaths } from "@poetics/store";
+import { commandAdapters, storePaths, typescriptReads } from "@poetics/store";
 import type { PoeticsConfig } from "@poetics/store";
+import { commandAdapter } from "./command-adapter.ts";
 import { detectIn } from "./declarations.ts";
 import { pluginsFor } from "./frameworks.ts";
 
@@ -28,10 +30,16 @@ export interface CodeAdapter {
   readonly name: string;
   /** Whether this adapter reads `file`. */
   reads(file: string): boolean;
-  /** The units of `files` as they are on disk, with edges between them. */
-  index(files: readonly string[]): AdaptedUnit[];
+  /** The units of `files` as they are on disk, with edges between them, and the files it could not read. */
+  index(files: readonly string[]): IndexReport;
   /** The units of each file in `files`, read from the text given, by path. */
   readTexts(files: ReadonlyArray<{ path: string; text: string }>): Map<string, TextUnit[]>;
+}
+
+export interface IndexReport {
+  units: AdaptedUnit[];
+  /** Files the adapter could not read: their units keep their last version and are never removed for it (ADR 0025). */
+  notRead: string[];
 }
 
 export interface AdapterOptions {
@@ -39,17 +47,27 @@ export interface AdapterOptions {
   cache?: boolean;
 }
 
-/** The adapters a repository's config names. Today one, the TypeScript indexer with its framework plugins. */
+/** The adapters a repository's config names: its command adapters, then the TypeScript indexer with its framework plugins. */
 export function adaptersFor(root: string, config: Pick<PoeticsConfig, "adapters" | "typescript">, options: AdapterOptions = {}): CodeAdapter[] {
-  return [typescriptAdapter(root, config, options)];
+  return [...commandAdapters(config.adapters).map((entry) => commandAdapter(root, entry, config.adapters ?? [])), typescriptAdapter(root, config, options)];
 }
 
-/** Indexes `files` with the adapters that read them, together. Files no adapter reads are left out. */
-export function indexWith(adapters: readonly CodeAdapter[], files: readonly string[]): AdaptedUnit[] {
-  return adapters.flatMap((adapter) => {
+/** Indexes `files` with the adapters that read them, and lists the files an adapter could not read. Files no adapter reads are left out. */
+export function indexReport(adapters: readonly CodeAdapter[], files: readonly string[]): IndexReport {
+  const report: IndexReport = { units: [], notRead: [] };
+  for (const adapter of adapters) {
     const mine = files.filter((file) => adapter.reads(file));
-    return mine.length === 0 ? [] : adapter.index(mine);
-  });
+    if (mine.length === 0) continue;
+    const { units, notRead } = adapter.index(mine);
+    report.units.push(...units);
+    report.notRead.push(...notRead);
+  }
+  return report;
+}
+
+/** The units of `files`, indexed with the adapters that read them. */
+export function indexWith(adapters: readonly CodeAdapter[], files: readonly string[]): AdaptedUnit[] {
+  return indexReport(adapters, files).units;
 }
 
 /** Reads each file from its text with the adapter that reads it. A file no adapter reads has no entry. */
@@ -74,15 +92,16 @@ function typescriptAdapter(root: string, config: Pick<PoeticsConfig, "adapters" 
   const tsconfig = config.typescript?.tsconfig;
   return {
     name: "typescript",
-    reads: (file) => isParseable(file, config.adapters),
+    reads: (file) => typescriptReads(file, config.adapters),
     index(files) {
-      return createTypeScriptIndexer({
+      const { units } = createTypeScriptIndexer({
         root,
         files,
         plugins,
         ...(options.cache ? { cacheFile: join(storePaths(root).cache, CACHE) } : {}),
         ...(tsconfig ? { tsconfig } : {}),
-      }).index().units;
+      }).index();
+      return { units, notRead: [] };
     },
     readTexts(files) {
       const out = new Map<string, TextUnit[]>();

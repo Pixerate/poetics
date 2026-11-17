@@ -6,7 +6,7 @@
 // test files that git saw renamed.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { adaptersFor, indexWith, readTextsWith, readsAny } from "./adapters.ts";
+import { adaptersFor, indexReport, readTextsWith, readsAny } from "./adapters.ts";
 import type { AdaptedUnit, CodeAdapter } from "./adapters.ts";
 import { REMOVED_CONTENT_HASH, isRemoved, matchIdentities, mintUid } from "@poetics/core";
 import type { Actor, ChangeClass, CodeUnit, Hash, LineageDeclaration, LineageEntry, Link, QueuedMatch, RejectedDeclaration, TrackedUnit, Unit, Version } from "@poetics/core";
@@ -66,6 +66,8 @@ export interface IndexPlan {
   rationale: string | undefined;
   /** Units whose recorded place already has their latest hash. */
   fresh: number;
+  /** Files an adapter could not read, when there were any: their units are left as they were (ADR 0025). */
+  notRead?: string[];
   moves: PlannedMove[];
   versions: PlannedVersion[];
   created: Unit[];
@@ -86,10 +88,12 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   const { parseable } = await filesInScope(root, config);
   const paths = storePaths(root);
   const adapters = adaptersFor(root, config, { cache: true });
-  const code = indexWith(adapters, parseable);
+  const { units: code, notRead } = indexReport(adapters, parseable);
+  const unread = new Set(notRead);
   // By scope, not by what exists now: a unit whose file was deleted or moved is exactly what matching is for.
   const inScope = createMatcher(config.include, config.exclude ?? []);
-  const indexable = (file: string) => inScope(file) && readsAny(adapters, file);
+  // A file an adapter could not read is out of reach this run, like a file out of scope: its units are not missing.
+  const indexable = (file: string) => inScope(file) && readsAny(adapters, file) && !unread.has(file);
   const live = (await readUnitFiles(paths))
     .map(parseUnit)
     .filter((unit) => !isRemoved(unit))
@@ -97,6 +101,7 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   const units = live.filter((unit) => indexable(unit.location.file));
 
   const plan: IndexPlan = { base, rationale, fresh: 0, moves: [], versions: [], created: [], removed: [], relinks: [], reclassified: [], queued: [], rejected: [] };
+  if (notRead.length > 0) plan.notRead = [...notRead].sort();
   // A declared unit goes through matching even when its old place still has code, as a split's original does.
   const declared = new Set((options.declarations ?? []).flatMap((declaration) => declaration.uids));
   // A store recorded before an adapter existed calls its components functions; the code now says otherwise.
@@ -286,6 +291,7 @@ export function formatIndexPlan(plan: IndexPlan, written?: number): string {
   for (const { key, tests } of plan.relinks) lines.push(`= ${key} tests: ${tests.map(({ from, to }) => `${from} -> ${to}`).join(", ")}`);
   for (const { key, from, to } of plan.reclassified) lines.push(`* ${key} ${from.kind} (${from.framework}) -> ${to.kind} (${to.framework})`);
   for (const q of plan.queued) lines.push(`? ${q.reason}: ${q.uids.join(", ")} -> ${q.keys.join(", ")}; declare which is which with lineage (poetics-refactor)`);
+  for (const file of plan.notRead ?? []) lines.push(`! ${file} not read by its adapter; its units are left as they were`);
   for (const r of plan.rejected) lines.push(`! declared ${r.declaration.kind} of ${r.declaration.uids.join(", ")} rejected: ${r.reason}`);
   if (plan.rationale === undefined && needsRationale(plan)) lines.push("No rationale yet: pass --rationale, or commit with a message first.");
   const counts = `${plan.moves.length} moved, ${plan.versions.length} changed, ${plan.created.length} new, ${plan.removed.length} removed, ${plan.relinks.length} relinked, ${plan.reclassified.length} reclassified, ${plan.queued.length} queued, ${plan.fresh} up to date`;

@@ -8,8 +8,7 @@ import { createMatcher, extendsPrehistory, isParseable, parseUnit, readUnitFiles
 import type { Scope } from "@poetics/store";
 import { isProvisional } from "@poetics/core";
 import type { Unit } from "@poetics/core";
-import { declarationsIn } from "./declarations.ts";
-import { pluginsFor } from "./frameworks.ts";
+import { declarationsOf } from "./declarations.ts";
 import type { Declaration } from "./declarations.ts";
 import { DRIFT_SEVERITY, compareCodeWithStore } from "./drift.ts";
 import { changesSince, showAt } from "./git.ts";
@@ -42,8 +41,7 @@ export interface ChangeReport {
   findings: ChangeFinding[];
 }
 
-export async function checkChange(root: string, since: string, scope: Scope & { adapters?: readonly string[] }): Promise<ChangeReport> {
-  const plugins = pluginsFor(scope);
+export async function checkChange(root: string, since: string, scope: Scope): Promise<ChangeReport> {
   const { base, changes } = changesSince(root, since);
   const inScope = createMatcher(scope.include, scope.exclude ?? []);
   const changedPaths = new Set(changes.flatMap((c) => (c.from ? [c.path, c.from] : [c.path])));
@@ -51,11 +49,8 @@ export async function checkChange(root: string, since: string, scope: Scope & { 
 
   // 1. Code that changed must match the store.
   const codeFiles = [...changedPaths].filter((path) => inScope(path) && isParseable(path, scope.adapters)).sort();
-  const declarations: Declaration[] = [];
-  for (const file of codeFiles) {
-    const text = await readFile(join(root, file), "utf8").catch(() => undefined);
-    if (text !== undefined) declarations.push(...declarationsIn(file, text, plugins));
-  }
+  const texts = await Promise.all(codeFiles.map(async (path) => ({ path, text: await readFile(join(root, path), "utf8").catch(() => undefined) })));
+  const declarations = declarationsOf(root, scope, texts.filter((file): file is { path: string; text: string } => file.text !== undefined));
   const paths = storePaths(root);
   const units = (await readUnitFiles(paths)).map(parseUnit);
   const covered = new Set(codeFiles);
@@ -121,10 +116,10 @@ export async function checkChange(root: string, since: string, scope: Scope & { 
 
   // Declarations of the files new rehash versions sit in, which need not be among the changed code files.
   const declarationCache = new Map<string, Declaration[]>();
-  const declarationsOf = async (file: string) => {
+  const declarationsIn = async (file: string) => {
     if (!declarationCache.has(file)) {
       const text = await readFile(join(root, file), "utf8").catch(() => undefined);
-      declarationCache.set(file, text === undefined ? [] : declarationsIn(file, text, plugins));
+      declarationCache.set(file, text === undefined ? [] : declarationsOf(root, scope, [{ path: file, text }]));
     }
     return declarationCache.get(file)!;
   };
@@ -134,7 +129,7 @@ export async function checkChange(root: string, since: string, scope: Scope & { 
     // the code's own b3: hash when the adapters' rules changed its interface hash (ADR 0024).
     if (version.change === "rehash" && version === unit.versions.at(-1)) {
       const name = unit.location.export ?? unit.name;
-      const decl = (await declarationsOf(unit.location.file)).find((d) => d.name === name && (d.kind === "type") === (unit.kind === "type"));
+      const decl = (await declarationsIn(unit.location.file)).find((d) => d.name === name && (d.kind === "type") === (unit.kind === "type"));
       const parentIsCode = decl !== undefined && version.parent != null && (isProvisional(version.parent) ? decl.hash : decl.contentHash) === version.parent;
       if (decl && (!parentIsCode || decl.contentHash !== version.contentHash)) {
         findings.push({

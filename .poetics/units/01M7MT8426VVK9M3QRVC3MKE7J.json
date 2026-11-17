@@ -1,0 +1,61 @@
+{
+  "uid": "01M7MT8426VVK9M3QRVC3MKE7J",
+  "kind": "function",
+  "framework": "none",
+  "name": "commandAdapter",
+  "location": {
+    "file": "packages/cli/src/command-adapter.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:9d46cf12b558451c285b8810bf1b63835aff64f51d1c7ad290a9e02b12bbbf94",
+      "interfaceHash": "b3:1705f69177723f5e186cb84bf71b3d02304d76f4d7ce985e6e9648825d8af350",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Runs a command adapter once per batch with the protocol request on stdin, checks its response's shape, adapter name and fit to the request, and maps its units to spans from their lines. Any failure throws AdapterError, so the run stops before units could look deleted (ADR 0025).",
+      "deps": {
+        "01M7MRHZ80JM8HJC0A1SNB23AB": "b3:980af9eeb2406741fc52b16825982520b1f9f09a7e2bfdcf6d52737a4974f48e",
+        "01M7MRHZ80RNGSBJX617ERS8R6": "b3:a705f5fca81e172f8c6fa9aaeb584ce4924db2abead9b3829478772d82bd2d24",
+        "01M7MRHZ80FGFDYZAVPDTMHA9H": "b3:965d25d59a7dba5dfdd1b838616cd15e00362321f7601d115a22582243097fa2",
+        "01M7MT8426KDBFMGPNQRQZDS3V": "b3:9447a1f4e33232308345f900e8fcbcaed9b3a606aee997ea5c7cd0659b566b3e",
+        "01M7MT8426WVKVDMZ3B143BC4E": "b3:757ac6238ac70f228ac07904c4966b3f786f053373c2badbf45198b83649f12b",
+        "01M7MT84266Z8WEFB5ZZEM9RN3": "b3:346d6f7d6329e9317ebfe382fdda352de2a4d6cae9e7a6a56c74a03976303dd8",
+        "01M7MQ4DBE8DNGFJMWW9W6JPVN": "b3:eb9cadd814ab6d47e49991c8c11631faf1052efd86458b364fbfda07d6f689ed",
+        "01M7MQ4DBE8YHTA9X1V29E3DTR": "b3:8740b8ac7930e632093ddaac6578a5576ad713aa7f58467041dde425d7f36fdc",
+        "01M7MQ4DBEG9QSH6VHH2V8NE5B": "b3:bdd2639bc9176053013d368fb6e891992858564c190f59f9d30ee079bca26013",
+        "01M7MT8427Z0B4WNFM438C6GXC": "b3:ecb3e15d1af5987a26a287a16be355a666b11db48380c5d0f2aa1e34a3742e42",
+        "01M7MQ4DBECQGB6ZCACXYZGGKR": "b3:67d98cbd677d0dfb5aa206ed3be084be72aad767dcd210e952145f725997fb38",
+        "01M7MT8427XW2XTS0VT50WP50T": "b3:03c57651f4b1a8cb5564a07504fccf5629eddc4a28ff88599360c4c954f27f24",
+        "01M7MT8427HFXV2GMS40TGFTG5": "b3:a52a2ed1d6f2aa76d9a11b26cfe4d7cd4dc564344da68f2f8bb0cbc64dfcba59",
+        "01M7MT8427JKR45BEHSVX9XKEA": "b3:30ef345ddda10b7813ac8259d50c8a0f7c6410dea41d47100c06459b692d15d6"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "The adapter for one command entry in the config. `all` decides which files it reads: those no earlier command adapter claims.",
+  "tests": [
+    {
+      "file": "packages/cli/src/command-adapter.test.ts",
+      "via": "static"
+    }
+  ]
+}

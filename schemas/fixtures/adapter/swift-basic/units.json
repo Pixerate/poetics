@@ -1,0 +1,63 @@
+[
+  {
+    "key": "Sources/Paint/Brush.swift#Brush",
+    "kind": "type",
+    "framework": "none",
+    "contentHash": "b3:0934e4aff50e12d5a5abe9c0dac9ca6a443f13ab4984afd8c385a8af0ec3e063",
+    "interfaceHash": "b3:da227ac8d2d528479bdd826cc06cb9257632f519c335b33201087ba991421c23",
+    "change": "created"
+  },
+  {
+    "key": "Sources/Paint/Canvas+Export.swift#Canvas.exportPNG()",
+    "kind": "function",
+    "framework": "none",
+    "owner": "Sources/Paint/Canvas.swift#Canvas",
+    "contentHash": "b3:7383912bb5065b4965882b220da2e81639792dfd721dc284803fe7300e0346af",
+    "interfaceHash": "b3:d6e40066d69faeef27db8916bf3d0fee742782de25f645be163311dd1b9784d9",
+    "change": "created"
+  },
+  {
+    "key": "Sources/Paint/Canvas+Export.swift#Color.brand",
+    "kind": "function",
+    "framework": "none",
+    "contentHash": "b3:98664fa12c81c8b0a10a387593437384e8264f3d13d11fc3df2f4d63184995bb",
+    "interfaceHash": "b3:2e0fec69a4a1ade0ed4ff1e0f1938895a9c4781780b41397939f840618eb6d98",
+    "change": "created"
+  },
+  {
+    "key": "Sources/Paint/Canvas.swift#Canvas",
+    "kind": "type",
+    "framework": "none",
+    "docs": "A drawing surface that records strokes.",
+    "contentHash": "b3:87d5cafeedfff8b0900e1e356aec71a4061ad9f5c1847024dc4897b357ed7714",
+    "interfaceHash": "b3:47414a827d6cb4351fc959c3669559b212a00536d7ca5d9d162e5233a5299a7f",
+    "change": "created"
+  },
+  {
+    "key": "Sources/Paint/Canvas.swift#Canvas.draw(_:)",
+    "kind": "function",
+    "framework": "none",
+    "owner": "Sources/Paint/Canvas.swift#Canvas",
+    "contentHash": "b3:76144dbcc9c9f9fb2b24d48307db487d29c46a61dec48ae0f1a97b648ecdbdec",
+    "interfaceHash": "b3:ed95ae64352caf494b2eee6f2541d886e6f726307ae43b4fdc739f19d879a400",
+    "change": "created"
+  },
+  {
+    "key": "Sources/Paint/Canvas.swift#Canvas.draw(_:in:)",
+    "kind": "function",
+    "framework": "none",
+    "owner": "Sources/Paint/Canvas.swift#Canvas",
+    "contentHash": "b3:9b9ca2f3a2f921392bf57533ac9c34a43822b541bd8575985983d994e8f8b2a1",
+    "interfaceHash": "b3:fc6023b755dbd2a971a4605fabb48f4dcd0e0a37e1c653bdaae72232a4b978bf",
+    "change": "created"
+  },
+  {
+    "key": "Sources/Paint/Canvas.swift#clamp(_:)",
+    "kind": "function",
+    "framework": "none",
+    "docs": "Declared under #if os(iOS) and #else: one unit covering both branches.",
+    "contentHash": "b3:cd61ba2fe34ba64744ee8df0e1d60742ffcddefa794fa666684d91dee83592b7",
+    "interfaceHash": "b3:b49e88584fcaf45a96b0529583cb66a8e6fa55dc3f06a6cc231b4edd9111532a",
+    "change": "created"
+  }
+]

@@ -1,0 +1,51 @@
+{
+  "uid": "01M7MT8427JKR45BEHSVX9XKEA",
+  "kind": "function",
+  "framework": "none",
+  "name": "commandAdapterFor",
+  "location": {
+    "file": "packages/store/src/scope.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:30ef345ddda10b7813ac8259d50c8a0f7c6410dea41d47100c06459b692d15d6",
+      "interfaceHash": "b3:c4a0c76ec57b1cf953e07b1f2bc49f0c137c35e4468bc25e6e28bc7559d04b8f",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Which command adapter reads a file: the first whose include matches, so each file has exactly one adapter (ADR 0025).",
+      "deps": {
+        "01M5Z1F6NV9Q4BF2C1KBZD09MQ": "b3:73bb120c04ff81df07603ebd00c8a7b85a52b560589afe2ec8b7691c4be3c18a",
+        "01M7MT8427XW2XTS0VT50WP50T": "b3:03c57651f4b1a8cb5564a07504fccf5629eddc4a28ff88599360c4c954f27f24",
+        "01M7MT8427HFXV2GMS40TGFTG5": "b3:a52a2ed1d6f2aa76d9a11b26cfe4d7cd4dc564344da68f2f8bb0cbc64dfcba59",
+        "01M7MT84277PJTJHM8AWYKGD97": "b3:229a68d781cfda9d19c9e8d7eab350058ebeef489348fb554383d304424a99ab"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "The command adapter whose `include` matches `file`, the first one listed when several do.",
+  "tests": [
+    {
+      "file": "packages/store/src/scope.test.ts",
+      "via": "static"
+    }
+  ]
+}

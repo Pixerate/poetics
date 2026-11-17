@@ -57,7 +57,10 @@ describe("versionCommits", () => {
   });
 });
 
-describe("runBackfillEval", () => {
+// Each test clones a repository and runs the snapshot backfill: about 3 s alone, longer under the full suite.
+const EVAL_TIMEOUT_MS = 30_000;
+
+describe("runBackfillEval", { timeout: EVAL_TIMEOUT_MS }, () => {
   it("infers every unit from a clone without its unit files, and pairs each with the version from the same commit", async () => {
     const root = await recordedRepo();
     const result = await runBackfillEval(root);

@@ -22,10 +22,59 @@
       "minItems": 1,
       "uniqueItems": true,
       "items": {
-        "enum": [
-          "react",
-          "svelte",
-          "typescript"
+        "oneOf": [
+          {
+            "enum": [
+              "react",
+              "svelte",
+              "typescript"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "command",
+              "include"
+            ],
+            "description": "An out-of-process adapter (ADR 0025): a command run once per batch, without a shell, from the repository root, speaking the adapter protocol on stdin and stdout.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$",
+                "not": {
+                  "enum": [
+                    "react",
+                    "svelte",
+                    "typescript"
+                  ]
+                }
+              },
+              "command": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "include": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": "Globs for the files this adapter reads. Files it matches go to it and to no other adapter."
+              },
+              "timeoutSeconds": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "How long one batch may take. Default 120."
+              }
+            }
+          }
         ]
       }
     },
@@ -74,11 +123,25 @@
         "draft": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["command"],
+          "required": [
+            "command"
+          ],
           "description": "The command backfill --draft runs to draft rationale (ADR 0017). Poetics names no model or provider: the command reads one JSON draft request on stdin and writes one JSON draft on stdout.",
           "properties": {
-            "command": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "description": "Program and arguments, run without a shell from the repository root." },
-            "timeoutSeconds": { "type": "integer", "minimum": 1, "description": "How long one draft may take before it counts as failed. Default 120." }
+            "command": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": "Program and arguments, run without a shell from the repository root."
+            },
+            "timeoutSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "How long one draft may take before it counts as failed. Default 120."
+            }
           }
         }
       }

@@ -1,0 +1,39 @@
+{
+  "uid": "01M7MT8427Z0B4WNFM438C6GXC",
+  "kind": "function",
+  "framework": "none",
+  "name": "adapterResponseProblems",
+  "location": {
+    "file": "packages/core/src/adapter-protocol.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:ecb3e15d1af5987a26a287a16be355a666b11db48380c5d0f2aa1e34a3742e42",
+      "interfaceHash": "b3:97bb9b0d27a85dbcf81ccfa76acc7692f6ace75c194d75d3a1b02dcd58f840e1",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Checks a command adapter's response against the protocol's shape without loading JSON Schemas at runtime, which the CLI does not ship; a parity test keeps it in step with adapter-response.schema.json (ADR 0025).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/store/src/schemas.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "Where a parsed value breaks the shape of `schemas/adapter-response.schema.json`, so the core can refuse a malformed\nresponse without loading the schemas at runtime. Empty for a well-formed response. Kept in step with the schema by\na test that runs both over the same cases."
+}

@@ -3,7 +3,7 @@
 // as a composition graph over uids.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { adaptersFor, indexWith, readsAny } from "@poetics/cli";
+import { adaptersFor, indexReport, readsAny } from "@poetics/cli";
 import type { AdaptedUnit } from "@poetics/cli";
 import { createGraph, isRemoved } from "@poetics/core";
 import type { CompositionGraph, Edge, Uid, Unit, UnresolvedEdge } from "@poetics/core";
@@ -30,10 +30,11 @@ export async function codeView(root: string, units: readonly Unit[]): Promise<Co
   const { parseable } = await filesInScope(root, config);
   // The same adapters and cache poetics index uses, so packs and impact see units as it records them.
   const adapters = adaptersFor(root, config, { cache: true });
-  const indexed = indexWith(adapters, parseable);
+  const { units: indexed, notRead } = indexReport(adapters, parseable);
+  const unread = new Set(notRead);
   // By scope, not existence: a unit whose file was deleted is missing, not out of scope.
   const inScope = createMatcher(config.include, config.exclude ?? []);
-  const indexable = (file: string) => inScope(file) && readsAny(adapters, file);
+  const indexable = (file: string) => inScope(file) && readsAny(adapters, file) && !unread.has(file);
   return joinCode(indexed, units, indexable, (file) => readFileSync(join(root, file), "utf8"));
 }
 

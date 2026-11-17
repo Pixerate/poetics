@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { REMOVED_CONTENT_HASH } from "@poetics/core";
+import { REMOVED_CONTENT_HASH, adapterResponseProblems } from "@poetics/core";
 import { createValidator, loadSchemaSet } from "./schemas.ts";
 import { REPO_SCHEMAS, UID_A, defaultConfig, hash, makeNote, makeUnit } from "./test-helpers.ts";
 
@@ -192,6 +192,85 @@ describe("adapter protocol schemas", () => {
 
   it("takes kinds and frameworks from the unit schema, so a framework the store does not know is refused", () => {
     expect(validator.adapterResponse(response([{ path: "a.swift", units: [unit({ kind: "component", framework: "react" })] }])).valid).toBe(true);
-    expect(validator.adapterResponse(response([{ path: "a.swift", units: [unit({ framework: "swiftui" })] }])).valid).toBe(false);
+    // swiftui joined the unit schema with the first consumed Swift output (ADR 0026).
+    expect(validator.adapterResponse(response([{ path: "a.swift", units: [unit({ kind: "component", framework: "swiftui" })] }])).valid).toBe(true);
+    expect(validator.adapterResponse(response([{ path: "a.swift", units: [unit({ framework: "uikit" })] }])).valid).toBe(false);
+    expect(validator.unit({ ...unit(), framework: "uikit" }).valid).toBe(false);
+  });
+
+  it("accepts conforms-to edges (ADR 0026)", () => {
+    expect(validator.adapterResponse(response([{ path: "a.swift", units: [unit({ edges: [{ to: "a.swift#P", kind: "conforms-to", resolution: "name" }] })] }])).valid).toBe(true);
+  });
+});
+
+describe("adapterResponseProblems", () => {
+  const B3 = `b3:${"a".repeat(64)}`;
+  const unit = (extra: Record<string, unknown> = {}) => ({
+    key: "a.swift#f()",
+    name: "f()",
+    kind: "function",
+    framework: "none",
+    startLine: 1,
+    endLine: 2,
+    contentHash: B3,
+    interfaceHash: B3,
+    fingerprint: [],
+    signatureText: "func f()",
+    edges: [],
+    unresolved: [],
+    ...extra,
+  });
+  const response = (files: unknown[], extra: Record<string, unknown> = {}) => ({ protocol: 1, adapter: { name: "swift", version: "0.1.0", rules: 1 }, files, ...extra });
+  const withUnit = (extra: Record<string, unknown>) => response([{ path: "a.swift", units: [unit(extra)] }]);
+
+  it("agrees with adapter-response.schema.json on every case", async () => {
+    const fixture = JSON.parse(await readFile(join(REPO_SCHEMAS, "fixtures/adapter/swift-basic/response.json"), "utf8")) as unknown;
+    const cases: Array<[string, unknown]> = [
+      ["the fixture", fixture],
+      ["a minimal response", response([])],
+      ["an error entry", response([{ path: "a.swift", error: "unreadable" }])],
+      ["a full unit", withUnit({ owner: "a.swift#T", docs: "d", runtimeHash: B3, edges: [{ to: "a.swift#g()", kind: "conforms-to", resolution: "name" }], unresolved: [{ kind: "calls", line: 3, name: "g", reason: "ambiguous" }] })],
+      ["not an object", []],
+      ["protocol 2", response([], { protocol: 2 })],
+      ["an unknown top-level field", response([], { extra: 1 })],
+      ["no adapter", { protocol: 1, files: [] }],
+      ["an adapter name with capitals", response([], { adapter: { name: "Swift", version: "1", rules: 1 } })],
+      ["rules of 0", response([], { adapter: { name: "swift", version: "1", rules: 0 } })],
+      ["an empty version", response([], { adapter: { name: "swift", version: "", rules: 1 } })],
+      ["files not an array", response({} as unknown as unknown[])],
+      ["neither units nor error", response([{ path: "a.swift" }])],
+      ["both units and error", response([{ path: "a.swift", units: [], error: "x" }])],
+      ["an empty error", response([{ path: "a.swift", error: "" }])],
+      ["an absolute path", response([{ path: "/a.swift", units: [] }])],
+      ["a path leaving the root", response([{ path: "a/../../b.swift", units: [] }])],
+      ["a backslash path", response([{ path: "a\\b.swift", units: [] }])],
+      ["a path with dots in a name", response([{ path: "a/..b/c.swift", units: [] }])],
+      ["a unit missing its key", withUnit({ key: undefined })],
+      ["a key without a file", withUnit({ key: "f()" })],
+      ["an unknown kind", withUnit({ kind: "struct" })],
+      ["an unknown framework", withUnit({ framework: "uikit" })],
+      ["swiftui", withUnit({ framework: "swiftui" })],
+      ["line 0", withUnit({ startLine: 0 })],
+      ["a fractional line", withUnit({ endLine: 1.5 })],
+      ["a git: hash", withUnit({ contentHash: `git:${"a".repeat(40)}` })],
+      ["an empty fingerprint entry", withUnit({ fingerprint: [""] })],
+      ["an unknown unit field", withUnit({ extra: true })],
+      ["an edge without resolution", withUnit({ edges: [{ to: "a.swift#g()", kind: "calls" }] })],
+      ["an unknown edge kind", withUnit({ edges: [{ to: "a.swift#g()", kind: "inherits", resolution: "name" }] })],
+      ["an unresolved use with an empty reason", withUnit({ unresolved: [{ kind: "calls", line: 1, name: "g", reason: "" }] })],
+      ["an empty name", withUnit({ name: "" })],
+    ];
+    for (const [label, value] of cases) {
+      const clean = JSON.parse(JSON.stringify(value)) as unknown;
+      expect(adapterResponseProblems(clean).length === 0, label).toBe(validator.adapterResponse(clean).valid);
+    }
+  });
+
+  it("says where a response breaks the protocol", () => {
+    expect(adapterResponseProblems(withUnit({ kind: "struct", startLine: 0 }))).toEqual([
+      "/files/0/units/0/kind must be one of function, hook, component, context, type",
+      "/files/0/units/0/startLine must be an integer of at least 1",
+    ]);
+    expect(adapterResponseProblems("x")).toEqual(["/ must be an object"]);
   });
 });

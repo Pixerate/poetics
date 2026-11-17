@@ -177,7 +177,9 @@ stdout:
   `edges` (each with a `resolution`, `exact` or `name`) and `unresolved` uses.
 
 The `kind` and `framework` of a unit come from the unit schema, so an adapter
-can only report what the store can hold. `checkAdapterResponse` in
+can only report what the store can hold. Swift brought `swiftui` as a
+framework and `conforms-to` as an edge kind, a type naming a protocol or
+superclass it adopts ([ADR 0026](decisions/0026-swift-units.md)). `checkAdapterResponse` in
 `@poetics/core` checks what the schemas cannot: every path was requested and
 answered once, keys are unique and start with their file, and owners and edge
 targets are units in the batch. A requested file with no units, an error or
@@ -189,8 +191,11 @@ interface hashes, and `readTexts` reads files from text, such as a file at an
 earlier commit, with hashes, fingerprints and signature text only. Indexing,
 rehash, backfill, the MCP server and the evals call `adaptersFor` and never an
 indexer directly. The TypeScript indexer, with its React and Svelte plugins, is
-the in-process adapter; an out-of-process adapter answers the same two calls
-with protocol requests.
+the in-process adapter. Each command adapter in the config's `adapters` is an
+out-of-process one, answering the same two calls with protocol requests (see
+[Adapters for other languages](getting-started.md#adapters-for-other-languages)).
+`index` also returns the files an adapter could not read, whose units
+`poetics index` and the MCP server leave as they were.
 
 Example batches live in
 [`schemas/fixtures/adapter/`](../schemas/fixtures/adapter/README.md), for

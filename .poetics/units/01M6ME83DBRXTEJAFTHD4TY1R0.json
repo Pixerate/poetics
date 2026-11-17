@@ -82,6 +82,39 @@
           "ref": "#73"
         }
       ]
+    },
+    {
+      "contentHash": "b3:12c46ead2e1dd5915e28ec5549aa37bc0fc7ffbc092986e19770394a6d1ebd4d",
+      "interfaceHash": "b3:916fcb93281cfd50f9d28b3025bcebca36db0cd851a4e37de0c60470ad6b9908",
+      "parent": "b3:61aa4d6faccbe86a7546543ebd39ccbe51268d598d7b877a8a9b819501fe1eb9",
+      "change": "interface",
+      "rationale": "Accepts a config whose adapters may include command adapter entries; only the built-in names choose plugins (ADR 0025).",
+      "deps": {
+        "01M6ME83DB7CZMB7TW8W4YE6PZ": "b3:1dd83970f2ffc92c08a31fa813e45797464a2663afc5358e1d85627c3649eefa",
+        "01M73SRDN5F6KY612X9A9V8741": "b3:2e008bc68f698797b5279de3f1fc59b185e5c3ea6759b61ea45b71d0910b5c33",
+        "01M6ME83DBH0ZQESVNXD8R53EW": "b3:edb73add1559c280c4dcdceb5f3f6bf3dbf06d95ad7a8ce70316aef31405ac59",
+        "01M5Z1F6NEEP85GB1637ED9BB3": "b3:03046b777ca23622988fda2a578ec3eb10efecb92933aab0ac053bb8513f916a"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/frameworks.test.ts"
+        }
+      ]
     }
   ],
   "docs": "The plugins for `config.adapters`: React's when `react` is listed. Svelte's arrives with its adapter.",

@@ -10,7 +10,7 @@
     "$schema": { "type": "string" },
     "uid": { "$ref": "#/$defs/uid" },
     "kind": { "enum": ["function", "hook", "component", "context", "type"] },
-    "framework": { "enum": ["react", "svelte", "none"] },
+    "framework": { "enum": ["react", "svelte", "swiftui", "none"] },
     "name": { "type": "string", "minLength": 1 },
     "owner": {
       "$ref": "#/$defs/uid",
