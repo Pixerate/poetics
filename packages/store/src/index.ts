@@ -42,8 +42,8 @@ export {
 } from "./json-store.ts";
 export type { StoreLayout, StorePaths } from "./paths.ts";
 export { resolveUnit } from "./resolve.ts";
-export type { Scope } from "./scope.ts";
-export { filesInScope, isParseable } from "./scope.ts";
+export type { AdapterEntry, CommandAdapterConfig, Scope } from "./scope.ts";
+export { commandAdapterFor, commandAdapters, filesInScope, isParseable, typescriptReads } from "./scope.ts";
 export { storePaths, unitFilePath } from "./paths.ts";
 export type { SchemaSet, StoreValidator, ValidationResult } from "./schemas.ts";
 export { createValidator, loadSchemaSet } from "./schemas.ts";

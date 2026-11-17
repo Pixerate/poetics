@@ -1,0 +1,49 @@
+{
+  "uid": "01M7MT84277KGDZ4M0N06WDX1N",
+  "kind": "function",
+  "framework": "none",
+  "name": "typescriptReads",
+  "location": {
+    "file": "packages/store/src/scope.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:14947ade3f0b379fcf3ee1c02705a400a36b00393ab02fd83b76752a74940189",
+      "interfaceHash": "b3:d5cd0461a6a43a25fd7ce2ed80e248c72fdc100f61e604d5e774fe565e81ef66",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "What the in-process TypeScript adapter reads, minus files a command adapter claims, so a file never goes to two adapters (ADR 0025).",
+      "deps": {
+        "01M7MT8427XW2XTS0VT50WP50T": "b3:03c57651f4b1a8cb5564a07504fccf5629eddc4a28ff88599360c4c954f27f24",
+        "01M7MT8427JKR45BEHSVX9XKEA": "b3:30ef345ddda10b7813ac8259d50c8a0f7c6410dea41d47100c06459b692d15d6"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "Whether the in-process TypeScript adapter reads `file`: TypeScript sources, and `.svelte` with `svelte`, unless a command adapter claims it.",
+  "tests": [
+    {
+      "file": "packages/store/src/scope.test.ts",
+      "via": "static"
+    }
+  ]
+}

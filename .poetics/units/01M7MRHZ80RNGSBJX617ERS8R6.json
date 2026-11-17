@@ -37,6 +37,37 @@
           "ref": "packages/cli/src/adapters.test.ts"
         }
       ]
+    },
+    {
+      "contentHash": "b3:a705f5fca81e172f8c6fa9aaeb584ce4924db2abead9b3829478772d82bd2d24",
+      "interfaceHash": "b3:61f4f3c1f76ce3b9ac47d3ab65381dad3be390053cfbd675941cc314f65d84f4",
+      "parent": "b3:66a70ca40a905b633619301f28f32a02c5c2cce7a89d0976c2573ee6eedca2e9",
+      "change": "interface",
+      "rationale": "index returns an IndexReport with the files the adapter could not read, which an out-of-process adapter can report per file (ADR 0025).",
+      "deps": {
+        "01M7MT8426J4ZEENEG30CAKKKQ": "b3:a75c1dce58ca82518b9c8aa76b9b03b1b48fc71e2495eb0806d141d81554a9d6",
+        "01M7MRHZ80FGFDYZAVPDTMHA9H": "b3:965d25d59a7dba5dfdd1b838616cd15e00362321f7601d115a22582243097fa2"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
     }
   ],
   "docs": "Reads the units of the files it claims, from disk as one program or from text one file at a time.",

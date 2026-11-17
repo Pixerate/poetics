@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { Scope } from "./scope.ts";
+import type { AdapterEntry, Scope } from "./scope.ts";
 
 export interface CoverageThresholds {
   tracked?: number;
@@ -12,8 +12,8 @@ export interface CoverageThresholds {
 }
 
 export interface PoeticsConfig extends Scope {
-  /** Which adapters read the code: `typescript`, plus `react` and `svelte` for their components. */
-  adapters?: readonly string[];
+  /** Which adapters read the code: `typescript`, plus `react` and `svelte` for their components, and command adapters (ADR 0025). */
+  adapters?: readonly AdapterEntry[];
   /** The tsconfig whose compiler options the indexer uses, relative to the root. */
   typescript?: { tsconfig?: string };
   store?: { layout?: "flat" | "sharded" };

@@ -102,6 +102,39 @@
           "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:19d7817ad4d255fac992e23cdac859f8e34adb71571dbcd30eeaf00134c23db7",
+      "interfaceHash": "b3:df2fd5c0422d40358de3f0c89e94c02946b70f16e4e6a00dae2e46e2a33cfe5b",
+      "parent": "b3:75bbe5e20401472b882510f1b586c60f3ff3e77f09a3c3df9300196d8faa1dc9",
+      "change": "interface",
+      "rationale": "Takes Scope, whose adapters may now include command adapters, and reads through declarationsOf (ADR 0025).",
+      "deps": {
+        "01M5Z1F6ND8XM1DD3V2T49XSGD": "b3:9fc05d69431271176899fb4c0582763056c6b96a555ec5082f709bd060a45369",
+        "01M7MT8427DY0QEERXCQCV3YAM": "b3:40217d916d2a0d4b6e9d91823d17ffefecb3c0d9964acc63758aedec41e6d2e0",
+        "01M5Z1F6NEEP85GB1637ED9BB3": "b3:03046b777ca23622988fda2a578ec3eb10efecb92933aab0ac053bb8513f916a",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:a50623c392fe2033d26911146b4a8e6a15556a3e824b0e0f1a7799513f92f113"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/drift.test.ts"
+        }
+      ]
     }
   ],
   "docs": "Every tracked-shape declaration in scope.",

@@ -35,7 +35,7 @@ function fake(name: string, extension: string, asked: string[][]): CodeAdapter {
     reads: (file) => file.endsWith(extension),
     index(files) {
       asked.push([...files]);
-      return files.map((file): AdaptedUnit => ({ ...unit(file), interfaceHash: `b3:${"2".repeat(64)}`, edges: [], unresolved: [] }));
+      return { units: files.map((file): AdaptedUnit => ({ ...unit(file), interfaceHash: `b3:${"2".repeat(64)}`, edges: [], unresolved: [] })), notRead: [] };
     },
     readTexts(files) {
       asked.push(files.map((file) => file.path));

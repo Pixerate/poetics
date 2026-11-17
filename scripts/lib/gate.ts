@@ -34,7 +34,7 @@ export const REFACTORS: readonly RefactorKind[] = ["rename", "move-file", "move-
  * The refactors a config can be measured on: wrapping a component in `memo` needs the React adapter to see through
  * it, and renaming a component's file needs the Svelte adapter to read it.
  */
-export function refactorsFor(config: { adapters?: readonly string[] }): RefactorKind[] {
+export function refactorsFor(config: Pick<PoeticsConfig, "adapters">): RefactorKind[] {
   return REFACTORS.filter((kind) => (kind !== "wrap" || config.adapters?.includes("react")) && (kind !== "rename-file" || config.adapters?.includes("svelte")));
 }
 
@@ -138,7 +138,7 @@ export async function runGate(corpus: CorpusEntry, source: string, options: { ro
     }
     const result: GateResult = {
       corpus,
-      adapters: [...(config.adapters ?? ["typescript"])],
+      adapters: (config.adapters ?? ["typescript"]).map((entry) => (typeof entry === "string" ? entry : entry.name)),
       files: { indexed: parseable.length, notIndexed },
       units: expected.size,
       unitKinds,

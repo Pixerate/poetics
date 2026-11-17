@@ -17,6 +17,7 @@ import { applyIndex, formatIndexPlan, needsRationale, planIndex } from "./indexi
 import { applyInit, formatInitPlan, planInit } from "./init.ts";
 import type { IndexPlan } from "./indexing.ts";
 import { applyRehash, planRehash, unitHashes } from "./rehash.ts";
+import { AdapterError } from "./command-adapter.ts";
 
 export interface Io {
   out(text: string): void;
@@ -65,6 +66,11 @@ export async function run(argv: readonly string[], io: Io, root: string = proces
       report(io, json, { error: "not-implemented", command: command.name, message: error.message });
       return 2;
     }
+    // A command adapter that cannot answer stops the run before anything is written (ADR 0025).
+    if (error instanceof AdapterError) {
+      report(io, json, { error: "adapter-failed", adapter: error.adapter, message: error.message });
+      return 1;
+    }
     throw error;
   }
 }
@@ -81,6 +87,7 @@ async function changes(args: readonly string[], io: Io, json: boolean, root: str
   try {
     set = await changesBetween(storePaths(root), { ...(from ? { from } : {}), ...(to ? { to } : {}) });
   } catch (error) {
+    if (error instanceof AdapterError) throw error;
     report(io, json, { error: "invalid-argument", command: "changes", message: (error as Error).message });
     return 2;
   }
@@ -101,6 +108,7 @@ async function history(name: "log" | "why", args: readonly string[], io: Io, jso
     await rebuildIndex(paths, db);
     unit = await resolveUnit(paths, db, ref);
   } catch (error) {
+    if (error instanceof AdapterError) throw error;
     report(io, json, { error: "invalid-argument", command: name, message: (error as Error).message });
     return 2;
   } finally {
@@ -130,6 +138,7 @@ async function verify(args: readonly string[], io: Io, json: boolean, root: stri
   try {
     result = await checkChange(root, since, await readConfig(root));
   } catch (error) {
+    if (error instanceof AdapterError) throw error;
     report(io, json, { error: "invalid-argument", command: "verify", message: (error as Error).message });
     return 2;
   }
@@ -210,6 +219,7 @@ async function index(args: readonly string[], io: Io, json: boolean, root: strin
   try {
     plan = await planIndex(root, config, { ...(since ? { since } : {}), ...(rationale ? { rationale } : {}) });
   } catch (error) {
+    if (error instanceof AdapterError) throw error;
     report(io, json, { error: "invalid-argument", command: "index", message: (error as Error).message });
     return 2;
   }
@@ -280,6 +290,7 @@ async function backfill(args: readonly string[], io: Io, json: boolean, root: st
         ...trackerOptions,
       });
     } catch (error) {
+      if (error instanceof AdapterError) throw error;
       report(io, json, { error: "range", command: "backfill", message: (error as Error).message });
       return 2;
     }
@@ -321,7 +332,7 @@ function actorOf(values: ReadonlyMap<string, string>): Actor {
   return agent ? { kind: "agent", tool: agent, ...(model ? { model } : {}), reviewed: false } : { kind: "human" };
 }
 
-function report(io: Io, json: boolean, payload: { error: string; message: string; command?: string }): void {
+function report(io: Io, json: boolean, payload: { error: string; message: string; command?: string; adapter?: string }): void {
   io.err(json ? JSON.stringify(payload) : payload.message);
 }
 

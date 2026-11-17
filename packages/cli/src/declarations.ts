@@ -58,11 +58,16 @@ export function declarationsIn(file: string, text: string, plugins: readonly Fra
 }
 
 /** Every tracked-shape declaration in scope, read by the adapters the scope names. */
-export async function discoverDeclarations(root: string, scope: Scope & { adapters?: readonly string[] }): Promise<{ declarations: Declaration[]; unsupported: string[] }> {
+export async function discoverDeclarations(root: string, scope: Scope): Promise<{ declarations: Declaration[]; unsupported: string[] }> {
   const { parseable, unsupported } = await filesInScope(root, scope);
   const files = await Promise.all(parseable.map(async (path) => ({ path, text: await readFile(join(root, path), "utf8") })));
+  return { declarations: declarationsOf(root, scope, files), unsupported };
+}
+
+/** The declarations in each file's text, read by the adapters the scope names. Files no adapter reads give none. */
+export function declarationsOf(root: string, scope: Scope, files: ReadonlyArray<{ path: string; text: string }>): Declaration[] {
   const unitsIn = readTextsWith(adaptersFor(root, scope), files);
-  const declarations = files.flatMap(({ path, text }) =>
+  return files.flatMap(({ path, text }) =>
     (unitsIn.get(path) ?? []).map((unit) => ({
       file: path,
       name: unit.name,
@@ -74,5 +79,4 @@ export async function discoverDeclarations(root: string, scope: Scope & { adapte
       endLine: unit.endLine,
     })),
   );
-  return { declarations, unsupported };
 }

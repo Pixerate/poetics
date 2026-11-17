@@ -1,0 +1,47 @@
+{
+  "uid": "01M7MT8426WVKVDMZ3B143BC4E",
+  "kind": "function",
+  "framework": "none",
+  "name": "linesOf",
+  "location": {
+    "file": "packages/cli/src/command-adapter.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:757ac6238ac70f228ac07904c4966b3f786f053373c2badbf45198b83649f12b",
+      "interfaceHash": "b3:2b3b72d52e56d7db85a9d9fc21bf852f36ba715a7f642824eae9b4a0bc74bf2e",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Indexes where each line starts, once per file, for turning an adapter's line numbers into spans (ADR 0025).",
+      "deps": {
+        "01M7MT8426KDBFMGPNQRQZDS3V": "b3:9447a1f4e33232308345f900e8fcbcaed9b3a606aee997ea5c7cd0659b566b3e"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "packages/cli/src/command-adapter.test.ts",
+      "via": "static"
+    }
+  ]
+}

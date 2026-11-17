@@ -1,0 +1,41 @@
+{
+  "uid": "01M7MT8426J4ZEENEG30CAKKKQ",
+  "kind": "type",
+  "framework": "none",
+  "name": "IndexReport",
+  "location": {
+    "file": "packages/cli/src/adapters.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:a75c1dce58ca82518b9c8aa76b9b03b1b48fc71e2495eb0806d141d81554a9d6",
+      "interfaceHash": "b3:78f3697ca411da3932df9a8569364aab2bf66b29ccfe1177aad16cb16addc582",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Index results carry the files an adapter could not read, because a failing file must keep its units rather than look as though they were deleted (ADR 0025).",
+      "deps": {
+        "01M7MRHZ80JM8HJC0A1SNB23AB": "b3:980af9eeb2406741fc52b16825982520b1f9f09a7e2bfdcf6d52737a4974f48e"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
+    }
+  ]
+}

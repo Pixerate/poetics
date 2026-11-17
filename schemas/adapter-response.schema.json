@@ -104,7 +104,8 @@
         "calls",
         "uses-hook",
         "uses-context",
-        "references-type"
+        "references-type",
+        "conforms-to"
       ]
     },
     "unit": {

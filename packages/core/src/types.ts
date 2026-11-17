@@ -9,7 +9,7 @@ export type Hash = `b3:${string}` | `git:${string}`;
 
 export type UnitKind = "function" | "hook" | "component" | "context" | "type";
 
-export type Framework = "react" | "svelte" | "none";
+export type Framework = "react" | "svelte" | "swiftui" | "none";
 
 /**
  * `created` marks a unit's first version and `removed` its last (ADR 0010);
@@ -111,7 +111,8 @@ export interface Span {
   end: number;
 }
 
-export type EdgeKind = "renders" | "calls" | "uses-hook" | "uses-context" | "references-type";
+/** `conforms-to` is a type naming a protocol or superclass it adopts (ADR 0026). */
+export type EdgeKind = "renders" | "calls" | "uses-hook" | "uses-context" | "references-type" | "conforms-to";
 
 /** Unit A uses unit B. */
 export interface Edge {

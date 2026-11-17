@@ -96,6 +96,34 @@ cached in `.poetics/cache/drafts.json`, so a dry run and the `--write` after
 it run the command once. The code and evidence go wherever your command
 sends them, so pick one your team is allowed to share the repository with.
 
+## Adapters for other languages
+
+Languages the TypeScript checker cannot read, such as Swift, are read by a
+command adapter: a separate program that speaks the adapter protocol
+([ADR 0025](decisions/0025-out-of-process-adapter-contract.md)). List it in
+`adapters` beside the built-in ones:
+
+```json
+{
+  "adapters": [
+    "typescript",
+    { "name": "swift", "command": ["poetics-swift"], "include": ["**/*.swift"], "timeoutSeconds": 120 }
+  ],
+  "include": ["Sources/**", "src/**"]
+}
+```
+
+Files in scope that match an adapter's `include` go to that adapter and to no
+other; when two command adapters match a file, the first listed reads it. The
+command runs from the repository root without a shell, once per batch of
+files, reading one request on stdin and writing one response on stdout (see
+[the adapter protocol](data-model.md#the-adapter-protocol)).
+
+If the command cannot be started, fails, times out or writes a response that
+breaks the protocol, the run stops with the adapter's error and nothing is
+written. A file the adapter reports it could not read keeps its units as they
+were: `poetics index` lists it and never records its units as removed.
+
 ## Repository layout
 
 ```

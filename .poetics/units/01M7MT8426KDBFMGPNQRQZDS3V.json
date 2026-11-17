@@ -1,0 +1,45 @@
+{
+  "uid": "01M7MT8426KDBFMGPNQRQZDS3V",
+  "kind": "type",
+  "framework": "none",
+  "name": "Lines",
+  "location": {
+    "file": "packages/cli/src/command-adapter.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:9447a1f4e33232308345f900e8fcbcaed9b3a606aee997ea5c7cd0659b566b3e",
+      "interfaceHash": "b3:f7c11f02bdd8b32d3c62e0929bdbc3df1413e7364f64fb31efeaed31d1664ebd",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Line starts and text length, so units an adapter reports by line can be given the character spans the core slices code with (ADR 0025).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "Where each line of a text starts, and how long the text is, for turning line numbers into spans.",
+  "tests": [
+    {
+      "file": "packages/cli/src/command-adapter.test.ts",
+      "via": "static"
+    }
+  ]
+}

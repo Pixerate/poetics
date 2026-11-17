@@ -237,6 +237,71 @@
         "model": "claude-opus-5-5",
         "reviewed": false
       }
+    },
+    {
+      "contentHash": "b3:9e69db373026f91b888432b597a83ca576402da6253f5ae5364c906298f1a2da",
+      "interfaceHash": "b3:2b936ea454e8c7cbabfa58cc1ed0887dfd73bd82e751b73fe26102853d7e9b1d",
+      "parent": "b3:aff5263e43e4d1218170f95269aa2784d190c304bec37412c4bc1e66f19ec3f1",
+      "change": "behaviour",
+      "rationale": "Reports an adapter that fails as adapter-failed with exit code 1 instead of a stack trace or an invalid-argument error, and the commands pass it through their own error handling (ADR 0025).",
+      "deps": {
+        "01M6KA0K778RFNVAQG8WWE4VGF": "b3:dd9a80a8d4bbf0862d3f7c5f567e0a2e3af02baf23a62857b471a9eff5606da5",
+        "01M7197DPXXWAHEHJANZKA9QNG": "b3:c350831a2f9a50b4488acc4e992edfcbaf0e344deeec6aa3c84393da6cb1cec3",
+        "01M6KA0K77MDHC1HZVGBFEJW4N": "b3:7e4437c347ade5391a1dfe83c85c1ef4e1dfafc9bbf03db0d838d691817882e0",
+        "01M7197DPXVE10R7N3TW98N09P": "b3:e6cfe7e5ae00a93e1343d453b18163be9bd08cc4a9c4f8786341102388ad9828",
+        "01M6KA0K772CHR6J5B39TCRDNW": "b3:85b7243f9af6d583218602ddd5d8f8bb2560e2ed2e28b7f2d95ede795a98b379",
+        "01M7197DPXKMRJDWGAXMJGGE7Z": "b3:6f46dd1d52b297e7857bdb5be4ad05fee50daca02b756b4250d52f7eea005266",
+        "01M5Z1F6N2W72KV89NHZA85J1J": "b3:629fb60c03c2dcca7cb3b0403a4babf0fe527310d8661be76e80eaad3b6b7ffc",
+        "01M5Z1F6N3MZ76YDZE94J79SXQ": "b3:d5a609ffcc42160ff8bef481bf82bb1bad43ee6e0197631ab54c9070eda74da3",
+        "01M61CFKXJWHCR8K7PQ19T1X5Y": "b3:34076e03f7bbbaff99f2713f74907a5c9f075a7652b937faa977461c777658f2",
+        "01M5Z1F6MZSTYMNZJZ92CQEFT2": "b3:e463f77279830d6d73f009a8537a5c4be87198e17adc7af907b10d28cf86d694",
+        "01M5Z1F6NC6ERTK9YTPH9BFJWN": "b3:f9073f6ad3661c139c6c5129d33ed20cb61d2be9ec647691045f36379552126e",
+        "01M7340MGD7Q9HKJSRPSY0X8MR": "b3:b7e56181348ca35f2190ff290cd416042cb27a95001c59238cb672171bdfb99f",
+        "01M730BJ24FV87TD1YT9DG4QH6": "b3:916860c43f96528fdc846f48051c5f29d8aab9a5414d44aadd4110e3bb4bb99e",
+        "01M6H9V1C1ETVK5RASY2JE4R93": "b3:51150fe2c8acda49d4fd6baf9c6e2c35e1894a97c34c4f51560d40817e73a009",
+        "01M6H9V1C1FZTVMQJ89JMP9GTQ": "b3:dbd186daa831f4005700f826df4c624de819f215cf8670665878b4e471587222",
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:654d96c06aab3913ec5ceeb26e90101a80229799a268fb7b553d7e68ad1f6c51",
+        "01M6HXEYDE1M8H5FYVN16JC6C2": "b3:6dfe143c1727cad43a9898cae7e6c0551fba324c61a4da0b16b7cffa99c481a4",
+        "01M6HXEYDERMK5P5XDW6HRCKR5": "b3:2e44de3a91f48e2730556175690c7b1055c6b74dcf4e7268e5bfd7bbd51d16b9",
+        "01M6NQZ6JW3B0N2SP8YF9M6YF2": "b3:45042c8779fd7387e905af2d91ffa33b3bfef6401015111e03819afd6f476d5a",
+        "01M6HXEYDEZ9Z7E3V1R9FWEZ91": "b3:d7f531b90284fd5ca6d56ae29feeda33fc6d48db87910b01128fae1cea956e72",
+        "01M6M2KNYNKD0BQ1JBJPFT4M4N": "b3:efdddf29ce6530d88a45f532f4be107e5814b72d8b1477d8469b91c46b5d1060",
+        "01M6M2KNYN5EEBBE5QJ7E1RAEM": "b3:d08f736350c0a1688a6e8e01fbb47c95bdadb9c1ef5ba2aa8addc36771218a89",
+        "01M6M2KNYN1A2MK6H0NJF56BTT": "b3:619c4333cf586329564a6e775556ff2e41f40cc0190554a7d80e656b2edf1c13",
+        "01M6HVGXY29N8YZCQSKKWEF7M6": "b3:cce8ee1b380cf46a4e11928c07af567747ce1111d1eedf05099eb00c1440736f",
+        "01M6HVGXY257HZAJPVZA78VQB1": "b3:24e15939d1f6cb4518de1c87dd73b623c3e58accd1151111944b475e21da03e1",
+        "01M6HVGXY2H36T7Y808WGRDFE2": "b3:5b659bc6902bb2f06ed4e3121970cdb6db7aa72ddde382033af35a0b64ed687b",
+        "01M5XDBC6BX1B52HMF6DM053F1": "b3:fd7995b89805f459c0a4b4dbe445e5b548d35808e5648b8b4b2782b4ee8edfe4",
+        "01M5XDBC7242S6J91S3VHFFY98": "b3:6132ad1bb03eda44a4092b8d11be5fe787dd79eca9d7ecba4b13f7c15a0ac702",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M617V6SZ3FADWGRAAV12WAZD": "b3:8875731742a53d4577d3f71d00ee3c9e190b8a799f97fbc99aac05644ac79806",
+        "01M617V6SZ6XMVAQ36MF6C7ZBB": "b3:65febe07a26e4cad1193f904dbd6af6079b7a1c6039d1e60a2e0709d62d54a7b",
+        "01M5Z1F6N6QK49CWHHTZ40TRE6": "b3:26000976264007442ede0a6b852a726e2e1c22c84ca25359cc7f931c75cd8f5c",
+        "01M5XDBC7VGCSGJXZPVP5ZPWG7": "b3:84310788aa2e6ddf577bdd3b71a23607e6246e8709702f165ab8a19716c7dc43",
+        "01M5XDBC7XBXKJEG8FHJZGB77B": "b3:cb7aed0d7d23b89a53175102d540c2535be1b5aec38e7c2686290a645e106f3f",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M6GF24PKWTFAYBMWFTGQ0Y3K": "b3:6f80bc48bd14da0eba03366e7e4f8d58d72bc6e5f86056384bd1f3f31033bea8"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
     }
   ],
   "docs": "Exit codes: 0 ok, 1 findings (e.g. verify), 2 usage or not-implemented. `root` is the repository root.",

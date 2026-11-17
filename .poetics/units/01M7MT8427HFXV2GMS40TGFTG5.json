@@ -1,0 +1,45 @@
+{
+  "uid": "01M7MT8427HFXV2GMS40TGFTG5",
+  "kind": "type",
+  "framework": "none",
+  "name": "CommandAdapterConfig",
+  "location": {
+    "file": "packages/store/src/scope.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:a52a2ed1d6f2aa76d9a11b26cfe4d7cd4dc564344da68f2f8bb0cbc64dfcba59",
+      "interfaceHash": "b3:5ad5ebfe2f92faa52ca6fc30aa4b4624859f2c03ffba73ab982b2c7750655b54",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "A command adapter's config: name, argv run without a shell, the globs it reads and a timeout, mirroring how drafting commands are configured (ADR 0025, ADR 0017).",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "An out-of-process adapter: a command run once per batch of the files its `include` matches (ADR 0025).",
+  "tests": [
+    {
+      "file": "packages/store/src/scope.test.ts",
+      "via": "static"
+    }
+  ]
+}

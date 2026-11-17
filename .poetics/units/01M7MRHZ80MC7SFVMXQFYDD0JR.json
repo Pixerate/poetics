@@ -48,6 +48,50 @@
           "ref": "packages/cli/src/adapters.test.ts"
         }
       ]
+    },
+    {
+      "contentHash": "b3:50ed63fb25c1fb51d3d64c06de822841fd975b2a7a850f24b39ac0acbac7b084",
+      "interfaceHash": "b3:ded78f4f691282a3c3d2a2cd3e0e0e07e4044cc6f2bab424be098c1abf9cc402",
+      "parent": "b3:66f919caf0744117fa13029c4b3c69c22bce3a35ed5a399fa53926b4b12ab7b1",
+      "change": "behaviour",
+      "rationale": "Builds a command adapter for each command entry in the config, ahead of the TypeScript indexer, so a repository can list an out-of-process adapter such as Swift's (ADR 0025).",
+      "deps": {
+        "01M6HNRFMK1WQP8F6MRK9FMJY0": "b3:252c11550ca3058d8e1552e696c924d336141e33e90f860d817bdf73227bcfe3",
+        "01M6HS3HPGSA1NB2JTM6ZM903R": "b3:dbb56abfafffa1a6af99b5f802532bed33a61a89ad8e7a7bbdb12c4f73443a5e",
+        "01M6HNRFMKW8GXW0YMCVY67N4A": "b3:1d24ec831164b4800ab2ef100dd1b4e382fdc4d1ec5d5ce599f8eab5ccd7c43c",
+        "01M6HYTZKT7RKWE7EFQ74ASSN8": "b3:aa673e5faac465803b12d6cd059d5d9243b72699f9872ca33512d5281f660a89",
+        "01M7MRHZ800KGF1MVFVXEMXGRY": "b3:a4ed6a500a7d73f6ccd93d41029bb5baffef22188ff0fbea23db1468e3634fe9",
+        "01M7MRHZ80RNGSBJX617ERS8R6": "b3:a705f5fca81e172f8c6fa9aaeb584ce4924db2abead9b3829478772d82bd2d24",
+        "01M7MRHZ80FGFDYZAVPDTMHA9H": "b3:965d25d59a7dba5dfdd1b838616cd15e00362321f7601d115a22582243097fa2",
+        "01M7MT8426VVK9M3QRVC3MKE7J": "b3:9d46cf12b558451c285b8810bf1b63835aff64f51d1c7ad290a9e02b12bbbf94",
+        "01M73SYHXDKHFFGXMW34YR7Y3P": "b3:52a252893ddce32174861c7cd65a2c4b4b46efd416d1dd5410ee9607286a8f2b",
+        "01M6ME83DBRXTEJAFTHD4TY1R0": "b3:12c46ead2e1dd5915e28ec5549aa37bc0fc7ffbc092986e19770394a6d1ebd4d",
+        "01M5XDBC6TWJ0A59K9ER71Q88Y": "b3:19dd1d269306d1c7edc17d860a6674f7831d3d232ba7b067020f558ad0488a11",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:70c14390e38dd905b37b4d2b7fa6f38fe76fa18e35f83a6744977d39865eee00",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M7MT84277PJTJHM8AWYKGD97": "b3:229a68d781cfda9d19c9e8d7eab350058ebeef489348fb554383d304424a99ab",
+        "01M7MT84277KGDZ4M0N06WDX1N": "b3:14947ade3f0b379fcf3ee1c02705a400a36b00393ab02fd83b76752a74940189"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/command-adapter.test.ts"
+        }
+      ]
     }
   ],
   "docs": "The adapters a repository's config names. Today one, the TypeScript indexer with its framework plugins.",
