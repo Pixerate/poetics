@@ -1,5 +1,11 @@
 # @poetics/cli
 
+## 0.11.0
+
+### Minor Changes
+
+- [#95](https://github.com/Pixerate/poetics/pull/95) [`096b2b1`](https://github.com/Pixerate/poetics/commit/096b2b16722da1599605b7a7b70c9e27a85cf252) Thanks [@surrealroad](https://github.com/surrealroad)! - Read code through one adapter interface (ADR 0025): `CodeAdapter`, `adaptersFor`, `indexWith`, `readTextsWith` and `readsAny` in `@poetics/cli`. Indexing, rehash, backfill, declaration discovery and the MCP server's code view use it instead of calling the TypeScript indexer, with the same results. `exportsIntroduced` now takes adapters instead of framework plugins. The history walk no longer calls an edit cosmetic when the unit has no runtime hash.
+
 ## 0.10.1
 
 ### Patch Changes
