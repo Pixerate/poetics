@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { IssueTracker, TrackedIssue, Unit, Version } from "@poetics/core";
-import type { IndexedUnit } from "@poetics/adapter-typescript";
+import type { AdaptedUnit } from "@poetics/cli";
 import type { CodeView } from "./code.ts";
 import { linkedNumber, linkedSignals, parseIssueRef, relatedIssues, unitSignals, unitsForIssue } from "./issues.ts";
 
@@ -127,7 +127,7 @@ describe("unitsForIssue", () => {
   });
 
   it("places stack frames inside a unit's lines when it has the code", () => {
-    const code = { name: "round", span: { file: "src/round.ts", start: 0, end: 10 } } as unknown as IndexedUnit;
+    const code = { name: "round", span: { file: "src/round.ts", start: 0, end: 10 } } as unknown as AdaptedUnit;
     const view = { byUid: new Map([[UID.round, code]]), linesOf: () => ({ startLine: 10, endLine: 20 }) } as unknown as CodeView;
     const at = (line: number) => unitsForIssue({ number: 9, title: "Crash", body: `TypeError\n    at round (webpack:///./src/round.ts:${line}:5)` }, units, { view });
     expect(at(12).map((m) => [m.uid, m.why])).toEqual([[UID.round, ["stack", "path"]]]);

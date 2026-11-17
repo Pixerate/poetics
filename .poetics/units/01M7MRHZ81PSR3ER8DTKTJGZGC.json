@@ -1,0 +1,48 @@
+{
+  "uid": "01M7MRHZ81PSR3ER8DTKTJGZGC",
+  "kind": "function",
+  "framework": "none",
+  "name": "walkChange",
+  "location": {
+    "file": "packages/cli/src/backfill.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:af14ef71491f3c3756e1dbcb52307a8bdd25ab828267a6447882f0913573396f",
+      "interfaceHash": "b3:4645abf80f86cbf9f06e72de9c18d971b4928f8e8b78ae0011217ba2f09b43b5",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The history walk's change class, pulled out so it can be tested: a unit with no runtime hash, as Swift's will be, was classed cosmetic because two missing hashes compared equal; now it is behaviour.",
+      "deps": {
+        "01M5XDBC71JDZ5ANVBKKB168EW": "b3:15b02c3dbcc5b7c1d93a89f604dbb5aa20e8b6b319338904d3189c6c1305ed69"
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/backfill.test.ts"
+        }
+      ]
+    }
+  ],
+  "docs": "The change class the history walk gives a unit's edit: a different signature as written is `interface`, the same\nruntime tree is `cosmetic`, anything else `behaviour`. A unit with no runtime hash (a language without erasable\ntypes) is never `cosmetic`, since two missing hashes say nothing about the code.",
+  "tests": [
+    {
+      "file": "packages/cli/src/backfill.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -11,7 +11,7 @@ import { contentTree, fingerprint } from "@poetics/adapter-typescript";
 import type { DetectedUnit } from "@poetics/adapter-typescript";
 import { REMOVED_CONTENT_HASH, isRemoved, mintUid } from "@poetics/core";
 import type { Unit } from "@poetics/core";
-import { applyIndex, detectIn, planIndex, pluginsFor, unitHashes } from "@poetics/cli";
+import { adaptersFor, applyIndex, detectIn, planIndex, pluginsFor, readTextsWith, unitHashes } from "@poetics/cli";
 import { appendVersion, createUnit, filesInScope, parseUnit, readUnitFiles, relocateUnit, storePaths } from "@poetics/store";
 import type { PoeticsConfig } from "@poetics/store";
 
@@ -428,10 +428,8 @@ async function findUnit(root: string, config: PoeticsConfig, file: string, name:
 /** How many units declare each name across the workspace, so a rename never touches two. */
 async function declarationCounts(root: string, config: PoeticsConfig): Promise<Map<string, number>> {
   const counts = new Map<string, number>();
-  for (const file of (await filesInScope(root, config)).parseable) {
-    const text = await readFile(join(root, file), "utf8");
-    for (const unit of detectIn(file, text, pluginsFor(config)).units) counts.set(unit.name, (counts.get(unit.name) ?? 0) + 1);
-  }
+  const files = await Promise.all((await filesInScope(root, config)).parseable.map(async (path) => ({ path, text: await readFile(join(root, path), "utf8") })));
+  for (const units of readTextsWith(adaptersFor(root, config), files).values()) for (const unit of units) counts.set(unit.name, (counts.get(unit.name) ?? 0) + 1);
   return counts;
 }
 

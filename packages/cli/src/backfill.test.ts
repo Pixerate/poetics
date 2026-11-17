@@ -7,8 +7,9 @@ import { REMOVED_CONTENT_HASH } from "@poetics/core";
 import type { IssueTracker, TrackedPullRequest, TrackedReviewComment, Unit } from "@poetics/core";
 import { checkStore, createValidator, loadSchemaSet, storePaths } from "@poetics/store";
 import type { DraftRequest, Drafter } from "./draft.ts";
-import { applyBackfill, applyPrehistory, confidenceOf, exportsIntroduced, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
+import { applyBackfill, applyPrehistory, confidenceOf, exportsIntroduced, walkChange, formatBackfillPlan, formatPrehistoryPlan, planBackfill, planPrehistory } from "./backfill.ts";
 import { applyIndex, planIndex } from "./indexing.ts";
+import { adaptersFor } from "./adapters.ts";
 import { runGit, write } from "./test-helpers.ts";
 
 const CONFIG = { include: ["src/**/*.ts"], exclude: ["**/*.test.ts"] };
@@ -593,18 +594,32 @@ describe("exportsIntroduced", { timeout: GIT_TIMEOUT_MS }, () => {
     const root = await adopted();
     const head = (subject: string) => runGit(root, "log", "--format=%H", `--grep=${subject}`).trim();
     const all = () => true;
-    expect(exportsIntroduced(root, head("add formatPrice"), all)).toBe(1);
-    expect(exportsIntroduced(root, head("initial import"), all)).toBe(2);
-    expect(exportsIntroduced(root, head("initial import"), (file) => file !== "src/util.ts")).toBe(0);
-    expect(exportsIntroduced(root, head("initial import"), all, [], 1)).toBe(1);
+    const ts = adaptersFor(root, { adapters: ["typescript"] });
+    expect(exportsIntroduced(root, head("add formatPrice"), all, ts)).toBe(1);
+    expect(exportsIntroduced(root, head("initial import"), all, ts)).toBe(2);
+    expect(exportsIntroduced(root, head("initial import"), (file) => file !== "src/util.ts", ts)).toBe(0);
+    expect(exportsIntroduced(root, head("initial import"), all, ts, 1)).toBe(1);
     runGit(root, "mv", "src/util.ts", "src/utils.ts");
     await write(root, "src/utils.ts", "export function one() {\n  return 1;\n}\nexport function two() {\n  return 2;\n}\nexport function three() {\n  return 3;\n}\n");
     runGit(root, "add", "src/utils.ts");
     runGit(root, "commit", "-q", "-m", "refactor: rename util and add three");
     // A rename is read against the file's old name, so only three is new.
-    expect(exportsIntroduced(root, head("rename util"), all)).toBe(1);
+    expect(exportsIntroduced(root, head("rename util"), all, ts)).toBe(1);
     runGit(root, "rm", "-q", "src/tax.ts");
     runGit(root, "commit", "-q", "-m", "chore: drop tax");
-    expect(exportsIntroduced(root, head("drop tax"), all)).toBe(0);
+    expect(exportsIntroduced(root, head("drop tax"), all, ts)).toBe(0);
+  });
+});
+
+describe("walkChange", () => {
+  const hash = (n: string) => `b3:${n.repeat(64)}` as const;
+  it("is interface when the signature as written changed, cosmetic when the runtime tree did not, else behaviour", () => {
+    expect(walkChange({ signature: "f(a)", runtimeHash: hash("1") }, { signature: "f(a, b)", runtimeHash: hash("1") })).toBe("interface");
+    expect(walkChange({ signature: "f(a)", runtimeHash: hash("1") }, { signature: "f(a)", runtimeHash: hash("1") })).toBe("cosmetic");
+    expect(walkChange({ signature: "f(a)", runtimeHash: hash("1") }, { signature: "f(a)", runtimeHash: hash("2") })).toBe("behaviour");
+  });
+
+  it("is never cosmetic when neither side has a runtime hash, as for a language without erasable types", () => {
+    expect(walkChange({ signature: "f(a)" }, { signature: "f(a)" })).toBe("behaviour");
   });
 });

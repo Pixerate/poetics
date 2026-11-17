@@ -4,12 +4,11 @@
 // written to; what they lack is listed for someone to add.
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { contentTree, createTypeScriptIndexer, fingerprint, signatureText } from "@poetics/adapter-typescript";
-import { detectIn } from "./declarations.ts";
-import type { FrameworkPlugin, IndexedUnit } from "@poetics/adapter-typescript";
-import { REMOVED_CONTENT_HASH, contentHash, isRemoved, matchIdentities, mintUid } from "@poetics/core";
+import { adaptersFor, indexWith, readTextsWith, readsAny } from "./adapters.ts";
+import type { AdaptedUnit, CodeAdapter, TextUnit } from "./adapters.ts";
+import { REMOVED_CONTENT_HASH, isRemoved, matchIdentities, mintUid } from "@poetics/core";
 import type { Actor, ChangeClass, CodeUnit, Framework, Hash, Inferred, IssueTracker, Link, Unit, Version } from "@poetics/core";
-import { appendVersion, createMatcher, createUnit, extendsPrehistory, filesInScope, isParseable, parseUnit, readUnitFiles, setPrehistory, storePaths } from "@poetics/store";
+import { appendVersion, createMatcher, createUnit, extendsPrehistory, filesInScope, parseUnit, readUnitFiles, setPrehistory, storePaths } from "@poetics/store";
 import type { PoeticsConfig, StoreLayout } from "@poetics/store";
 import { git, showAt } from "./git.ts";
 import type { TrackerStatus } from "./github.ts";
@@ -17,7 +16,6 @@ import { pullRequestEvidence, pullRequestTexts, pullRequestsInSubject, trackerRe
 import { draftRequest, draftVersions, formatDraftReport } from "./draft.ts";
 import type { DraftReport, DraftRequest, Drafter } from "./draft.ts";
 import type { CommitPullRequests, TrackerUse } from "./pull-requests.ts";
-import { pluginsFor } from "./frameworks.ts";
 import { planIndex } from "./indexing.ts";
 
 /** One piece of evidence about why a unit exists. */
@@ -73,8 +71,8 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
   const index = await planIndex(root, config, { rationale: "backfill" });
   // The same index planIndex just built, from its cache: spans for blame, docs for the gaps.
   const { parseable } = await filesInScope(root, config);
-  const tsconfig = config.typescript?.tsconfig;
-  const code = createTypeScriptIndexer({ root, files: parseable, cacheFile: join(storePaths(root).cache, "typescript.json"), plugins: pluginsFor(config), ...(tsconfig ? { tsconfig } : {}) }).index().units;
+  const adapters = adaptersFor(root, config, { cache: true });
+  const code = indexWith(adapters, parseable);
   const place = (file: string, name: string, kind: string) => `${file}#${name}#${kind === "type"}`;
   const codeAt = new Map(code.map((unit) => [place(unit.span.file, unit.name, unit.kind), unit]));
   const blame = blameLines(root);
@@ -92,13 +90,12 @@ export async function planBackfill(root: string, config: PoeticsConfig, options:
   // Whether a commit is about one unit: it introduced one export when it was made, not just one that survives, since
   // an "initial commit" whose other exports were deleted since still described all of them (ADR 0022). Read only when
   // it decides confidence, and only as far as a second export.
-  const plugins = pluginsFor(config);
   const inScope = createMatcher(config.include, config.exclude ?? []);
-  const indexable = (file: string) => inScope(file) && isParseable(file, config.adapters);
+  const indexable = (file: string) => inScope(file) && readsAny(adapters, file);
   const aboutOne = new Map<string, boolean>();
   const aboutOneUnit = (sha: string) => {
     if (perCommit.get(sha) !== 1) return false;
-    if (!aboutOne.has(sha)) aboutOne.set(sha, exportsIntroduced(root, sha, indexable, plugins, 2) <= 1);
+    if (!aboutOne.has(sha)) aboutOne.set(sha, exportsIntroduced(root, sha, indexable, adapters, 2) <= 1);
     return aboutOne.get(sha)!;
   };
 
@@ -224,7 +221,7 @@ export function hasBackfill(plan: BackfillPlan): boolean {
 }
 
 // Docs, tests and candidate notes for units that already have a file: listed, never written.
-function listGaps(root: string, parseable: readonly string[], existing: readonly Unit[], codeAt: ReadonlyMap<string, IndexedUnit>, plan: BackfillPlan): void {
+function listGaps(root: string, parseable: readonly string[], existing: readonly Unit[], codeAt: ReadonlyMap<string, AdaptedUnit>, plan: BackfillPlan): void {
   for (const unit of existing) {
     const at = codeAt.get(`${unit.location.file}#${unit.name}#${unit.kind === "type"}`);
     if (!at) continue;
@@ -249,10 +246,11 @@ function listGaps(root: string, parseable: readonly string[], existing: readonly
  * is new when the parent's file had none of that name and kind. A root commit's every export is new. Counting stops
  * at `atMost`.
  */
-export function exportsIntroduced(root: string, sha: string, indexable: (file: string) => boolean, plugins: readonly FrameworkPlugin[] = [], atMost = Infinity): number {
+export function exportsIntroduced(root: string, sha: string, indexable: (file: string) => boolean, adapters: readonly CodeAdapter[], atMost = Infinity): number {
   const parent = git(root, ["rev-list", "--parents", "-n", "1", sha]).trim().split(" ")[1];
   const changes = git(root, ["diff-tree", "--no-commit-id", "--name-status", "-r", "-M", "--root", sha]).split("\n").filter(Boolean);
-  const names = (file: string, text: string | undefined) => new Set(text === undefined ? [] : detectIn(file, text, plugins).units.map((unit) => `${unit.name}#${unit.kind === "type"}`));
+  const names = (file: string, text: string | undefined) =>
+    new Set(text === undefined ? [] : (readTextsWith(adapters, [{ path: file, text }]).get(file) ?? []).map((unit) => `${unit.name}#${unit.kind === "type"}`));
   let added = 0;
   for (const line of changes) {
     const [status = "", first = "", second] = line.split("\t");
@@ -460,12 +458,35 @@ export interface PrehistoryRange {
   includeRemoved?: boolean;
 }
 
+/**
+ * The change class the history walk gives a unit's edit: a different signature as written is `interface`, the same
+ * runtime tree is `cosmetic`, anything else `behaviour`. A unit with no runtime hash (a language without erasable
+ * types) is never `cosmetic`, since two missing hashes say nothing about the code.
+ */
+export function walkChange(was: Pick<Followed, "signature" | "runtimeHash">, now: Pick<Followed, "signature" | "runtimeHash">): ChangeClass {
+  if (now.signature !== was.signature) return "interface";
+  return now.runtimeHash !== undefined && now.runtimeHash === was.runtimeHash ? "cosmetic" : "behaviour";
+}
+
+/** What the walk follows of a unit read from a file's text at some commit. */
+function followedCode(file: string, text: string, unit: TextUnit): Omit<Followed, "history"> {
+  const followed: Omit<Followed, "history"> = {
+    code: { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: unit.contentHash, fingerprint: unit.fingerprint },
+    framework: unit.framework,
+    text: text.slice(unit.span.start, unit.span.end),
+    signature: unit.signatureText,
+  };
+  if (unit.runtimeHash !== undefined) followed.runtimeHash = unit.runtimeHash;
+  return followed;
+}
+
 interface Followed {
   code: CodeUnit;
   framework: Framework;
   /** Its source text at this point in the walk, for drafting. */
   text: string;
-  runtimeHash: Hash;
+  /** Absent for languages with no erasable types; then no change is `cosmetic`. */
+  runtimeHash?: Hash | undefined;
   signature: string;
   history: Version[];
   stoppedAt?: { commit: string; reason: string };
@@ -491,9 +512,9 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
   const prText = await pullRequestTextAllowed(range);
   // Each reconstructed version's draft request, built while the walk still has the code before and after.
   const requests = new Map<Version, DraftRequest>();
-  const plugins = pluginsFor(config);
+  const adapters = adaptersFor(root, config);
   const inScope = createMatcher(config.include, config.exclude ?? []);
-  const indexable = (file: string) => inScope(file) && isParseable(file, config.adapters);
+  const indexable = (file: string) => inScope(file) && readsAny(adapters, file);
   const empty = !hasCommits(root);
   if (empty && (range.from || range.to)) throw new Error("The repository has no commits to walk a range of");
   const head = empty ? "" : resolveCommit(root, "HEAD");
@@ -524,23 +545,18 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
       if (recorded) done.add(recorded[1]!);
     }
     // The code at `from` is where the walk starts: followed, with no history it can claim.
-    for (const file of git(root, ["ls-tree", "-r", "--name-only", from]).split("\n").filter(indexable)) {
-      const text = showAt(root, from, file);
-      if (text === undefined) continue;
-      const { units, source } = detectIn(file, text, plugins);
+    const texts = git(root, ["ls-tree", "-r", "--name-only", from])
+      .split("\n")
+      .filter(indexable)
+      .flatMap((path) => {
+        const text = showAt(root, from, path);
+        return text === undefined ? [] : [{ path, text }];
+      });
+    const unitsIn = readTextsWith(adapters, texts);
+    for (const { path: file, text } of texts) {
       state.set(
         file,
-        units.map((unit) => {
-          const tree = contentTree(unit);
-          return {
-            code: { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: contentHash(tree), fingerprint: fingerprint(tree) },
-            framework: unit.framework,
-            text: text.slice(unit.span.start, unit.span.end),
-            runtimeHash: contentHash(contentTree(unit, true)),
-            signature: signatureText(unit, source, plugins),
-            history: [],
-          };
-        }),
+        (unitsIn.get(file) ?? []).map((unit) => ({ ...followedCode(file, text, unit), history: [] })),
       );
     }
   }
@@ -598,23 +614,14 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
     if (touched.size === 0) return markRecorded();
 
     const before = [...touched].flatMap((file) => state.get(file) ?? []);
-    const after = present.flatMap((file) => {
-      const text = showAt(root, sha, file);
-      if (text === undefined) return [];
-      const { units, source, lineOf } = detectIn(file, text, plugins);
-      return units.map((unit) => {
-        const tree = contentTree(unit);
-        return {
-          code: { key: unit.key, file, name: unit.name, kind: unit.kind, contentHash: contentHash(tree), fingerprint: fingerprint(tree) },
-          framework: unit.framework,
-          text: text.slice(unit.span.start, unit.span.end),
-          runtimeHash: contentHash(contentTree(unit, true)),
-          signature: signatureText(unit, source, plugins),
-          startLine: lineOf(unit.span.start),
-          endLine: lineOf(unit.span.end),
-        };
-      });
+    const texts = present.flatMap((path) => {
+      const text = showAt(root, sha, path);
+      return text === undefined ? [] : [{ path, text }];
     });
+    const unitsIn = readTextsWith(adapters, texts);
+    const after = texts.flatMap(({ path: file, text }) =>
+      (unitsIn.get(file) ?? []).map((unit) => ({ ...followedCode(file, text, unit), startLine: unit.startLine, endLine: unit.endLine })),
+    );
     const ids = new Map(before.map((followed, n) => [`h${n}`, followed]));
     const result = matchIdentities(
       [...ids].map(([uid, followed]) => ({ ...followed.code, uid })),
@@ -671,7 +678,7 @@ export async function planPrehistory(root: string, config: PoeticsConfig, range:
         changed.push({ followed, version: v });
       } else if (now.code.contentHash !== was.code.contentHash) {
         // Interface from the signature as written: the checker's hash would need this commit's dependencies.
-        const change: ChangeClass = now.signature !== was.signature ? "interface" : now.runtimeHash === was.runtimeHash ? "cosmetic" : "behaviour";
+        const change = walkChange(was, now);
         const v = version(was.code.contentHash, now, change, was);
         followed.history = [...was.history, v as Version];
         changed.push({ followed, version: v });

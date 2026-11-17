@@ -35,6 +35,39 @@
           "ref": "docs/decisions/0022-backfill-thin-commit-evidence.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:ea9ca69154e3563779fc2c2181b323df11ade9945fb09277c55ed721725f90e6",
+      "interfaceHash": "b3:728a13381581cfb5b4e1c9f8a7303b3edd7d48ed25c74604ca228b4c56e7cb38",
+      "parent": "b3:599f080211eb3e9a9083b189910b823868055f2ffd543a38b67e55b3a72e9085",
+      "change": "interface",
+      "rationale": "Takes the adapters to read with instead of TypeScript framework plugins, so counting what a commit introduced (ADR 0022) works for any language (ADR 0025).",
+      "deps": {
+        "01M7MRHZ80RNGSBJX617ERS8R6": "b3:66a70ca40a905b633619301f28f32a02c5c2cce7a89d0976c2573ee6eedca2e9",
+        "01M7MRHZ81AHZQ6SJ5VYY46RZC": "b3:0141931e30dc7d4efcb850ac9ddc3ff4feb3ebe1f8746ce4a60ec0561258c39b",
+        "01M5Z1F6NP3C1KG9NNND31TPSJ": "b3:dd4eb578ac15dbcb0dcf9645b932f78a8a124faebe26255799f186266636ddbb",
+        "01M5Z1F6NQR9T376HTSH2ZYP8C": "b3:85859a81a9f157d7de29c1cfe6fed88d978006bd3ed9ea8645bd87f785770203"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/cli/src/backfill.test.ts"
+        }
+      ]
     }
   ],
   "docs": "How many exports a commit added to the files in scope, counting ones deleted since: each file it added, changed\nor renamed is read as the commit left it and as its parent had it (under its old name, for a rename), and an export\nis new when the parent's file had none of that name and kind. A root commit's every export is new. Counting stops\nat `atMost`.",

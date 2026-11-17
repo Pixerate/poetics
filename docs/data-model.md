@@ -183,6 +183,15 @@ answered once, keys are unique and start with their file, and owners and edge
 targets are units in the batch. A requested file with no units, an error or
 no entry is reported as not read, and its units are kept.
 
+Inside the core, every reader of code goes through `CodeAdapter` in
+`@poetics/cli`: `index` reads files on disk as one program, with edges and
+interface hashes, and `readTexts` reads files from text, such as a file at an
+earlier commit, with hashes, fingerprints and signature text only. Indexing,
+rehash, backfill, the MCP server and the evals call `adaptersFor` and never an
+indexer directly. The TypeScript indexer, with its React and Svelte plugins, is
+the in-process adapter; an out-of-process adapter answers the same two calls
+with protocol requests.
+
 Example batches live in
 [`schemas/fixtures/adapter/`](../schemas/fixtures/adapter/README.md), for
 adapters in other repositories to test against. When you change the protocol,

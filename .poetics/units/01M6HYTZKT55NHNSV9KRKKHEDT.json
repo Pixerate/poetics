@@ -59,6 +59,38 @@
           "ref": "docs/plan.md#issue-trackers"
         }
       ]
+    },
+    {
+      "contentHash": "b3:e7fb52af7754f145e508a3d973695fb639db9df0a27e2175178fd4456e942cc3",
+      "interfaceHash": "b3:9d77e8b9fd870f5c57d5d13acfd670679031768a8e5dafd7c7d37ee262b1de0a",
+      "parent": "b3:a333be7869a4cc295280179fc7f97590f1fc9e6738349b147c71c73a8d6e747a",
+      "change": "interface",
+      "rationale": "Holds AdaptedUnit instead of the TypeScript IndexedUnit, so code from any adapter can back the MCP read tools (ADR 0025).",
+      "deps": {
+        "01M7MRHZ80JM8HJC0A1SNB23AB": "b3:980af9eeb2406741fc52b16825982520b1f9f09a7e2bfdcf6d52737a4974f48e",
+        "01M5XDBC6HVMJWYFKK186EKB7F": "b3:e4a9b9957f43a652cdbb457103579606bb032196fa54611cc28d5fbe91e9c1a5",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        },
+        {
+          "kind": "test",
+          "ref": "packages/mcp/src/code.test.ts"
+        }
+      ]
     }
   ],
   "docs": "Indexed code joined to the store: units by uid, the graph, untracked code and missing units.",

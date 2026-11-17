@@ -55,6 +55,35 @@
           "ref": "docs/plan.md#react-ts-tsx"
         }
       ]
+    },
+    {
+      "contentHash": "b3:5b659bc6902bb2f06ed4e3121970cdb6db7aa72ddde382033af35a0b64ed687b",
+      "interfaceHash": "b3:45f3703823b2e0bb5e36bb1fb751ddc8eb0b44a06e5d56394fc30b090c40b2c4",
+      "parent": "b3:17595042fafd2edb8b565063a501893813aee2b10434a9d60c3136885f546e80",
+      "change": "interface",
+      "rationale": "Indexes the file through the configured adapters instead of the TypeScript indexer, so hand-written versions get hashes for any language (ADR 0025).",
+      "deps": {
+        "01M7MRHZ80JM8HJC0A1SNB23AB": "b3:980af9eeb2406741fc52b16825982520b1f9f09a7e2bfdcf6d52737a4974f48e",
+        "01M7MRHZ80MC7SFVMXQFYDD0JR": "b3:66f919caf0744117fa13029c4b3c69c22bce3a35ed5a399fa53926b4b12ab7b1",
+        "01M7MRHZ809787T2DQ62Z6K76X": "b3:0ca839fb978808f62c4d9816c90693dd16d3166571e1f050ac879419b5dcd39f",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:f04382f791d67f79900893b6db74030ac78e675b2251f687fcf757012032b781"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#11"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0025-out-of-process-adapter-contract.md"
+        }
+      ]
     }
   ],
   "docs": "The indexer's content and interface hashes for the units in one file.",
