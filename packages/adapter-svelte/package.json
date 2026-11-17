@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@poetics/adapter-typescript": "workspace:*",
-    "svelte2tsx": "0.7.62",
+    "svelte2tsx": "0.7.63",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
