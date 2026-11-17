@@ -20,7 +20,7 @@ describe("planRehash and applyRehash", () => {
 
     const plan = await planRehash(root, config);
     expect(plan.rehash.map((e) => e.uid)).toEqual([UID]);
-    expect(plan.rehash[0]).toMatchObject({ name: "a", file: "src/a.ts", contentHash: expect.stringMatching(/^b3:/), interfaceHash: expect.stringMatching(/^b3:/) });
+    expect(plan.rehash[0]).toMatchObject({ name: "a", file: "src/a.ts", reason: "provisional", contentHash: expect.stringMatching(/^b3:/), interfaceHash: expect.stringMatching(/^b3:/) });
     expect(plan.skipped).toEqual([
       { uid: UID_B, name: "b", file: "src/b.ts", reason: expect.stringMatching(/^the code changed since git:/) },
       { uid: UID_C, name: "gone", file: "src/c.ts", reason: "no function gone in src/c.ts that the indexer can read" },
@@ -42,6 +42,40 @@ describe("planRehash and applyRehash", () => {
     // A second run finds nothing left to do for the rehashed unit.
     const again = await planRehash(root, config);
     expect([again.rehash, again.alreadyIndexed]).toEqual([[], 1]);
+  });
+
+  it("rehashes b3: units whose interface hash the adapters' rules now compute differently (ADR 0024)", async () => {
+    const root = await makeGitRepo(UID);
+    const [now] = await unitHashes(root, config, "src/a.ts");
+    const stale = `b3:${"0".repeat(64)}` as const;
+    const recorded = unitFor(UID, "a", "");
+    recorded.versions = [{ contentHash: now!.contentHash, interfaceHash: stale, parent: null, change: "created", actor: { kind: "human" }, rationale: "Made." }];
+    await writeUnitFile(root, recorded);
+
+    const plan = await planRehash(root, config);
+    expect(plan).toMatchObject({ skipped: [], alreadyIndexed: 0 });
+    expect(plan.rehash).toEqual([{ uid: UID, name: "a", file: "src/a.ts", parent: now!.contentHash, reason: "rules", contentHash: now!.contentHash, interfaceHash: now!.interfaceHash }]);
+    expect(await applyRehash(root, plan, { kind: "human" })).toBe(1);
+    expect((await readUnit(root, UID)).versions.at(-1)).toMatchObject({
+      contentHash: now!.contentHash,
+      interfaceHash: now!.interfaceHash,
+      parent: now!.contentHash,
+      change: "rehash",
+      rationale: expect.stringContaining("rules"),
+      links: [{ kind: "decision", ref: "docs/decisions/0014-rehash-versions.md" }, { kind: "decision", ref: "docs/decisions/0024-rehash-after-rule-changes.md" }],
+    });
+    expect(await planRehash(root, config)).toMatchObject({ rehash: [], alreadyIndexed: 1 });
+  });
+
+  it("finds a Svelte component by its name, not its default export", async () => {
+    const root = await makeGitRepo(UID);
+    const svelte = { include: ["src/**/*.{ts,svelte}"], adapters: ["typescript", "svelte"] };
+    await write(root, "src/Tag.svelte", `<script lang="ts">\n  let { label }: { label: string } = $props();\n</script>\n\n<b>{label}</b>\n`);
+    const [now] = await unitHashes(root, svelte, "src/Tag.svelte");
+    const tag = unitFor(UID_B, "Tag", "", { kind: "component", framework: "svelte", location: { file: "src/Tag.svelte", export: "default" } });
+    tag.versions = [{ contentHash: now!.contentHash, interfaceHash: `b3:${"0".repeat(64)}`, parent: null, change: "created", actor: { kind: "human" }, rationale: "Made." }];
+    await writeUnitFile(root, tag);
+    expect((await planRehash(root, svelte)).rehash.map((e) => [e.name, e.reason])).toEqual([["a", "provisional"], ["Tag", "rules"]]);
   });
 
   it("gives the hashes that the change check expects", async () => {
