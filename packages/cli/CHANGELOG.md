@@ -1,5 +1,16 @@
 # @poetics/cli
 
+## 0.10.0
+
+### Minor Changes
+
+- [#92](https://github.com/Pixerate/poetics/pull/92) [`c730697`](https://github.com/Pixerate/poetics/commit/c7306970ae3e91f5b53294ea588a7d67b5fb5ef7) Thanks [@surrealroad](https://github.com/surrealroad)! - Re-record interface hashes that adapter rule changes made stale (ADR 0024). `poetics index` and `poetics rehash` now append a `rehash` version for unchanged `b3:` code whose interface hash the adapters compute differently, so the next edit is no longer misclassified as `interface`. The store check allows that rehash to repeat its parent's `contentHash`, and the change check accepts it on a `b3:` parent. `RehashEntry` gains `reason`. `poetics rehash` now finds Svelte components, which it missed by looking them up as `default`.
+
+### Patch Changes
+
+- Updated dependencies [[`c730697`](https://github.com/Pixerate/poetics/commit/c7306970ae3e91f5b53294ea588a7d67b5fb5ef7)]:
+  - @poetics/store@0.6.0
+
 ## 0.9.0
 
 ### Minor Changes
