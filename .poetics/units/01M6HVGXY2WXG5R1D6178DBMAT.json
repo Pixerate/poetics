@@ -30,6 +30,28 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:86439d648b89c25285b241fc8f630b6e8c2cb0b074176d5c4d32e7d40191dd54",
+      "interfaceHash": "b3:4ceeb2cfa210db0afb252ff338b1f66cbbeba185c508723129fca1a3c78ddf08",
+      "parent": "b3:5dd91004263bbfff0de92bdc38d70e614058b1791ebd49def42d14bef388e565",
+      "change": "interface",
+      "rationale": "Adds `reason` ('provisional' or 'rules') so callers and applyRehash can tell a git:-to-b3: rehash from one re-recording an interface hash after an adapter rule change; `parent` may now be a b3: hash.",
+      "deps": {
+        "01M5XDBC6YYK0M5RPS3YMPYSPM": "b3:a9d8f9922d57a2b242a17ff15b364a707eb1b721d5ced5d96e4ec2f62342087d"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0024-rehash-after-rule-changes.md"
+        }
+      ]
     }
   ],
   "docs": "A unit the rehash will re-record: uid, place, parent and b3: hashes.",

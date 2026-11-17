@@ -199,7 +199,10 @@ function checkVersions(
   const seen = new Set<string>();
   unit.versions.forEach((version, i) => {
     const at = `versions[${i}]`;
-    if (seen.has(version.contentHash)) error(file, `${at} repeats contentHash ${version.contentHash}`);
+    const previous = i > 0 ? unit.versions[i - 1]! : undefined;
+    // A rehash after an adapter rule change re-records its parent's code, so it repeats that one hash (ADR 0024).
+    const rulesRehash = version.change === "rehash" && previous !== undefined && version.contentHash === previous.contentHash;
+    if (seen.has(version.contentHash) && !rulesRehash) error(file, `${at} repeats contentHash ${version.contentHash}`);
     seen.add(version.contentHash);
 
     const expectedParent = i === 0 ? null : unit.versions[i - 1]!.contentHash;
@@ -217,10 +220,17 @@ function checkVersions(
     const provisional = hashes.some(isProvisional);
     if (provisional && version.provisional !== true) error(file, `${at} has git: hashes but is not marked provisional`);
     if (!provisional && version.provisional === true) error(file, `${at} is marked provisional but has no git: hashes`);
-    // A rehash replaces a provisional hash with the indexer's, so it needs one before it and none of its own (ADR 0014).
+    // A rehash replaces a provisional hash with the indexer's, so it needs one before it and none of its own (ADR 0014),
+    // or re-records the same b3: content hash with the interface hash the adapters' rules now compute (ADR 0024).
     if (version.change === "rehash") {
       if (provisional) error(file, `${at} is a rehash but its hashes are not all b3:`);
-      if (i > 0 && !isProvisional(unit.versions[i - 1]!.contentHash)) error(file, `${at} is a rehash but the version before it already has a b3: hash`);
+      if (rulesRehash) {
+        if (version.interfaceHash === undefined || version.interfaceHash === previous.interfaceHash) {
+          error(file, `${at} is a rehash of the same contentHash but does not change the interfaceHash`);
+        }
+      } else if (previous && !isProvisional(previous.contentHash)) {
+        error(file, `${at} is a rehash but the version before it already has a b3: hash`);
+      }
     }
   });
   // History keeps the hashes it was recorded with; the policy is about where each live unit stands now.

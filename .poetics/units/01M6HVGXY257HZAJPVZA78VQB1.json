@@ -63,6 +63,40 @@
           "ref": "docs/plan.md#react-ts-tsx"
         }
       ]
+    },
+    {
+      "contentHash": "b3:c40cb00aa0e4acb3f3f435ef58eb9d6a58b39f9643bee5157fe01e7234413646",
+      "interfaceHash": "b3:c1af4691214155a56fc6dbc2a4a8b499ef69cdb0caaaadbd0466c97620e8a182",
+      "parent": "b3:2e632b16597531990f409492a9e50743d0c1e0194c8bd706a6651d176e8cdc15",
+      "change": "behaviour",
+      "rationale": "Plans a rules rehash for a b3: unit whose contentHash still matches but whose interfaceHash the adapters now compute differently, instead of counting it as already indexed. Also looks units up by their own name, as poetics index does: by location.export it never found a Svelte component (export 'default'), so components were silently counted as indexed.",
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:9d50a5bc83981531e65f1542461ae5c20d8d8b79151d4abce76d76ea9672a184",
+        "01M6HNRFMK1WQP8F6MRK9FMJY0": "b3:252c11550ca3058d8e1552e696c924d336141e33e90f860d817bdf73227bcfe3",
+        "01M6ME83DBRXTEJAFTHD4TY1R0": "b3:61aa4d6faccbe86a7546543ebd39ccbe51268d598d7b877a8a9b819501fe1eb9",
+        "01M6HVGXY26F49QHBWFB4CTXER": "b3:678db794eebb1a543045710dcb951c454b2e7113e72ee4be49ac4d485b4666f8",
+        "01M7D1WTFP0WBEEJM9TVETAH82": "b3:dda6045de9a37b27dc803df5b90e4e75be99f20e265d23d18b39042825357288",
+        "01M5XDBC6ST4ATSSPWGG8KZ6B5": "b3:a48813ec198e0ea8ddd7b390ce748d6b531cee916cfc3b1ecacca3a3d95feea4",
+        "01M5XDBC6R15PA0T08670RYQVW": "b3:c7034313ef971387c011fbcdcf06bfe2f467ae890db397d3a5de9836190a5313",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:f04382f791d67f79900893b6db74030ac78e675b2251f687fcf757012032b781",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:a50623c392fe2033d26911146b4a8e6a15556a3e824b0e0f1a7799513f92f113"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0024-rehash-after-rule-changes.md"
+        }
+      ]
     }
   ],
   "docs": "Which units the rehash would touch, and which it must leave until their code is recorded.",

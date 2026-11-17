@@ -33,6 +33,29 @@
           "ref": "docs/decisions/0020-svelte-through-svelte2tsx.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:a910d0ef1fa4198022f978b30cf97913d48d5c73b26dc17bba5d2c175237002f",
+      "interfaceHash": "b3:104bc8be425dc25be5a22745f411d8db61107fea746c9b5f9c000fb46e6f63b0",
+      "parent": "b3:a910d0ef1fa4198022f978b30cf97913d48d5c73b26dc17bba5d2c175237002f",
+      "change": "rehash",
+      "rationale": "Rehashed by the indexer: the code is unchanged, but the adapters' rules now compute a different interface hash for it.",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0014-rehash-versions.md"
+        },
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0024-rehash-after-rule-changes.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ]
 }

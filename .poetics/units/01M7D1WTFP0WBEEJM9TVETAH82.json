@@ -1,0 +1,46 @@
+{
+  "uid": "01M7D1WTFP0WBEEJM9TVETAH82",
+  "kind": "function",
+  "framework": "none",
+  "name": "rulesRehash",
+  "location": {
+    "file": "packages/cli/src/rehash.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:dda6045de9a37b27dc803df5b90e4e75be99f20e265d23d18b39042825357288",
+      "interfaceHash": "b3:ffedef5588738752a68552e529164b43537bb910ad9ad03c4be0902cced2ddf4",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "New: the one test of whether a unit needs a rules rehash (same b3: contentHash, different interfaceHash, not removed), shared by poetics index and poetics rehash so both plan the same versions.",
+      "deps": {
+        "01M6HNRFMKK4404JSPA7R8XBGE": "b3:9d50a5bc83981531e65f1542461ae5c20d8d8b79151d4abce76d76ea9672a184",
+        "01M5XDBC6R15PA0T08670RYQVW": "b3:c7034313ef971387c011fbcdcf06bfe2f467ae890db397d3a5de9836190a5313",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b"
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0024-rehash-after-rule-changes.md"
+        }
+      ]
+    }
+  ],
+  "docs": "The `rehash` version for a unit whose code still has its latest version's b3:\ncontent hash but whose interface hash the adapters now compute differently,\nor undefined when there is none to write (ADR 0024).",
+  "tests": [
+    {
+      "file": "packages/cli/src/rehash.test.ts",
+      "via": "explicit"
+    },
+    {
+      "file": "packages/cli/src/indexing.test.ts",
+      "via": "explicit"
+    }
+  ]
+}
