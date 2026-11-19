@@ -1,6 +1,6 @@
 # 0024. A rehash also follows an adapter rule change
 
-- Status: Proposed
+- Status: Accepted (2026-11-19)
 - Date: 2026-11-14
 
 ## Context
