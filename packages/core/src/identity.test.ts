@@ -70,6 +70,23 @@ describe("matchIdentities", () => {
     expect(matchIdentities([tracked("U1", code("a.ts#f", "f1", SHAPE))], [code("b.ts#g", "g", half)], [], { threshold: 0.3 }).matched).toHaveLength(1);
   });
 
+  it("pairs units that share content by name when their file moves", () => {
+    const moved = matchIdentities(
+      [tracked("U1", code("a.ts#f", "same")), tracked("U2", code("a.ts#g", "same")), tracked("U3", code("a.ts#h", "same"))],
+      [code("b.ts#f", "same"), code("b.ts#g", "same"), code("b.ts#k", "same")],
+    );
+    expect(moved.matched.map((m) => [m.uid, m.key, m.via])).toEqual([
+      ["U1", "b.ts#f", "content"],
+      ["U2", "b.ts#g", "content"],
+      ["U3", "b.ts#k", "content"],
+    ]);
+    expect(moved.queued).toEqual([]);
+    // A name twice on one side tells nothing.
+    const twice = matchIdentities([tracked("U1", code("a.ts#f", "same")), tracked("U2", code("c.ts#f", "same"))], [code("b.ts#f", "same"), code("d.ts#f", "same")]);
+    expect(twice.matched).toEqual([]);
+    expect(twice.queued).toHaveLength(1);
+  });
+
   it("queues rather than guesses when content or shape fits more than one unit", () => {
     const sameContent = matchIdentities(
       [tracked("U1", code("a.ts#f", "same")), tracked("U2", code("a.ts#g", "same"))],

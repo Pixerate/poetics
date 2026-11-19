@@ -254,7 +254,9 @@ stages and never revisits a decision:
 2. **File and name.** A unit at the same place, in the same namespace (types and
    values apart), is the same unit, edited or not.
 3. **Content hash.** A unique pair with the same content hash is a rename or move.
-   Several units sharing content are queued.
+   Among several units sharing content, those whose name appears once on each
+   side pair by name, as when a file of empty default implementations moves;
+   the rest are matched if one pair is left, and queued otherwise.
 4. **Similarity.** Jaccard similarity of fingerprints, for units with at least 8
    entries, at 0.65 or more. A pair is matched only when neither unit resembles
    anything else above the threshold; otherwise the whole group is queued.
