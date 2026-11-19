@@ -30,7 +30,7 @@ new record here.
 | [0021](0021-svelte-context-units.md) | Svelte contexts are context units, keyed by what declares them | Accepted |
 | [0022](0022-backfill-thin-commit-evidence.md) | Backfill counts what a commit introduced when it was made, and always leads with the doc comment | Accepted |
 | [0023](0023-agent-runtimes.md) | Skills ship once in the Agent Skills format, and evals run an agent through a configured command | Proposed |
-| [0024](0024-rehash-after-rule-changes.md) | A rehash also follows an adapter rule change | Proposed |
+| [0024](0024-rehash-after-rule-changes.md) | A rehash also follows an adapter rule change | Accepted |
 | [0025](0025-out-of-process-adapter-contract.md) | Out-of-process adapters answer batched JSON requests on stdin and stdout | Accepted |
 | [0026](0026-swift-units.md) | Swift units are non-private declarations, with SwiftUI views as components | Accepted |
 
