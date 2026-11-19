@@ -1,0 +1,30 @@
+{
+  "uid": "01M7TZQEATFPK0TMTNX46N5BJA",
+  "kind": "type",
+  "framework": "none",
+  "name": "SwiftBody",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:f1366ad904f3f4f5c5a6e4d97f29e59cea3f73884835189d6ac161d9d57dfe97",
+      "interfaceHash": "b3:9ff435561114648ff2a9dff3a03eee7cada397b0f9fd0f539cf3366d083f43c9",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Where a Swift function's body sits in the text, with its top-level statements, since the Swift adapter reports lines and the gate has no syntax tree to edit by."
+    }
+  ]
+}

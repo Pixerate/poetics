@@ -1,0 +1,40 @@
+{
+  "uid": "01M7TZQEAVTG1HD83JR5AZZXVF",
+  "kind": "function",
+  "framework": "none",
+  "name": "renameSwift",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:2b2be8e7ef375408ebf2568952a2c480d9dbc0aa00e20ca458a7988128df844b",
+      "interfaceHash": "b3:8a1ebe47e9bc37f3198dd9c0ffd607abd063d311eb974048969953589f00dd6e",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Swift unit names carry their container and argument labels, so the expected name after a rename replaces only the base name: Canvas.draw(_:in:) becomes Canvas.drawGate(_:in:).",
+      "deps": {
+        "01M7TZQEAVGRGRWQC77WP5JDWF": "b3:a372c10d1e3eb685bafad0f0c1f38a4d47c8726ce0dd3b5677de1d849639f442"
+      }
+    }
+  ],
+  "docs": "`name` with its base name replaced: `Canvas.drawGate(_:in:)` for `Canvas.draw(_:in:)` and `drawGate`.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

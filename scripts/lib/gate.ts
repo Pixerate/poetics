@@ -13,17 +13,19 @@ import { REMOVED_CONTENT_HASH, isRemoved, mintUid } from "@poetics/core";
 import type { Unit } from "@poetics/core";
 import { adaptersFor, applyIndex, detectIn, planIndex, pluginsFor, readTextsWith, unitHashes } from "@poetics/cli";
 import { appendVersion, createUnit, filesInScope, parseUnit, readUnitFiles, relocateUnit, storePaths } from "@poetics/store";
-import type { PoeticsConfig } from "@poetics/store";
+import type { AdapterEntry, PoeticsConfig } from "@poetics/store";
+import { braceDepthAt, declarationLines, ifDepthAt, insertStatement, mergeBodies, renameSwift, splitBody, swiftBaseName, swiftBody, swiftContainer, swiftDeclarations } from "./gate-swift.ts";
+import type { SwiftBody } from "./gate-swift.ts";
 
 export interface CorpusEntry {
   name: string;
-  kind: "react" | "svelte" | "mixed";
+  kind: "react" | "svelte" | "mixed" | "swift";
   repo: string;
   commit: string;
   include: string[];
   exclude: string[];
-  /** The adapters its config lists; `typescript` alone when unset. */
-  adapters?: string[];
+  /** The adapters its config lists, built in by name or run as a command; `typescript` alone when unset. */
+  adapters?: AdapterEntry[];
 }
 
 export type RefactorKind = "rename" | "move-file" | "move-unit" | "rename-edit" | "split" | "merge" | "wrap" | "rename-file";
@@ -101,7 +103,7 @@ export function seededRandom(seed: number): () => number {
 export async function prepareWorkspace(
   source: string,
   corpus: CorpusEntry,
-  adapters: readonly string[] = corpus.adapters ?? ["typescript"],
+  adapters: readonly AdapterEntry[] = corpus.adapters ?? ["typescript"],
 ): Promise<{ root: string; config: PoeticsConfig; notIndexed: number }> {
   const root = await mkdtemp(join(tmpdir(), `poetics-gate-${corpus.name}-`));
   const config: PoeticsConfig = { include: corpus.include, exclude: corpus.exclude, adapters: [...adapters] };
@@ -118,7 +120,7 @@ export async function prepareWorkspace(
 }
 
 /** Runs the gate on one prepared corpus: seed the store, then `rounds` rounds of one refactor of each kind. `adapters` overrides the corpus's. */
-export async function runGate(corpus: CorpusEntry, source: string, options: { rounds: number; seed: number; adapters?: readonly string[] }): Promise<GateResult> {
+export async function runGate(corpus: CorpusEntry, source: string, options: { rounds: number; seed: number; adapters?: readonly AdapterEntry[] }): Promise<GateResult> {
   const { root, config, notIndexed } = await prepareWorkspace(source, corpus, options.adapters);
   const kinds = refactorsFor(config);
   try {
@@ -194,6 +196,7 @@ export async function runGate(corpus: CorpusEntry, source: string, options: { ro
         const where = (u: Unit | undefined) => (!u ? "nowhere" : isRemoved(u) ? "removed" : `${u.location.file}#${u.name}`);
         if (queued.has(uid)) {
           tally.queued++;
+          result.failures.push(`round ${round} ${kind}: ${uid} queued, should be at ${want ? `${want.file}#${want.name}` : "removed"}`);
           // The person who resolves the queue declares the match; the gate records the outcome and does the same.
           if (want && unit && !isRemoved(unit)) {
             const lineage: NonNullable<Unit["lineage"]> = [];
@@ -236,6 +239,8 @@ async function refactor(
   random: () => number,
 ): Promise<{ uids: string[]; created: string[]; sizes?: Map<string, string> } | undefined> {
   const units = (await liveUnits(root)).filter((unit) => !used.has(unit.uid) && unit.kind !== "type");
+  // A corpus with Swift is measured on its Swift, edited as text: the adapter that reads it reports lines, not syntax.
+  if ((await liveUnits(root)).some((unit) => isSwift(unit.location.file))) return swiftRefactor(kind, root, config, expected, used, random);
   // A .svelte file's units are found in the TypeScript svelte2tsx makes of it, so edits by their declarations' offsets
   // would land in the wrong place; only renames, moves and file renames touch them. A component is named after its
   // file, so it is renamed by renaming the file, not its identifier.
@@ -383,21 +388,183 @@ async function refactor(
     const add = (text: string) => insertAt(text, into, `${inner}\n`);
     const text = b!.start > into ? add(remove(a!.text)) : remove(add(a!.text));
     await writeText(root, file, text);
-    const ctx = { paths: storePaths(root), actor: human };
-    await relocateUnit(ctx, first!.uid, { file, name: first!.name }, [{ kind: "merge", uids: [second!.uid] }]);
-    await appendVersion(ctx, second!.uid, {
-      contentHash: REMOVED_CONTENT_HASH,
-      provisional: true,
-      parent: second!.versions.at(-1)!.contentHash,
-      change: "removed",
-      actor: human,
-      rationale: `Merged into ${first!.uid}`,
-    });
+    await declareMerge(root, first!, second!);
     use(used, first!.uid, second!.uid);
     expected.set(second!.uid, null);
     return { uids: [first!.uid, second!.uid], created: [] };
   }
   return undefined;
+}
+
+/** A Swift unit as the adapter reads it now, with its body when it is a function with one. */
+interface SwiftFound {
+  framework: Unit["framework"];
+  text: string;
+  startLine: number;
+  endLine: number;
+  fingerprint: number;
+  body: SwiftBody | undefined;
+}
+
+async function findSwift(root: string, config: PoeticsConfig, file: string, name: string): Promise<SwiftFound | undefined> {
+  const text = await readFile(join(root, file), "utf8").catch(() => undefined);
+  if (text === undefined) return undefined;
+  const unit = readTextsWith(adaptersFor(root, config), [{ path: file, text }])
+    .get(file)
+    ?.find((u) => u.name === name);
+  if (!unit) return undefined;
+  const { framework, startLine, endLine } = unit;
+  return { framework, text, startLine, endLine, fingerprint: unit.fingerprint.length, body: swiftBody(text, startLine, endLine) };
+}
+
+/**
+ * The Swift form of `refactor`. Names carry their container and labels (`Canvas.draw(_:in:)`), so a rename changes
+ * only the base name, and renaming or moving a type takes its members' names or places with it. Declarations inside
+ * `#if` are only renamed or moved with their file, since editing one branch's lines could split the block.
+ */
+async function swiftRefactor(
+  kind: RefactorKind,
+  root: string,
+  config: PoeticsConfig,
+  expected: Expected,
+  used: Set<string>,
+  random: () => number,
+): Promise<{ uids: string[]; created: string[]; sizes?: Map<string, string> } | undefined> {
+  // Types too: in Swift they are most of what is declared at the top level, and renaming or moving one is common.
+  const all = (await liveUnits(root)).filter((unit) => isSwift(unit.location.file) && !used.has(unit.uid));
+  const functions = all.filter((unit) => unit.kind === "function");
+  const swiftFiles = (await filesInScope(root, config)).parseable.filter(isSwift);
+  const declared = swiftDeclarations(await Promise.all(swiftFiles.map((file) => readFile(join(root, file), "utf8"))));
+  const pick = <T>(items: T[]) => items[Math.floor(random() * items.length)];
+  const code = (unit: Unit) => findSwift(root, config, unit.location.file, unit.name);
+  const inPlace = (found: SwiftFound) => ifDepthAt(found.text, found.startLine) === 0;
+  const describe = (found: SwiftFound) => `${found.body?.statements.length ?? 0} statement(s), ${found.fingerprint} fingerprint entries`;
+  const withBody = (found: SwiftFound | undefined, min = 1): found is SwiftFound & { body: SwiftBody } =>
+    found !== undefined && found.body !== undefined && found.body.statements.length >= min && inPlace(found);
+  // Members are named after their type and, in its own file, move with it.
+  const members = (name: string) => [...expected].filter((entry): entry is [string, Place] => entry[1] !== null && entry[1].name.startsWith(`${name}.`));
+
+  if (kind === "rename" || kind === "rename-edit") {
+    const candidates = (kind === "rename" ? all : functions).filter((unit) => {
+      const base = swiftBaseName(unit.name);
+      return /^[A-Za-z_]\w{3,}$/.test(base) && declared.get(base) === 1 && !declared.has(`${base}Gate`);
+    });
+    for (let tries = 0; tries < 20 && candidates.length > 0; tries++) {
+      const unit = pick(candidates)!;
+      const found = await code(unit);
+      if (!found || (kind === "rename-edit" && !withBody(found))) continue;
+      if (kind === "rename-edit") await writeText(root, unit.location.file, insertStatement(found.text, found.body!));
+      const base = swiftBaseName(unit.name);
+      const next = renameSwift(unit.name, `${base}Gate`);
+      await renameEverywhere(root, config, base, `${base}Gate`);
+      use(used, unit.uid);
+      expected.set(unit.uid, { file: unit.location.file, name: next });
+      for (const [uid, place] of members(unit.name)) {
+        use(used, uid);
+        expected.set(uid, { ...place, name: next + place.name.slice(unit.name.length) });
+      }
+      return { uids: [unit.uid], created: [], sizes: new Map([[unit.uid, describe(found)]]) };
+    }
+    return undefined;
+  }
+
+  if (kind === "move-file") {
+    const files = [...new Set(all.map((unit) => unit.location.file))].filter((file) => !file.includes("/gate-moved/"));
+    const file = pick(files);
+    if (!file) return undefined;
+    const to = posix.join(posix.dirname(file), "gate-moved", posix.basename(file));
+    await mkdir(dirname(join(root, to)), { recursive: true });
+    git(root, "mv", file, to);
+    for (const unit of (await liveUnits(root)).filter((u) => u.location.file === file)) {
+      use(used, unit.uid);
+      const want = expected.get(unit.uid);
+      if (want) expected.set(unit.uid, { ...want, file: to });
+    }
+    return { uids: all.filter((unit) => unit.location.file === file).map((unit) => unit.uid), created: [] };
+  }
+
+  if (kind === "move-unit") {
+    // Top-level declarations only: a member cannot leave its type or extension.
+    const topLevel = all.filter((unit) => swiftContainer(unit.name) === "");
+    const files = swiftFiles;
+    for (let tries = 0; tries < 20; tries++) {
+      const unit = pick(topLevel);
+      if (!unit) return undefined;
+      const found = await code(unit);
+      const target = pick(files.filter((file) => file !== unit.location.file));
+      if (!found || !inPlace(found) || !target || (await findSwift(root, config, target, unit.name))) continue;
+      const lines = declarationLines(found.text, found.startLine, found.endLine);
+      if (braceDepthAt(found.text, lines.start) !== 0) continue;
+      await writeText(root, unit.location.file, found.text.slice(0, lines.start) + found.text.slice(lines.end));
+      const into = await readFile(join(root, target), "utf8");
+      await writeText(root, target, `${into.trimEnd()}\n\n${found.text.slice(lines.start, lines.end).trimEnd()}\n`);
+      use(used, unit.uid);
+      expected.set(unit.uid, { file: target, name: unit.name });
+      for (const [uid, place] of members(unit.name)) {
+        if (place.file !== unit.location.file) continue;
+        use(used, uid);
+        expected.set(uid, { ...place, file: target });
+      }
+      return { uids: [unit.uid], created: [] };
+    }
+    return undefined;
+  }
+
+  if (kind === "split") {
+    for (let tries = 0; tries < 30; tries++) {
+      const unit = pick(functions);
+      if (!unit) return undefined;
+      const found = await code(unit);
+      const base = swiftBaseName(unit.name);
+      if (!withBody(found, 4) || declared.has(`${base}Rest`)) continue;
+      const split = splitBody(found.text, found.body, `${base}Rest`)!;
+      await writeText(root, unit.location.file, split);
+      // Declared as the poetics-refactor skill says: a new unit for the part, lineage both ways.
+      const name = `${swiftContainer(unit.name)}${base}Rest()`;
+      const part = await declareNew(root, config, unit.location.file, name, [{ kind: "split", uids: [unit.uid] }]);
+      await relocateUnit({ paths: storePaths(root), actor: human }, unit.uid, { file: unit.location.file, name: unit.name }, [{ kind: "split", uids: [part] }]);
+      use(used, unit.uid, part);
+      expected.set(part, { file: unit.location.file, name });
+      return { uids: [unit.uid, part], created: [part] };
+    }
+    return undefined;
+  }
+
+  if (kind !== "merge") return undefined;
+  // Two functions in one scope of one file become the first.
+  const byScope = new Map<string, Unit[]>();
+  for (const unit of functions) {
+    const scope = `${unit.location.file}#${swiftContainer(unit.name)}`;
+    byScope.set(scope, [...(byScope.get(scope) ?? []), unit]);
+  }
+  for (const inScope of [...byScope.values()].sort(() => random() - 0.5)) {
+    if (inScope.length < 2) continue;
+    const [first, second] = [...inScope].sort(() => random() - 0.5);
+    const [a, b] = [await code(first!), await code(second!)];
+    if (!withBody(a) || !withBody(b)) continue;
+    const lines = declarationLines(b.text, b.startLine, b.endLine);
+    if (lines.start <= a.body.close && lines.end > a.body.open) continue;
+    await writeText(root, first!.location.file, mergeBodies(a.text, a.body, b.body, lines));
+    await declareMerge(root, first!, second!);
+    use(used, first!.uid, second!.uid);
+    expected.set(second!.uid, null);
+    return { uids: [first!.uid, second!.uid], created: [] };
+  }
+  return undefined;
+}
+
+/** Records a merge as the poetics-refactor skill says: lineage on the survivor, and the other unit removed. */
+async function declareMerge(root: string, first: Unit, second: Unit): Promise<void> {
+  const ctx = { paths: storePaths(root), actor: human };
+  await relocateUnit(ctx, first.uid, { file: first.location.file, name: first.name }, [{ kind: "merge", uids: [second.uid] }]);
+  await appendVersion(ctx, second.uid, {
+    contentHash: REMOVED_CONTENT_HASH,
+    provisional: true,
+    parent: second.versions.at(-1)!.contentHash,
+    change: "removed",
+    actor: human,
+    rationale: `Merged into ${first.uid}`,
+  });
 }
 
 interface Found {
@@ -429,7 +596,13 @@ async function findUnit(root: string, config: PoeticsConfig, file: string, name:
 async function declarationCounts(root: string, config: PoeticsConfig): Promise<Map<string, number>> {
   const counts = new Map<string, number>();
   const files = await Promise.all((await filesInScope(root, config)).parseable.map(async (path) => ({ path, text: await readFile(join(root, path), "utf8") })));
-  for (const units of readTextsWith(adaptersFor(root, config), files).values()) for (const unit of units) counts.set(unit.name, (counts.get(unit.name) ?? 0) + 1);
+  for (const [path, units] of readTextsWith(adaptersFor(root, config), files)) {
+    for (const unit of units) {
+      // A Swift unit is named with its container and labels; a rename changes only its base name.
+      const name = isSwift(path) ? swiftBaseName(unit.name) : unit.name;
+      counts.set(name, (counts.get(name) ?? 0) + 1);
+    }
+  }
   return counts;
 }
 
@@ -448,7 +621,7 @@ async function renameEverywhere(root: string, config: PoeticsConfig, from: strin
 async function declareNew(root: string, config: PoeticsConfig, file: string, name: string, lineage: Unit["lineage"]): Promise<string> {
   const hashes = (await unitHashes(root, config, file)).find((u) => u.name === name);
   if (!hashes) throw new Error(`No unit ${name} in ${file} after the refactor`);
-  const framework = (await findUnit(root, config, file, name))?.unit.framework ?? "none";
+  const framework = isSwift(file) ? ((await findSwift(root, config, file, name))?.framework ?? "none") : ((await findUnit(root, config, file, name))?.unit.framework ?? "none");
   const uid = mintUid();
   await createUnit(
     { paths: storePaths(root), actor: human },
@@ -520,7 +693,11 @@ function use(used: Set<string>, ...uids: string[]) {
 }
 
 function sameFamily(a: string, b: string): boolean {
-  return a.endsWith(".tsx") === b.endsWith(".tsx") && !a.endsWith(".svelte") && !b.endsWith(".svelte");
+  return a.endsWith(".tsx") === b.endsWith(".tsx") && isSwift(a) === isSwift(b) && !a.endsWith(".svelte") && !b.endsWith(".svelte");
+}
+
+function isSwift(file: string): boolean {
+  return file.endsWith(".swift");
 }
 
 function insertAt(text: string, at: number, insert: string): string {

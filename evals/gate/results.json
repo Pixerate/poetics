@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-11",
+  "date": "2026-11-19",
   "rounds": 10,
   "seed": 26,
   "results": [
@@ -118,18 +118,18 @@
       },
       "spuriousCreated": 0,
       "timings": {
-        "seedMs": 767,
+        "seedMs": 757,
         "indexMs": [
-          472,
-          532,
-          412,
-          414,
-          412,
-          379,
-          388,
-          346,
-          415,
-          488
+          383,
+          453,
+          372,
+          344,
+          356,
+          344,
+          356,
+          314,
+          348,
+          479
         ]
       },
       "failures": []
@@ -245,25 +245,25 @@
       },
       "spuriousCreated": 4,
       "timings": {
-        "seedMs": 8036,
+        "seedMs": 8138,
         "indexMs": [
-          3833,
-          25547,
-          4212,
-          3783,
-          4183,
-          3562,
-          3865,
-          4165,
-          3930,
-          4605
+          1139,
+          24818,
+          1152,
+          1324,
+          1190,
+          1131,
+          1197,
+          1983,
+          1323,
+          2779
         ]
       },
       "failures": [
-        "round 2 rename-edit: 01M75BCS3EGRF0WS44T4RKFB2C removed, should be at docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate (1 statement(s), 7 fingerprint entries)",
-        "round 3 rename-edit: 01M75BCS3FWKNW2MNNQF4J7H5N removed, should be at docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate (1 statement(s), 13 fingerprint entries)",
-        "round 4 rename-edit: 01M75BCS3MZBYNKJ3KQX5AS0BB removed, should be at packages/cli/src/utils/utils.ts#isUrlGate (2 statement(s), 13 fingerprint entries)",
-        "round 8 rename-edit: 01M75BCS3NCEH7GQ89ZGQ6HD0Z removed, should be at packages/primitives/src/lib/message-scroller/message-scroller.svelte.ts#useMessageScrollerScrollableGate (1 statement(s), 8 fingerprint entries)"
+        "round 2 rename-edit: 01M7TZQZ48DC1EQ30FBEEMGQJF removed, should be at docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate (1 statement(s), 7 fingerprint entries)",
+        "round 3 rename-edit: 01M7TZQZ48H3T5CQA4TY0NSEGM removed, should be at docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate (1 statement(s), 13 fingerprint entries)",
+        "round 4 rename-edit: 01M7TZQZ4EQEW1YFMZYEYHACFF removed, should be at packages/cli/src/utils/utils.ts#isUrlGate (2 statement(s), 13 fingerprint entries)",
+        "round 8 rename-edit: 01M7TZQZ4FQ0ZQY9NVD2CWMAWY removed, should be at packages/primitives/src/lib/message-scroller/message-scroller.svelte.ts#useMessageScrollerScrollableGate (1 statement(s), 8 fingerprint entries)"
       ]
     },
     {
@@ -393,25 +393,266 @@
       },
       "spuriousCreated": 3,
       "timings": {
-        "seedMs": 663,
+        "seedMs": 717,
         "indexMs": [
-          446,
-          454,
-          406,
-          442,
-          522,
-          496,
-          465,
-          426,
-          457,
-          447
+          434,
+          389,
+          362,
+          389,
+          441,
+          393,
+          399,
+          375,
+          413,
+          413
         ]
       },
       "failures": [
-        "round 1 rename-edit: 01M75BKWB9T1Q174YYZD69A3WA removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)",
-        "round 2 rename-edit: 01M75BKWB8GT9TT6TGC7J2MN7K removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate (1 statement(s), 9 fingerprint entries)",
-        "round 7 rename-edit: 01M75BKWB880XE6K9PC7ZKH9Q0 removed, should be at packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate (1 statement(s), 7 fingerprint entries)"
+        "round 1 rename-edit: 01M7TZYPFB7B92X5NDQS23S7AD removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)",
+        "round 2 rename-edit: 01M7TZYPFBXYVNW39KBCJGRJTV removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate (1 statement(s), 9 fingerprint entries)",
+        "round 7 rename-edit: 01M7TZYPFB6A29E47H3ND6QEFA removed, should be at packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate (1 statement(s), 7 fingerprint entries)"
       ]
+    },
+    {
+      "corpus": {
+        "name": "icecubes",
+        "kind": "swift",
+        "repo": "Dimillian/IceCubesApp",
+        "commit": "98098b9c4b5928f89f338203193c2bf40ab7f38c",
+        "adapters": [
+          {
+            "name": "swift",
+            "command": [
+              "poetics-swift"
+            ],
+            "include": [
+              "**/*.swift"
+            ]
+          }
+        ],
+        "include": [
+          "IceCubesApp/**/*.swift",
+          "Packages/*/Sources/**/*.swift"
+        ],
+        "exclude": [
+          "**/Tests/**"
+        ]
+      },
+      "adapters": [
+        "swift"
+      ],
+      "files": {
+        "indexed": 367,
+        "notIndexed": 0
+      },
+      "units": 1749,
+      "unitKinds": {
+        "component": 168,
+        "function": 1148,
+        "type": 420,
+        "context": 13
+      },
+      "rounds": 10,
+      "byKind": {
+        "rename": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "move-file": {
+          "refactors": 10,
+          "kept": 42,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "move-unit": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "rename-edit": {
+          "refactors": 10,
+          "kept": 9,
+          "lost": 1,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "split": {
+          "refactors": 9,
+          "kept": 18,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 1
+        },
+        "merge": {
+          "refactors": 10,
+          "kept": 20,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        }
+      },
+      "byUnitKind": {
+        "type": {
+          "kept": 23,
+          "touched": 23
+        },
+        "component": {
+          "kept": 9,
+          "touched": 9
+        },
+        "function": {
+          "kept": 76,
+          "touched": 77
+        },
+        "context": {
+          "kept": 1,
+          "touched": 1
+        }
+      },
+      "spuriousCreated": 1,
+      "timings": {
+        "seedMs": 12742,
+        "indexMs": [
+          11634,
+          16966,
+          14767,
+          14404,
+          10994,
+          11160,
+          10934,
+          10848,
+          10922,
+          16413
+        ]
+      },
+      "failures": [
+        "round 8 rename-edit: 01M7TZZF330J2XR4JERR2YQV2R removed, should be at IceCubesApp/App/Main/IceCubesApp+Scene.swift#Scene.windowResizeGate() (1 statement(s), 11 fingerprint entries)"
+      ]
+    },
+    {
+      "corpus": {
+        "name": "alamofire",
+        "kind": "swift",
+        "repo": "Alamofire/Alamofire",
+        "commit": "dea4bab91767a971d6e112bc955c6a82295589b7",
+        "adapters": [
+          {
+            "name": "swift",
+            "command": [
+              "poetics-swift"
+            ],
+            "include": [
+              "**/*.swift"
+            ]
+          }
+        ],
+        "include": [
+          "Source/**/*.swift"
+        ],
+        "exclude": []
+      },
+      "adapters": [
+        "swift"
+      ],
+      "files": {
+        "indexed": 44,
+        "notIndexed": 0
+      },
+      "units": 1072,
+      "unitKinds": {
+        "type": 204,
+        "function": 868
+      },
+      "rounds": 10,
+      "byKind": {
+        "rename": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "move-file": {
+          "refactors": 10,
+          "kept": 376,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "move-unit": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "rename-edit": {
+          "refactors": 10,
+          "kept": 10,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        },
+        "split": {
+          "refactors": 8,
+          "kept": 16,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 2
+        },
+        "merge": {
+          "refactors": 10,
+          "kept": 20,
+          "lost": 0,
+          "misplaced": 0,
+          "queued": 0,
+          "skipped": 0
+        }
+      },
+      "byUnitKind": {
+        "function": {
+          "kept": 362,
+          "touched": 362
+        },
+        "type": {
+          "kept": 80,
+          "touched": 80
+        }
+      },
+      "spuriousCreated": 2,
+      "timings": {
+        "seedMs": 4759,
+        "indexMs": [
+          2566,
+          2804,
+          2436,
+          2383,
+          2595,
+          2787,
+          2426,
+          2425,
+          2438,
+          2294
+        ]
+      },
+      "failures": []
     }
   ]
 }

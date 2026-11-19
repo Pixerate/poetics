@@ -1,0 +1,40 @@
+{
+  "uid": "01M7TZQEATGETN4E0JS1K4JZAB",
+  "kind": "function",
+  "framework": "none",
+  "name": "mergeBodies",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:49c654154e42bda443b2188cac74e7f47e79ef0477f9f64475a556a8ae55bb54",
+      "interfaceHash": "b3:5fd26dda617d5d26932b9b60f95805815729d199afeeaf697658d5286bbf0a52",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The merge refactor for Swift: moves one function's statements to the end of another's body and deletes the first, applying the later edit first so offsets hold.",
+      "deps": {
+        "01M7TZQEATFPK0TMTNX46N5BJA": "b3:f1366ad904f3f4f5c5a6e4d97f29e59cea3f73884835189d6ac161d9d57dfe97"
+      }
+    }
+  ],
+  "docs": "Moves `second`'s statements to the end of `first`'s body and deletes `second`, as the `merge` refactor does.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

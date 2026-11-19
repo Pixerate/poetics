@@ -6,8 +6,10 @@ gate asks that a unit's uid survive renames, moves, splits and merges on real
 code: a React app, a Svelte app and a repository mixing both around shared
 utilities. Phase 2's gate asks the same of a React app with the React adapter
 on, so components and hooks are recorded as such, and phase 3's asks it of
-`.svelte` components with the Svelte adapter on. [`results.md`](results.md)
-has the latest measurements.
+`.svelte` components with the Svelte adapter on. [ADR 0026](../../docs/decisions/0026-swift-units.md)
+asks it of an open-source Swift app and package, read by the out-of-process
+`poetics-swift` adapter, before that adapter is recommended for real use.
+[`results.md`](results.md) has the latest measurements.
 
 ## Corpus
 
@@ -19,6 +21,12 @@ its source files:
 | [shadcn-ui/taxonomy](https://github.com/shadcn-ui/taxonomy) | React | A Next.js app: components, routes, hooks and utilities |
 | [huntabyte/shadcn-svelte](https://github.com/huntabyte/shadcn-svelte) | Svelte | Svelte 5 components with their TypeScript, plus a CLI |
 | [TanStack/query](https://github.com/TanStack/query) | Mixed | `query-core`, shared by `react-query` and `svelte-query` |
+| [Dimillian/IceCubesApp](https://github.com/Dimillian/IceCubesApp) | Swift | A SwiftUI app with local SwiftPM packages, `#if` platform code and many extensions |
+| [Alamofire/Alamofire](https://github.com/Alamofire/Alamofire) | Swift | A package: classes, protocols with default implementations, and extensions across files |
+
+The Swift corpora run the adapter as the command `poetics-swift`, so its
+binary must be on `PATH` (build it from the poetics-swift repository with
+`swift build -c release` and add `.build/release`).
 
 `pnpm gate --fetch` downloads each one at its pinned commit, shallow and
 source only, into `.cache/` (gitignored). Nothing from them is installed or
@@ -64,11 +72,50 @@ like any function, but never a component, whose name is its file's;
 Like `move-file`, `rename-file` does not rewrite imports: identity matching
 reads each file on its own.
 
+Swift is edited as text, since its adapter reports a unit's lines rather than
+a syntax tree: bodies and statements are found by braces outside strings and
+comments. A Swift unit's name carries its container and argument labels
+(`Canvas.draw(_:in:)`), so `rename` changes only the base name, and only when
+that name is declared once anywhere, stored properties and enum cases
+included. Renaming a type renames its members' names with it, and `move-unit`
+moves top-level declarations only, taking a type's members in that file
+along. Types are refactored like functions, since in Swift they are most of
+what is declared at the top level. Declarations inside `#if` are only renamed
+or moved with their file. `wrap` and `rename-file` do not apply.
+
 Each corpus lists its adapters in [`corpus.json`](corpus.json): taxonomy runs
 with `typescript, react`, shadcn-svelte with `typescript, svelte`, and TanStack
 Query with all three. `--adapters typescript` reruns phase 1's
 configuration. The report counts the seeded units by kind and the uids kept by
 the kind of unit each refactor picked.
+
+## Swift findings (2026-11-19)
+
+- **Alamofire kept 442 of 442 uids and IceCubesApp 109 of 110**, over 10
+  rounds each, across types, SwiftUI views (9 of 9), environment values and
+  members owned across extensions. Nothing was misplaced or queued. The one
+  miss is a `rename-edit` of a one-statement function, as on TypeScript.
+- The adapter tracks 1,749 units in IceCubesApp's 367 files (168 SwiftUI
+  components, 13 environment values and keys, 420 types, 1,148 functions)
+  and 1,072 in Alamofire's 44.
+- **Fingerprints were too coarse at first.** poetics-swift hashed one entry
+  per statement, so almost every Swift function had fewer than the 8 entries
+  similarity matching needs, and 5 of 5 `rename-edit`s on Alamofire lost
+  their uid. It now shingles subtrees the way the TypeScript adapter does.
+- **Identical units could not move.** Content leaves out a unit's own name,
+  so Alamofire's empty default implementations in `EventMonitor` all hash
+  alike, and moving their file queued every one. Identity matching now pairs
+  units that share content by a name each side has once (`@poetics/core`).
+- **The gate's own rename was too broad at first:** a unit name declared once
+  among units can still be a stored property or an enum case elsewhere. A
+  rename now needs the name declared once anywhere.
+- Alamofire created 2 units no refactor made although no uid was missed;
+  they are not explained yet.
+- **Cost:** a round's `poetics index` takes 11.6 s on IceCubesApp and 2.4 s on
+  Alamofire (median), against under 1.4 s on every TypeScript corpus. The
+  command adapter rereads the whole batch every run, since edges need it;
+  caching unchanged files is the work to do before this is comfortable on a
+  large app.
 
 ## Phase 3 findings (2026-11-11)
 

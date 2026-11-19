@@ -1,0 +1,40 @@
+{
+  "uid": "01M7TZQEATM5RK8BZF393XY5F5",
+  "kind": "function",
+  "framework": "none",
+  "name": "swiftDeclarations",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:f586641a169ac05f1123040a7eefa94bf0f8d1a810b9a97a90bdb90cb8513887",
+      "interfaceHash": "b3:9cf9d16e6697f4b4931ac5559fcb28ed326e024aaf06a55738576ba4d97f0dfe",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Counts every declaration of each name, stored properties, enum cases and private ones included. On Alamofire a rename of CachedResponseHandler.cache also renamed ResponseCacher.cache and an enum case, which no editor rename would do; renames now need the name declared once.",
+      "deps": {
+        "01M7TZQEATKFCGQSEN881598WJ": "b3:687898df7eef6ca21654ea603eced7dd09884be94c2c22075439267f1daa27fb"
+      }
+    }
+  ],
+  "docs": "How many times each name is declared in `texts`, units or not: stored properties, enum cases and private\ndeclarations too. A rename by text is only an editor's rename when the name is declared once.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

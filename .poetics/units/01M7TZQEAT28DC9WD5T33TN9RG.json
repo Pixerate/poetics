@@ -1,0 +1,40 @@
+{
+  "uid": "01M7TZQEAT28DC9WD5T33TN9RG",
+  "kind": "function",
+  "framework": "none",
+  "name": "declarationLines",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:9ecef2baf6c069db7396db28c374e5e86d358b3141cbb5a93876f0e2b84003fe",
+      "interfaceHash": "b3:fcfa99faff340e7945ae60e5dadde7cb62ffd07ddd8c2e3cc84b02c32e492300",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The whole lines of a Swift declaration with its doc comment and attributes above, so move-unit and merge take the comment along instead of leaving it to attach to the next declaration.",
+      "deps": {
+        "01M7TZQEATB85PWYR31A15D0Q6": "b3:76d4e9a21d107bdd32cac467540ebcb920fa14305a1a99cc6236b01934746f33"
+      }
+    }
+  ],
+  "docs": "The whole lines `startLine`–`endLine`, with the doc comment lines directly above them.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

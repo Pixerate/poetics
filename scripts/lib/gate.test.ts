@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -185,5 +186,73 @@ describe("formatResults", () => {
     expect(text).toContain("| rename | ");
     expect(text).toMatch(/Uids kept: \*\*\d+ of \d+\*\*/);
     expect(text).toContain("- round 1 rename: X removed");
+  }, GATE_TIMEOUT_MS);
+});
+
+// The Swift adapter is its own repository (poetics-swift); this runs where its binary is on PATH.
+const hasSwiftAdapter = (() => {
+  try {
+    execFileSync("poetics-swift", ["--version"], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+})();
+
+/** A Swift corpus: types with block-bodied methods, and top-level functions, several per file. */
+async function swiftCorpus(): Promise<string> {
+  const root = await mkdtemp(join(tmpdir(), "poetics-gate-swift-"));
+  // Distinct statement shapes, so no two functions look alike and nothing is queued.
+  const shapes = [
+    (v: string) => `let ${v} = [input, input + 1].map { $0 * 2 }`,
+    (v: string) => `if input > 10 { print("${v}", input) }`,
+    (v: string) => `var ${v} = 0\n        for i in 0..<input { ${v} += i }`,
+    (v: string) => `let ${v} = (total: input, label: String(input))`,
+    (v: string) => `guard input != 7 else { return -1 }`,
+    (v: string) => `let ${v}: [String: Int] = ["a": input]`,
+    (v: string) => `while input % 3 != 0 { print("${v}") ; break }`,
+    (v: string) => `let ${v} = input > 0 ? max(input, 4) : min(input, -4)`,
+    (v: string) => `switch input { case 1: print("${v}") ; default: break }`,
+    (v: string) => `let ${v} = "\\(input)-\\(input * 7)".split(separator: "-")`,
+    (v: string) => `for key in [input].indices { print(key, "${v}") }`,
+    (v: string) => `let ${v} = (0..<input).map { $0 * $0 }.reduce(0, +)`,
+  ];
+  let made = 0;
+  const statements = (name: string, _n: number) => {
+    const start = made++;
+    return Array.from({ length: 6 }, (_, i) => shapes[(start * 5 + i * 7) % shapes.length]!(`${name.slice(-5).toLowerCase()}${i}`)).join("\n        ");
+  };
+  const method = (name: string, n: number) => `    func ${name}(_ input: Int) -> Int {\n        ${statements(name, n)}\n        return input\n    }\n`;
+  const top = (name: string, n: number) => `func ${name}(_ input: Int) -> Int {\n    ${statements(name, n).replaceAll("\n        ", "\n    ")}\n    return input\n}\n`;
+  const files: Record<string, string> = {
+    "Sources/Alpha.swift": `struct AlphaModel {\n    var count: Int\n\n${method("computeAlpha", 1)}\n${method("computeBravo", 2)}\n${method("computeCharlie", 3)}}\n\n${top("standaloneDelta", 4)}`,
+    "Sources/Echo.swift": `final class EchoStore {\n    var items: [Int] = []\n\n${method("computeEcho", 5)}\n${method("computeFoxtrot", 6)}\n${method("computeGolf", 7)}}\n\n${top("standaloneHotel", 8)}`,
+    "Sources/India.swift": `enum IndiaMath {\n${method("computeIndia", 9)}\n${method("computeJuliet", 10)}}\n\n${top("standaloneKilo", 11)}`,
+  };
+  for (const [file, text] of Object.entries(files)) {
+    await mkdir(dirname(join(root, file)), { recursive: true });
+    await writeFile(join(root, file), text);
+  }
+  return root;
+}
+
+const SWIFT_ENTRY: CorpusEntry = {
+  name: "swift",
+  kind: "swift",
+  repo: "example/swift",
+  commit: "0".repeat(40),
+  include: ["Sources/**/*.swift"],
+  exclude: [],
+  adapters: [{ name: "swift", command: ["poetics-swift"], include: ["**/*.swift"] }],
+};
+
+describe.skipIf(!hasSwiftAdapter)("runGate with the Swift adapter (ADR 0026)", () => {
+  it("edits Swift as text and keeps every uid, types and members included", async () => {
+    const result = await runGate(SWIFT_ENTRY, await swiftCorpus(), { rounds: 2, seed: 26 });
+    expect(result.adapters).toEqual(["swift"]);
+    expect(result.unitKinds).toEqual({ function: 11, type: 3 });
+    for (const kind of ["rename", "move-file", "move-unit", "rename-edit", "split", "merge"] as const) expect(result.byKind[kind]!.refactors).toBeGreaterThan(0);
+    expect(result.failures).toEqual([]);
+    expect(result.spuriousCreated).toBe(0);
   }, GATE_TIMEOUT_MS);
 });
