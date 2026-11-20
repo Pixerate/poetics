@@ -1,0 +1,40 @@
+{
+  "uid": "01M7WX8DCF5ER61TV5R9N1XVZG",
+  "kind": "function",
+  "framework": "none",
+  "name": "swiftLabels",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:64af49c72193c826fd73b700197daa8ab234db1a91f7408ca3ffb99827e64dc1",
+      "interfaceHash": "b3:0dabae50fb00869cb7934c12b5317082d1915c759f932c08ca0bbd28725e4345",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Collects argument labels and parameter names. On Alamofire, renaming DispatchQueue.after(_:execute:) by text also rewrote the label in HTTPHeaders.index(after:), which no editor rename does, and the gate counted the result as a unit it could not explain. A name used as a label is no longer a rename candidate.",
+      "deps": {
+        "01M7TZQEATKFCGQSEN881598WJ": "b3:687898df7eef6ca21654ea603eced7dd09884be94c2c22075439267f1daa27fb"
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Every word used as an argument label or parameter name in `texts`, at a call or a declaration. A textual rename\nwould rewrite these too, which an editor's rename of a declaration never does.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

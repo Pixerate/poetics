@@ -56,6 +56,30 @@
           "url": "https://github.com/Pixerate/poetics/milestone/2"
         }
       ]
+    },
+    {
+      "contentHash": "b3:27e04a5b0718fd408384b9a062ceb40f34378e6e60be75ae2daf9a3ae9d0b8c0",
+      "interfaceHash": "b3:ce7a8c46a014faddde704a91926293200228dd8ca25d54ab2d279e3eb9d0758c",
+      "parent": "b3:ddf68ee10722e08f6f6b297afde60e6aa9a5075fdfd17c088c5065b378295ec8",
+      "change": "interface",
+      "rationale": "Adds spurious: each unit created that no refactor made, by round and place, with any unit removed that round that no refactor removed. The count alone left Alamofire's 2 unexplained; the list showed one was a label rewritten by a rename and the other an untracked member of a renamed type.",
+      "deps": {
+        "01M6J0611RWR0GXQFD30AW6JBG": "b3:d2bf36e56ac1a5d623a41eb3f82d98da54e076b7e7bc3374f1bacfd0a1b90d52",
+        "01M6J0611RJRBW8VKQT9E7MFTW": "b3:7bb9caf454c26b73be0b5e6487eae48357bd574e99076936c1d4c2f6beb6e3a1",
+        "01M6J0611RXDG1J0DGPDSS1GZS": "b3:5388ff7fe6160966911b3f8b82cf30651b97c391504fe7bb61b26eec7fce3569"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ]
     }
   ],
   "docs": "One corpus's gate outcome: per-refactor tallies, spurious units, timings and misses.",

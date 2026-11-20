@@ -117,19 +117,20 @@
         }
       },
       "spuriousCreated": 0,
+      "spurious": [],
       "timings": {
-        "seedMs": 727,
+        "seedMs": 695,
         "indexMs": [
-          390,
-          427,
-          362,
-          346,
-          355,
+          363,
+          449,
           328,
-          340,
-          340,
-          359,
-          485
+          348,
+          336,
+          367,
+          375,
+          316,
+          351,
+          474
         ]
       },
       "failures": []
@@ -244,26 +245,32 @@
         }
       },
       "spuriousCreated": 4,
+      "spurious": [
+        "round 2: docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate; removed that round by no refactor: 01M7WXBVRS3NRRKV12YDFJ2CKW (docs/src/lib/blocks.ts#Block), 01M7WXBVRS2NJMNG0TKS2WF4NC (docs/src/lib/blocks.ts#BlockName), 01M7WXBVRSN1YAFG5KCGBGGMA0 (docs/src/lib/colors.ts#Color), 01M7WXBVRSX7Q5SJJMQXXJCZXZ (docs/src/lib/colors.ts#ColorPalette), 01M7WXBVRSEJAM4RGEG7KV12WY (docs/src/lib/components/cards/payments-features.ts#PaymentsTableFeatures), 01M7WXBVRSPGD4VK7FRH30G8G7 (docs/src/lib/components/cards/payments.svelte#Payment), 01M7WXBVRSATMH5KAZ7GYCEM5J (docs/src/lib/components/colors/colors.ts#Color), 01M7WXBVRS01WB02KC4PAJ7W2S (docs/src/lib/components/colors/colors.ts#ColorFormat), 01M7WXBVRS4QDWBSZ09Z3KMNX6 (docs/src/lib/components/colors/colors.ts#ColorPalette), 01M7WXBVRS2T8278CQZ0DZ8X93 (docs/src/lib/components/docs-toc.svelte#TableOfContents), 01M7WXBVRSP0W7VW986Z8ZCBTH (docs/src/lib/components/docs-toc.svelte#TocItem), 01M7WXBVRS0ASB4PRCHEAZB1RW (docs/src/lib/components/file-tree/file-tree-node.svelte#FileNode), 01M7WXBVRSEX75BQ4VC4RA1FW8 (docs/src/lib/components/icon-placeholder/icon-loader.ts#IconLoader), 01M7WXBVRTBGV05D5NYP0AAH30 (docs/src/lib/docs.ts#ChangelogPage), 01M7WXBVRTHHRE0NK31NFK3N9V (docs/src/lib/features/design-system/components/design-system-provider-state.svelte.ts#Lockable), 01M7WXBVRT7DEY670NSAYDWP26 (docs/src/lib/features/typeset/fixtures/index.ts#FixtureName), 01M7WXBVRT9ZRKN3H3JQ7JTTR6 (docs/src/lib/features/typeset/preview-override.svelte.ts#TypesetPreviewOverride), 01M7WXBVRTXMEVSDZFD9K36HWQ (docs/src/lib/features/typeset/typeset.svelte.ts#LockableParam), 01M7WXBVRT9VH9DMWNS4PCBT48 (docs/src/lib/features/typeset/typeset.svelte.ts#TypesetParams), 01M7WXBVRT0ZVV0CSWGB52Y9M5 (docs/src/lib/font-definitions.ts#FontDefinition), 01M7WXBVRTNB6MFDM2CADTPK6J (docs/src/lib/font-definitions.ts#FontName), 01M7WXBVRTA3PX0HQQV7G12VYT (docs/src/lib/fonts.ts#Font), 01M7WXBVRT0T6SAARQRWQBDXJ5 (docs/src/lib/fonts.ts#FontHeadingOption), 01M7WXBVRTMFJXD07HYFRDKAPG (docs/src/lib/message-animations.ts#MessageAnimationId), 01M7WXBVRT7224CNAYS538579S (docs/src/lib/message-animations.ts#MessageAnimationPreset), 01M7WXBVRTTNM2R8RTRVAPC1NV (docs/src/lib/navigation.ts#NavItem), 01M7WXBVRTGYBYKA4C01R1H4ZV (docs/src/lib/navigation.ts#NavItemWithChildren), 01M7WXBVRTK4W8SQEMGBYXE3GJ (docs/src/lib/navigation.ts#SidebarNavItem), 01M7WXBVRTXAK6R9QX1J9F2M9H (docs/src/lib/package-manager.ts#PackageManager), 01M7WXBVRTPGBYZ42NJNNDPYV2 (docs/src/lib/package-manager.ts#PackageManagerCommand), 01M7WXBVRT8248R14ENGTJK3TQ (docs/src/lib/registry/base-colors.ts#BaseColor), 01M7WXBVRTF1TQFCCAQ96FHYGN (docs/src/lib/registry/blocks/dashboard-01/components/data-table-features.ts#DashboardTableFeatures), 01M7WXBVRTBFQWGE5F8AC83BMX (docs/src/lib/registry/blocks/dashboard-01/components/schemas.ts#Schema), 01M7WXBVRTRV1SREN5KQ6Q3SFP (docs/src/lib/registry/colors.ts#BaseColor), 01M7WXBVRTNAXCSPFR3CFZD95G (docs/src/lib/registry/colors.ts#ColorScale), 01M7WXBVRTKPR70WHJW112CHQF (docs/src/lib/registry/colors.ts#Colors), 01M7WXBVRTCSSBJN2BJQXWNCTR (docs/src/lib/registry/colors.ts#CompleteColorFormat), 01M7WXBVRT4MA3VVSBSDPDPG2C (docs/src/lib/registry/config.ts#BaseColorName), 01M7WXBVRTRPGG6KDYFN115Y0V (docs/src/lib/registry/config.ts#DesignSystemConfig), 01M7WXBVRTM2GTHMJ4AX39T47D (docs/src/lib/registry/config.ts#FontHeadingValue), 01M7WXBVRTQ3TRMC1BNN0GBJZ1 (docs/src/lib/registry/config.ts#FontValue), 01M7WXBVRT8EQQWHQK1NPD77A0 (docs/src/lib/registry/config.ts#MenuAccent), 01M7WXBVRTNT3BCKA7JN0BZ52J (docs/src/lib/registry/config.ts#MenuAccentValue), 01M7WXBVRT2RSW0SQHNZXYT7ZA (docs/src/lib/registry/config.ts#MenuColor), 01M7WXBVRT0QN3Y7YKG5VZK5TJ (docs/src/lib/registry/config.ts#MenuColorValue), 01M7WXBVRTFH87PX2CZ793HZZB (docs/src/lib/registry/config.ts#Preset), 01M7WXBVRTDNTAC1J33CC23SW7 (docs/src/lib/registry/config.ts#Radius), 01M7WXBVRT2FMBRBKRFB9RM6QH (docs/src/lib/registry/config.ts#RadiusValue), 01M7WXBVRT57PJK8CW00S73F8H (docs/src/lib/registry/config.ts#StyleName), 01M7WXBVRTR7M25WD6N79770KS (docs/src/lib/registry/config.ts#ThemeName), 01M7WXBVRVZP41EARQT7315GEZ (docs/src/lib/registry/examples/create/elevenlabs/bar-visualizer.svelte#AgentState), 01M7WXBVRX4S5QA145D3N38VB3 (docs/src/lib/registry/icons/__hugeicons__/index.ts#HugeIconsIconName), 01M7WXBVRX3YNWTB11M6C7FWHC (docs/src/lib/registry/icons/__lucide__/index.ts#LucideIconName), 01M7WXBVRXRRY814J08BJ4JTP5 (docs/src/lib/registry/icons/__phosphor__/index.ts#PhosphorIconName), 01M7WXBVRXYFCM2QS0B7X8HDYD (docs/src/lib/registry/icons/__remixicon__/index.ts#RemixIconIconName), 01M7WXBVRXEBQZHPMB7V2V4PT9 (docs/src/lib/registry/icons/__tabler__/index.ts#TablerIconName), 01M7WXBVRXK69882NMGPF4AS8Z (docs/src/lib/registry/lib/highlighter.ts#HighlightedLine), 01M7WXBVRXSV4YWY5TNTKNGRKM (docs/src/lib/registry/lib/highlighter.ts#HighlightedToken), 01M7WXBVRXY3A9J68DWTWBAEZX (docs/src/lib/registry/lib/highlighter.ts#Highlighter), 01M7WXBVRX5GZPX82W3768MZ7Z (docs/src/lib/registry/lib/utils.ts#WithElementRef), 01M7WXBVRX99JADKTVX2DTTFTJ (docs/src/lib/registry/lib/utils.ts#WithoutChild), 01M7WXBVRXWHH6ASXBA0Y4MPX2 (docs/src/lib/registry/lib/utils.ts#WithoutChildren), 01M7WXBVRXJ9JRTHP73X4SG2Q3 (docs/src/lib/registry/lib/utils.ts#WithoutChildrenOrChild), 01M7WXBVRXJDP4TSEMZMPR7KAN (docs/src/lib/registry/registry-base-colors.ts#BaseColor), 01M7WXBVRX62QXCMEHYNG69HJF (docs/src/lib/registry/registry-colors.ts#BaseColor), 01M7WXBVRX21CQQ9AKYVA5Z540 (docs/src/lib/registry/registry-utils.ts#DesignSystemConfig), 01M7WXBVRXGFR3Q607CT2K8QSN (docs/src/lib/registry/registry-utils.ts#FileTree), 01M7WXBVRXKEKTB2SKM6TBV0EX (docs/src/lib/registry/schema.ts#BlockName), 01M7WXBVRXBX8674X7GRBDQ759 (docs/src/lib/registry/styles/index.ts#Style), 01M7WXBVRXQFRW825CHSDPSVT3 (docs/src/lib/registry/themes.ts#BaseTheme), 01M7WXBVRXXXEYADQDCNDV951G (docs/src/lib/registry/themes.ts#Theme), 01M7WXBVRX38M6F8F67BBWCJDY (docs/src/lib/registry/ui/alert/alert.svelte#AlertVariant), 01M7WXBVRXXPKWR5S020EKYY84 (docs/src/lib/registry/ui/attachment/attachment-media.svelte#AttachmentMediaVariant), 01M7WXBVRXRDNHHBQ979GRGNQD (docs/src/lib/registry/ui/attachment/attachment.svelte#AttachmentOrientation), 01M7WXBVRXRY9W2XDWPJZXK0VV (docs/src/lib/registry/ui/attachment/attachment.svelte#AttachmentSize), 01M7WXBVRXHXE0TRMMSSPST6W0 (docs/src/lib/registry/ui/attachment/attachment.svelte#AttachmentState), 01M7WXBVRXWMFQ5Q2R4GCFY15R (docs/src/lib/registry/ui/badge/badge.svelte#BadgeVariant), 01M7WXBVRXKJC92V162DWT33JM (docs/src/lib/registry/ui/bubble/bubble-reactions.svelte#BubbleReactionsAlign), 01M7WXBVRX6WHA7H2S9S5NBR1X (docs/src/lib/registry/ui/bubble/bubble-reactions.svelte#BubbleReactionsSide), 01M7WXBVRX1PXMHDMZFZZWGZ5J (docs/src/lib/registry/ui/bubble/bubble.svelte#BubbleVariant), 01M7WXBVRXPETY2BF23BA3D23B (docs/src/lib/registry/ui/button-group/button-group.svelte#ButtonGroupOrientation), 01M7WXBVRXWCT19B57WA5Z8WKC (docs/src/lib/registry/ui/button/button.svelte#ButtonProps), 01M7WXBVRXGRNFF0FFNVJ1DBK7 (docs/src/lib/registry/ui/button/button.svelte#ButtonSize), 01M7WXBVRXQTDHJFCF942XCQQZ (docs/src/lib/registry/ui/button/button.svelte#ButtonVariant), 01M7WXBVRXGCAPM75FSPFRDY6G (docs/src/lib/registry/ui/carousel/context.ts#CarouselAPI), 01M7WXBVRXN63Y7E2RW7EGAQTA (docs/src/lib/registry/ui/carousel/context.ts#CarouselOptions), 01M7WXBVRXB4WBTTBPG4VSEE04 (docs/src/lib/registry/ui/carousel/context.ts#CarouselPlugins), 01M7WXBVRXJCMWA4MNGS9VRDVF (docs/src/lib/registry/ui/carousel/context.ts#CarouselProps), 01M7WXBVRXBZWBRNXP912KKFR4 (docs/src/lib/registry/ui/carousel/context.ts#EmblaContext), 01M7WXBVRX8H8RPZQ0D03PSM5R (docs/src/lib/registry/ui/chart/chart-utils.ts#ChartConfig), 01M7WXBVRXRMGYFTMNQJWENVN8 (docs/src/lib/registry/ui/chart/chart-utils.ts#ExtractSnippetParams), 01M7WXBVRXKWXS6A2P2X8S01RQ (docs/src/lib/registry/ui/chart/chart-utils.ts#TooltipPayload), 01M7WXBVRXX4P82Z95YMBD36YT (docs/src/lib/registry/ui/code-block/code-block-line.svelte#CodeBlockLineToken), 01M7WXBVRXP892KES7YP74JQ8T (docs/src/lib/registry/ui/code-block/code-block-line.svelte#CodeBlockLineVariant), 01M7WXBVRX35MGRA8VAPFEJ04C (docs/src/lib/registry/ui/code-block/code-block.svelte#CodeBlockSize), 01M7WXBVRXMPJERRD9DK488HBB (docs/src/lib/registry/ui/code-block/code-block.svelte#CodeBlockVariant), 01M7WXBVRXS9NQH70Q4MVRDPVJ (docs/src/lib/registry/ui/command/command.svelte#CommandRootApi), 01M7WXBVRY86WJE2BHKRR0GMDW (docs/src/lib/registry/ui/empty/empty-media.svelte#EmptyMediaVariant), 01M7WXBVRY636TMZQ1AJD0HQKZ (docs/src/lib/registry/ui/field/field.svelte#FieldOrientation), 01M7WXBVRYBFM6S2T0ZGMNAP2C (docs/src/lib/registry/ui/input-group/input-group-addon.svelte#InputGroupAddonAlign), 01M7WXBVRYAD0XPD3ARX66J8ZM (docs/src/lib/registry/ui/input-group/input-group-button.svelte#InputGroupButtonSize), 01M7WXBVRYXJEH21C2BFKAZ8C7 (docs/src/lib/registry/ui/item/item-media.svelte#ItemMediaVariant), 01M7WXBVRYCAPT6NERARJQ97MZ (docs/src/lib/registry/ui/item/item.svelte#ItemSize), 01M7WXBVRYQQ9TN759611NB7R6 (docs/src/lib/registry/ui/item/item.svelte#ItemVariant), 01M7WXBVRYFHGXMVM9S2R5GE8Y (docs/src/lib/registry/ui/marker/marker.svelte#MarkerVariant), 01M7WXBVRY4J2GS8B0N35YT3AF (docs/src/lib/registry/ui/sheet/sheet-content.svelte#Side), 01M7WXBVRYYZ16HAMXAP1698GA (docs/src/lib/registry/ui/sidebar/context.svelte.ts#SidebarStateProps), 01M7WXBVRYFGBN7J5PVKJY068N (docs/src/lib/registry/ui/sidebar/sidebar-menu-button.svelte#SidebarMenuButtonSize), 01M7WXBVRYQZB8PYFWP7CR84YJ (docs/src/lib/registry/ui/sidebar/sidebar-menu-button.svelte#SidebarMenuButtonVariant), 01M7WXBVRY813THDFRSFDMXRK4 (docs/src/lib/registry/ui/tabs/tabs-list.svelte#TabsListVariant), 01M7WXBVRY4A3JYNRF4VJ3X2YV (docs/src/lib/registry/ui/toggle/toggle.svelte#ToggleSize), 01M7WXBVRYWQSXC4GJRCQMHWDK (docs/src/lib/registry/ui/toggle/toggle.svelte#ToggleVariant), 01M7WXBVRYBD5CGGB0RYNBGE21 (docs/src/lib/registry/ui/toggle/toggle.svelte#ToggleVariants), 01M7WXBVRYP7CP6FHXZF2W1H3B (docs/src/lib/registry/ui/trace/trace-line.svelte#TraceLineStatus), 01M7WXBVRY2WV3YHTQB92J6P77 (docs/src/lib/themes.ts#Theme), 01M7WXBVRYQHT3Q26SNBCERX3F (docs/src/lib/user-config.svelte.ts#ActiveTheme), 01M7WXBVRYADB6373J5DB39432 (docs/src/lib/user-config.svelte.ts#ColorFormat), 01M7WXBVRYH3VMVZ7H9FAT8ZTD (docs/src/lib/user-config.svelte.ts#InstallationType), 01M7WXBVRYES23N4Q3Q3CJCT8P (docs/src/lib/user-config.svelte.ts#Layout), 01M7WXBVRY99C1403HMVS85XAQ (docs/src/lib/user-config.svelte.ts#PackageManager), 01M7WXBVRYPRW6TKQREH15V0RK (docs/src/lib/user-config.svelte.ts#UserConfigType), 01M7WXBVRY4523G4V2WB0GM2DG (docs/src/lib/utils.ts#WithElementRef), 01M7WXBVRYK2H2RQFW57GRPNFC (docs/src/lib/utils.ts#WithoutChild), 01M7WXBVRYMSYQP6NKP4YAKN0D (docs/src/lib/utils.ts#WithoutChildren), 01M7WXBVRYYWFZCR19N47BSXX6 (docs/src/lib/utils.ts#WithoutChildrenOrChild), 01M7WXBVRY7B8WK9YF5NV2TGMZ (docs/src/lib/utils/search.ts#SearchContent), 01M7WXBVRYJCC9BQ0BQ5S7Z0S5 (docs/src/lib/utils/search.ts#SearchResult), 01M7WXBVRYVF2S46RPK3RA214X (docs/src/routes/(app)/(layout)/(create)/lib/randomize-biases.ts#BiasFilter), 01M7WXBVRYB9689SQ48JPJPMV6 (docs/src/routes/(app)/(layout)/(create)/lib/randomize-biases.ts#RandomizeBiases), 01M7WXBVRYVEEEC28BBAZE67VK (docs/src/routes/(app)/(layout)/(create)/lib/randomize-biases.ts#RandomizeContext), 01M7WXBVRYR2QNARYQR2RNF39E (docs/src/routes/(app)/(layout)/examples/dashboard/components/data-table-features.ts#DashboardTableFeatures), 01M7WXBVRYR8JZF277ZB1X97Z3 (docs/src/routes/(app)/(layout)/examples/dashboard/components/schemas.ts#Schema), 01M7WXBVRY6HSG79FVPCD3T1NP (docs/src/routes/(app)/(layout)/examples/playground/(data)/models.ts#Model), 01M7WXBVRYQEHZBXZ14TZHS48Y (docs/src/routes/(app)/(layout)/examples/playground/(data)/models.ts#ModelType), 01M7WXBVRY7DG3PRKQA7NVE8B3 (docs/src/routes/(app)/(layout)/examples/playground/(data)/presets.ts#Preset), 01M7WXBVRZ8C21TRT6V5VP8QZE (docs/src/routes/(app)/(layout)/examples/tasks/components/data-table-features.ts#TasksTableFeatures), 01M7WXBVRZ1VST4MVDS9APBE1J (docs/src/routes/(app)/(layout)/examples/tasks/data/schemas.ts#Task), 01M7WXBVRZ7BYKYC8RZP0G8CKM (packages/cli/src/commands/registry/deps-resolver.ts#ProjectDependencies), 01M7WXBVRZJ7YXSMYJ71DY0ETN (packages/cli/src/commands/registry/deps-resolver.ts#ResolvedDependencies), 01M7WXBVRZX5EECMM2CMRF4ZFG (packages/cli/src/icons/libraries.ts#IconLibrary), 01M7WXBVRZHT17ZSRZ4JJWB8RP (packages/cli/src/icons/libraries.ts#IconLibraryName), 01M7WXBVRZEWTS7QNAM7PC5JHA (packages/cli/src/preset/preset.ts#PresetConfig), 01M7WXBVRZVVMZFAXQX35A8P84 (packages/cli/src/utils/add-registry-items.ts#ApplyOnly), 01M7WXBVRZ9XSSCR14JXQ1EN1T (packages/cli/src/utils/config/schema.ts#BaseColorName), 01M7WXBVRZ796VJ4AYNN668VJ8 (packages/cli/src/utils/config/schema.ts#MenuAccent), 01M7WXBVRZ9REY6QM4R8KSVPX2 (packages/cli/src/utils/config/schema.ts#MenuColor), 01M7WXBVRZP1Y9FCXVTT5MAERE (packages/cli/src/utils/config/schema.ts#RawConfig), 01M7WXBVRZ6AT3BYJCP56P5SQS (packages/cli/src/utils/config/schema.ts#ResolvedConfig), 01M7WXBVRZ9GKQ7DDPQDE24B2Y (packages/cli/src/utils/config/schema.ts#StyleName), 01M7WXBVRZ7BP8EAFWP9QGJG2H (packages/cli/src/utils/config/schema.ts#ThemeName), 01M7WXBVRZHHREZ0RYZRYVHEVF (packages/cli/src/utils/font-markers.ts#FontMarkerSource), 01M7WXBVRZSWP9X52N40Y0F408 (packages/cli/src/utils/fonts.ts#Font), 01M7WXBVRZ5N6HS6YSPG5JJ04R (packages/cli/src/utils/registry/schema.ts#CssSchema), 01M7WXBVRZ5PSWRFEAG0T51B9M (packages/cli/src/utils/registry/schema.ts#CssVars), 01M7WXBVRZH7SNANRBMEWN1NCC (packages/cli/src/utils/registry/schema.ts#Registry), 01M7WXBVRZ722QAFD7G6YKDFR4 (packages/cli/src/utils/registry/schema.ts#RegistryFont), 01M7WXBVRZ0GMPC5S53ZPJWZ40 (packages/cli/src/utils/registry/schema.ts#RegistryIndex), 01M7WXBVRZ928NHCDGFY29YCRG (packages/cli/src/utils/registry/schema.ts#RegistryIndexItem), 01M7WXBVRZ9B3KYJ4QR9PW0TYA (packages/cli/src/utils/registry/schema.ts#RegistryItem), 01M7WXBVRZ7K52CZV3HNEME93P (packages/cli/src/utils/registry/schema.ts#RegistryItemFile), 01M7WXBVRZZYAVM1M2WKDQ5JMV (packages/cli/src/utils/registry/schema.ts#RegistryItemFileType), 01M7WXBVRZQN52WR6GZC2B5WM4 (packages/cli/src/utils/registry/schema.ts#RegistryItemType), 01M7WXBVRZ6EFYAN0ABSSR3KN3 (packages/cli/src/utils/transformers/index.ts#TransformOptions), 01M7WXBVRZZ5DM437FG4XME6TK (packages/cli/src/utils/transformers/index.ts#Transformer), 01M7WXBVRZJMBYM92B8ZXXMH36 (packages/cli/src/utils/transformers/index.ts#TransformerResult), 01M7WXBVRZE8FH2MYKKS6XQ3CY (packages/cli/src/utils/updaters/update-css-vars.ts#UpdateCssVarsOptions), 01M7WXBVRZCT32K82PVEFF91TG (packages/parity/src/compare.ts#ClassString), 01M7WXBVRZRCKRSVPKBY2XETD5 (packages/parity/src/compare.ts#Pair), 01M7WXBVRZ46340ZVJ08JF1EH7 (packages/parity/src/compare.ts#PairKind), 01M7WXBVRZSNTS65H4104NBB4W (packages/parity/src/compare.ts#ParityRunOptions), 01M7WXBVRZ8F3JFA80BXV0ZG6C (packages/parity/src/compare.ts#UpstreamIgnoreRule), 01M7WXBVRZ4Y5YB1NQEWG3P8YC (packages/primitives/src/lib/internal/attributes.ts#PrimitiveButtonAttributes), 01M7WXBVRZKCY44SQJC5T1YXMH (packages/primitives/src/lib/internal/attributes.ts#PrimitiveDivAttributes), 01M7WXBVRZ1N0JTGBZ6QHEVPCE (packages/primitives/src/lib/internal/attributes.ts#PrimitiveFieldsetAttributes), 01M7WXBVRZSA1XVV6MWQQP6GFP (packages/primitives/src/lib/internal/attributes.ts#PrimitiveFormAttributes), 01M7WXBVRZG3TP5W9WRE8XYGWE (packages/primitives/src/lib/internal/attributes.ts#PrimitiveInputAttributes), 01M7WXBVRZ2TBX25V8YHBZ90WC (packages/primitives/src/lib/internal/attributes.ts#PrimitiveLabelAttributes), 01M7WXBVRZ185XWHCQWVQMEH8H (packages/primitives/src/lib/internal/attributes.ts#PrimitiveLegendAttributes), 01M7WXBVRZGN6JRQBMZY8DPG46 (packages/primitives/src/lib/internal/attributes.ts#PrimitiveParagraphAttributes), 01M7WXBVRZYXMPZESTXGEQJV47 (packages/primitives/src/lib/internal/attributes.ts#PrimitiveSpanAttributes), 01M7WXBVRZWSNB9W44W3J3T109 (packages/primitives/src/lib/internal/types.ts#BitsEvent), 01M7WXBVRZCZ6A1B0EN25Y7FNQ (packages/primitives/src/lib/internal/types.ts#BitsKeyboardEvent), 01M7WXBVRZYMZTRVGM5TNH9VMZ (packages/primitives/src/lib/internal/types.ts#BitsMouseEvent), 01M7WXBVRZMP88VFMKTV8MF3D1 (packages/primitives/src/lib/internal/types.ts#ElementRef), 01M7WXBVRZXTPAH2JYCJ7CN09G (packages/primitives/src/lib/internal/types.ts#OnChangeFn), 01M7WXBVRZD0008TD0ZA0JVY8Z (packages/primitives/src/lib/internal/types.ts#RefAttachment), 01M7WXBVRZGSQ8MK3SAWQ21A20 (packages/primitives/src/lib/internal/types.ts#StyleProperties), 01M7WXBVRZ6ANN6WK65B238T14 (packages/primitives/src/lib/internal/types.ts#WithChild), 01M7WXBVRZWMCS593XHHK61KG3 (packages/primitives/src/lib/internal/types.ts#WithChildNoChildrenSnippetProps), 01M7WXBVRZZ6C9RZESEKRRTWCF (packages/primitives/src/lib/internal/types.ts#WithRefOpts), 01M7WXBVRZKQDG2PRPBCF6PR2E (packages/primitives/src/lib/internal/types.ts#Without), 01M7WXBVRZ48ZAH2T119J96ES2 (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-browser-host.svelte#ThreadProps), 01M7WXBVRZZ4E584KEVKMPVTMA (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-browser-thread.svelte#BrowserTestItem), 01M7WXBVS0RAG9QK8AJP9SBVAH (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#PendingScrollTreeProps), 01M7WXBVS081VTP53PYB7B66ZX (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#TestMessage), 01M7WXBVS0BKD7YJE87E87CWCG (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#TestRef), 01M7WXBVS0TT7FEW2EWWYTYCZE (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#TestScrollerApi), 01M7WXBVS05EVDZC8NMSN9X0D9 (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#TestScrollerOptions), 01M7WXBVS0DZSH87AY8S56GETB (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#TestScrollerRefs), 01M7WXBVS0A2R36NFE0VPVWNS9 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerButtonDirection), 01M7WXBVS06DK8BTASJDT0FGQ4 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerButtonProps), 01M7WXBVS07WPZ4HMYK48WHTX7 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerButtonRenderState), 01M7WXBVS0THMB99TG87TC5P3M (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerContentProps), 01M7WXBVS0HKM266ETAQ6H5ZNS (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerDefaultScrollPosition), 01M7WXBVS0P3VVCXBQYYVMQTMD (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerItemProps), 01M7WXBVS0XKYTE86NCNZ9555W (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerMode), 01M7WXBVS085M3ETN34MBTNZEP (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerProviderProps), 01M7WXBVS0E4R97MQWR62MAW7K (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerRef), 01M7WXBVS07FM75S43HFV17MZ4 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerRegisterMessage), 01M7WXBVS0VC498VGDB7YY8AV7 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerRootProps), 01M7WXBVS08H2HNKRYCNXHSYRB (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerScrollAlign), 01M7WXBVS04HGYKNKJACRHVX22 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerScrollOptions), 01M7WXBVS059VA99S09NFBTRAM (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerScrollable), 01M7WXBVS0SMXPZK88DKPFBYVX (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerViewportProps), 01M7WXBVS0CYKT5JQQJRYJ0JNC (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerVisibilityState), 01M7WXBVS02PPE5PTYTZTW8PE7 (packages/primitives/src/lib/questionnaire/collection.ts#QuestionnaireCollection), 01M7WXBVS0V1F5BNPZRBDQTNZF (packages/primitives/src/lib/questionnaire/types.ts#AnswerControlRegistration), 01M7WXBVS05QMNXY0Q7XNYDG2M (packages/primitives/src/lib/questionnaire/types.ts#ChoiceRegistration), 01M7WXBVS0111W16PRW41KWA7C (packages/primitives/src/lib/questionnaire/types.ts#ItemRegistration), 01M7WXBVS0KNBWW7K07R3H2MPK (packages/primitives/src/lib/questionnaire/types.ts#PendingFocus), 01M7WXBVS04GYDWD6MNXM0MT6J (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceDefinition), 01M7WXBVS0MYT8GVMAWEDNZBDV (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceInputProps), 01M7WXBVS0HE3CXXT6YHMDMMNW (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceInputPropsWithoutHTML), 01M7WXBVS0T52P6GCCYRWME3FZ (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceLabelProps), 01M7WXBVS024XCXW024A1PQ5RZ (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceLabelPropsWithoutHTML), 01M7WXBVS0DJ7N3AFQT8XKCJKV (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceProps), 01M7WXBVS0Z4W0GJJA4W2PY2G3 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoicePropsWithoutHTML), 01M7WXBVS0DEJBH6J04VCXVA2Q (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceShortcutProps), 01M7WXBVS0N81AXA72PSTDN344 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceShortcutPropsWithoutHTML), 01M7WXBVS0EKQ70N4VCMW3YHRC (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceShortcutState), 01M7WXBVS0T5G3BD2RYJ1VZ54J (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceState), 01M7WXBVS0YTBN2XSS6NZQ6203 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoicesProps), 01M7WXBVS0QYJ2T0MH5P0FK93N (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoicesPropsWithoutHTML), 01M7WXBVS0CHZSQ2KXBWED7JEG (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoicesState), 01M7WXBVS0FTJBG1KVQ5D9M5YT (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireDescriptionProps), 01M7WXBVS0A4CPE6YPKCS1X2R5 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireDescriptionPropsWithoutHTML), 01M7WXBVS0XDAPP68GTA4795PH (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireErrorProps), 01M7WXBVS05WV8G2R4HS11BPPX (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireErrorPropsWithoutHTML), 01M7WXBVS051QAJ6AGXZHDR59R (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireInputProps), 01M7WXBVS059GF112YGYQYMND7 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireInputPropsWithoutHTML), 01M7WXBVS0TRSF3MH0D8DE222B (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireInputState), 01M7WXBVS0G7CXD23YDKHTZMK5 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireInputType), 01M7WXBVS0X24HAX3HKAXEYDTY (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireItemDefinition), 01M7WXBVS08Y76TXSC88KMDXS2 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireItemProps), 01M7WXBVS0TV1FP9NHYHNVF46K (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireItemPropsWithoutHTML), 01M7WXBVS07Q768J43RCN1ZERG (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireItemState), 01M7WXBVS02KBSJA2VB1Y9SCCD (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireItemStatus), 01M7WXBVS09CJFJEAP3CH1ZHKM (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireNavigationState), 01M7WXBVS01ACCGJT3J8GAZSPR (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireNextProps), 01M7WXBVS0MY3Y9B9H0P5WGGVD (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireNextPropsWithoutHTML), 01M7WXBVS0WYQFTH1P2SWNJRDF (packages/primitives/src/lib/questionnaire/types.ts#QuestionnairePreviousProps), 01M7WXBVS00KSE67SHMJMMTAEX (packages/primitives/src/lib/questionnaire/types.ts#QuestionnairePreviousPropsWithoutHTML), 01M7WXBVS00DTVCC05KABNBTSE (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireProgressProps), 01M7WXBVS0AC91C6Q8ZTND1M7M (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireProgressPropsWithoutHTML), 01M7WXBVS00VKWSH5S86KY8H7B (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireProgressState), 01M7WXBVS001NA6ZHYS9NDQM6X (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireRootProps), 01M7WXBVS01YVEJ5CJAWR6G0R5 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireRootPropsWithoutHTML), 01M7WXBVS08KTBCGAECYH7CCSX (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireRootState), 01M7WXBVS0ZVDA8QFJ7DJFJPAZ (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireShortcutMode), 01M7WXBVS0FTP0KYKHBKN9E55Z (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireSkipProps), 01M7WXBVS0F6WEY1KQY71TVR0W (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireSkipPropsWithoutHTML), 01M7WXBVS0CGTHW5WK8XFHTYVP (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireSubmitProps), 01M7WXBVS01J301MKX85XFDPF2 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireSubmitPropsWithoutHTML), 01M7WXBVS07PHX47E8ZVWRXD8E (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireTitleProps), 01M7WXBVS0568YK6T8NBHP8X5K (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireTitlePropsWithoutHTML), 01M7WXBVS08063YR9S13NNSNM6 (packages/primitives/src/lib/svelte-virtual/virtualizer.svelte.ts#SvelteVirtualizer)",
+        "round 3: docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate",
+        "round 4: packages/cli/src/utils/utils.ts#isUrlGate",
+        "round 8: packages/primitives/src/lib/message-scroller/message-scroller.svelte.ts#useMessageScrollerScrollableGate"
+      ],
       "timings": {
-        "seedMs": 8069,
+        "seedMs": 7194,
         "indexMs": [
-          2992,
-          24138,
-          1106,
-          1251,
-          1342,
-          1021,
-          1059,
-          1890,
-          1019,
-          2251
+          1141,
+          22950,
+          1131,
+          1192,
+          1220,
+          1026,
+          975,
+          2108,
+          986,
+          2137
         ]
       },
       "failures": [
-        "round 2 rename-edit: 01M7WAY9R0TQXG1WXEZRJHHVKT removed, should be at docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate (1 statement(s), 7 fingerprint entries)",
-        "round 3 rename-edit: 01M7WAY9R0FMVNSQZ5JP0CZCSP removed, should be at docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate (1 statement(s), 13 fingerprint entries)",
-        "round 4 rename-edit: 01M7WAY9R6R7M9B20T4YKJKRGA removed, should be at packages/cli/src/utils/utils.ts#isUrlGate (2 statement(s), 13 fingerprint entries)",
-        "round 8 rename-edit: 01M7WAY9R6DGP6V84A55EVJF8K removed, should be at packages/primitives/src/lib/message-scroller/message-scroller.svelte.ts#useMessageScrollerScrollableGate (1 statement(s), 8 fingerprint entries)"
+        "round 2 rename-edit: 01M7WXBVRTE6X3F8XTKB5SX4RA removed, should be at docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate (1 statement(s), 7 fingerprint entries)",
+        "round 3 rename-edit: 01M7WXBVRTYKSQQGTM6Z765V5F removed, should be at docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate (1 statement(s), 13 fingerprint entries)",
+        "round 4 rename-edit: 01M7WXBVRZ6HRVTZADT1EMR95Y removed, should be at packages/cli/src/utils/utils.ts#isUrlGate (2 statement(s), 13 fingerprint entries)",
+        "round 8 rename-edit: 01M7WXBVS0W6DHYB1ME36B0MXG removed, should be at packages/primitives/src/lib/message-scroller/message-scroller.svelte.ts#useMessageScrollerScrollableGate (1 statement(s), 8 fingerprint entries)"
       ]
     },
     {
@@ -392,25 +399,30 @@
         }
       },
       "spuriousCreated": 3,
+      "spurious": [
+        "round 1: packages/query-core/src/utils.ts#sleepGate",
+        "round 2: packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate",
+        "round 7: packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate"
+      ],
       "timings": {
-        "seedMs": 597,
+        "seedMs": 608,
         "indexMs": [
-          450,
-          436,
-          408,
-          416,
-          480,
-          419,
+          461,
           414,
-          367,
-          423,
-          428
+          406,
+          386,
+          439,
+          398,
+          419,
+          348,
+          409,
+          395
         ]
       },
       "failures": [
-        "round 1 rename-edit: 01M7WB5R8WYFASJVH0KPG13WST removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)",
-        "round 2 rename-edit: 01M7WB5R8VJBHK20ACT0KA5H49 removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate (1 statement(s), 9 fingerprint entries)",
-        "round 7 rename-edit: 01M7WB5R8VK5KJNJAW630PXZJA removed, should be at packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate (1 statement(s), 7 fingerprint entries)"
+        "round 1 rename-edit: 01M7WXHWJVY04JH7QD77FZ4GCG removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)",
+        "round 2 rename-edit: 01M7WXHWJTMT68J7ZH59EDARCG removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate (1 statement(s), 9 fingerprint entries)",
+        "round 7 rename-edit: 01M7WXHWJTCDRDZAMHD6N65YB8 removed, should be at packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate (1 statement(s), 7 fingerprint entries)"
       ]
     },
     {
@@ -456,7 +468,7 @@
       "byKind": {
         "rename": {
           "refactors": 10,
-          "kept": 10,
+          "kept": 32,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
@@ -464,7 +476,7 @@
         },
         "move-file": {
           "refactors": 10,
-          "kept": 42,
+          "kept": 44,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
@@ -472,7 +484,7 @@
         },
         "move-unit": {
           "refactors": 10,
-          "kept": 10,
+          "kept": 21,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
@@ -487,12 +499,12 @@
           "skipped": 0
         },
         "split": {
-          "refactors": 9,
-          "kept": 18,
+          "refactors": 10,
+          "kept": 20,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
-          "skipped": 1
+          "skipped": 0
         },
         "merge": {
           "refactors": 10,
@@ -505,40 +517,39 @@
       },
       "byUnitKind": {
         "type": {
-          "kept": 23,
-          "touched": 23
-        },
-        "component": {
-          "kept": 9,
-          "touched": 9
+          "kept": 21,
+          "touched": 21
         },
         "function": {
-          "kept": 76,
-          "touched": 77
+          "kept": 104,
+          "touched": 105
         },
-        "context": {
-          "kept": 1,
-          "touched": 1
+        "component": {
+          "kept": 21,
+          "touched": 21
         }
       },
       "spuriousCreated": 1,
+      "spurious": [
+        "round 1: Packages/Models/Sources/Models/ServerFilter.swift#ServerFilter.hasExpiryGate()"
+      ],
       "timings": {
-        "seedMs": 3311,
+        "seedMs": 3156,
         "indexMs": [
-          2385,
-          2336,
-          2912,
-          2327,
-          2334,
-          2523,
-          2199,
-          2425,
-          2313,
-          2378
+          2132,
+          2293,
+          2220,
+          2156,
+          2121,
+          2254,
+          2239,
+          2424,
+          2337,
+          2232
         ]
       },
       "failures": [
-        "round 8 rename-edit: 01M7WB688SGK2J2YGSH7RW5522 removed, should be at IceCubesApp/App/Main/IceCubesApp+Scene.swift#Scene.windowResizeGate() (1 statement(s), 11 fingerprint entries)"
+        "round 1 rename-edit: 01M7WXJBMDQRQ95XR5RK2M2BTD removed, should be at Packages/Models/Sources/Models/ServerFilter.swift#ServerFilter.hasExpiryGate() (1 statement(s), 6 fingerprint entries)"
       ]
     },
     {
@@ -579,23 +590,23 @@
       "byKind": {
         "rename": {
           "refactors": 10,
-          "kept": 10,
-          "lost": 0,
+          "kept": 147,
+          "lost": 3,
           "misplaced": 0,
-          "queued": 0,
+          "queued": 5,
           "skipped": 0
         },
         "move-file": {
           "refactors": 10,
-          "kept": 376,
+          "kept": 246,
           "lost": 0,
           "misplaced": 0,
-          "queued": 0,
+          "queued": 3,
           "skipped": 0
         },
         "move-unit": {
           "refactors": 10,
-          "kept": 10,
+          "kept": 35,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
@@ -603,19 +614,19 @@
         },
         "rename-edit": {
           "refactors": 10,
-          "kept": 10,
-          "lost": 0,
+          "kept": 7,
+          "lost": 3,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
         },
         "split": {
-          "refactors": 8,
-          "kept": 16,
+          "refactors": 7,
+          "kept": 14,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
-          "skipped": 2
+          "skipped": 3
         },
         "merge": {
           "refactors": 10,
@@ -628,31 +639,54 @@
       },
       "byUnitKind": {
         "function": {
-          "kept": 362,
-          "touched": 362
+          "kept": 376,
+          "touched": 387
         },
         "type": {
-          "kept": 80,
-          "touched": 80
+          "kept": 93,
+          "touched": 96
         }
       },
-      "spuriousCreated": 2,
+      "spuriousCreated": 6,
+      "spurious": [
+        "round 3: Source/Core/HTTPHeaders.swift#HTTPHeader.websocketProtocolGate(_:)",
+        "round 5: Source/Core/ParameterEncoding.swift#JSONEncodingGate.`default`",
+        "round 5: Source/Core/ParameterEncoding.swift#JSONEncodingGate.prettyPrinted",
+        "round 6: Source/Core/HTTPHeaders.swift#HTTPHeader.acceptLanguageGate(_:)",
+        "round 7: Source/Core/HTTPHeaders.swift#HTTPHeaders.startIndexGate",
+        "round 9: Source/Core/HTTPHeaders.swift#HTTPHeaders.sortGate()"
+      ],
       "timings": {
-        "seedMs": 1681,
+        "seedMs": 1642,
         "indexMs": [
-          1256,
-          1615,
-          1244,
-          1137,
-          1423,
-          1639,
-          1313,
-          1247,
-          1271,
-          1165
+          1176,
+          1133,
+          2182,
+          1150,
+          1211,
+          1163,
+          1292,
+          1883,
+          1284,
+          1134
         ]
       },
-      "failures": []
+      "failures": [
+        "round 3 rename-edit: 01M7WXKNHNWDG8BBPJXV37QY2S removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeader.websocketProtocolGate(_:) (1 statement(s), 11 fingerprint entries)",
+        "round 5 rename: 01M7WXKNHNZ12T1HWRJY3G3T9N removed, should be at Source/Core/ParameterEncoding.swift#JSONEncodingGate.`default`",
+        "round 5 rename: 01M7WXKNHNSHCR00RZNBCAJSM7 removed, should be at Source/Core/ParameterEncoding.swift#JSONEncodingGate.prettyPrinted",
+        "round 6 rename-edit: 01M7WXKNHNA69G2FPCPMKCQFPW removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeader.acceptLanguageGate(_:) (1 statement(s), 11 fingerprint entries)",
+        "round 7 rename: 01M7WXKNHNN1K1QT192HV6Y4BG removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeaders.startIndexGate (0 statement(s), 6 fingerprint entries)",
+        "round 8 rename: 01M7WXKNHP7S9FGQZZVGM87FXB queued, should be at Source/Features/EventMonitor.swift#EventMonitorGate.requestDidCancel(_:)",
+        "round 8 rename: 01M7WXKNHP5WV2PDSNFGXXSA2S queued, should be at Source/Features/EventMonitor.swift#EventMonitorGate.requestDidFinish(_:)",
+        "round 8 rename: 01M7WXKNHPD9NSZ3QCDRTZQYKB queued, should be at Source/Features/EventMonitor.swift#EventMonitorGate.requestDidResume(_:)",
+        "round 8 rename: 01M7WXKNHPFZ2V2BXZ5FS2WEJW queued, should be at Source/Features/EventMonitor.swift#EventMonitorGate.requestDidSuspend(_:)",
+        "round 8 rename: 01M7WXKNHP70W64YBD98S79WS6 queued, should be at Source/Features/EventMonitor.swift#EventMonitorGate.requestIsRetrying(_:)",
+        "round 8 move-file: 01M7WXKNHP8N4WDFCGBYZGJMJY queued, should be at Source/Features/gate-moved/Combine.swift#DataResponsePublisher",
+        "round 8 move-file: 01M7WXKNHP1F1MQ29PYSBMYFX5 queued, should be at Source/Features/gate-moved/Combine.swift#DataStreamPublisher",
+        "round 8 move-file: 01M7WXKNHP66CMEQ4RGAS3CDH3 queued, should be at Source/Features/gate-moved/Combine.swift#DownloadResponsePublisher",
+        "round 9 rename-edit: 01M7WXKNHNSBDFKHSVGXQFQ6F0 removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeaders.sortGate() (1 statement(s), 15 fingerprint entries)"
+      ]
     }
   ]
 }
