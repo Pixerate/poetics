@@ -14,6 +14,7 @@ import {
   swiftBody,
   swiftContainer,
   swiftDeclarations,
+  swiftLabels,
 } from "./gate-swift.ts";
 
 const CANVAS = `struct Canvas {
@@ -121,5 +122,12 @@ describe("names", () => {
     expect(counts.get("clear")).toBe(1);
     expect(counts.get("strokes")).toBe(2);
     expect(counts.get("Canvas")).toBe(1);
+  });
+});
+
+describe("swiftLabels", () => {
+  it("collects argument labels and parameter names at calls and declarations, outside comments", () => {
+    const labels = swiftLabels(["func index(after i: Int) -> Int { headers.index(before: i) }\n// f(skipped: 1)\n", "let d = [1: 2]\nlet t = a ? b : c\n"]);
+    expect([...labels].sort()).toEqual(["after", "before"]);
   });
 });

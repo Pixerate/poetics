@@ -82,6 +82,7 @@ describe("runGate", () => {
     for (const kind of refactorsFor({})) expect(result.byKind[kind]!.refactors + result.byKind[kind]!.skipped).toBe(2);
     const missed = Object.values(result.byKind).reduce((n, k) => n + k.lost + k.misplaced + k.queued, 0);
     expect(result.failures).toEqual([]);
+    expect(result.spurious).toEqual([]);
     expect(missed).toBe(0);
     expect(result.byKind.split!.kept).toBe(2 * result.byKind.split!.refactors);
     expect(result.adapters).toEqual(["typescript"]);
@@ -177,6 +178,7 @@ describe("formatResults", () => {
   it("renders a table per corpus with totals and misses", async () => {
     const result = await runGate(ENTRY, await corpus(), { rounds: 1, seed: 1 });
     result.failures.push("round 1 rename: X removed, should be at src/a.ts#y");
+    result.spurious.push("round 1: src/a.ts#yGate");
     const text = formatResults([result], { date: "2026-11-04", rounds: 1, seed: 1 });
     expect(text).toMatch(/^# Gate results\n/);
     expect(text).toContain("adapters typescript:");
@@ -186,6 +188,7 @@ describe("formatResults", () => {
     expect(text).toContain("| rename | ");
     expect(text).toMatch(/Uids kept: \*\*\d+ of \d+\*\*/);
     expect(text).toContain("- round 1 rename: X removed");
+    expect(text).toContain("<summary>Units created that no refactor made</summary>\n\n- round 1: src/a.ts#yGate");
   }, GATE_TIMEOUT_MS);
 });
 
@@ -248,11 +251,13 @@ const SWIFT_ENTRY: CorpusEntry = {
 
 describe.skipIf(!hasSwiftAdapter)("runGate with the Swift adapter (ADR 0026)", () => {
   it("edits Swift as text and keeps every uid, types and members included", async () => {
-    const result = await runGate(SWIFT_ENTRY, await swiftCorpus(), { rounds: 2, seed: 26 });
+    // Seed 7 renames and moves types, so their members are checked too.
+    const result = await runGate(SWIFT_ENTRY, await swiftCorpus(), { rounds: 2, seed: 7 });
     expect(result.adapters).toEqual(["swift"]);
     expect(result.unitKinds).toEqual({ function: 11, type: 3 });
     for (const kind of ["rename", "move-file", "move-unit", "rename-edit", "split", "merge"] as const) expect(result.byKind[kind]!.refactors).toBeGreaterThan(0);
     expect(result.failures).toEqual([]);
     expect(result.spuriousCreated).toBe(0);
+    for (const kind of ["rename", "move-unit"] as const) expect(result.byKind[kind]!.kept).toBeGreaterThan(result.byKind[kind]!.refactors);
   }, GATE_TIMEOUT_MS);
 });

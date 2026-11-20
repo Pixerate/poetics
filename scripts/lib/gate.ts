@@ -14,7 +14,7 @@ import type { Unit } from "@poetics/core";
 import { adaptersFor, applyIndex, detectIn, planIndex, pluginsFor, readTextsWith, unitHashes } from "@poetics/cli";
 import { appendVersion, createUnit, filesInScope, parseUnit, readUnitFiles, relocateUnit, storePaths } from "@poetics/store";
 import type { AdapterEntry, PoeticsConfig } from "@poetics/store";
-import { braceDepthAt, declarationLines, ifDepthAt, insertStatement, mergeBodies, renameSwift, splitBody, swiftBaseName, swiftBody, swiftContainer, swiftDeclarations } from "./gate-swift.ts";
+import { braceDepthAt, declarationLines, ifDepthAt, insertStatement, mergeBodies, renameSwift, splitBody, swiftBaseName, swiftBody, swiftContainer, swiftDeclarations, swiftLabels } from "./gate-swift.ts";
 import type { SwiftBody } from "./gate-swift.ts";
 
 export interface CorpusEntry {
@@ -70,6 +70,8 @@ export interface GateResult {
   byUnitKind: Record<string, { kept: number; touched: number }>;
   /** Units poetics index created that no refactor made: lost identities show up here too. */
   spuriousCreated: number;
+  /** Each of those, by round and place, with any unit removed that round that no refactor removed. */
+  spurious: string[];
   timings: { seedMs: number; indexMs: number[] };
   failures: string[];
 }
@@ -148,6 +150,7 @@ export async function runGate(corpus: CorpusEntry, source: string, options: { ro
       byKind: Object.fromEntries(kinds.map((kind) => [kind, { refactors: 0, kept: 0, lost: 0, misplaced: 0, queued: 0, skipped: 0 }])),
       byUnitKind: {},
       spuriousCreated: 0,
+      spurious: [],
       timings: { seedMs, indexMs: [] },
       failures: [],
     };
@@ -179,9 +182,11 @@ export async function runGate(corpus: CorpusEntry, source: string, options: { ro
 
       const queued = new Set(plan.queued.flatMap((q) => q.uids));
       const store = new Map((await allUnits(root)).map((unit) => [unit.uid, unit]));
+      const unexpectedlyRemoved = plan.removed.filter((v) => !touched.has(v.uid)).map((v) => `${v.uid} (${store.get(v.uid)?.location.file}#${store.get(v.uid)?.name})`);
       for (const unit of plan.created) {
         if (madeByRefactor.has(unit.uid)) continue;
         result.spuriousCreated++;
+        result.spurious.push(`round ${round}: ${unit.location.file}#${unit.name}${unexpectedlyRemoved.length ? `; removed that round by no refactor: ${unexpectedlyRemoved.join(", ")}` : ""}`);
         // A lost uid's code under a new one: refactoring it again would count the same miss twice.
         use(used, unit.uid);
       }
@@ -434,20 +439,27 @@ async function swiftRefactor(
   const all = (await liveUnits(root)).filter((unit) => isSwift(unit.location.file) && !used.has(unit.uid));
   const functions = all.filter((unit) => unit.kind === "function");
   const swiftFiles = (await filesInScope(root, config)).parseable.filter(isSwift);
-  const declared = swiftDeclarations(await Promise.all(swiftFiles.map((file) => readFile(join(root, file), "utf8"))));
+  const texts = await Promise.all(swiftFiles.map((file) => readFile(join(root, file), "utf8")));
+  const declared = swiftDeclarations(texts);
+  const labels = swiftLabels(texts);
   const pick = <T>(items: T[]) => items[Math.floor(random() * items.length)];
   const code = (unit: Unit) => findSwift(root, config, unit.location.file, unit.name);
   const inPlace = (found: SwiftFound) => ifDepthAt(found.text, found.startLine) === 0;
   const describe = (found: SwiftFound) => `${found.body?.statements.length ?? 0} statement(s), ${found.fingerprint} fingerprint entries`;
   const withBody = (found: SwiftFound | undefined, min = 1): found is SwiftFound & { body: SwiftBody } =>
     found !== undefined && found.body !== undefined && found.body.statements.length >= min && inPlace(found);
-  // Members are named after their type and, in its own file, move with it.
-  const members = (name: string) => [...expected].filter((entry): entry is [string, Place] => entry[1] !== null && entry[1].name.startsWith(`${name}.`));
+  // Members are named after their type, in any file, and in its own file move with it. Renaming a type renames them
+  // all, so every one is checked, not only those an earlier refactor already tracks.
+  const members = async (name: string): Promise<[string, Place][]> =>
+    (await liveUnits(root)).flatMap((unit): [string, Place][] => {
+      const place = expected.has(unit.uid) ? expected.get(unit.uid) : { file: unit.location.file, name: unit.name };
+      return place && place.name.startsWith(`${name}.`) ? [[unit.uid, place]] : [];
+    });
 
   if (kind === "rename" || kind === "rename-edit") {
     const candidates = (kind === "rename" ? all : functions).filter((unit) => {
       const base = swiftBaseName(unit.name);
-      return /^[A-Za-z_]\w{3,}$/.test(base) && declared.get(base) === 1 && !declared.has(`${base}Gate`);
+      return /^[A-Za-z_]\w{3,}$/.test(base) && declared.get(base) === 1 && !labels.has(base) && !declared.has(`${base}Gate`);
     });
     for (let tries = 0; tries < 20 && candidates.length > 0; tries++) {
       const unit = pick(candidates)!;
@@ -459,11 +471,12 @@ async function swiftRefactor(
       await renameEverywhere(root, config, base, `${base}Gate`);
       use(used, unit.uid);
       expected.set(unit.uid, { file: unit.location.file, name: next });
-      for (const [uid, place] of members(unit.name)) {
+      const renamed = await members(unit.name);
+      for (const [uid, place] of renamed) {
         use(used, uid);
         expected.set(uid, { ...place, name: next + place.name.slice(unit.name.length) });
       }
-      return { uids: [unit.uid], created: [], sizes: new Map([[unit.uid, describe(found)]]) };
+      return { uids: [unit.uid, ...renamed.map(([uid]) => uid)], created: [], sizes: new Map([[unit.uid, describe(found)]]) };
     }
     return undefined;
   }
@@ -500,12 +513,15 @@ async function swiftRefactor(
       await writeText(root, target, `${into.trimEnd()}\n\n${found.text.slice(lines.start, lines.end).trimEnd()}\n`);
       use(used, unit.uid);
       expected.set(unit.uid, { file: target, name: unit.name });
-      for (const [uid, place] of members(unit.name)) {
-        if (place.file !== unit.location.file) continue;
+      // Members declared in the type move with it; those in an extension, even in the same file, stay.
+      const moved: string[] = [];
+      for (const [uid, place] of await members(unit.name)) {
+        if (place.file !== unit.location.file || !(await findSwift(root, config, target, place.name))) continue;
         use(used, uid);
         expected.set(uid, { ...place, file: target });
+        moved.push(uid);
       }
-      return { uids: [unit.uid], created: [] };
+      return { uids: [unit.uid, ...moved], created: [] };
     }
     return undefined;
   }
@@ -674,6 +690,7 @@ export function formatResults(results: readonly GateResult[], meta: { date: stri
       "",
     );
     if (result.failures.length > 0) lines.push("<details><summary>Misses</summary>", "", ...result.failures.map((f) => `- ${f}`), "", "</details>", "");
+    if (result.spurious.length > 0) lines.push("<details><summary>Units created that no refactor made</summary>", "", ...result.spurious.map((s) => `- ${s}`), "", "</details>", "");
   }
   return `${lines.join("\n").trimEnd()}\n`;
 }

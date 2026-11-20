@@ -89,6 +89,34 @@ Query with all three. `--adapters typescript` reruns phase 1's
 configuration. The report counts the seeded units by kind and the uids kept by
 the kind of unit each refactor picked.
 
+## Swift findings (2026-11-20)
+
+- **Alamofire's 2 unexplained units were the gate's own side effects.** The
+  report now lists each unit created that no refactor made, with any unit
+  removed that round that no refactor removed.
+  - Renaming `DispatchQueue.after(_:execute:)` by text also rewrote the
+    argument label of `HTTPHeaders.index(after:)`. A name used as an argument
+    label or parameter name anywhere is no longer a rename candidate.
+  - Renaming `Empty` renamed `Empty.emptyValue()` too, but the gate only
+    checked members an earlier refactor already tracked. A type rename now
+    checks every member of the type, and a type move checks those declared
+    in it (not those in an extension, even in the same file).
+- **Checking every member measures more, and finds real misses.** Alamofire
+  keeps **469 of 483** uids (was 442 of 442) and IceCubesApp 146 of 147. Every
+  unit created that no refactor made is now a miss's new uid. The misses:
+  - **Members that name their type** lose their uid when it is renamed:
+    `JSONEncoding.default` is `JSONEncoding { JSONEncoding() }`, so its name
+    and content change together and it is too small to match by similarity.
+  - **Identical members of a renamed type are queued:** `EventMonitor`'s 5
+    empty default implementations share content, and pairing by name fails
+    because every name changed with the type.
+  - **The textual rename still overreaches** on names a library also
+    declares: renaming `HTTPHeaders.startIndex` rewrote `headers.startIndex`
+    in its own body, which an editor would not. These misses are the gate's.
+  - 3 `rename-edit`s of one-statement functions, as on TypeScript.
+  - Moving `Combine.swift` queued its 3 publisher types, which are alike but
+    do not share content; this is not explained yet.
+
 ## Swift findings (2026-11-19)
 
 - **Alamofire kept 442 of 442 uids and IceCubesApp 109 of 110**, over 10
@@ -110,7 +138,7 @@ the kind of unit each refactor picked.
   among units can still be a stored property or an enum case elsewhere. A
   rename now needs the name declared once anywhere.
 - Alamofire created 2 units no refactor made although no uid was missed;
-  they are not explained yet.
+  see the findings of 2026-11-20 for what they were.
 - **Cost:** a round's `poetics index` first took 11.6 s on IceCubesApp and
   2.4 s on Alamofire (median). Profiling showed 10.8 s of IceCubesApp's in
   poetics-swift resolving names by scanning every unit of the batch for each

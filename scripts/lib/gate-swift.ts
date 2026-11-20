@@ -223,6 +223,18 @@ export function swiftDeclarations(texts: Iterable<string>): Map<string, number> 
   return counts;
 }
 
+const LABELS = /[(,]\s*([A-Za-z_]\w*)(?:\s+[A-Za-z_]\w*)?\s*:/g;
+
+/**
+ * Every word used as an argument label or parameter name in `texts`, at a call or a declaration. A textual rename
+ * would rewrite these too, which an editor's rename of a declaration never does.
+ */
+export function swiftLabels(texts: Iterable<string>): Set<string> {
+  const labels = new Set<string>();
+  for (const text of texts) for (const match of blankSwift(text).matchAll(LABELS)) labels.add(match[1]!);
+  return labels;
+}
+
 /** A Swift unit's name without its container or argument labels: `draw` for `Canvas.draw(_:in:)`. */
 export function swiftBaseName(name: string): string {
   const bare = name.split("(")[0]!;
