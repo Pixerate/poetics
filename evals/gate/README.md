@@ -111,11 +111,16 @@ the kind of unit each refactor picked.
   rename now needs the name declared once anywhere.
 - Alamofire created 2 units no refactor made although no uid was missed;
   they are not explained yet.
-- **Cost:** a round's `poetics index` takes 11.6 s on IceCubesApp and 2.4 s on
-  Alamofire (median), against under 1.4 s on every TypeScript corpus. The
-  command adapter rereads the whole batch every run, since edges need it;
-  caching unchanged files is the work to do before this is comfortable on a
-  large app.
+- **Cost:** a round's `poetics index` first took 11.6 s on IceCubesApp and
+  2.4 s on Alamofire (median). Profiling showed 10.8 s of IceCubesApp's in
+  poetics-swift resolving names by scanning every unit of the batch for each
+  use. With dictionary lookups (poetics-swift `f804097`, same output byte for
+  byte) a round takes **2.4 s on IceCubesApp and 1.3 s on Alamofire**, and
+  seeding 3.3 s and 1.7 s. That is in line with shadcn-svelte's 1.3 s for
+  2,912 units. Caching unchanged files in the core would not be safe: edges
+  are resolved across the whole batch (ADR 0025), so an unchanged file's
+  edges change when another file renames what it calls. An adapter that needs
+  more speed caches its own parsing.
 
 ## Phase 3 findings (2026-11-11)
 

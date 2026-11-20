@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "rounds": 10,
   "seed": 26,
   "results": [
@@ -118,18 +118,18 @@
       },
       "spuriousCreated": 0,
       "timings": {
-        "seedMs": 757,
+        "seedMs": 727,
         "indexMs": [
-          383,
-          453,
-          372,
-          344,
-          356,
-          344,
-          356,
-          314,
-          348,
-          479
+          390,
+          427,
+          362,
+          346,
+          355,
+          328,
+          340,
+          340,
+          359,
+          485
         ]
       },
       "failures": []
@@ -245,25 +245,25 @@
       },
       "spuriousCreated": 4,
       "timings": {
-        "seedMs": 8138,
+        "seedMs": 8069,
         "indexMs": [
-          1139,
-          24818,
-          1152,
-          1324,
-          1190,
-          1131,
-          1197,
-          1983,
-          1323,
-          2779
+          2992,
+          24138,
+          1106,
+          1251,
+          1342,
+          1021,
+          1059,
+          1890,
+          1019,
+          2251
         ]
       },
       "failures": [
-        "round 2 rename-edit: 01M7TZQZ48DC1EQ30FBEEMGQJF removed, should be at docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate (1 statement(s), 7 fingerprint entries)",
-        "round 3 rename-edit: 01M7TZQZ48H3T5CQA4TY0NSEGM removed, should be at docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate (1 statement(s), 13 fingerprint entries)",
-        "round 4 rename-edit: 01M7TZQZ4EQEW1YFMZYEYHACFF removed, should be at packages/cli/src/utils/utils.ts#isUrlGate (2 statement(s), 13 fingerprint entries)",
-        "round 8 rename-edit: 01M7TZQZ4FQ0ZQY9NVD2CWMAWY removed, should be at packages/primitives/src/lib/message-scroller/message-scroller.svelte.ts#useMessageScrollerScrollableGate (1 statement(s), 8 fingerprint entries)"
+        "round 2 rename-edit: 01M7WAY9R0TQXG1WXEZRJHHVKT removed, should be at docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate (1 statement(s), 7 fingerprint entries)",
+        "round 3 rename-edit: 01M7WAY9R0FMVNSQZ5JP0CZCSP removed, should be at docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate (1 statement(s), 13 fingerprint entries)",
+        "round 4 rename-edit: 01M7WAY9R6R7M9B20T4YKJKRGA removed, should be at packages/cli/src/utils/utils.ts#isUrlGate (2 statement(s), 13 fingerprint entries)",
+        "round 8 rename-edit: 01M7WAY9R6DGP6V84A55EVJF8K removed, should be at packages/primitives/src/lib/message-scroller/message-scroller.svelte.ts#useMessageScrollerScrollableGate (1 statement(s), 8 fingerprint entries)"
       ]
     },
     {
@@ -393,24 +393,24 @@
       },
       "spuriousCreated": 3,
       "timings": {
-        "seedMs": 717,
+        "seedMs": 597,
         "indexMs": [
-          434,
-          389,
-          362,
-          389,
-          441,
-          393,
-          399,
-          375,
-          413,
-          413
+          450,
+          436,
+          408,
+          416,
+          480,
+          419,
+          414,
+          367,
+          423,
+          428
         ]
       },
       "failures": [
-        "round 1 rename-edit: 01M7TZYPFB7B92X5NDQS23S7AD removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)",
-        "round 2 rename-edit: 01M7TZYPFBXYVNW39KBCJGRJTV removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate (1 statement(s), 9 fingerprint entries)",
-        "round 7 rename-edit: 01M7TZYPFB6A29E47H3ND6QEFA removed, should be at packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate (1 statement(s), 7 fingerprint entries)"
+        "round 1 rename-edit: 01M7WB5R8WYFASJVH0KPG13WST removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)",
+        "round 2 rename-edit: 01M7WB5R8VJBHK20ACT0KA5H49 removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate (1 statement(s), 9 fingerprint entries)",
+        "round 7 rename-edit: 01M7WB5R8VK5KJNJAW630PXZJA removed, should be at packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate (1 statement(s), 7 fingerprint entries)"
       ]
     },
     {
@@ -523,22 +523,22 @@
       },
       "spuriousCreated": 1,
       "timings": {
-        "seedMs": 12742,
+        "seedMs": 3311,
         "indexMs": [
-          11634,
-          16966,
-          14767,
-          14404,
-          10994,
-          11160,
-          10934,
-          10848,
-          10922,
-          16413
+          2385,
+          2336,
+          2912,
+          2327,
+          2334,
+          2523,
+          2199,
+          2425,
+          2313,
+          2378
         ]
       },
       "failures": [
-        "round 8 rename-edit: 01M7TZZF330J2XR4JERR2YQV2R removed, should be at IceCubesApp/App/Main/IceCubesApp+Scene.swift#Scene.windowResizeGate() (1 statement(s), 11 fingerprint entries)"
+        "round 8 rename-edit: 01M7WB688SGK2J2YGSH7RW5522 removed, should be at IceCubesApp/App/Main/IceCubesApp+Scene.swift#Scene.windowResizeGate() (1 statement(s), 11 fingerprint entries)"
       ]
     },
     {
@@ -638,18 +638,18 @@
       },
       "spuriousCreated": 2,
       "timings": {
-        "seedMs": 4759,
+        "seedMs": 1681,
         "indexMs": [
-          2566,
-          2804,
-          2436,
-          2383,
-          2595,
-          2787,
-          2426,
-          2425,
-          2438,
-          2294
+          1256,
+          1615,
+          1244,
+          1137,
+          1423,
+          1639,
+          1313,
+          1247,
+          1271,
+          1165
         ]
       },
       "failures": []
