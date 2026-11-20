@@ -1,5 +1,11 @@
 # @poetics/core
 
+## 0.9.1
+
+### Patch Changes
+
+- [#98](https://github.com/Pixerate/poetics/pull/98) [`fced8bb`](https://github.com/Pixerate/poetics/commit/fced8bba9c370f28f0a5fd9a9c5ea683b2ef5847) Thanks [@surrealroad](https://github.com/surrealroad)! - Identity matching pairs units that share content by name before queueing them, so moving a file of identical default implementations keeps every uid.
+
 ## 0.9.0
 
 ### Minor Changes

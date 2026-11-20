@@ -1,5 +1,12 @@
 # @poetics/adapter-svelte
 
+## 0.7.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @poetics/adapter-typescript@0.6.3
+
 ## 0.7.2
 
 ### Patch Changes
