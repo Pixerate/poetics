@@ -1,0 +1,40 @@
+{
+  "uid": "01M7TZQEAT2WTJYK05QXPBAGHK",
+  "kind": "function",
+  "framework": "none",
+  "name": "splitBody",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:d140c398e84532b14537b172a98db083f9f0e675e3e7762f2b15f7b411fbc5d9",
+      "interfaceHash": "b3:8f6e5b6b44673253af8ea66c64cf1824c6cb413f426d610c2406f1f080b7dcc2",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The split refactor for Swift: cuts a body at its middle statement and opens func <name>Rest() there, so the original closing brace closes the new function in the same scope.",
+      "deps": {
+        "01M7TZQEATFPK0TMTNX46N5BJA": "b3:f1366ad904f3f4f5c5a6e4d97f29e59cea3f73884835189d6ac161d9d57dfe97"
+      }
+    }
+  ],
+  "docs": "Cuts the body in two at its middle statement: the first half stays, and the rest becomes `func <rest>()` right\nafter it, in the same scope. Undefined when the body has fewer than `min` statements.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

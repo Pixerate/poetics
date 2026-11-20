@@ -1,0 +1,40 @@
+{
+  "uid": "01M7TZQEATJEMQ2JN306V127B8",
+  "kind": "function",
+  "framework": "none",
+  "name": "braceDepthAt",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:fa4cc1f933b9b827df53ad52861dcd3b78cba382c1ac9d6146721013bb0462e0",
+      "interfaceHash": "b3:406e83037aebe40c8d896ac454c49317ee22daaa69ba60fd8d0a07e1e9fbee88",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Tells whether a Swift declaration is at file scope, so move-unit only cuts out whole top-level declarations.",
+      "deps": {
+        "01M7TZQEATKFCGQSEN881598WJ": "b3:687898df7eef6ca21654ea603eced7dd09884be94c2c22075439267f1daa27fb"
+      }
+    }
+  ],
+  "docs": "Brace depth at `offset`, counting from the start of the text.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

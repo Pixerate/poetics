@@ -1,0 +1,40 @@
+{
+  "uid": "01M7TZQEATMXW6AJR3RDBJ46BP",
+  "kind": "function",
+  "framework": "none",
+  "name": "insertStatement",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:825a6123ee0906cc76577c0f4360c95cccd7b56e1b9c8da22f2bfa338c56a8f9",
+      "interfaceHash": "b3:89591d20d714985f6076aa9dc7c9968d1dbc5d413133f793ef537a1ef86134ce",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The rename-edit refactor for Swift: one statement (_ = 0) at the top of a function body, matching the TypeScript gate's void 0.",
+      "deps": {
+        "01M7TZQEATFPK0TMTNX46N5BJA": "b3:f1366ad904f3f4f5c5a6e4d97f29e59cea3f73884835189d6ac161d9d57dfe97"
+      }
+    }
+  ],
+  "docs": "Inserts a statement at the top of the body, as the `rename-edit` refactor does.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "uid": "01M7TZQEAT0EE6NDCPJWSRCNMY",
+  "kind": "function",
+  "framework": "none",
+  "name": "swiftBody",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:47347d819a495c0d8629bdd5ed7cef67d23581d96b86925118165143fdea8329",
+      "interfaceHash": "b3:affdee1cc6d7ed75acd406fc8b564de350dbd1a81cfc33f2210a5ef3ad3baf35",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Finds a Swift func or init body and its top-level statements in text, treating continuation lines (guard … else, chained calls) as part of the statement before, and refusing computed properties and types.",
+      "deps": {
+        "01M7TZQEATFPK0TMTNX46N5BJA": "b3:f1366ad904f3f4f5c5a6e4d97f29e59cea3f73884835189d6ac161d9d57dfe97",
+        "01M7TZQEATKFCGQSEN881598WJ": "b3:687898df7eef6ca21654ea603eced7dd09884be94c2c22075439267f1daa27fb",
+        "01M7TZQEATB85PWYR31A15D0Q6": "b3:76d4e9a21d107bdd32cac467540ebcb920fa14305a1a99cc6236b01934746f33"
+      }
+    }
+  ],
+  "docs": "The body of the `func` or `init` declared on lines `startLine`–`endLine`: the first `{` outside parentheses and\nbrackets after the keyword, and the statements directly in it. Undefined for anything else (a type, a computed\nproperty, a protocol requirement).",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

@@ -56,6 +56,31 @@
           "url": "https://github.com/Pixerate/poetics/milestone/2"
         }
       ]
+    },
+    {
+      "contentHash": "b3:fb87405e69717c885eeb7108f8b66366206f0a2eb511e46fd73aa1de6d134c09",
+      "interfaceHash": "b3:b38e2fd577aaf29140e833e6de603976bb8a899c0456e9f5010af9add87ec589",
+      "parent": "b3:d7e99dcef25c96c960f0a9180660e0de419f5c77762226d3050471816a063e78",
+      "change": "interface",
+      "rationale": "Takes adapter entries rather than names, so a Swift corpus's config carries its poetics-swift command into the throwaway workspace.",
+      "deps": {
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:70c14390e38dd905b37b4d2b7fa6f38fe76fa18e35f83a6744977d39865eee00",
+        "01M7MT8427XW2XTS0VT50WP50T": "b3:03c57651f4b1a8cb5564a07504fccf5629eddc4a28ff88599360c4c954f27f24",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:a50623c392fe2033d26911146b4a8e6a15556a3e824b0e0f1a7799513f92f113",
+        "01M6J0611RWR0GXQFD30AW6JBG": "b3:d2bf36e56ac1a5d623a41eb3f82d98da54e076b7e7bc3374f1bacfd0a1b90d52"
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "Copies the corpus's in-scope files into a throwaway git repository with a\nconfig for the same scope, so the gate never writes into the downloaded tree.",

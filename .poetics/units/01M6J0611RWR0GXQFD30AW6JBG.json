@@ -46,6 +46,28 @@
           "url": "https://github.com/Pixerate/poetics/milestone/2"
         }
       ]
+    },
+    {
+      "contentHash": "b3:d2bf36e56ac1a5d623a41eb3f82d98da54e076b7e7bc3374f1bacfd0a1b90d52",
+      "interfaceHash": "b3:4b9bad6037e24e3e914c5148f0597b2358b8a53b53bfcdf6be1124606d456ee8",
+      "parent": "b3:6829e3e4ad13789b6fe6de9a163fe69bc0ee1ebded7db716596df2d38acb1c81",
+      "change": "interface",
+      "rationale": "Corpus entries can name command adapters as well as built-in ones, and a corpus can be of kind swift, so the gate can run Alamofire and IceCubesApp through poetics-swift (ADR 0026).",
+      "deps": {
+        "01M7MT8427XW2XTS0VT50WP50T": "b3:03c57651f4b1a8cb5564a07504fccf5629eddc4a28ff88599360c4c954f27f24"
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "tests": [

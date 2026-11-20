@@ -194,7 +194,7 @@ export function matchIdentities(
     if (same && openAfter.has(same.key)) match(unit, same, "location");
   }
 
-  // 3. The same content: a rename or move with no other edit. Shared content is ambiguous.
+  // 3. The same content: a rename or move with no other edit. Shared content is ambiguous unless names tell it apart.
   const pending = () => ({
     left: before.filter((unit) => openBefore.has(unit.uid)),
     right: after.filter((unit) => openAfter.has(unit.key)),
@@ -210,7 +210,19 @@ export function matchIdentities(
     };
     for (const unit of left) group(unit).left.push(unit);
     for (const unit of right) group(unit).right.push(unit);
-    for (const { left: from, right: to } of groups.values()) {
+    for (const group of groups.values()) {
+      if (group.left.length === 0 || group.right.length === 0) continue;
+      // A file move keeps names, so units with the same content (empty default implementations, say) pair up by a
+      // name each side has once. Only what is left is ambiguous.
+      if (group.left.length > 1 || group.right.length > 1) {
+        const right = new Map(once(group.right).map((unit) => [unit.name, unit]));
+        for (const from of once(group.left)) {
+          const to = right.get(from.name);
+          if (to) match(from, to, "content");
+        }
+      }
+      const from = group.left.filter((unit) => openBefore.has(unit.uid));
+      const to = group.right.filter((unit) => openAfter.has(unit.key));
       if (from.length === 0 || to.length === 0) continue;
       if (from.length === 1 && to.length === 1) match(from[0]!, to[0]!, "content");
       else queue(result, `${from.length + to.length} units share the same content`, from, to, openBefore, openAfter);
@@ -286,6 +298,13 @@ function lineageBetween(from: CodeUnit, to: CodeUnit): LineageEntry[] {
   if (from.file !== to.file) entries.push({ kind: "move", from: from.file });
   if (from.name !== to.name) entries.push({ kind: "rename", from: from.name });
   return entries;
+}
+
+/** The units whose name no other unit in `units` has. */
+function once<T extends { name: string }>(units: readonly T[]): T[] {
+  const counts = new Map<string, number>();
+  for (const unit of units) counts.set(unit.name, (counts.get(unit.name) ?? 0) + 1);
+  return units.filter((unit) => counts.get(unit.name) === 1);
 }
 
 function queue(result: IdentityResult, reason: string, from: readonly TrackedUnit[], to: readonly CodeUnit[], openBefore: Set<Uid>, openAfter: Set<string>) {

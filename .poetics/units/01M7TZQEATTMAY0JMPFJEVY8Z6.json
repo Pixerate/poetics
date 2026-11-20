@@ -1,0 +1,37 @@
+{
+  "uid": "01M7TZQEATTMAY0JMPFJEVY8Z6",
+  "kind": "function",
+  "framework": "none",
+  "name": "lineOf",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:0a8c1e642234fdbad9288da47cc66b2736b2026ca452727b1c89a360a71f2ed3",
+      "interfaceHash": "b3:406e83037aebe40c8d896ac454c49317ee22daaa69ba60fd8d0a07e1e9fbee88",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The line an offset is on, to turn a Swift body offset back into the adapter's line numbers."
+    }
+  ],
+  "docs": "The 1-based line `offset` is on.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

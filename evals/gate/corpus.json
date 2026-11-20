@@ -1,5 +1,5 @@
 {
-  "$comment": "Gate corpus (#26, phase 2's React gate and phase 3's Svelte gate, #66): real repositories at pinned commits. Fetched by `pnpm gate --fetch` into the gitignored .cache/; never installed or run.",
+  "$comment": "Gate corpus (#26, phase 2's React gate and phase 3's Svelte gate, #66, and the Swift gate, ADR 0026): real repositories at pinned commits. Fetched by `pnpm gate --fetch` into the gitignored .cache/; never installed or run.",
   "repos": [
     {
       "name": "taxonomy",
@@ -27,6 +27,24 @@
       "adapters": ["typescript", "react", "svelte"],
       "include": ["packages/query-core/src/**/*.ts", "packages/react-query/src/**/*.{ts,tsx}", "packages/svelte-query/src/**/*.{ts,svelte}"],
       "exclude": ["**/__tests__/**", "**/*.test.*", "**/*.test-d.*", "**/*.d.ts"]
+    },
+    {
+      "name": "icecubes",
+      "kind": "swift",
+      "repo": "Dimillian/IceCubesApp",
+      "commit": "98098b9c4b5928f89f338203193c2bf40ab7f38c",
+      "adapters": [{"name": "swift", "command": ["poetics-swift"], "include": ["**/*.swift"]}],
+      "include": ["IceCubesApp/**/*.swift", "Packages/*/Sources/**/*.swift"],
+      "exclude": ["**/Tests/**"]
+    },
+    {
+      "name": "alamofire",
+      "kind": "swift",
+      "repo": "Alamofire/Alamofire",
+      "commit": "dea4bab91767a971d6e112bc955c6a82295589b7",
+      "adapters": [{"name": "swift", "command": ["poetics-swift"], "include": ["**/*.swift"]}],
+      "include": ["Source/**/*.swift"],
+      "exclude": []
     }
   ]
 }

@@ -1,0 +1,37 @@
+{
+  "uid": "01M7TZQEAVZBK7AR4YRPXPFEZY",
+  "kind": "function",
+  "framework": "none",
+  "name": "swiftBaseName",
+  "location": {
+    "file": "scripts/lib/gate-swift.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:f240da1a88d72dae5314a13212c365187a154ad67f07159b046cd390ca792242",
+      "interfaceHash": "b3:ac632d9854d0fd1d8da530063d63accf0751c4e359be73138226174fbf278eeb",
+      "parent": null,
+      "change": "created",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "The base name of a qualified Swift unit name, which is what a rename changes and what must be declared once."
+    }
+  ],
+  "docs": "A Swift unit's name without its container or argument labels: `draw` for `Canvas.draw(_:in:)`.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-swift.test.ts",
+      "via": "static"
+    }
+  ]
+}

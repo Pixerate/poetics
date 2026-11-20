@@ -45,6 +45,38 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:7dc2f6cf5931b0925c429e8f4aa72b384d3fdcb039b1ad36c4966f5ba95a7367",
+      "interfaceHash": "b3:3174d3b25323883b8b07645db61e02c99287931b90aed56d8c3510e94ca27990",
+      "parent": "b3:a8be2a1254b37843e5c66268ede92743b2389cd10ae516755fef228ec00911de",
+      "change": "behaviour",
+      "rationale": "Pairs units that share content by name before queueing them. The Swift identity gate moved Alamofire's EventMonitor.swift, whose protocol extension holds a dozen empty default implementations; content leaves out a unit's own name, so they all hash alike and every file move queued them, although each kept its name. Within a shared-content group, a name each side has once now pairs those two, and only what is left is matched one-to-one or queued.",
+      "deps": {
+        "01M6HS3HPGZVH440C5ZV7AYGMS": "b3:fee65a0014cedc3229df6817f1070051f134600d1d9804f246940a818bf956d0",
+        "01M6HS3HPGABNGAED2YXSTCHVS": "b3:4cb2abf7687b4109aeac5c627b8e01b4fbb1a35e69a39b29d3348236324e68d9",
+        "01M6HS3HPGVX3S4HZG7GNP1ETK": "b3:cf590d89c72207fb7238066cd987ddb50f5f075013f233e1e5227c9247268f83",
+        "01M6HS3HPGW693T6MZB6ZGQRPY": "b3:9cd4df3e6ee7292cfd2e53dfc32f56b827ec6eef6d8b9592b4b8c0b263bd7054",
+        "01M6HS3HPGNHPBVMA8MTD6GXJJ": "b3:9fb130bfaced1e35289f7c67acd067440a54759e4bb45f305b8225d0eeb437ef",
+        "01M6HS3HPGG0ZQGPYYK267SE4D": "b3:33d41a7f239f45e0a8e7d8ae0b775d81ea28f3c4d1250aea793dfcdc807cc603",
+        "01M6HS3HPGWQSVQ3NJ5VJ8WEVV": "b3:a758a3287b7cca85cd56fe02fba2800684980f7cc5add38bc15e193ea8a406e2",
+        "01M6HS3HPGSXQAH4Q34AQMPGVK": "b3:166336cf692fcd9a5ef0964fe8a644935aacb964e9af7ad5ff3b035ca63ac655",
+        "01M5XDBC777RN8YV0NBHRBXR3Y": "b3:c728ec79ae2af36596a032d15eca00fa56ff655bde1dfe678b1717b84a191eef",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M5XDBC6Z8PGANPEC147TCK3S": "b3:310b05240b0bddfa9d2b156478f247c373bc198d7422bdd196ed64e36ca04387"
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ],
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      }
     }
   ],
   "docs": "Matches an earlier snapshot's tracked units to the units in the code now.",
