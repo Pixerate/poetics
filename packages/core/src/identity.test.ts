@@ -100,6 +100,82 @@ describe("matchIdentities", () => {
     expect(twoLookAlikes.created).toEqual([]);
   });
 
+  describe("members following their owner (ADR 0027)", () => {
+    const type = (ref: string, body: string) => code(ref, body, SHAPE, "type");
+    const member = (ref: string, body: string, owner: string) => ({ ...code(ref, body, ["m"]), owner });
+    const trackedMember = (uid: string, ref: string, body: string, ownerUid: string) => ({ ...tracked(uid, code(ref, body, ["m"])), ownerUid });
+
+    it("keeps a member that names its renamed type, though its name and content both changed", () => {
+      const result = matchIdentities(
+        [tracked("T", type("a.swift#Encoding", "type")), trackedMember("M", "a.swift#Encoding.default", "Encoding()", "T")],
+        [type("a.swift#EncodingGate", "type"), member("a.swift#EncodingGate.default", "EncodingGate()", "a.swift#EncodingGate")],
+      );
+      expect(result.matched.map((m) => [m.uid, m.key, m.via])).toEqual([
+        ["T", "a.swift#EncodingGate", "content"],
+        ["M", "a.swift#EncodingGate.default", "owner"],
+      ]);
+      expect(result.matched[1]!.lineage).toEqual([{ kind: "rename", from: "Encoding.default" }]);
+      expect([result.created, result.removed, result.queued]).toEqual([[], [], []]);
+    });
+
+    it("pairs a renamed type's identical members by their names within it instead of queueing them", () => {
+      const result = matchIdentities(
+        [tracked("T", type("a.swift#Monitor", "type")), trackedMember("M1", "a.swift#Monitor.didStart()", "{}", "T"), trackedMember("M2", "a.swift#Monitor.didStop()", "{}", "T")],
+        [type("a.swift#MonitorGate", "type"), member("a.swift#MonitorGate.didStop()", "{}", "a.swift#MonitorGate"), member("a.swift#MonitorGate.didStart()", "{}", "a.swift#MonitorGate")],
+      );
+      expect(result.matched.map((m) => [m.uid, m.key, m.via]).sort()).toEqual([
+        ["M1", "a.swift#MonitorGate.didStart()", "owner"],
+        ["M2", "a.swift#MonitorGate.didStop()", "owner"],
+        ["T", "a.swift#MonitorGate", "content"],
+      ]);
+      expect(result.queued).toEqual([]);
+    });
+
+    it("brings a nested type's members along", () => {
+      // The outer type keeps its content; the nested type and its member change with the rename.
+      const result = matchIdentities(
+        [tracked("T", type("a.swift#Outer", "outer")), { ...tracked("N", code("a.swift#Outer.Inner", "inner", ["i"], "type")), ownerUid: "T" }, trackedMember("M", "a.swift#Outer.Inner.run()", "run(Outer.Inner)", "N")],
+        [type("b.swift#OuterGate", "outer"), { ...code("b.swift#OuterGate.Inner", "inner2", ["i"], "type"), owner: "b.swift#OuterGate" }, member("b.swift#OuterGate.Inner.run()", "run(OuterGate.Inner)", "b.swift#OuterGate.Inner")],
+      );
+      expect(result.matched.map((m) => [m.uid, m.via])).toEqual([
+        ["T", "content"],
+        ["N", "owner"],
+        ["M", "owner"],
+      ]);
+      expect(result.created).toEqual([]);
+    });
+
+    it("matches members whose names do not include their owner's, as a component's script functions", () => {
+      const component = (ref: string) => code(ref, "component", SHAPE, "component");
+      const result = matchIdentities(
+        [tracked("C", component("src/Card.svelte#Card")), trackedMember("H", "src/Card.svelte#handle", "a", "C")],
+        [component("src/Tile.svelte#Tile"), member("src/Tile.svelte#handle", "b", "src/Tile.svelte#Tile")],
+      );
+      expect(result.matched.map((m) => [m.uid, m.key, m.via])).toEqual([
+        ["C", "src/Tile.svelte#Tile", "content"],
+        ["H", "src/Tile.svelte#handle", "owner"],
+      ]);
+    });
+
+    it("does not pair a member renamed with its type, nor one under another owner", () => {
+      const result = matchIdentities(
+        [tracked("T", type("a.swift#Encoding", "type")), trackedMember("M", "a.swift#Encoding.default", "Encoding()", "T")],
+        [type("a.swift#EncodingGate", "type"), member("a.swift#EncodingGate.standard", "EncodingGate()", "a.swift#EncodingGate"), member("a.swift#Other.default", "EncodingGate()", "a.swift#Other")],
+      );
+      expect(result.matched.map((m) => m.uid)).toEqual(["T"]);
+      expect(result.removed).toEqual([{ uid: "M" }]);
+    });
+
+    it("still queues what is left ambiguous, with the count of what is left", () => {
+      const result = matchIdentities(
+        [tracked("T", type("a.swift#Monitor", "type")), trackedMember("M1", "a.swift#Monitor.didStart()", "{}", "T"), tracked("F", code("a.swift#f", "{}")), tracked("G", code("a.swift#g", "{}"))],
+        [type("a.swift#MonitorGate", "type"), member("a.swift#MonitorGate.didStart()", "{}", "a.swift#MonitorGate"), code("b.swift#f2", "{}"), code("b.swift#g2", "{}")],
+      );
+      expect(result.matched.find((m) => m.uid === "M1")?.via).toBe("owner");
+      expect(result.queued).toEqual([{ reason: "4 units share the same content", uids: ["F", "G"], keys: ["b.swift#f2", "b.swift#g2"] }]);
+    });
+  });
+
   it("never turns a function into a type", () => {
     const result = matchIdentities([tracked("U1", code("a.ts#P", "body"))], [code("b.ts#P", "body", ["body"], "type")]);
     expect(result.matched).toEqual([]);

@@ -89,6 +89,17 @@ Query with all three. `--adapters typescript` reruns phase 1's
 configuration. The report counts the seeded units by kind and the uids kept by
 the kind of unit each refactor picked.
 
+## Swift findings (2026-11-21)
+
+- **Members now follow their type** (ADR 0027): when a type is renamed or
+  moved, each member pairs with the member of the same name in the type's
+  match. Alamofire keeps **476 of 483** uids (was 469): `JSONEncoding.default`
+  and `.prettyPrinted` keep theirs, and `EventMonitor`'s 5 identical methods
+  are no longer queued. The other corpora are unchanged.
+- What is left on Alamofire: 3 one-statement `rename-edit`s, the gate's
+  rename of `startIndex` that also rewrote `headers.startIndex`, and the 3
+  publisher types queued when `Combine.swift` moves.
+
 ## Swift findings (2026-11-20)
 
 - **Alamofire's 2 unexplained units were the gate's own side effects.** The

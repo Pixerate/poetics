@@ -83,6 +83,32 @@ describe("planIndex and applyIndex", () => {
     expect(own.version.deps![bump.uid]).toBe(bump.version.contentHash);
   });
 
+  it("keeps a script function's uid when its component is renamed and the function edited too (ADR 0027)", async () => {
+    const root = await mkdtemp(join(tmpdir(), "poetics-index-svelte-"));
+    runGit(root, "init", "-q", "-b", "main");
+    const config = { adapters: ["typescript", "svelte"], include: ["src/**/*.{ts,svelte}"] };
+    await write(root, ".poetics/config.json", JSON.stringify({ version: 1, ...config }));
+    await write(root, ".gitignore", ".poetics/cache/\n");
+    const counter = `<script lang="ts">\n  let count = $state(0);\n  function bump(by: number) {\n    count += by;\n  }\n  function reset() {\n    count = 0;\n  }\n</script>\n\n<button onclick={() => bump(1)}>{count}</button>\n<button onclick={reset}>reset</button>\n`;
+    await write(root, "src/Counter.svelte", counter);
+    await applyIndex(root, await planIndex(root, config, { rationale: "Seed" }), human);
+    runGit(root, "add", "-A");
+    runGit(root, "commit", "-q", "-m", "Seed");
+    const seededUnits = await store(root);
+    runGit(root, "mv", "src/Counter.svelte", "src/Tally.svelte");
+    // Too small to match by similarity once edited: only its owner says which unit it is.
+    await write(root, "src/Tally.svelte", counter.replace("count += by;", "count += by * 2;"));
+    const plan = await planIndex(root, config, { rationale: "Rename the counter, and bump twice as fast" });
+    expect(plan.moves.map((m) => [m.uid, m.to.name, m.via]).sort()).toEqual(
+      [
+        [seededUnits.get("Counter")!.uid, "Tally", "similarity"],
+        [seededUnits.get("bump")!.uid, "bump", "owner"],
+        [seededUnits.get("reset")!.uid, "reset", "content"],
+      ].sort(),
+    );
+    expect([plan.created, plan.removed, plan.queued]).toEqual([[], [], []]);
+  });
+
   it("clears a script function's owner when it moves out of the component (#72)", async () => {
     const root = await mkdtemp(join(tmpdir(), "poetics-index-svelte-"));
     runGit(root, "init", "-q", "-b", "main");

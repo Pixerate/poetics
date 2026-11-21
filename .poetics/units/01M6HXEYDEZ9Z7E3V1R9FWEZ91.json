@@ -577,6 +577,57 @@
           "ref": "packages/cli/src/command-adapter.test.ts"
         }
       ]
+    },
+    {
+      "contentHash": "b3:d3563a358f8e2c2994b130f84675f59d90149e0d9d613a6fc1f2e9ce3a0e48dc",
+      "interfaceHash": "b3:a04df6aa2c2960b718e71b9ae318240cd7d023cd673a7777305e8402ba650d57",
+      "parent": "b3:d7f531b90284fd5ca6d56ae29feeda33fc6d48db87910b01128fae1cea956e72",
+      "change": "behaviour",
+      "rationale": "Passes each orphan its owner uid from the store, and each unit in the code its owner key from the adapter, so matching can let members follow a renamed or moved owner (ADR 0027). Renaming a Svelte component while editing a one-line script function lost the function's uid.",
+      "deps": {
+        "01M7MRHZ80JM8HJC0A1SNB23AB": "b3:980af9eeb2406741fc52b16825982520b1f9f09a7e2bfdcf6d52737a4974f48e",
+        "01M7MRHZ80RNGSBJX617ERS8R6": "b3:a705f5fca81e172f8c6fa9aaeb584ce4924db2abead9b3829478772d82bd2d24",
+        "01M7MRHZ80MC7SFVMXQFYDD0JR": "b3:50ed63fb25c1fb51d3d64c06de822841fd975b2a7a850f24b39ac0acbac7b084",
+        "01M7MT8426B9WXAH8TR8HYE9KB": "b3:5dc1a2331706a6d0e7cd20366fae896de95b1373bd871697a9b78afa57de43cb",
+        "01M7MRHZ81AHZQ6SJ5VYY46RZC": "b3:0141931e30dc7d4efcb850ac9ddc3ff4feb3ebe1f8746ce4a60ec0561258c39b",
+        "01M7MRHZ810VPR7DQXT4EF9D3X": "b3:2558c14e3ac5dd37c48a3904ed709dce8a2b22c6c7436ed9afd839efdbf6c201",
+        "01M5Z1F6NSEZG78RH31S5GZANP": "b3:6f1bd4d062f93cf88e1b3e890edcadcbb79a8311e3f82efce3a6250f7308a575",
+        "01M5Z1F6NP3C1KG9NNND31TPSJ": "b3:dd4eb578ac15dbcb0dcf9645b932f78a8a124faebe26255799f186266636ddbb",
+        "01M5Z1F6NQR9T376HTSH2ZYP8C": "b3:85859a81a9f157d7de29c1cfe6fed88d978006bd3ed9ea8645bd87f785770203",
+        "01M6HXEYDD4MHGVQEYFBGW2ZHF": "b3:91393e02ffb95d399bb1b3e9b8a7a2493f93eea229fc9f7428a0cf38d4d55998",
+        "01M6HXEYDED92BHH3BZYQMFFK4": "b3:654d96c06aab3913ec5ceeb26e90101a80229799a268fb7b553d7e68ad1f6c51",
+        "01M6HXEYDEF480EDP3WX2271SV": "b3:947119cca169fc103a36a91b7450ddcaed892d30c2d46f2be86988aa084f60d0",
+        "01M6HXEYDDNG0KFMNFYRAH0DBY": "b3:7fba29621de90f7be07b7125696d94321e7040cfc35b51dfa9e135182ed844f1",
+        "01M7D1WTFP0WBEEJM9TVETAH82": "b3:df87c807b072ec48d9eac59728f92ba53cf47725813255702e91112796694a6c",
+        "01M6HS3HPGZVH440C5ZV7AYGMS": "b3:a382d507fe8f9bcd7711123e579ce0297edacb38144f89ae572b3613a89739d5",
+        "01M6HS3HPGWQSVQ3NJ5VJ8WEVV": "b3:ee83babe749f50e51d8299d8ebdb158111f841ac77d4fa94c18c7b5d166f83c9",
+        "01M6HS3HPGM7XKCBTGKAJ8RCSH": "b3:46178fb45392dc2b64fe903840c94e4fd07030dfb933dc9097836ec569a8eb03",
+        "01M617V6SYQFWYR12XS2NY4D60": "b3:e8340536a2346a81250e814eef267fe71b968e81c7daefb5f2b4ba555e8ebe1e",
+        "01M5XDBC71JDZ5ANVBKKB168EW": "b3:15b02c3dbcc5b7c1d93a89f604dbb5aa20e8b6b319338904d3189c6c1305ed69",
+        "01M5XDBC6YYK0M5RPS3YMPYSPM": "b3:a9d8f9922d57a2b242a17ff15b364a707eb1b721d5ced5d96e4ec2f62342087d",
+        "01M5XDBC74RY8DRPAXNTM7KM0W": "b3:2256d971b742e8b5a6ad40714f082f993c4521518fb083ae3238e8e5edc1f79b",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M5XDBC75MMR8696T4BHXT1FB": "b3:7d88d88c102f9f2563d74adff4670da467c8661e028d838eca4298e5d1387a6b",
+        "01M5XDBC7FTZ5GY3BX711BWGN6": "b3:3cf0225787144e59edd01ec041de70443d024e2b9e55b22dfceabec9025b44b7",
+        "01M5Z1F6N5NDMXHCMABBEBS2J7": "b3:70c14390e38dd905b37b4d2b7fa6f38fe76fa18e35f83a6744977d39865eee00",
+        "01M5Z1F6NV9Q4BF2C1KBZD09MQ": "b3:73bb120c04ff81df07603ebd00c8a7b85a52b560589afe2ec8b7691c4be3c18a",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M5Z1F6NFPJZD8SQSR28Y2NJ8": "b3:a50623c392fe2033d26911146b4a8e6a15556a3e824b0e0f1a7799513f92f113"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0027-members-follow-their-owner.md"
+        }
+      ]
     }
   ],
   "docs": "What poetics index would record: nothing is written until `applyIndex`.",

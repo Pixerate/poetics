@@ -45,6 +45,29 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:ee83babe749f50e51d8299d8ebdb158111f841ac77d4fa94c18c7b5d166f83c9",
+      "interfaceHash": "b3:69f9411a31e4baa7ea1f06b24d3b7f4a7f63a4efa6c507a4d7e346b897d08205",
+      "parent": "b3:a758a3287b7cca85cd56fe02fba2800684980f7cc5add38bc15e193ea8a406e2",
+      "change": "interface",
+      "rationale": "Adds ownerUid, the store's owner of the earlier unit. The earlier snapshot is read a file at a time, which loses owners across files in Swift, so the store is the reliable source (ADR 0027).",
+      "deps": {
+        "01M6HS3HPGZVH440C5ZV7AYGMS": "b3:a382d507fe8f9bcd7711123e579ce0297edacb38144f89ae572b3613a89739d5",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0027-members-follow-their-owner.md"
+        }
+      ]
     }
   ],
   "docs": "A code unit in the earlier snapshot, with its store uid.",

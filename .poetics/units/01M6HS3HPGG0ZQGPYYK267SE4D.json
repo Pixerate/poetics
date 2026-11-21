@@ -45,6 +45,25 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:a99093b2c79422e215faff992af304008001c8d206c86096dc564dfadd0fbc42",
+      "interfaceHash": "b3:3ddb63a74b693417842d712300800fbaf110df7748c024283989dd9856f69daa",
+      "parent": "b3:33d41a7f239f45e0a8e7d8ae0b775d81ea28f3c4d1250aea793dfcdc807cc603",
+      "change": "interface",
+      "rationale": "Adds \"owner\" for units matched because their owner was, so poetics index can say a member was found through its type rather than by its own content or shape (ADR 0027).",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0027-members-follow-their-owner.md"
+        }
+      ]
     }
   ],
   "docs": "The stage that found a match: declared, location, content or similarity.",
