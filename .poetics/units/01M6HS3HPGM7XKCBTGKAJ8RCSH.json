@@ -77,6 +77,38 @@
         "model": "claude-opus-5-5",
         "reviewed": false
       }
+    },
+    {
+      "contentHash": "b3:46178fb45392dc2b64fe903840c94e4fd07030dfb933dc9097836ec569a8eb03",
+      "interfaceHash": "b3:3174d3b25323883b8b07645db61e02c99287931b90aed56d8c3510e94ca27990",
+      "parent": "b3:7dc2f6cf5931b0925c429e8f4aa72b384d3fdcb039b1ad36c4966f5ba95a7367",
+      "change": "behaviour",
+      "rationale": "Adds stage 5: a member whose owner was matched pairs with the member of the owner's match that has the same name within it, repeated for nested types. Ambiguous content and similarity groups are held until then. On Alamofire, renaming JSONEncoding lost JSONEncoding.default, whose name and content both name the type, and renaming EventMonitor queued its 5 identical empty methods (ADR 0027).",
+      "deps": {
+        "01M6HS3HPGZVH440C5ZV7AYGMS": "b3:a382d507fe8f9bcd7711123e579ce0297edacb38144f89ae572b3613a89739d5",
+        "01M6HS3HPGABNGAED2YXSTCHVS": "b3:4cb2abf7687b4109aeac5c627b8e01b4fbb1a35e69a39b29d3348236324e68d9",
+        "01M6HS3HPGVX3S4HZG7GNP1ETK": "b3:cf590d89c72207fb7238066cd987ddb50f5f075013f233e1e5227c9247268f83",
+        "01M6HS3HPGW693T6MZB6ZGQRPY": "b3:9cd4df3e6ee7292cfd2e53dfc32f56b827ec6eef6d8b9592b4b8c0b263bd7054",
+        "01M6HS3HPGNHPBVMA8MTD6GXJJ": "b3:9fb130bfaced1e35289f7c67acd067440a54759e4bb45f305b8225d0eeb437ef",
+        "01M6HS3HPGG0ZQGPYYK267SE4D": "b3:a99093b2c79422e215faff992af304008001c8d206c86096dc564dfadd0fbc42",
+        "01M6HS3HPGWQSVQ3NJ5VJ8WEVV": "b3:ee83babe749f50e51d8299d8ebdb158111f841ac77d4fa94c18c7b5d166f83c9",
+        "01M6HS3HPGSXQAH4Q34AQMPGVK": "b3:166336cf692fcd9a5ef0964fe8a644935aacb964e9af7ad5ff3b035ca63ac655",
+        "01M5XDBC777RN8YV0NBHRBXR3Y": "b3:c728ec79ae2af36596a032d15eca00fa56ff655bde1dfe678b1717b84a191eef",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce",
+        "01M5XDBC6Z8PGANPEC147TCK3S": "b3:310b05240b0bddfa9d2b156478f247c373bc198d7422bdd196ed64e36ca04387"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0027-members-follow-their-owner.md"
+        }
+      ]
     }
   ],
   "docs": "Matches an earlier snapshot's tracked units to the units in the code now.",

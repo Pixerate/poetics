@@ -33,5 +33,6 @@ new record here.
 | [0024](0024-rehash-after-rule-changes.md) | A rehash also follows an adapter rule change | Accepted |
 | [0025](0025-out-of-process-adapter-contract.md) | Out-of-process adapters answer batched JSON requests on stdin and stdout | Accepted |
 | [0026](0026-swift-units.md) | Swift units are non-private declarations, with SwiftUI views as components | Accepted |
+| [0027](0027-members-follow-their-owner.md) | A member follows its owner when the owner is renamed or moved | Proposed |
 
 New records copy [`template.md`](template.md).

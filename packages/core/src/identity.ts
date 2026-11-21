@@ -1,7 +1,8 @@
 // Identity matching: which unit in the code now is which tracked unit, across
 // renames, moves, splits and merges. Stages run in a fixed order (declared
-// lineage, file and name, content hash, syntax-tree similarity), and anything
-// with more than one plausible answer is queued for a person, never guessed.
+// lineage, file and name, content hash, syntax-tree similarity, then members
+// following their owner), and anything with more than one plausible answer is
+// queued for a person, never guessed.
 import { isRemoved } from "./removal.ts";
 import type { Hash, LineageEntry, LineageKind, Uid, Unit, UnitKind } from "./types.ts";
 
@@ -15,11 +16,15 @@ export interface CodeUnit {
   contentHash: Hash;
   /** Hashes of the unit's subtrees, for similarity; see `similarity`. */
   fingerprint: readonly string[];
+  /** The key of the unit it is declared in, in the same snapshot: a Swift type's member, a component's function. */
+  owner?: string;
 }
 
 /** A code unit in the earlier snapshot, with the uid the store gives it. */
 export interface TrackedUnit extends CodeUnit {
   uid: Uid;
+  /** The uid of the unit that owns it, as the store records it (ADR 0027). */
+  ownerUid?: Uid;
 }
 
 /** Where a unit is, by file and name; the kind says whether it is a type or a value. */
@@ -41,7 +46,7 @@ export interface LineageDeclaration {
   to: UnitRef[];
 }
 
-export type MatchVia = "declared" | "location" | "content" | "similarity";
+export type MatchVia = "declared" | "location" | "content" | "similarity" | "owner";
 
 /** A tracked unit found again, and the lineage entries its file should gain. */
 export interface IdentityMatch {
@@ -127,7 +132,7 @@ export function trackedUnits(units: readonly Unit[], code: readonly CodeUnit[]):
   for (const unit of units) {
     if (isRemoved(unit)) continue;
     const found = byRef.get(refKey({ file: unit.location.file, name: unit.name, kind: unit.kind }));
-    if (found) tracked.push({ ...found, uid: unit.uid });
+    if (found) tracked.push({ ...found, uid: unit.uid, ...(unit.owner !== undefined ? { ownerUid: unit.owner } : {}) });
     else missing.push(unit.uid);
   }
   return { tracked, missing };
@@ -194,10 +199,21 @@ export function matchIdentities(
     if (same && openAfter.has(same.key)) match(unit, same, "location");
   }
 
+  // Groups content or similarity cannot decide wait until members have followed their owners (stage 5), and take
+  // no part in the stages between.
+  const held: Array<{ reason: (from: number, to: number) => string; from: TrackedUnit[]; to: CodeUnit[]; pairs?: ReadonlyArray<{ from: TrackedUnit; to: CodeUnit; score: number }> }> = [];
+  const heldBefore = new Set<Uid>();
+  const heldAfter = new Set<string>();
+  const hold = (entry: (typeof held)[number]) => {
+    held.push(entry);
+    for (const unit of entry.from) heldBefore.add(unit.uid);
+    for (const unit of entry.to) heldAfter.add(unit.key);
+  };
+
   // 3. The same content: a rename or move with no other edit. Shared content is ambiguous unless names tell it apart.
   const pending = () => ({
-    left: before.filter((unit) => openBefore.has(unit.uid)),
-    right: after.filter((unit) => openAfter.has(unit.key)),
+    left: before.filter((unit) => openBefore.has(unit.uid) && !heldBefore.has(unit.uid)),
+    right: after.filter((unit) => openAfter.has(unit.key) && !heldAfter.has(unit.key)),
   });
   {
     const { left, right } = pending();
@@ -225,7 +241,7 @@ export function matchIdentities(
       const to = group.right.filter((unit) => openAfter.has(unit.key));
       if (from.length === 0 || to.length === 0) continue;
       if (from.length === 1 && to.length === 1) match(from[0]!, to[0]!, "content");
-      else queue(result, `${from.length + to.length} units share the same content`, from, to, openBefore, openAfter);
+      else hold({ reason: (left, right) => `${left + right} units share the same content`, from, to });
     }
   }
 
@@ -245,9 +261,54 @@ export function matchIdentities(
       if (component.from.length === 1 && component.to.length === 1) {
         match(component.from[0]!, component.to[0]!, "similarity", { score: Math.round(component.pairs[0]!.score * 1000) / 1000 });
       } else {
-        queue(result, "similar to more than one unit", component.from, component.to, openBefore, openAfter);
+        hold({ reason: () => "similar to more than one unit", from: component.from, to: component.to, pairs: component.pairs });
       }
     }
+  }
+
+  // 5. Members follow their owner: when an owner was matched, each of its members pairs with the one member of the
+  // owner's match that has the same name within it. Repeated, so nested types bring their own members.
+  {
+    const afterByKey = new Map(after.map((unit) => [unit.key, unit]));
+    const within = (name: string, owner: string) => (name.startsWith(`${owner}.`) ? name.slice(owner.length + 1) : name);
+    for (let found = true; found; ) {
+      found = false;
+      const matchedTo = new Map(result.matched.map((m) => [m.uid, m.key]));
+      const byOwner = new Map<string, { from: TrackedUnit[]; to: CodeUnit[] }>();
+      const slot = (key: string) => byOwner.get(key) ?? byOwner.set(key, { from: [], to: [] }).get(key)!;
+      for (const unit of before) {
+        if (!openBefore.has(unit.uid) || unit.ownerUid === undefined) continue;
+        const owner = byUid.get(unit.ownerUid);
+        const ownerTo = matchedTo.get(unit.ownerUid);
+        // Only an owner this matching moved or renamed leads; one that stayed put is not among `before`.
+        if (!owner || ownerTo === undefined) continue;
+        slot(ownerTo).from.push({ ...unit, name: `${space(unit.kind)}\0${within(unit.name, owner.name)}` });
+      }
+      for (const unit of after) {
+        if (!openAfter.has(unit.key) || unit.owner === undefined || !byOwner.has(unit.owner)) continue;
+        slot(unit.owner).to.push({ ...unit, name: `${space(unit.kind)}\0${within(unit.name, afterByKey.get(unit.owner)!.name)}` });
+      }
+      for (const { from, to } of byOwner.values()) {
+        const right = new Map(once(to).map((unit) => [unit.name, unit]));
+        for (const member of once(from)) {
+          const target = right.get(member.name);
+          if (!target) continue;
+          match(byUid.get(member.uid)!, afterByKey.get(target.key)!, "owner");
+          found = true;
+        }
+      }
+    }
+  }
+
+  // What the held groups still have open is decided as content and similarity would have: one pair left matches,
+  // more are queued.
+  for (const group of held) {
+    const from = group.from.filter((unit) => openBefore.has(unit.uid));
+    const to = group.to.filter((unit) => openAfter.has(unit.key));
+    if (from.length === 0 || to.length === 0) continue;
+    const pair = from.length === 1 && to.length === 1 ? (group.pairs ? group.pairs.find((p) => p.from.uid === from[0]!.uid && p.to.key === to[0]!.key) : { score: undefined }) : undefined;
+    if (pair) match(from[0]!, to[0]!, group.pairs ? "similarity" : "content", pair.score === undefined ? {} : { score: Math.round(pair.score * 1000) / 1000 });
+    else queue(result, group.reason(from.length, to.length), from, to, openBefore, openAfter);
   }
 
   for (const unit of after) if (openAfter.has(unit.key)) result.created.push({ key: unit.key });

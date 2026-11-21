@@ -142,7 +142,10 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
   const untracked = code.filter((unit) => !claimed.has(unit.key));
   const before: TrackedUnit[] = orphans.map((unit) => {
     const was = baseCode(unit.location.file, unit.name, unit.kind);
-    return was ? { ...was, uid: unit.uid } : { key: `${unit.location.file}#${unit.name}`, file: unit.location.file, name: unit.name, kind: unit.kind, contentHash: unit.versions.at(-1)!.contentHash, fingerprint: [], uid: unit.uid };
+    const tracked: TrackedUnit = was ? { ...was, uid: unit.uid } : { key: `${unit.location.file}#${unit.name}`, file: unit.location.file, name: unit.name, kind: unit.kind, contentHash: unit.versions.at(-1)!.contentHash, fingerprint: [], uid: unit.uid };
+    // So a member can follow its owner when both moved (ADR 0027).
+    if (unit.owner !== undefined) tracked.ownerUid = unit.owner;
+    return tracked;
   });
   const result = matchIdentities(before, untracked.map(codeUnit), options.declarations ?? []);
   plan.rejected = result.rejected;
@@ -407,7 +410,9 @@ function baseSnapshot(root: string, base: string | null, adapters: readonly Code
 }
 
 function codeUnit(unit: AdaptedUnit): CodeUnit {
-  return { key: unit.key, file: unit.span.file, name: unit.name, kind: unit.kind, contentHash: unit.contentHash, fingerprint: unit.fingerprint };
+  const out: CodeUnit = { key: unit.key, file: unit.span.file, name: unit.name, kind: unit.kind, contentHash: unit.contentHash, fingerprint: unit.fingerprint };
+  if (unit.owner !== undefined) out.owner = unit.owner;
+  return out;
 }
 
 /** The messages of the commits from `base` to HEAD, oldest first, as the default rationale. */
