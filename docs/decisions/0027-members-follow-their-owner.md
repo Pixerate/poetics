@@ -1,6 +1,6 @@
 # 0027. A member follows its owner when the owner is renamed or moved
 
-- Status: Proposed
+- Status: Accepted (2026-11-22)
 - Date: 2026-11-21
 - Refines: identity matching as [`docs/data-model.md`](../data-model.md)
   describes it, for [ADR 0026](0026-swift-units.md)'s members
