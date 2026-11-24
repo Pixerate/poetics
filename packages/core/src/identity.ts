@@ -261,6 +261,13 @@ export function matchIdentities(
       if (component.from.length === 1 && component.to.length === 1) {
         match(component.from[0]!, component.to[0]!, "similarity", { score: Math.round(component.pairs[0]!.score * 1000) / 1000 });
       } else {
+        // As with shared content: a file move keeps names, so look-alikes edited as they moved (copies of one
+        // pattern, say) pair by a name each side has once, if that pair is itself similar enough.
+        const to = new Map(once(component.to).map((unit) => [unit.name, unit]));
+        for (const from of once(component.from)) {
+          const pair = component.pairs.find((p) => p.from.uid === from.uid && p.to.key === to.get(from.name)?.key);
+          if (pair) match(from, pair.to, "similarity", { score: Math.round(pair.score * 1000) / 1000 });
+        }
         hold({ reason: () => "similar to more than one unit", from: component.from, to: component.to, pairs: component.pairs });
       }
     }
