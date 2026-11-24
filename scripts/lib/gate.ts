@@ -14,8 +14,9 @@ import type { Unit } from "@poetics/core";
 import { adaptersFor, applyIndex, detectIn, planIndex, pluginsFor, readTextsWith, unitHashes } from "@poetics/cli";
 import { appendVersion, createUnit, filesInScope, parseUnit, readUnitFiles, relocateUnit, storePaths } from "@poetics/store";
 import type { AdapterEntry, PoeticsConfig } from "@poetics/store";
-import { braceDepthAt, declarationLines, ifDepthAt, insertStatement, mergeBodies, renameSwift, splitBody, swiftBaseName, swiftBody, swiftContainer, swiftDeclarations, swiftLabels } from "./gate-swift.ts";
+import { braceDepthAt, declarationLines, ifDepthAt, insertStatement, mergeBodies, renameSwift, splitBody, swiftBaseName, swiftBody, swiftContainer, swiftDeclarations, swiftForwards, swiftLabels } from "./gate-swift.ts";
 import type { SwiftBody } from "./gate-swift.ts";
+import { textOnlyWords } from "./gate-typescript.ts";
 
 export interface CorpusEntry {
   name: string;
@@ -117,6 +118,9 @@ export async function prepareWorkspace(
   await write(root, ".poetics/config.json", JSON.stringify({ version: 1, ...config }, null, 2));
   await write(root, ".gitignore", ".poetics/cache/\n");
   git(root, "init", "-q", "-b", "main");
+  // Dozens of commits on thousands of files start git's gc in the background, which writes packs while the gate
+  // deletes the workspace and fails it with ENOTEMPTY.
+  git(root, "config", "gc.auto", "0");
   commit(root, `Corpus ${corpus.repo}@${corpus.commit.slice(0, 7)}`);
   return { root, config, notIndexed: unsupported.length };
 }
@@ -259,9 +263,17 @@ async function refactor(
 
   if (kind === "rename" || kind === "rename-edit") {
     // The rename rewrites the name as a word in every file, so a keyword's name (`type`, `async`, `default`) would
-    // rewrite the keyword too and break every file that uses it.
+    // rewrite the keyword too and break every file that uses it, and a name also in a string or after a `.` would
+    // rewrite what an editor's rename leaves alone.
+    const { parseable, unsupported } = await filesInScope(root, config);
+    const textOnly = textOnlyWords(await Promise.all([...parseable, ...unsupported].map((file) => readFile(join(root, file), "utf8"))));
     const candidates = (kind === "rename" ? units : editable).filter(
-      (unit) => !svelteComponent(unit) && unit.name.length >= 4 && declared.get(unit.name) === 1 && ts.identifierToKeywordKind(ts.factory.createIdentifier(unit.name)) === undefined,
+      (unit) =>
+        !svelteComponent(unit) &&
+        unit.name.length >= 4 &&
+        declared.get(unit.name) === 1 &&
+        !textOnly.has(unit.name) &&
+        ts.identifierToKeywordKind(ts.factory.createIdentifier(unit.name)) === undefined,
     );
     for (let tries = 0; tries < 20 && candidates.length > 0; tries++) {
       const unit = pick(candidates)!;
@@ -468,9 +480,11 @@ async function swiftRefactor(
     for (let tries = 0; tries < 20 && candidates.length > 0; tries++) {
       const unit = pick(candidates)!;
       const found = await code(unit);
-      if (!found || (kind === "rename-edit" && !withBody(found))) continue;
-      if (kind === "rename-edit") await writeText(root, unit.location.file, insertStatement(found.text, found.body!));
       const base = swiftBaseName(unit.name);
+      if (!found || (kind === "rename-edit" && !withBody(found))) continue;
+      // Forwarding to another type's member of the same name (`headers.startIndex`): an editor leaves that call alone.
+      if (swiftForwards(found.text, found.startLine, found.endLine, base)) continue;
+      if (kind === "rename-edit") await writeText(root, unit.location.file, insertStatement(found.text, found.body!));
       const next = renameSwift(unit.name, `${base}Gate`);
       await renameEverywhere(root, config, base, `${base}Gate`);
       use(used, unit.uid);

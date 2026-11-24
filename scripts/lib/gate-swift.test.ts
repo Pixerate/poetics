@@ -14,6 +14,7 @@ import {
   swiftBody,
   swiftContainer,
   swiftDeclarations,
+  swiftForwards,
   swiftLabels,
 } from "./gate-swift.ts";
 
@@ -128,6 +129,34 @@ describe("names", () => {
 describe("swiftLabels", () => {
   it("collects argument labels and parameter names at calls and declarations, outside comments", () => {
     const labels = swiftLabels(["func index(after i: Int) -> Int { headers.index(before: i) }\n// f(skipped: 1)\n", "let d = [1: 2]\nlet t = a ? b : c\n"]);
-    expect([...labels].sort()).toEqual(["after", "before"]);
+    expect([...labels].sort()).toEqual(["after", "before", "i"]);
+  });
+
+  it("collects a parameter's internal name as well as its label", () => {
+    // Alamofire's `SecPolicy.af.hostname(_:)` takes `_ hostname`, so renaming the function by text renamed its parameter.
+    expect(swiftLabels(["static func hostname(_ hostname: String) -> SecPolicy { make(hostname) }"]).has("hostname")).toBe(true);
+  });
+});
+
+describe("swiftForwards", () => {
+  const text = [
+    "struct Headers {",
+    "  var startIndex: Int { headers.startIndex }",
+    "  mutating func sort() {",
+    "    headers.sort { $0 < $1 }",
+    "  }",
+    "  func sorted() -> Headers { self.sort(); return self }",
+    "  func label() -> String { \"x.label\" }",
+    "}",
+  ].join("\n");
+
+  it("finds a member that forwards to another's member of the same name", () => {
+    expect(swiftForwards(text, 2, 2, "startIndex")).toBe(true);
+    expect(swiftForwards(text, 3, 5, "sort")).toBe(true);
+  });
+
+  it("ignores its own calls through self and the name inside strings", () => {
+    expect(swiftForwards(text, 6, 6, "sort")).toBe(false);
+    expect(swiftForwards(text, 7, 7, "label")).toBe(false);
   });
 });

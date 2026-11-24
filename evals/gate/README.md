@@ -63,6 +63,12 @@ leaves them alone. A queued match is resolved the way a person would, so later
 rounds start from a correct store. Picks are seeded and made by place, not by
 uid, so a run is repeatable.
 
+Renames rewrite the name as a word in every file, so the gate only renames a
+name for which that is an editor's rename: declared once, not a keyword, not
+an argument label or parameter name, and in TypeScript never in a string or
+after a `.`. A Swift member that forwards to another type's member of the same
+name (`headers.startIndex`) is not renamed either.
+
 A `.svelte` file's units are found in the TypeScript svelte2tsx makes of it, so
 the refactors that edit text at a declaration's offsets (`rename-edit`,
 `split`, `merge`, `wrap`) leave `.svelte` files alone, and `move-unit` moves
@@ -88,6 +94,23 @@ with `typescript, react`, shadcn-svelte with `typescript, svelte`, and TanStack
 Query with all three. `--adapters typescript` reruns phase 1's
 configuration. The report counts the seeded units by kind and the uids kept by
 the kind of unit each refactor picked.
+
+## Rename findings (2026-11-24)
+
+- **Every plain rename now keeps its uid, on every corpus.** The gate's
+  rename had been rewriting what an editor's rename leaves alone, and those
+  misses were the gate's: `'[data-testid="submit"]'` in `submit`'s body,
+  `headers.startIndex` and `headers.sort` in the members that forward to
+  them, and the parameter of `hostname(_ hostname:)`. Those names are no
+  longer renamed (see Method).
+- With different draws: taxonomy keeps **91 of 92**, shadcn-svelte 95 of 98,
+  TanStack Query 74 of 77, IceCubesApp 132 of 135 and Alamofire 329 of 330.
+  Every miss left is a `rename-edit` of a function of one or two statements,
+  too small to match by similarity, and every unit created that no refactor
+  made is one of those misses' new uids.
+- A run had stopped at shadcn-svelte with `ENOTEMPTY` while deleting its
+  workspace: git's auto gc was packing in the background. The gate turns it
+  off in its workspaces.
 
 ## Swift findings (2026-11-21)
 

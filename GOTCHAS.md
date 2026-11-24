@@ -66,6 +66,15 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 - **Caught by:** test `scripts/lib/gate.test.ts` (applies every refactor and keeps every uid on code with room to match)
 - **Note:** `01M6JZZ0WZKRDBQHG52NHE3XVY`
 
+### The gate fails deleting its workspace when git's auto gc runs in the background
+
+- **Symptom:** `[Error: ENOTEMPTY: directory not empty, rmdir '/var/folders/z7/xw5vybm12n7_kshf2wxdw27h0000gn/T/poetics-gate-shadcn-svelte-bcAWUm/.git/objects/pack']`
+- **Cause:** runGate commits a few dozen times in a throwaway repository of thousands of files, which passes git's gc.auto threshold. git then packs in a background process, which can still be writing .git/objects/pack while runGate's finally block deletes the workspace. The rm fails, the error replaces any result, and pnpm gate stops at that corpus without writing results.md.
+- **Fix:** prepareWorkspace sets gc.auto to 0 in the workspace. If you create other throwaway repositories that commit often and delete them at once, do the same. pnpm gate's exit code is the only sign that it stopped: a `; echo` after it hides it, and the old results files stay as they were.
+- **Applies to:** `pnpm gate`, `scripts/lib/gate.ts`, `scripts/gate.ts`
+- **Caught by:** test `scripts/lib/gate.test.ts` (copies only the files in scope into a fresh git repository with a matching config)
+- **Note:** `01M876EEWAH4ZX9BMCWSJNR3Q8`
+
 ## Node, type stripping and modules
 
 ### Workspace imports resolve to `dist/` and fail before a build

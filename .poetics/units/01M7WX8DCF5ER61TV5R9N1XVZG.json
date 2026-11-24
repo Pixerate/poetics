@@ -28,6 +28,28 @@
           "ref": "docs/decisions/0026-swift-units.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:72da1406004bbdf49ed6a3ed95f6d9b664825fc820f9fccc2dff127887706eb6",
+      "interfaceHash": "b3:0dabae50fb00869cb7934c12b5317082d1915c759f932c08ca0bbd28725e4345",
+      "parent": "b3:64af49c72193c826fd73b700197daa8ab234db1a91f7408ca3ffb99827e64dc1",
+      "change": "behaviour",
+      "rationale": "Also collects a parameter's internal name, not only its label. Alamofire's SecPolicy.af.hostname(_ hostname:) names its parameter after itself and uses it in its body, so renaming the function by text renamed the parameter as well, which an editor's rename does not, and the gate lost the unit's uid.",
+      "deps": {
+        "01M7TZQEATKFCGQSEN881598WJ": "b3:687898df7eef6ca21654ea603eced7dd09884be94c2c22075439267f1daa27fb"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0026-swift-units.md"
+        }
+      ]
     }
   ],
   "docs": "Every word used as an argument label or parameter name in `texts`, at a call or a declaration. A textual rename\nwould rewrite these too, which an editor's rename of a declaration never does.",

@@ -70,6 +70,7 @@ describe("prepareWorkspace", () => {
     const { readdir } = await import("node:fs/promises");
     expect((await readdir(join(root, "src"))).sort()).toEqual(["alpha.ts", "delta.ts", "golf.ts", "juliet.ts", "view.svelte"]);
     expect((await readdir(root)).includes("test")).toBe(false);
+    expect(execFileSync("git", ["-C", root, "config", "gc.auto"], { encoding: "utf8" }).trim()).toBe("0");
   });
 });
 
@@ -103,6 +104,18 @@ describe("runGate renames", () => {
     expect(result.byKind.rename!.skipped).toBe(1);
     expect(result.byKind["rename-edit"]!.skipped).toBe(1);
     expect(result.spurious).toEqual([]);
+    expect(result.failures).toEqual([]);
+  }, GATE_TIMEOUT_MS);
+
+  it("never renames a unit whose name is also in a string or after a dot, which an editor's rename would leave", async () => {
+    const root = await mkdtemp(join(tmpdir(), "poetics-gate-string-"));
+    await mkdir(join(root, "src"), { recursive: true });
+    // As shadcn-svelte's `submit` finds `[data-testid="submit"]`: a rename by text would rewrite its own body.
+    await writeFile(join(root, "src/helpers.ts"), fn("computeAlpha").replace("  return input;", '  console.log("computeAlpha");\n  return input;'));
+    await writeFile(join(root, "src/form.ts"), fn("computeBravo").replace("  return input;", "  globalThis.computeBravo?.();\n  return input;"));
+    const result = await runGate(ENTRY, root, { rounds: 1, seed: 26 });
+    expect(result.byKind.rename!.skipped).toBe(1);
+    expect(result.byKind["rename-edit"]!.skipped).toBe(1);
     expect(result.failures).toEqual([]);
   }, GATE_TIMEOUT_MS);
 });

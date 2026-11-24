@@ -223,7 +223,7 @@ export function swiftDeclarations(texts: Iterable<string>): Map<string, number> 
   return counts;
 }
 
-const LABELS = /[(,]\s*([A-Za-z_]\w*)(?:\s+[A-Za-z_]\w*)?\s*:/g;
+const LABELS = /[(,]\s*([A-Za-z_]\w*)(?:\s+([A-Za-z_]\w*))?\s*:/g;
 
 /**
  * Every word used as an argument label or parameter name in `texts`, at a call or a declaration. A textual rename
@@ -231,7 +231,13 @@ const LABELS = /[(,]\s*([A-Za-z_]\w*)(?:\s+[A-Za-z_]\w*)?\s*:/g;
  */
 export function swiftLabels(texts: Iterable<string>): Set<string> {
   const labels = new Set<string>();
-  for (const text of texts) for (const match of blankSwift(text).matchAll(LABELS)) labels.add(match[1]!);
+  // Both names of `_ hostname: String`: a function may name its parameter after itself, and use it in its body.
+  for (const text of texts) {
+    for (const match of blankSwift(text).matchAll(LABELS)) {
+      labels.add(match[1]!);
+      if (match[2]) labels.add(match[2]);
+    }
+  }
   return labels;
 }
 
@@ -252,4 +258,16 @@ export function renameSwift(name: string, to: string): string {
   const paren = name.indexOf("(");
   const labels = paren === -1 ? "" : name.slice(paren);
   return `${swiftContainer(name)}${to}${labels}`;
+}
+
+/**
+ * Whether the declaration on lines `startLine`–`endLine` of `text` uses `base` as a member of something other than
+ * itself, as `var startIndex: Int { headers.startIndex }` does. A rename by text would rewrite that use too, which an
+ * editor's rename never does, since it is another type's member.
+ */
+export function swiftForwards(text: string, startLine: number, endLine: number, base: string): boolean {
+  const starts = lineStarts(text);
+  const body = blankSwift(text).slice(starts[startLine], starts[endLine + 1]);
+  const use = new RegExp(`([A-Za-z_]\\w*|[)\\]])\\s*\\??\\s*\\.\\s*${base}(?!\\w)`, "g");
+  return [...body.matchAll(use)].some((match) => match[1] !== "self" && match[1] !== "Self");
 }
