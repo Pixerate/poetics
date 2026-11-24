@@ -106,6 +106,15 @@ the kind of unit each refactor picked.
   Look-alikes in a similarity group now pair by a name each side has once
   when that pair is itself above the threshold, as shared content already
   did. Alamofire keeps **479 of 483**; the other corpora are unchanged.
+- **shadcn-svelte's ~270 removed types (2026-11-24) were the gate's.** Round
+  2 renamed a test helper called `type`, and the rename rewrites the name as
+  a word in every file, so `export type Block = …` became
+  `export typeGate Block = …` in 1,031 files. That code no longer parses, so
+  Poetics rightly found no types there. A name that is a TypeScript keyword is
+  no longer a rename candidate. With different draws, shadcn-svelte keeps
+  **88 of 95**: 6 `rename-edit`s of small functions, and `submit`, whose
+  rename also rewrote `'[data-testid="submit"]'` in its own body. That is the
+  same overreach as `headers.startIndex`, so this miss is the gate's too.
 
 ## Swift findings (2026-11-20)
 

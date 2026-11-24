@@ -119,18 +119,18 @@
       "spuriousCreated": 0,
       "spurious": [],
       "timings": {
-        "seedMs": 750,
+        "seedMs": 653,
         "indexMs": [
-          378,
-          449,
-          376,
-          357,
-          362,
-          367,
+          354,
+          396,
+          334,
+          340,
+          334,
+          338,
           370,
-          343,
-          384,
-          575
+          324,
+          347,
+          458
         ]
       },
       "failures": []
@@ -175,32 +175,32 @@
       "byKind": {
         "rename": {
           "refactors": 10,
-          "kept": 10,
-          "lost": 0,
+          "kept": 9,
+          "lost": 1,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
         },
         "move-file": {
           "refactors": 10,
-          "kept": 17,
+          "kept": 16,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
         },
         "move-unit": {
-          "refactors": 8,
-          "kept": 8,
+          "refactors": 9,
+          "kept": 9,
           "lost": 0,
           "misplaced": 0,
           "queued": 0,
-          "skipped": 2
+          "skipped": 1
         },
         "rename-edit": {
           "refactors": 10,
-          "kept": 6,
-          "lost": 4,
+          "kept": 4,
+          "lost": 6,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
@@ -232,45 +232,51 @@
       },
       "byUnitKind": {
         "function": {
-          "kept": 69,
+          "kept": 66,
           "touched": 72
         },
         "component": {
-          "kept": 20,
-          "touched": 20
+          "kept": 19,
+          "touched": 19
         },
         "hook": {
-          "kept": 2,
-          "touched": 3
+          "kept": 3,
+          "touched": 4
         }
       },
-      "spuriousCreated": 4,
+      "spuriousCreated": 7,
       "spurious": [
-        "round 2: docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate; removed that round by no refactor: 01M86NV6MG6S0R38CEBQ6VRN3D (docs/src/lib/blocks.ts#Block), 01M86NV6MGNAGDPZ20RMT0JZ72 (docs/src/lib/blocks.ts#BlockName), 01M86NV6MGTSGAS07ZKBXYR98G (docs/src/lib/colors.ts#Color), 01M86NV6MGQ9Z9EDRAD7ZQ1NR7 (docs/src/lib/colors.ts#ColorPalette), 01M86NV6MGCCH0HN749EMN16Z2 (docs/src/lib/components/cards/payments-features.ts#PaymentsTableFeatures), 01M86NV6MGCPXDQF3511M60760 (docs/src/lib/components/cards/payments.svelte#Payment), 01M86NV6MH1G8RYJFTMYPSN544 (docs/src/lib/components/colors/colors.ts#Color), 01M86NV6MG93T75KKDZ76FN3GT (docs/src/lib/components/colors/colors.ts#ColorFormat), 01M86NV6MGY5YYV1H1TMCAENSW (docs/src/lib/components/colors/colors.ts#ColorPalette), 01M86NV6MH3FE2MMTADMDJX4WH (docs/src/lib/components/docs-toc.svelte#TableOfContents), 01M86NV6MHY78KSFP4REZWKY60 (docs/src/lib/components/docs-toc.svelte#TocItem), 01M86NV6MHQ94EBVBZMAWRR18M (docs/src/lib/components/file-tree/file-tree-node.svelte#FileNode), 01M86NV6MH4ZJ4MQGRX4621Q5C (docs/src/lib/components/icon-placeholder/icon-loader.ts#IconLoader), 01M86NV6MHJP48PQHBE5CEGAKR (docs/src/lib/docs.ts#ChangelogPage), 01M86NV6MHD9BK27ERJDVGG7E2 (docs/src/lib/features/design-system/components/design-system-provider-state.svelte.ts#Lockable), 01M86NV6MH6M6VBATAPKF8D84Z (docs/src/lib/features/typeset/fixtures/index.ts#FixtureName), 01M86NV6MH5BKVVSDJ7N5MRVVP (docs/src/lib/features/typeset/preview-override.svelte.ts#TypesetPreviewOverride), 01M86NV6MH227Z9704VCG13K41 (docs/src/lib/features/typeset/typeset.svelte.ts#LockableParam), 01M86NV6MHS89RS3J5MREW6WWM (docs/src/lib/features/typeset/typeset.svelte.ts#TypesetParams), 01M86NV6MHE9Z39EJJNYWXKWDP (docs/src/lib/font-definitions.ts#FontDefinition), 01M86NV6MHX49XQ1Z2N85NHWCF (docs/src/lib/font-definitions.ts#FontName), 01M86NV6MHT3P13YYKV3G6VGY3 (docs/src/lib/fonts.ts#Font), 01M86NV6MHMMHA071BT6ZZR8PY (docs/src/lib/fonts.ts#FontHeadingOption), 01M86NV6MHVAJ1G2VXV4RVF29H (docs/src/lib/message-animations.ts#MessageAnimationId), 01M86NV6MHZFE2E4GXY2MPAR0P (docs/src/lib/message-animations.ts#MessageAnimationPreset), 01M86NV6MH74W4FZCHE7K6XC5X (docs/src/lib/navigation.ts#NavItem), 01M86NV6MHGHBDZ2HRW2CFRQ96 (docs/src/lib/navigation.ts#NavItemWithChildren), 01M86NV6MH30E2ZCH2QRB04N4V (docs/src/lib/navigation.ts#SidebarNavItem), 01M86NV6MH9G0E45A8P0XZRRCQ (docs/src/lib/package-manager.ts#PackageManager), 01M86NV6MHVZB4X1PGQJHMHV3Z (docs/src/lib/package-manager.ts#PackageManagerCommand), 01M86NV6MHJH0N4EE4F54EYY3E (docs/src/lib/registry/base-colors.ts#BaseColor), 01M86NV6MHT2692C4NQFBBBG9W (docs/src/lib/registry/blocks/dashboard-01/components/data-table-features.ts#DashboardTableFeatures), 01M86NV6MH4A3DF0RVGFYT1TY0 (docs/src/lib/registry/blocks/dashboard-01/components/schemas.ts#Schema), 01M86NV6MJKE8A7Q7VYXE8HMGY (docs/src/lib/registry/colors.ts#BaseColor), 01M86NV6MJ9T58JPE6XTS9585Y (docs/src/lib/registry/colors.ts#ColorScale), 01M86NV6MJYTPYE6QCZ6JCHMTM (docs/src/lib/registry/colors.ts#Colors), 01M86NV6MJXSV0JDGP9GA5B2FR (docs/src/lib/registry/colors.ts#CompleteColorFormat), 01M86NV6MJXAP76JFQFQFMFYMB (docs/src/lib/registry/config.ts#BaseColorName), 01M86NV6MJN63WP5EPSZ911476 (docs/src/lib/registry/config.ts#DesignSystemConfig), 01M86NV6MJF6PGY4BAQ5XQ6E31 (docs/src/lib/registry/config.ts#FontHeadingValue), 01M86NV6MJ2QEAQNK7Y8QP8C2A (docs/src/lib/registry/config.ts#FontValue), 01M86NV6MJ7C979NF3TN5XXJPA (docs/src/lib/registry/config.ts#MenuAccent), 01M86NV6MJXT2ZJM0GGN7XDKN6 (docs/src/lib/registry/config.ts#MenuAccentValue), 01M86NV6MJBGN7B54ZJ1FQ2PT0 (docs/src/lib/registry/config.ts#MenuColor), 01M86NV6MJYQWHH46MJTMD6A04 (docs/src/lib/registry/config.ts#MenuColorValue), 01M86NV6MJRZW7J7QFYMMR4B9Q (docs/src/lib/registry/config.ts#Preset), 01M86NV6MJBMAC2730TZ0GPX14 (docs/src/lib/registry/config.ts#Radius), 01M86NV6MJ5FWVGYEZZEC4CFW1 (docs/src/lib/registry/config.ts#RadiusValue), 01M86NV6MJBTSHT717DFJANBZS (docs/src/lib/registry/config.ts#StyleName), 01M86NV6MJQHKJ4BWDEQ1D23CD (docs/src/lib/registry/config.ts#ThemeName), 01M86NV6MKMF3VDW5WRBEH8DR5 (docs/src/lib/registry/examples/create/elevenlabs/bar-visualizer.svelte#AgentState), 01M86NV6MMS1ZBQACZEHK27DV8 (docs/src/lib/registry/icons/__hugeicons__/index.ts#HugeIconsIconName), 01M86NV6MM1YS6EKC5Q4S0V1E8 (docs/src/lib/registry/icons/__lucide__/index.ts#LucideIconName), 01M86NV6MNV99BR1APZJVXX1DH (docs/src/lib/registry/icons/__phosphor__/index.ts#PhosphorIconName), 01M86NV6MN79GE45XQ6CMC1WCZ (docs/src/lib/registry/icons/__remixicon__/index.ts#RemixIconIconName), 01M86NV6MN576EJWXFMSTWP7P7 (docs/src/lib/registry/icons/__tabler__/index.ts#TablerIconName), 01M86NV6MN9W9YRC09GXDK6271 (docs/src/lib/registry/lib/highlighter.ts#HighlightedLine), 01M86NV6MNSNY0N6M1PGFJBT9F (docs/src/lib/registry/lib/highlighter.ts#HighlightedToken), 01M86NV6MNZZPZE7FSRY743Y3F (docs/src/lib/registry/lib/highlighter.ts#Highlighter), 01M86NV6MNRJ5V32KTGSZFA962 (docs/src/lib/registry/lib/utils.ts#WithElementRef), 01M86NV6MNQ4NM0YTF5RPCEZ4X (docs/src/lib/registry/lib/utils.ts#WithoutChild), 01M86NV6MNWPW2X1D2DZS8WJ67 (docs/src/lib/registry/lib/utils.ts#WithoutChildren), 01M86NV6MNV2VSJ685RW6K7G30 (docs/src/lib/registry/lib/utils.ts#WithoutChildrenOrChild), 01M86NV6MN9K49B5SKW7WBWM72 (docs/src/lib/registry/registry-base-colors.ts#BaseColor), 01M86NV6MNQK4ASKRCH7WETAF5 (docs/src/lib/registry/registry-colors.ts#BaseColor), 01M86NV6MNZJ18HEQND76VVJPS (docs/src/lib/registry/registry-utils.ts#DesignSystemConfig), 01M86NV6MNMWCAPPQM0254YK2G (docs/src/lib/registry/registry-utils.ts#FileTree), 01M86NV6MNRNTZKZCX48NMTFAF (docs/src/lib/registry/schema.ts#BlockName), 01M86NV6MNHZGRMMDD58E8B7Y7 (docs/src/lib/registry/styles/index.ts#Style), 01M86NV6MNY3VB6BHS3HT1GGZS (docs/src/lib/registry/themes.ts#BaseTheme), 01M86NV6MNY5CM9GKS7MKQKB1A (docs/src/lib/registry/themes.ts#Theme), 01M86NV6MNH7DK2DV8QXFEDFVE (docs/src/lib/registry/ui/alert/alert.svelte#AlertVariant), 01M86NV6MND755TW14SAEC27ET (docs/src/lib/registry/ui/attachment/attachment-media.svelte#AttachmentMediaVariant), 01M86NV6MN9FWSBSZMYB0S5DT7 (docs/src/lib/registry/ui/attachment/attachment.svelte#AttachmentOrientation), 01M86NV6MNZTV6DMAK949RA7HV (docs/src/lib/registry/ui/attachment/attachment.svelte#AttachmentSize), 01M86NV6MN3A6TAWTDK7JQ3WQ8 (docs/src/lib/registry/ui/attachment/attachment.svelte#AttachmentState), 01M86NV6MNPEK8B82NMVDHH20D (docs/src/lib/registry/ui/badge/badge.svelte#BadgeVariant), 01M86NV6MN6XNRXSWDB89E99RF (docs/src/lib/registry/ui/bubble/bubble-reactions.svelte#BubbleReactionsAlign), 01M86NV6MNZMV8465DWTWP67SD (docs/src/lib/registry/ui/bubble/bubble-reactions.svelte#BubbleReactionsSide), 01M86NV6MNZQ60GE1RXKVP1R96 (docs/src/lib/registry/ui/bubble/bubble.svelte#BubbleVariant), 01M86NV6MN5MB1E5GQJQD951QP (docs/src/lib/registry/ui/button-group/button-group.svelte#ButtonGroupOrientation), 01M86NV6MNN3E9JCG6MCNVRBRQ (docs/src/lib/registry/ui/button/button.svelte#ButtonProps), 01M86NV6MNBKGTHSFVFJ9MTZ3B (docs/src/lib/registry/ui/button/button.svelte#ButtonSize), 01M86NV6MNQMCHV5ERNC9250HN (docs/src/lib/registry/ui/button/button.svelte#ButtonVariant), 01M86NV6MNFGM1WY4VGGCEYDYG (docs/src/lib/registry/ui/carousel/context.ts#CarouselAPI), 01M86NV6MNXHJ0XJTX0TTYZA7F (docs/src/lib/registry/ui/carousel/context.ts#CarouselOptions), 01M86NV6MNPYPZ9JHPWXV9GD04 (docs/src/lib/registry/ui/carousel/context.ts#CarouselPlugins), 01M86NV6MNV2WYZ7SSNZVP6MY4 (docs/src/lib/registry/ui/carousel/context.ts#CarouselProps), 01M86NV6MNZ33FH0097Q2C68W0 (docs/src/lib/registry/ui/carousel/context.ts#EmblaContext), 01M86NV6MN4WCM9DWFKPFWWVSQ (docs/src/lib/registry/ui/chart/chart-utils.ts#ChartConfig), 01M86NV6MN729M5AT18E16XGCF (docs/src/lib/registry/ui/chart/chart-utils.ts#ExtractSnippetParams), 01M86NV6MNB28FX96ZR7Q91K21 (docs/src/lib/registry/ui/chart/chart-utils.ts#TooltipPayload), 01M86NV6MNWVGNGA6TE8R49V47 (docs/src/lib/registry/ui/code-block/code-block-line.svelte#CodeBlockLineToken), 01M86NV6MN1J0R6X4EB02R71DF (docs/src/lib/registry/ui/code-block/code-block-line.svelte#CodeBlockLineVariant), 01M86NV6MNNV00YVF017W20Q3T (docs/src/lib/registry/ui/code-block/code-block.svelte#CodeBlockSize), 01M86NV6MNX4K4K80C2NAJW3TX (docs/src/lib/registry/ui/code-block/code-block.svelte#CodeBlockVariant), 01M86NV6MNWMHXY541G7TVMD2N (docs/src/lib/registry/ui/command/command.svelte#CommandRootApi), 01M86NV6MN7YMQW8V78CVJ7F93 (docs/src/lib/registry/ui/empty/empty-media.svelte#EmptyMediaVariant), 01M86NV6MNBAGEEDTDK51R4BYD (docs/src/lib/registry/ui/field/field.svelte#FieldOrientation), 01M86NV6MNENK64H6N4NWNQD0Y (docs/src/lib/registry/ui/input-group/input-group-addon.svelte#InputGroupAddonAlign), 01M86NV6MNQXG3X9BVNNV3X540 (docs/src/lib/registry/ui/input-group/input-group-button.svelte#InputGroupButtonSize), 01M86NV6MNSC6Q3ENKC56Z2HVR (docs/src/lib/registry/ui/item/item-media.svelte#ItemMediaVariant), 01M86NV6MNVV323ZY51MTSFJ0H (docs/src/lib/registry/ui/item/item.svelte#ItemSize), 01M86NV6MN89A50XPWPHYD0ACH (docs/src/lib/registry/ui/item/item.svelte#ItemVariant), 01M86NV6MNTHCCBMYJMDBE2S9F (docs/src/lib/registry/ui/marker/marker.svelte#MarkerVariant), 01M86NV6MNT82005XFX153FXJD (docs/src/lib/registry/ui/sheet/sheet-content.svelte#Side), 01M86NV6MNKH0VWWXYWDEY8XST (docs/src/lib/registry/ui/sidebar/context.svelte.ts#SidebarStateProps), 01M86NV6MPT1S7PAAV1BKE15SV (docs/src/lib/registry/ui/sidebar/sidebar-menu-button.svelte#SidebarMenuButtonSize), 01M86NV6MPYYS97TN4V7QDXFGN (docs/src/lib/registry/ui/sidebar/sidebar-menu-button.svelte#SidebarMenuButtonVariant), 01M86NV6MPNGTA6HN9GJY7DBCT (docs/src/lib/registry/ui/tabs/tabs-list.svelte#TabsListVariant), 01M86NV6MPDVKVYYZQ1Z230NTE (docs/src/lib/registry/ui/toggle/toggle.svelte#ToggleSize), 01M86NV6MPZDMJ7CXCGKTN9Y0X (docs/src/lib/registry/ui/toggle/toggle.svelte#ToggleVariant), 01M86NV6MP0MHS6T684V6Y3QA3 (docs/src/lib/registry/ui/toggle/toggle.svelte#ToggleVariants), 01M86NV6MPJSK56CK4JHX8KAQP (docs/src/lib/registry/ui/trace/trace-line.svelte#TraceLineStatus), 01M86NV6MPZ006K7Y2MH50RDQS (docs/src/lib/themes.ts#Theme), 01M86NV6MPSZJKVHPEXNH5CFQS (docs/src/lib/user-config.svelte.ts#ActiveTheme), 01M86NV6MPGYXFTTNQBNW9K3MB (docs/src/lib/user-config.svelte.ts#ColorFormat), 01M86NV6MPVTX209HVKT7X2B39 (docs/src/lib/user-config.svelte.ts#InstallationType), 01M86NV6MP21E6B2416EZJ0RYH (docs/src/lib/user-config.svelte.ts#Layout), 01M86NV6MP172FPCNTZQTEP1AV (docs/src/lib/user-config.svelte.ts#PackageManager), 01M86NV6MPDKM3M89GMVEYR0GP (docs/src/lib/user-config.svelte.ts#UserConfigType), 01M86NV6MPB51D3V9059BMD54S (docs/src/lib/utils.ts#WithElementRef), 01M86NV6MPJB3X894JWG5K8PFW (docs/src/lib/utils.ts#WithoutChild), 01M86NV6MPA6BVXWM1TBV3GFDX (docs/src/lib/utils.ts#WithoutChildren), 01M86NV6MPEHW5ZS0K6RZR9EBG (docs/src/lib/utils.ts#WithoutChildrenOrChild), 01M86NV6MPNVFNQW4AXZNZ3AD7 (docs/src/lib/utils/search.ts#SearchContent), 01M86NV6MPPRXFB7SR6V0MNQCY (docs/src/lib/utils/search.ts#SearchResult), 01M86NV6MPETJD34XN32V7BRJQ (docs/src/routes/(app)/(layout)/(create)/lib/randomize-biases.ts#BiasFilter), 01M86NV6MPP53AEHC0F7F61A84 (docs/src/routes/(app)/(layout)/(create)/lib/randomize-biases.ts#RandomizeBiases), 01M86NV6MPE16AH1STRAY4WQMX (docs/src/routes/(app)/(layout)/(create)/lib/randomize-biases.ts#RandomizeContext), 01M86NV6MPWEW8T88NZ75SRXE1 (docs/src/routes/(app)/(layout)/examples/dashboard/components/data-table-features.ts#DashboardTableFeatures), 01M86NV6MP97RCD62GW8K9TPYY (docs/src/routes/(app)/(layout)/examples/dashboard/components/schemas.ts#Schema), 01M86NV6MPPARHR84MJ89PYSG1 (docs/src/routes/(app)/(layout)/examples/playground/(data)/models.ts#Model), 01M86NV6MPT1T2AW1VQGFTEX1C (docs/src/routes/(app)/(layout)/examples/playground/(data)/models.ts#ModelType), 01M86NV6MP1CGFAXYY1WS44Q38 (docs/src/routes/(app)/(layout)/examples/playground/(data)/presets.ts#Preset), 01M86NV6MPK4BZD1K5S09PJTAE (docs/src/routes/(app)/(layout)/examples/tasks/components/data-table-features.ts#TasksTableFeatures), 01M86NV6MP5ECYPC0SE46E3WP2 (docs/src/routes/(app)/(layout)/examples/tasks/data/schemas.ts#Task), 01M86NV6MPYN2A9WDA2D0WA6RE (packages/cli/src/commands/registry/deps-resolver.ts#ProjectDependencies), 01M86NV6MP7VWD969N5VKCH51S (packages/cli/src/commands/registry/deps-resolver.ts#ResolvedDependencies), 01M86NV6MPJPVWZK36CZF7B6YG (packages/cli/src/icons/libraries.ts#IconLibrary), 01M86NV6MPSPMMQ7HGYSG5DDQB (packages/cli/src/icons/libraries.ts#IconLibraryName), 01M86NV6MP2BXDHC2W9MMK0PK6 (packages/cli/src/preset/preset.ts#PresetConfig), 01M86NV6MPSEVK5GSA9VQBYS11 (packages/cli/src/utils/add-registry-items.ts#ApplyOnly), 01M86NV6MQWJNMNXCF019YB2QA (packages/cli/src/utils/config/schema.ts#BaseColorName), 01M86NV6MQ4T15MX9KRJQTJKDA (packages/cli/src/utils/config/schema.ts#MenuAccent), 01M86NV6MQWRCTRJEXYESX1Y0Z (packages/cli/src/utils/config/schema.ts#MenuColor), 01M86NV6MQPXF0E5TMFQR36YDP (packages/cli/src/utils/config/schema.ts#RawConfig), 01M86NV6MQWDMZ5V4K7P759E8Q (packages/cli/src/utils/config/schema.ts#ResolvedConfig), 01M86NV6MQPHPJXZ8PTZZMN50N (packages/cli/src/utils/config/schema.ts#StyleName), 01M86NV6MQQ81P6Y82MHC08GC5 (packages/cli/src/utils/config/schema.ts#ThemeName), 01M86NV6MQ5VAJ6004QX1MNQ7P (packages/cli/src/utils/font-markers.ts#FontMarkerSource), 01M86NV6MQQJQWCNVFWNN3WFMG (packages/cli/src/utils/fonts.ts#Font), 01M86NV6MQ06G6S1HHG5X1DCQV (packages/cli/src/utils/registry/schema.ts#CssSchema), 01M86NV6MQN6PP5VPJ35XG117D (packages/cli/src/utils/registry/schema.ts#CssVars), 01M86NV6MQGDT66BXE6KJT4JPZ (packages/cli/src/utils/registry/schema.ts#Registry), 01M86NV6MQFRGZZ295TYDS7BCV (packages/cli/src/utils/registry/schema.ts#RegistryFont), 01M86NV6MQ5HZ5PE4TNYAZMFHZ (packages/cli/src/utils/registry/schema.ts#RegistryIndex), 01M86NV6MQNDKXA7KCMHKBVRCD (packages/cli/src/utils/registry/schema.ts#RegistryIndexItem), 01M86NV6MQDMYRTZ5Z2SPBFAC1 (packages/cli/src/utils/registry/schema.ts#RegistryItem), 01M86NV6MQ3DXQEZ3JWWB4VY4T (packages/cli/src/utils/registry/schema.ts#RegistryItemFile), 01M86NV6MQP37ZP4SXADAEKBQS (packages/cli/src/utils/registry/schema.ts#RegistryItemFileType), 01M86NV6MQ3Z8F0PBK9CH9SXSP (packages/cli/src/utils/registry/schema.ts#RegistryItemType), 01M86NV6MQ3DT0R0TY84X1DDTB (packages/cli/src/utils/transformers/index.ts#TransformOptions), 01M86NV6MQ86FVQCRDSTXP8VZH (packages/cli/src/utils/transformers/index.ts#Transformer), 01M86NV6MQAFAM44E3Z8TX8VKF (packages/cli/src/utils/transformers/index.ts#TransformerResult), 01M86NV6MQEHQHKBJSD51Y28V7 (packages/cli/src/utils/updaters/update-css-vars.ts#UpdateCssVarsOptions), 01M86NV6MQCE7C7AC1VXNFFMEM (packages/parity/src/compare.ts#ClassString), 01M86NV6MQFR05MFNJDMG5N784 (packages/parity/src/compare.ts#Pair), 01M86NV6MQMVCZYARS821BW1KZ (packages/parity/src/compare.ts#PairKind), 01M86NV6MQKQNABNPMMMXNGSV6 (packages/parity/src/compare.ts#ParityRunOptions), 01M86NV6MQ6Q8WFYBPNGZK0MY6 (packages/parity/src/compare.ts#UpstreamIgnoreRule), 01M86NV6MQYBXZ5RWJ6XM66S8S (packages/primitives/src/lib/internal/attributes.ts#PrimitiveButtonAttributes), 01M86NV6MQGNTH46N80KENH3QS (packages/primitives/src/lib/internal/attributes.ts#PrimitiveDivAttributes), 01M86NV6MQWS7V0EA1NHFAPVPZ (packages/primitives/src/lib/internal/attributes.ts#PrimitiveFieldsetAttributes), 01M86NV6MQ77J7WY1NVM792EF6 (packages/primitives/src/lib/internal/attributes.ts#PrimitiveFormAttributes), 01M86NV6MQFCMPQD5Y1KXQSMF9 (packages/primitives/src/lib/internal/attributes.ts#PrimitiveInputAttributes), 01M86NV6MQSDQAAJC9VQX3ZQB4 (packages/primitives/src/lib/internal/attributes.ts#PrimitiveLabelAttributes), 01M86NV6MQGQDS98VD6QTNF4DA (packages/primitives/src/lib/internal/attributes.ts#PrimitiveLegendAttributes), 01M86NV6MQ8KYZSRMHNHQ2Y99J (packages/primitives/src/lib/internal/attributes.ts#PrimitiveParagraphAttributes), 01M86NV6MQR6S1NP98K37B69BH (packages/primitives/src/lib/internal/attributes.ts#PrimitiveSpanAttributes), 01M86NV6MQMNKD7QV0XCRZSPJ0 (packages/primitives/src/lib/internal/types.ts#BitsEvent), 01M86NV6MQKSXHKFY3692X3YWX (packages/primitives/src/lib/internal/types.ts#BitsKeyboardEvent), 01M86NV6MQEC02H10CTG09CTAY (packages/primitives/src/lib/internal/types.ts#BitsMouseEvent), 01M86NV6MQ4V9H1D4SCD85C54T (packages/primitives/src/lib/internal/types.ts#ElementRef), 01M86NV6MQZ6YCM1JNJXCATFZ4 (packages/primitives/src/lib/internal/types.ts#OnChangeFn), 01M86NV6MQBY5MH47YREPMCK0V (packages/primitives/src/lib/internal/types.ts#RefAttachment), 01M86NV6MQNZNEXMV8K8MZDF2S (packages/primitives/src/lib/internal/types.ts#StyleProperties), 01M86NV6MQDCKFH6EHSW88N0RC (packages/primitives/src/lib/internal/types.ts#WithChild), 01M86NV6MQ9G3XT963PRSJQXWA (packages/primitives/src/lib/internal/types.ts#WithChildNoChildrenSnippetProps), 01M86NV6MQPZD5SFTBF0JD58VF (packages/primitives/src/lib/internal/types.ts#WithRefOpts), 01M86NV6MQENQ0VXYP9W9QD613 (packages/primitives/src/lib/internal/types.ts#Without), 01M86NV6MQP66ZJZQT4M48TXMY (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-browser-host.svelte#ThreadProps), 01M86NV6MQCPG4Y1H2DCG4XNKD (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-browser-thread.svelte#BrowserTestItem), 01M86NV6MQCAR24ZJNN7W1R8G1 (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#PendingScrollTreeProps), 01M86NV6MQAQGQ3WV6J938XWD1 (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#TestMessage), 01M86NV6MQ7GE9H4WX3XYS6TRP (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#TestRef), 01M86NV6MQ3KQ3N2YYHBBT7G5Y (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#TestScrollerApi), 01M86NV6MQ3NQT0XHKHWP173RQ (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#TestScrollerOptions), 01M86NV6MQFPGXNHT5K85N60M6 (packages/primitives/src/lib/message-scroller/fixtures/message-scroller-test-types.ts#TestScrollerRefs), 01M86NV6MQ9ARVG8EVC4FG2CWA (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerButtonDirection), 01M86NV6MQZAXV6AWEV2HGS1N9 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerButtonProps), 01M86NV6MQZM5MRRH1G5CNXHKR (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerButtonRenderState), 01M86NV6MQCG3EX20B4KG8ZC9Q (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerContentProps), 01M86NV6MQJBX5R13TBWT0E5E3 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerDefaultScrollPosition), 01M86NV6MQA7KGAFGMC2GQPVR2 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerItemProps), 01M86NV6MQ0M6E5XPJN97GHHCM (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerMode), 01M86NV6MQ027MM47KZVJ5PR8M (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerProviderProps), 01M86NV6MQ89RRCDCYW90BNW8E (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerRef), 01M86NV6MQDETM4ZMR269N795M (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerRegisterMessage), 01M86NV6MQKVCE5SMQ20ESAXCC (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerRootProps), 01M86NV6MQ6E2XJGVQVMWXKBCE (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerScrollAlign), 01M86NV6MQ3WFDV1F49SFVXXR3 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerScrollOptions), 01M86NV6MQXTA5B4HX0RR4Z94Y (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerScrollable), 01M86NV6MQEVNFAT22R12EC2YG (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerViewportProps), 01M86NV6MQ48TQ0V38BGKRQ8F6 (packages/primitives/src/lib/message-scroller/types.ts#MessageScrollerVisibilityState), 01M86NV6MQP905V7GRFH42DG70 (packages/primitives/src/lib/questionnaire/collection.ts#QuestionnaireCollection), 01M86NV6MRGKVTRVT1AGCEET7P (packages/primitives/src/lib/questionnaire/types.ts#AnswerControlRegistration), 01M86NV6MRGF2AZVJ7BP0EW0VQ (packages/primitives/src/lib/questionnaire/types.ts#ChoiceRegistration), 01M86NV6MRFZQKH2FP010Y4CQK (packages/primitives/src/lib/questionnaire/types.ts#ItemRegistration), 01M86NV6MRNNNYACCX7MCFCBZQ (packages/primitives/src/lib/questionnaire/types.ts#PendingFocus), 01M86NV6MRSHM5WV9TRXMKR390 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceDefinition), 01M86NV6MRPCD4DQ688783J8G9 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceInputProps), 01M86NV6MR22FJ8GB7M9E7G4B6 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceInputPropsWithoutHTML), 01M86NV6MRSDSAXJ5GYCNX7A17 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceLabelProps), 01M86NV6MR5VAJ95HAZMXKD17C (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceLabelPropsWithoutHTML), 01M86NV6MRS5MBZGS175J629VJ (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceProps), 01M86NV6MRT9MVN7884F1JNQXE (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoicePropsWithoutHTML), 01M86NV6MRK2Y1HQC9KGQFSZEJ (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceShortcutProps), 01M86NV6MR5NY6YEKT3W234B5Y (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceShortcutPropsWithoutHTML), 01M86NV6MR45KN4G9ZCT5GYFSE (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceShortcutState), 01M86NV6MR135THBQY6MT427EE (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoiceState), 01M86NV6MRGEKGRMNCQV8EAXPP (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoicesProps), 01M86NV6MRRD96JAVQYK13H90T (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoicesPropsWithoutHTML), 01M86NV6MRRFG725F1S0F4Q1RY (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireChoicesState), 01M86NV6MRP41SDDQ7494Z20JK (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireDescriptionProps), 01M86NV6MR73N47EMXZ1GGNF2W (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireDescriptionPropsWithoutHTML), 01M86NV6MRQM1E1TVXDN21GQ58 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireErrorProps), 01M86NV6MRPEQ1X0TF51QYSY7M (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireErrorPropsWithoutHTML), 01M86NV6MR3Q6WCVNXWGSGHPBP (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireInputProps), 01M86NV6MRV7SSY5NPWA5C63XT (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireInputPropsWithoutHTML), 01M86NV6MRKG6BM7BBCRNR5CM0 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireInputState), 01M86NV6MRM0XT2NK60RW9JBK7 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireInputType), 01M86NV6MRCPG5CWNPT57TB9GR (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireItemDefinition), 01M86NV6MRMKYFGN9KN3BBKGEA (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireItemProps), 01M86NV6MRPYAMGWB7GQV49BSP (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireItemPropsWithoutHTML), 01M86NV6MRB7P2AHKKBX68SHVK (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireItemState), 01M86NV6MRSNRJHHNVE4FR2Z09 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireItemStatus), 01M86NV6MR980QK6Q3V5A9P510 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireNavigationState), 01M86NV6MRVYAXBGNHJGE0PG72 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireNextProps), 01M86NV6MR08D24QA5RM6EPMEB (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireNextPropsWithoutHTML), 01M86NV6MRE8MDE5BJQ11M8N5Y (packages/primitives/src/lib/questionnaire/types.ts#QuestionnairePreviousProps), 01M86NV6MRAKJVQF74EHA9GYHR (packages/primitives/src/lib/questionnaire/types.ts#QuestionnairePreviousPropsWithoutHTML), 01M86NV6MR1AJPJP9QG84GAJS4 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireProgressProps), 01M86NV6MR4ZAVRJSRHKPX70P2 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireProgressPropsWithoutHTML), 01M86NV6MRTYPRBFQQYY9BKY65 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireProgressState), 01M86NV6MR3REF54YN80MD3FDY (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireRootProps), 01M86NV6MR8F70X6GR42B2BYEJ (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireRootPropsWithoutHTML), 01M86NV6MRNYYN1X2E2AXRF405 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireRootState), 01M86NV6MRPXJYVMQP1B0AXPEP (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireShortcutMode), 01M86NV6MRJRNH01HFCZ2VD7TZ (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireSkipProps), 01M86NV6MRRG9QBFG0K6NNT5D4 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireSkipPropsWithoutHTML), 01M86NV6MR6D4DRQX26YZCNDRT (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireSubmitProps), 01M86NV6MRJCW2ZX0XRHJWD010 (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireSubmitPropsWithoutHTML), 01M86NV6MR5J8FDJZ7SHV5MDDR (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireTitleProps), 01M86NV6MRYC4YH2C0TEEZYZCC (packages/primitives/src/lib/questionnaire/types.ts#QuestionnaireTitlePropsWithoutHTML), 01M86NV6MRZHJXPK9MJXY8SJSE (packages/primitives/src/lib/svelte-virtual/virtualizer.svelte.ts#SvelteVirtualizer)",
+        "round 2: docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate",
+        "round 2: packages/primitives/src/lib/questionnaire/fixtures/questionnaire-test-utils.ts#submitGate",
         "round 3: docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate",
         "round 4: packages/cli/src/utils/utils.ts#isUrlGate",
-        "round 8: packages/primitives/src/lib/message-scroller/message-scroller.svelte.ts#useMessageScrollerScrollableGate"
+        "round 6: packages/cli/src/preset/presets.ts#resolvePresetGate",
+        "round 8: packages/cli/src/preset/preset.ts#isValidPresetGate",
+        "round 9: docs/src/lib/features/design-system/components/design-system-provider-state.svelte.ts#useDesignSystemGate"
       ],
       "timings": {
-        "seedMs": 8319,
+        "seedMs": 7051,
         "indexMs": [
-          1192,
-          25105,
-          1204,
-          1347,
-          1326,
+          1109,
+          3144,
+          1158,
+          1354,
+          1331,
+          1174,
           1120,
-          1154,
-          1882,
-          1019,
-          2230
+          2426,
+          1666,
+          977
         ]
       },
       "failures": [
-        "round 2 rename-edit: 01M86NV6MH2C1H3BFRG91ZJ1VQ removed, should be at docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate (1 statement(s), 7 fingerprint entries)",
-        "round 3 rename-edit: 01M86NV6MHPS9TPT1P34N6F6J2 removed, should be at docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate (1 statement(s), 13 fingerprint entries)",
-        "round 4 rename-edit: 01M86NV6MQ3M88C1DEPF4J22Y0 removed, should be at packages/cli/src/utils/utils.ts#isUrlGate (2 statement(s), 13 fingerprint entries)",
-        "round 8 rename-edit: 01M86NV6MQEJHE4V6R98X8KN8W removed, should be at packages/primitives/src/lib/message-scroller/message-scroller.svelte.ts#useMessageScrollerScrollableGate (1 statement(s), 8 fingerprint entries)"
+        "round 2 rename: 01M871PAJQ72NTXFJYXQ3TCGSG removed, should be at packages/primitives/src/lib/questionnaire/fixtures/questionnaire-test-utils.ts#submitGate (1 statement(s), 6 fingerprint entries)",
+        "round 2 rename-edit: 01M871PAJHPJF39NE759J5C83V removed, should be at docs/src/lib/features/typeset/preview-override.svelte.ts#provideTypesetPreviewOverrideGate (1 statement(s), 7 fingerprint entries)",
+        "round 3 rename-edit: 01M871PAJHWR6DE63HBAGRCMAT removed, should be at docs/src/lib/features/typeset/typeset.svelte.ts#findFontGate (1 statement(s), 13 fingerprint entries)",
+        "round 4 rename-edit: 01M871PAJQQ0CZ8JXCVDTAYMVG removed, should be at packages/cli/src/utils/utils.ts#isUrlGate (2 statement(s), 13 fingerprint entries)",
+        "round 6 rename-edit: 01M871PAJPJQN22YCVJ9XQM8AM removed, should be at packages/cli/src/preset/presets.ts#resolvePresetGate (1 statement(s), 12 fingerprint entries)",
+        "round 8 rename-edit: 01M871PAJP19NH6ZGA0QQB9KZ8 removed, should be at packages/cli/src/preset/preset.ts#isValidPresetGate (1 statement(s), 7 fingerprint entries)",
+        "round 9 rename-edit: 01M871PAJH17J34R6HBV6345EY removed, should be at docs/src/lib/features/design-system/components/design-system-provider-state.svelte.ts#useDesignSystemGate (1 statement(s), 7 fingerprint entries)"
       ]
     },
     {
@@ -405,24 +411,24 @@
         "round 7: packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate"
       ],
       "timings": {
-        "seedMs": 649,
+        "seedMs": 605,
         "indexMs": [
-          480,
-          447,
-          404,
-          408,
-          464,
-          412,
-          485,
-          405,
-          423,
-          440
+          420,
+          414,
+          398,
+          399,
+          452,
+          424,
+          411,
+          360,
+          425,
+          403
         ]
       },
       "failures": [
-        "round 1 rename-edit: 01M86P21XJRMRJ7GJGPMR51WZ7 removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)",
-        "round 2 rename-edit: 01M86P21XH4VSZ35BXHYTKSQ60 removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate (1 statement(s), 9 fingerprint entries)",
-        "round 7 rename-edit: 01M86P21XH33EJD1MKX7GSRSBP removed, should be at packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate (1 statement(s), 7 fingerprint entries)"
+        "round 1 rename-edit: 01M871WX3DKK64SJAT25KDRVJ2 removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)",
+        "round 2 rename-edit: 01M871WX3DGW1P2M2NKGMA611C removed, should be at packages/query-core/src/hydration.ts#defaultShouldDehydrateQueryGate (1 statement(s), 9 fingerprint entries)",
+        "round 7 rename-edit: 01M871WX3D31TXAD16EKSZ1390 removed, should be at packages/query-core/src/timeoutManager.ts#systemSetTimeoutZeroGate (1 statement(s), 7 fingerprint entries)"
       ]
     },
     {
@@ -534,22 +540,22 @@
         "round 1: Packages/Models/Sources/Models/ServerFilter.swift#ServerFilter.hasExpiryGate()"
       ],
       "timings": {
-        "seedMs": 3182,
+        "seedMs": 3323,
         "indexMs": [
-          2195,
-          2418,
-          2332,
-          2395,
-          2319,
-          2416,
-          2353,
-          2982,
-          2468,
-          2319
+          2125,
+          2276,
+          2169,
+          2223,
+          2143,
+          2261,
+          2145,
+          2380,
+          2361,
+          2227
         ]
       },
       "failures": [
-        "round 1 rename-edit: 01M86P2HW24TVNVQ1Y4AG7JGH4 removed, should be at Packages/Models/Sources/Models/ServerFilter.swift#ServerFilter.hasExpiryGate() (1 statement(s), 6 fingerprint entries)"
+        "round 1 rename-edit: 01M871XCMWSQGZ874977AEKSSY removed, should be at Packages/Models/Sources/Models/ServerFilter.swift#ServerFilter.hasExpiryGate() (1 statement(s), 6 fingerprint entries)"
       ]
     },
     {
@@ -655,25 +661,25 @@
         "round 9: Source/Core/HTTPHeaders.swift#HTTPHeaders.sortGate()"
       ],
       "timings": {
-        "seedMs": 1764,
+        "seedMs": 1594,
         "indexMs": [
-          1291,
-          1244,
-          2361,
-          1179,
-          1205,
-          1203,
-          1252,
-          1942,
-          1290,
-          1185
+          1195,
+          1123,
+          2057,
+          1147,
+          1149,
+          1168,
+          1238,
+          1978,
+          1661,
+          1959
         ]
       },
       "failures": [
-        "round 3 rename-edit: 01M86P40ER2V06K0W0SJ4TMMCP removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeader.websocketProtocolGate(_:) (1 statement(s), 11 fingerprint entries)",
-        "round 6 rename-edit: 01M86P40ERSPW36KP9BEERT5WX removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeader.acceptLanguageGate(_:) (1 statement(s), 11 fingerprint entries)",
-        "round 7 rename: 01M86P40ERCB8JGJ9G87H9Y5EC removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeaders.startIndexGate (0 statement(s), 6 fingerprint entries)",
-        "round 9 rename-edit: 01M86P40ERBSTRCJKPNQSDQFRK removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeaders.sortGate() (1 statement(s), 15 fingerprint entries)"
+        "round 3 rename-edit: 01M871YPJ8SN3HFXNK58EEN780 removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeader.websocketProtocolGate(_:) (1 statement(s), 11 fingerprint entries)",
+        "round 6 rename-edit: 01M871YPJ86MNC2Y3DAH0BF4WX removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeader.acceptLanguageGate(_:) (1 statement(s), 11 fingerprint entries)",
+        "round 7 rename: 01M871YPJ8AD09BYDBK5E8XTRF removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeaders.startIndexGate (0 statement(s), 6 fingerprint entries)",
+        "round 9 rename-edit: 01M871YPJ8J892ZVEJN7FAJ21A removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeaders.sortGate() (1 statement(s), 15 fingerprint entries)"
       ]
     }
   ]

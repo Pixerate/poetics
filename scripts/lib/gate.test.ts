@@ -91,6 +91,22 @@ describe("runGate", () => {
   }, GATE_TIMEOUT_MS);
 });
 
+describe("runGate renames", () => {
+  it("never renames a unit named after a keyword, which would rewrite the keyword everywhere", async () => {
+    const root = await mkdtemp(join(tmpdir(), "poetics-gate-keyword-"));
+    await mkdir(join(root, "src"), { recursive: true });
+    // A test helper named `type`, as in shadcn-svelte: renaming it by word would turn `export type Box` into `export typeGate Box`.
+    await writeFile(join(root, "src/helpers.ts"), fn("type"));
+    await writeFile(join(root, "src/box.ts"), "export type Box = { size: number };\n");
+    const result = await runGate(ENTRY, root, { rounds: 1, seed: 26 });
+    expect(result.unitKinds).toEqual({ function: 1, type: 1 });
+    expect(result.byKind.rename!.skipped).toBe(1);
+    expect(result.byKind["rename-edit"]!.skipped).toBe(1);
+    expect(result.spurious).toEqual([]);
+    expect(result.failures).toEqual([]);
+  }, GATE_TIMEOUT_MS);
+});
+
 /** A React corpus: components with block bodies, which only the React adapter claims. */
 async function reactCorpus(): Promise<string> {
   const root = await mkdtemp(join(tmpdir(), "poetics-gate-react-"));
