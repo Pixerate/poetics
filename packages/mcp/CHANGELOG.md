@@ -1,5 +1,15 @@
 # @poetics/mcp
 
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies [[`2f231bb`](https://github.com/Pixerate/poetics/commit/2f231bb16b80aa7179c98368d26187d10437d093)]:
+  - @poetics/core@0.10.1
+  - @poetics/adapter-typescript@0.6.5
+  - @poetics/cli@0.12.3
+  - @poetics/store@0.8.3
+
 ## 0.4.15
 
 ### Patch Changes

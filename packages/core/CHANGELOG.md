@@ -1,5 +1,11 @@
 # @poetics/core
 
+## 0.10.1
+
+### Patch Changes
+
+- [#105](https://github.com/Pixerate/poetics/pull/105) [`2f231bb`](https://github.com/Pixerate/poetics/commit/2f231bb16b80aa7179c98368d26187d10437d093) Thanks [@surrealroad](https://github.com/surrealroad)! - Units that resemble several others after being edited as their file moved now pair by a name each side has once, when that pair is itself above the similarity threshold, instead of all being queued. Moving Alamofire's `Combine.swift` in the same commit that renamed a method its three publisher types call no longer queues them.
+
 ## 0.10.0
 
 ### Minor Changes
