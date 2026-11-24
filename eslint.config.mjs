@@ -33,7 +33,8 @@ export default [
           message: 'Enums are non-erasable TypeScript syntax and unsupported by Node 24 type stripping. Use a union or const object instead.',
         },
         {
-          selector: 'TSModuleDeclaration',
+          // Ambient `declare module`/`declare global` blocks are erasable, so only flag runtime namespaces.
+          selector: "TSModuleDeclaration[declare=false][kind!='global']",
           message: 'Namespaces/modules are non-erasable TypeScript syntax and unsupported by Node 24 type stripping.',
         },
         {
