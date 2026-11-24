@@ -258,7 +258,11 @@ async function refactor(
     found && ts.isFunctionDeclaration(found.unit.declarations[0]!) && found.unit.declarations.length === 1 && (found.unit.declarations[0]!.body?.statements.length ?? 0) >= min;
 
   if (kind === "rename" || kind === "rename-edit") {
-    const candidates = (kind === "rename" ? units : editable).filter((unit) => !svelteComponent(unit) && unit.name.length >= 4 && declared.get(unit.name) === 1 && unit.name !== "default");
+    // The rename rewrites the name as a word in every file, so a keyword's name (`type`, `async`, `default`) would
+    // rewrite the keyword too and break every file that uses it.
+    const candidates = (kind === "rename" ? units : editable).filter(
+      (unit) => !svelteComponent(unit) && unit.name.length >= 4 && declared.get(unit.name) === 1 && ts.identifierToKeywordKind(ts.factory.createIdentifier(unit.name)) === undefined,
+    );
     for (let tries = 0; tries < 20 && candidates.length > 0; tries++) {
       const unit = pick(candidates)!;
       const found = await code(unit);
