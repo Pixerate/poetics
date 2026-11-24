@@ -14,6 +14,7 @@
   },
   "scripts": {
     "build": "pnpm -r --filter \"./packages/*\" build",
+    "lint": "eslint packages scripts",
     "typecheck": "tsc -b && tsc -p tsconfig.test.json",
     "check": "pnpm -r --if-present check",
     "test": "vitest run",
@@ -44,7 +45,9 @@
     "@poetics/core": "workspace:*",
     "@poetics/store": "workspace:*",
     "@types/node": "^24.19.2",
+    "eslint": "^9.39.5",
     "typescript": "^6.0.3",
+    "typescript-eslint": "^8.73.0",
     "vitest": "^5.1.0"
   }
 }
