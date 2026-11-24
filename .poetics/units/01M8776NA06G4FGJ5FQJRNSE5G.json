@@ -1,0 +1,37 @@
+{
+  "uid": "01M8776NA06G4FGJ5FQJRNSE5G",
+  "kind": "function",
+  "framework": "none",
+  "name": "textOnlyWords",
+  "location": {
+    "file": "scripts/lib/gate-typescript.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:f0edafe000887c36c19af75a35196a6111fd397fd84e551f9e65ad9ab62a9f3a",
+      "interfaceHash": "b3:0dabae50fb00869cb7934c12b5317082d1915c759f932c08ca0bbd28725e4345",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Finds the words a rename by text would rewrite in TypeScript and Svelte where an editor's rename would not: inside strings and after a dot. shadcn-svelte's submit() returns requiredElement('[data-testid=\"submit\"]'), so renaming it by text changed its body too and lost its uid. Such names are no longer rename candidates; finding too many only leaves a name out.",
+      "links": [
+        {
+          "kind": "github-issue",
+          "ref": "#26"
+        }
+      ]
+    }
+  ],
+  "docs": "Every word in `texts` inside a string literal or after a `.`: a rename by text would rewrite them, and an editor's\nrename of a top-level declaration never does. It errs towards finding too many (a template's `${}` counts as\nstring, and so does text between apostrophes in markup), which only leaves a name out of the gate's renames.",
+  "tests": [
+    {
+      "file": "scripts/lib/gate-typescript.test.ts",
+      "via": "static"
+    }
+  ]
+}
