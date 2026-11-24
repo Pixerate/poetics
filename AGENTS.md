@@ -114,8 +114,8 @@ is about. [`GOTCHAS.md`](GOTCHAS.md) is generated from the notes by
 
 ## Code style
 
-- TypeScript, ESM, Node 24 type stripping: erasable syntax only (no `enum`,
-  `namespace` or parameter properties), `.ts` extensions in relative imports.
+- TypeScript, ESM, Node 24 type stripping: erasable syntax only and `.ts`
+  extensions in relative imports (enforced by `pnpm lint`).
 - Match the surrounding code: naming, comment density, idiom.
 - Comments say why, not what. Public APIs get a one-line TSDoc.
 - Planned-but-unbuilt APIs exist as typed stubs that call `notImplemented()`.
