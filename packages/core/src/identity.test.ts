@@ -87,6 +87,34 @@ describe("matchIdentities", () => {
     expect(twice.queued).toHaveLength(1);
   });
 
+  it("pairs look-alikes edited as their file moved by name, when each pair is itself similar", () => {
+    // Three copies of one pattern, each with its own edit; every one resembles all three after the move.
+    const copy = (n: number) => [...SHAPE, `own${n}`];
+    const edited = (n: number) => [...SHAPE.slice(1), `own${n}`, "x0"];
+    const result = matchIdentities(
+      [tracked("U1", code("a.ts#One", "1", copy(1))), tracked("U2", code("a.ts#Two", "2", copy(2))), tracked("U3", code("a.ts#Three", "3", copy(3)))],
+      [code("b.ts#Three", "3e", edited(3)), code("b.ts#One", "1e", edited(1)), code("b.ts#Two", "2e", edited(2))],
+    );
+    expect(result.matched.map((m) => [m.uid, m.key, m.via])).toEqual([
+      ["U1", "b.ts#One", "similarity"],
+      ["U2", "b.ts#Two", "similarity"],
+      ["U3", "b.ts#Three", "similarity"],
+    ]);
+    expect(result.queued).toEqual([]);
+  });
+
+  it("does not pair look-alikes by name when that pair is not similar enough", () => {
+    const set = (prefix: string, n: number) => Array.from({ length: n }, (_, i) => `${prefix}${i}`);
+    const [c, a, b] = [set("c", 6), set("a", 6), set("b", 6)];
+    // f's new code looks like g's old code, not like f's: the names say one thing, the shapes another.
+    const result = matchIdentities(
+      [tracked("U1", code("a.ts#f", "f", [...c, ...a])), tracked("U2", code("a.ts#g", "g", [...c, ...b]))],
+      [code("b.ts#f", "f2", [...c, ...b, "x"]), code("b.ts#g", "g2", [...c, ...a, ...b])],
+    );
+    expect(result.matched.map((m) => [m.uid, m.key])).toEqual([["U2", "b.ts#g"]]);
+    expect(result.queued).toEqual([{ reason: "similar to more than one unit", uids: ["U1"], keys: ["b.ts#f"] }]);
+  });
+
   it("queues rather than guesses when content or shape fits more than one unit", () => {
     const sameContent = matchIdentities(
       [tracked("U1", code("a.ts#f", "same")), tracked("U2", code("a.ts#g", "same"))],

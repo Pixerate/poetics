@@ -259,7 +259,10 @@ stages and never revisits a decision:
    the rest are matched if one pair is left, and held for stage 5 otherwise.
 4. **Similarity.** Jaccard similarity of fingerprints, for units with at least 8
    entries, at 0.65 or more. A pair is matched only when neither unit resembles
-   anything else above the threshold; otherwise the whole group is held.
+   anything else above the threshold. In a group where units resemble several
+   others, those whose name appears once on each side pair by name when their
+   own pair is above the threshold, as when copies of one pattern are edited
+   while their file moves; the rest of the group is held.
 5. **Owner** ([ADR 0027](decisions/0027-members-follow-their-owner.md)). When a
    unit's owner (from the store's `owner`, and the adapter's on the other side)
    was matched, the unit pairs with the one unit owned by that match with the

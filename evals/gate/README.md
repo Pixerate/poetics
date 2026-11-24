@@ -99,6 +99,13 @@ the kind of unit each refactor picked.
 - What is left on Alamofire: 3 one-statement `rename-edit`s, the gate's
   rename of `startIndex` that also rewrote `headers.startIndex`, and the 3
   publisher types queued when `Combine.swift` moves.
+- **The Combine queue (2026-11-24)** came from two refactors in one round:
+  renaming `Protected.read(_:)` updated the calls in `DataResponsePublisher`,
+  `DataStreamPublisher` and `DownloadResponsePublisher`, three near-copies,
+  in the same commit that moved their file, so each resembled all three.
+  Look-alikes in a similarity group now pair by a name each side has once
+  when that pair is itself above the threshold, as shared content already
+  did. Alamofire keeps **479 of 483**; the other corpora are unchanged.
 
 ## Swift findings (2026-11-20)
 
