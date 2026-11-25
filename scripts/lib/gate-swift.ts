@@ -140,13 +140,18 @@ export function swiftBody(text: string, startLine: number, endLine: number): Swi
   return { open, close, statements: statementStarts(code, open, close) };
 }
 
-const CONTINUES_LINE = /^(\.|\}|\)|\]|else\b|catch\b|where\b|&&|\|\||\?\?|[?:+\-*/=<>,])/;
+// A line starting with `{` opens a body for the line before: SwiftFormat puts the brace of a multi-line `if` condition there.
+const CONTINUES_LINE = /^(\.|\{|\}|\)|\]|else\b|catch\b|where\b|&&|\|\||\?\?|[?:+\-*/=<>,])/;
 const LEAVES_LINE_OPEN = /(\(|\[|,|=|&&|\|\||\?\?|[+\-*/:?]|\bin|->)$/;
 
-/** Line starts of statements directly in a body: lines at its top level that do not continue the line before. */
+/**
+ * Line starts of statements directly in a body: lines at its top level that do not continue the line before. A
+ * whole `#if` … `#endif` block is one statement, so nothing cut at a statement leaves `#if` and `#endif` apart.
+ */
 function statementStarts(code: string, open: number, close: number): number[] {
   const starts: number[] = [];
   let depth = 0;
+  let ifDepth = 0;
   let previous = "{";
   let i = code.indexOf("\n", open) + 1;
   while (i > 0 && i < close) {
@@ -154,7 +159,9 @@ function statementStarts(code: string, open: number, close: number): number[] {
     const end = newline === -1 || newline > close ? close : newline;
     const line = code.slice(i, end).trim();
     if (line) {
-      if (depth === 0 && !CONTINUES_LINE.test(line) && !LEAVES_LINE_OPEN.test(previous)) starts.push(i);
+      if (depth === 0 && ifDepth === 0 && !CONTINUES_LINE.test(line) && !LEAVES_LINE_OPEN.test(previous)) starts.push(i);
+      if (/^#if\b/.test(line)) ifDepth++;
+      else if (/^#endif\b/.test(line)) ifDepth--;
       previous = line;
     }
     for (let j = i; j < end; j++) {
