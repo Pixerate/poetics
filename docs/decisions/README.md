@@ -34,5 +34,6 @@ new record here.
 | [0025](0025-out-of-process-adapter-contract.md) | Out-of-process adapters answer batched JSON requests on stdin and stdout | Accepted |
 | [0026](0026-swift-units.md) | Swift units are non-private declarations, with SwiftUI views as components | Accepted |
 | [0027](0027-members-follow-their-owner.md) | A member follows its owner when the owner is renamed or moved | Accepted |
+| [0028](0028-lone-pair-in-a-file.md) | A lone removed and created unit in one file pair at a lower threshold | Proposed |
 
 New records copy [`template.md`](template.md).

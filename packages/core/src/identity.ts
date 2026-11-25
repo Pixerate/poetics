@@ -1,7 +1,7 @@
 // Identity matching: which unit in the code now is which tracked unit, across
 // renames, moves, splits and merges. Stages run in a fixed order (declared
-// lineage, file and name, content hash, syntax-tree similarity, then members
-// following their owner), and anything with more than one plausible answer is
+// lineage, file and name, content hash, syntax-tree similarity, members
+// following their owner, then a file's lone leftover pair), and anything with more than one plausible answer is
 // queued for a person, never guessed.
 import { isRemoved } from "./removal.ts";
 import type { Hash, LineageEntry, LineageKind, Uid, Unit, UnitKind } from "./types.ts";
@@ -46,14 +46,14 @@ export interface LineageDeclaration {
   to: UnitRef[];
 }
 
-export type MatchVia = "declared" | "location" | "content" | "similarity" | "owner";
+export type MatchVia = "declared" | "location" | "content" | "similarity" | "owner" | "lone";
 
 /** A tracked unit found again, and the lineage entries its file should gain. */
 export interface IdentityMatch {
   uid: Uid;
   key: string;
   via: MatchVia;
-  /** Set for similarity matches. */
+  /** Set for similarity and lone matches. */
   score?: number;
   lineage: LineageEntry[];
   /**
@@ -101,6 +101,8 @@ export interface MatchOptions {
   threshold?: number;
   /** Fewest fingerprint entries a unit needs to be matched by similarity. Default 8. */
   minSize?: number;
+  /** The similarity at which a file's one leftover tracked unit and one new unit are the same (ADR 0028). Default 0.2. */
+  loneThreshold?: number;
 }
 
 // Measured on this repository: the closest unrelated pair of functions scores 0.61,
@@ -109,6 +111,9 @@ const DEFAULT_THRESHOLD = 0.65;
 // One-line functions carry too little shape to tell apart; they match only by
 // declaration, location or content.
 const DEFAULT_MIN_SIZE = 8;
+// From the identity gate and real history (ADR 0028): small units renamed and edited score 0.25 or more against
+// their old selves, and a file's one removed and one created unit that were different units scored 0.08 or less.
+const DEFAULT_LONE_THRESHOLD = 0.2;
 
 /** Jaccard similarity of two fingerprints: shared subtree hashes over all of them. */
 export function similarity(a: readonly string[], b: readonly string[]): number {
@@ -316,6 +321,26 @@ export function matchIdentities(
     const pair = from.length === 1 && to.length === 1 ? (group.pairs ? group.pairs.find((p) => p.from.uid === from[0]!.uid && p.to.key === to[0]!.key) : { score: undefined }) : undefined;
     if (pair) match(from[0]!, to[0]!, group.pairs ? "similarity" : "content", pair.score === undefined ? {} : { score: Math.round(pair.score * 1000) / 1000 });
     else queue(result, group.reason(from.length, to.length), from, to, openBefore, openAfter);
+  }
+
+  // 6. A lone pair (ADR 0028): when one file has exactly one tracked unit and one new unit of a namespace left open,
+  // a small unit renamed and edited is the likeliest story, if the two share some shape. The file and the lack of
+  // any alternative stand in for the size the similarity stage needs.
+  {
+    const loneThreshold = options.loneThreshold ?? DEFAULT_LONE_THRESHOLD;
+    const slot = (unit: CodeUnit) => `${unit.file}\0${space(unit.kind)}`;
+    const count = <T extends CodeUnit>(units: readonly T[], open: (unit: T) => boolean) => {
+      const bySlot = new Map<string, T[]>();
+      for (const unit of units) if (open(unit)) bySlot.set(slot(unit), [...(bySlot.get(slot(unit)) ?? []), unit]);
+      return bySlot;
+    };
+    const leftTo = count(after, (unit) => openAfter.has(unit.key));
+    for (const [key, from] of count(before, (unit) => openBefore.has(unit.uid))) {
+      const to = leftTo.get(key);
+      if (from.length !== 1 || to?.length !== 1) continue;
+      const score = similarity(from[0]!.fingerprint, to[0]!.fingerprint);
+      if (score >= loneThreshold) match(from[0]!, to[0]!, "lone", { score: Math.round(score * 1000) / 1000 });
+    }
   }
 
   for (const unit of after) if (openAfter.has(unit.key)) result.created.push({ key: unit.key });

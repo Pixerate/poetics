@@ -128,6 +128,59 @@ describe("matchIdentities", () => {
     expect(twoLookAlikes.created).toEqual([]);
   });
 
+  describe("a lone pair in a file (ADR 0028)", () => {
+    // Four subtrees, renamed and given one more statement: too small and too changed for the similarity stage.
+    const SMALL = ["t0", "t1", "t2", "t3"];
+    const GREW = ["t1", "t2", "t3", "n0", "n1", "n2"];
+
+    it("pairs a file's one leftover tracked unit with its one new unit when they share some shape", () => {
+      const result = matchIdentities([tracked("U1", code("a.ts#f", "f", SMALL)), tracked("U2", code("a.ts#g", "g", SHAPE))], [code("a.ts#fGate", "f2", GREW), code("a.ts#g", "g", SHAPE)]);
+      expect(result.matched).toEqual([
+        { uid: "U2", key: "a.ts#g", via: "location", lineage: [] },
+        { uid: "U1", key: "a.ts#fGate", via: "lone", score: 0.429, lineage: [{ kind: "rename", from: "f" }] },
+      ]);
+      expect([result.created, result.removed, result.queued]).toEqual([[], [], []]);
+    });
+
+    it("does not pair units that share too little, and takes its threshold from the options", () => {
+      const other = ["t0", "o1", "o2", "o3", "o4", "o5"];
+      const before = [tracked("U1", code("a.ts#f", "f", SMALL))];
+      const result = matchIdentities(before, [code("a.ts#other", "o", other)]);
+      expect(result.matched).toEqual([]);
+      expect(result.created).toEqual([{ key: "a.ts#other" }]);
+      expect(result.removed).toEqual([{ uid: "U1" }]);
+      expect(matchIdentities(before, [code("a.ts#other", "o", other)], [], { loneThreshold: 0.1 }).matched.map((m) => m.via)).toEqual(["lone"]);
+      expect(matchIdentities(before, [code("a.ts#fGate", "f2", GREW)], [], { loneThreshold: 0.5 }).matched).toEqual([]);
+    });
+
+    it("needs exactly one unit open on each side, in the same file and namespace", () => {
+      const two = matchIdentities([tracked("U1", code("a.ts#f", "f", SMALL))], [code("a.ts#fGate", "f2", GREW), code("a.ts#h", "h", ["t1", "t2", "h0"])]);
+      expect(two.matched).toEqual([]);
+      expect(two.created).toHaveLength(2);
+      const twoBefore = matchIdentities([tracked("U1", code("a.ts#f", "f", SMALL)), tracked("U2", code("a.ts#h", "h", ["t1", "h0"]))], [code("a.ts#fGate", "f2", GREW)]);
+      expect(twoBefore.matched).toEqual([]);
+      expect(matchIdentities([tracked("U1", code("a.ts#f", "f", SMALL))], [code("b.ts#fGate", "f2", GREW)]).matched).toEqual([]);
+      expect(matchIdentities([tracked("U1", code("a.ts#f", "f", SMALL))], [code("a.ts#F", "f2", GREW, "type")]).matched).toEqual([]);
+    });
+
+    it("counts a value and a type in one file apart, pairing each namespace's lone pair", () => {
+      const result = matchIdentities(
+        [tracked("U1", code("a.ts#f", "f", SMALL)), tracked("U2", code("a.ts#T", "t", ["k0", "k1"], "type"))],
+        [code("a.ts#fGate", "f2", GREW), code("a.ts#TGate", "t2", ["k0", "k1", "k2"], "type")],
+      );
+      expect(result.matched.map((m) => [m.uid, m.key, m.via])).toEqual([
+        ["U1", "a.ts#fGate", "lone"],
+        ["U2", "a.ts#TGate", "lone"],
+      ]);
+    });
+
+    it("leaves what an earlier stage queued for a person", () => {
+      const result = matchIdentities([tracked("U1", code("a.ts#f", "same")), tracked("U2", code("a.ts#g", "same"))], [code("a.ts#f2", "same"), code("a.ts#g2", "same")]);
+      expect(result.matched).toEqual([]);
+      expect(result.queued).toHaveLength(1);
+    });
+  });
+
   describe("members following their owner (ADR 0027)", () => {
     const type = (ref: string, body: string) => code(ref, body, SHAPE, "type");
     const member = (ref: string, body: string, owner: string) => ({ ...code(ref, body, ["m"]), owner });

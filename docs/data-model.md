@@ -270,6 +270,11 @@ stages and never revisits a decision:
    `JSONEncodingGate.default`. Repeated until nothing new is found, so nested
    types bring their members. Then what the held groups still have open is
    decided as before: one pair left matches, and the rest is queued.
+6. **Lone pair** ([ADR 0028](decisions/0028-lone-pair-in-a-file.md)). When a
+   file has exactly one tracked unit and one code unit of a namespace still
+   open, they pair if their similarity is at least 0.2, whatever their size,
+   with `via: "lone"`. This keeps small functions that are renamed and edited
+   together, which score too low or are too small for stage 4.
 
 `poetics index` runs this on every unit that is no longer at its recorded
 place, with the code at `--since` (default `HEAD`) as the earlier snapshot,
