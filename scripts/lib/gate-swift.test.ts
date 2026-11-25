@@ -81,6 +81,54 @@ describe("swiftBody", () => {
     ]);
   });
 
+  it("joins the brace of a multi-line condition, on a line of its own, to its statement", () => {
+    // SwiftFormat's style in IceCubes' Router.handle(url:): a cut at one of these braces left code with no handleRest.
+    const text = `func handle(url: URL) -> Result {
+  guard let client else { return .none }
+
+  if url.isTag,
+    let tag = url.last
+  {
+    navigate(tag)
+    return .handled
+  } else if url.isAccount,
+    let host = url.host
+  {
+    open(host)
+    return .handled
+  }
+  return .none
+}
+`;
+    const body = swiftBody(text, 1, 16)!;
+    expect(body.statements.map((start) => text.slice(start).trimStart().split("\n")[0])).toEqual([
+      "guard let client else { return .none }",
+      "if url.isTag,",
+      "return .none",
+    ]);
+  });
+
+  it("counts an #if block as one statement, so a split never cuts between #if and #endif", () => {
+    // As IceCubes' EditorStore.runAssistant(prompt:) is written: a cut inside left #if and #endif in two functions.
+    const text = `func run(prompt: Prompt) async {
+  #if !targetEnvironment(macCatalyst)
+    let assistant = Assistant()
+    var stream: Stream?
+    switch prompt {
+    case .fit: stream = await assistant.fit()
+    }
+    if let stream { consume(stream) }
+  #else
+    fallback()
+  #endif
+  done()
+}
+`;
+    const body = swiftBody(text, 1, 13)!;
+    expect(body.statements.map((start) => text.slice(start).trimStart().split("\n")[0])).toEqual(["#if !targetEnvironment(macCatalyst)", "done()"]);
+    expect(splitBody(text, body, "runRest")).toBeUndefined();
+  });
+
   it("is undefined for a type or a computed property", () => {
     expect(swiftBody(CANVAS, 1, 18)).toBeUndefined();
     expect(swiftBody("var area: Double {\n    func inner() {}\n    return 1\n}\n", 1, 4)).toBeUndefined();
