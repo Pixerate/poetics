@@ -1,6 +1,6 @@
 # 0028. A lone removed and created unit in one file pair at a lower threshold
 
-- Status: Proposed
+- Status: Accepted (2026-11-25)
 - Date: 2026-11-25
 - Refines: identity matching as [`docs/data-model.md`](../data-model.md)
   describes it
