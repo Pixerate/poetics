@@ -211,7 +211,7 @@ describe("planIndex and applyIndex", () => {
     await write(root, "src/cart.ts", TOTAL.replace("function total(", "function cartTotal(").replace("return sum +", "return 0 + sum +"));
     const plan = await planIndex(root, CONFIG, { rationale: "Reorganise" });
     expect(plan.moves.map(({ uid, to, lineage, via }) => ({ uid, to, lineage, via }))).toEqual([
-      { uid: before.get("total")!.uid, to: { file: "src/cart.ts", name: "cartTotal" }, lineage: [{ kind: "rename", from: "total" }], via: "similarity" },
+      { uid: before.get("total")!.uid, to: { file: "src/cart.ts", name: "cartTotal" }, lineage: [{ kind: "rename", from: "total", via: "similarity", score: 0.815 }], via: "similarity" },
       { uid: before.get("formatPrice")!.uid, to: { file: "src/format/price.ts", name: "formatPrice" }, lineage: [{ kind: "move", from: "src/price.ts" }], via: "content" },
     ]);
     expect(plan.versions.map((v) => v.uid)).toEqual([before.get("total")!.uid]);
@@ -220,10 +220,29 @@ describe("planIndex and applyIndex", () => {
 
     await applyIndex(root, plan, human);
     const after = await store(root);
-    expect(after.get("cartTotal")).toMatchObject({ uid: before.get("total")!.uid, location: { file: "src/cart.ts" }, lineage: [{ kind: "rename", from: "total" }] });
+    expect(after.get("cartTotal")).toMatchObject({ uid: before.get("total")!.uid, location: { file: "src/cart.ts" }, lineage: [{ kind: "rename", from: "total", via: "similarity", score: 0.815 }] });
     expect(after.get("formatPrice")!.versions).toEqual(before.get("formatPrice")!.versions);
     expect(after.get("gone")!.versions.at(-1)).toMatchObject({ change: "removed", rationale: "Reorganise" });
     expect(await planIndex(root, CONFIG)).toMatchObject({ moves: [], versions: [], created: [], removed: [], queued: [] });
+  });
+
+  it("records a file's lone leftover pair as a rename found by lone, with its score (ADR 0028, ADR 0029)", async () => {
+    const root = await seeded({ "src/price.ts": PRICE });
+    const before = await store(root);
+    await write(root, "src/price.ts", PRICE.replace("formatPrice(", "formatPriceGate(").replace("{\n", "{\n  void cents;\n"));
+    const plan = await planIndex(root, CONFIG, { rationale: "Rename" });
+    expect(plan.moves.map(({ uid, lineage, via }) => ({ uid, lineage, via }))).toEqual([
+      { uid: before.get("formatPrice")!.uid, lineage: [{ kind: "rename", from: "formatPrice", via: "lone", score: expect.any(Number) }], via: "lone" },
+    ]);
+    await applyIndex(root, plan, human);
+    expect((await store(root)).get("formatPriceGate")!.lineage).toEqual(plan.moves[0]!.lineage);
+  });
+
+  it("records content and declared matches without saying how they were found", async () => {
+    const root = await seeded({ "src/price.ts": PRICE });
+    await rm(join(root, "src/price.ts"));
+    await write(root, "src/money.ts", PRICE);
+    expect((await planIndex(root, CONFIG)).moves.map((m) => m.lineage)).toEqual([[{ kind: "move", from: "src/price.ts" }]]);
   });
 
   it("follows test files git saw renamed, for moved and unmoved units alike", async () => {

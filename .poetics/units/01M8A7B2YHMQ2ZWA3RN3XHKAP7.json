@@ -1,0 +1,31 @@
+{
+  "uid": "01M8A7B2YHMQ2ZWA3RN3XHKAP7",
+  "kind": "type",
+  "framework": "none",
+  "name": "LineageInference",
+  "location": {
+    "file": "packages/core/src/types.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:79160ba796b666f0faebeb22564d92142726a3eb081b9143dd2b05c0130a4fe5",
+      "interfaceHash": "b3:22462dd5f3cfd28cbc67d9313d64a5f067ebc8db6f7f8b403ab3422aa99688b3",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Names the two ways poetics index infers lineage from shape, similarity above the threshold and a file's lone leftover pair, for the via field of a lineage entry (ADR 0029).",
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0029-inferred-lineage-says-how.md"
+        }
+      ]
+    }
+  ],
+  "docs": "How `poetics index` found a rename or move nobody declared, when it rested on shape alone (ADR 0029)."
+}

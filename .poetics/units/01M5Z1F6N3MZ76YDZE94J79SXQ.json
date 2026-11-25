@@ -267,6 +267,43 @@
           "ref": "packages/cli/src/change.test.ts"
         }
       ]
+    },
+    {
+      "contentHash": "b3:c8b7ca77f2ece4f0c1395d1a47e4ca99866ab48642efcf5019521cf242070019",
+      "interfaceHash": "b3:fd52ee6eabb732e9d44e102b12bcfae4053c1b68bfb741790b922e5ae5dbd0b8",
+      "parent": "b3:d5a609ffcc42160ff8bef481bf82bb1bad43ee6e0197631ab54c9070eda74da3",
+      "change": "behaviour",
+      "rationale": "Warns once on each lineage entry with via \"lone\" that the change adds. In Swift the 0.2 floor of ADR 0028 does not separate renamed units from unrelated ones, so these renames need a person to confirm them in the pull request that records them (ADR 0029).",
+      "deps": {
+        "01M5Z1F6N1FTYYAR23HPRTR5EE": "b3:b9ace4b4528f8bd168f1d5cf1ea5d00310d85703aea9f5bbf024d8ed830b703e",
+        "01M5Z1F6N2W72KV89NHZA85J1J": "b3:629fb60c03c2dcca7cb3b0403a4babf0fe527310d8661be76e80eaad3b6b7ffc",
+        "01M5Z1F6ND8XM1DD3V2T49XSGD": "b3:9fc05d69431271176899fb4c0582763056c6b96a555ec5082f709bd060a45369",
+        "01M7MT8427DY0QEERXCQCV3YAM": "b3:40217d916d2a0d4b6e9d91823d17ffefecb3c0d9964acc63758aedec41e6d2e0",
+        "01M5Z1F6NNZ764QBAJ2DY8QTQY": "b3:01858c5a7e4434f72ec59027f2d11ed15ae15e35ab7dd4496374a9ebf73910a7",
+        "01M5Z1F6NSEZG78RH31S5GZANP": "b3:6f1bd4d062f93cf88e1b3e890edcadcbb79a8311e3f82efce3a6250f7308a575",
+        "01M5Z1F6NQR9T376HTSH2ZYP8C": "b3:85859a81a9f157d7de29c1cfe6fed88d978006bd3ed9ea8645bd87f785770203",
+        "01M5XDBC6R15PA0T08670RYQVW": "b3:c7034313ef971387c011fbcdcf06bfe2f467ae890db397d3a5de9836190a5313",
+        "01M5XDBC7A9SZKKAS2TAVNJBNS": "b3:dfa070a577e8bd3dfd1388dc7639ad14c8ea64dc5c276455a100c9b50fd916c8",
+        "01M5Z1F6NV9Q4BF2C1KBZD09MQ": "b3:73bb120c04ff81df07603ebd00c8a7b85a52b560589afe2ec8b7691c4be3c18a",
+        "01M7197DPX923K14R9JAV6MB6S": "b3:c445b73411996b115dd57f71ec857a513589e0938eec690a6f40538e32e962d5",
+        "01M5XDBC8732J5QJGW9EV89JBN": "b3:3cbdcd764a67a4481b2bd4be8daf1e3ff50e09be595e794ae06dde0897d73981",
+        "01M5XDBC8651F4PA8DEH7HP9JK": "b3:3728b4dda622cf126c17db1f1ba299fd27440a4ce501d8a111e71634633f9e88",
+        "01M5XDBC8HAP1P555V90DW4Q0E": "b3:0400d150639557153310371571de35db07198052175db09c0ab7a517945298a6",
+        "01M5Z1F6NEEP85GB1637ED9BB3": "b3:03046b777ca23622988fda2a578ec3eb10efecb92933aab0ac053bb8513f916a",
+        "01M73SYHXD5TXVNXQN4ZXTNDGT": "b3:d4e7879f01ef61c2a8f11d61f12de418945e4f0168bdf6fd8ded0c74d0123c26"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0029-inferred-lineage-says-how.md"
+        }
+      ]
     }
   ],
   "tests": [

@@ -121,6 +121,30 @@ describe("checkChange", () => {
     expect((await checkChange(root, "HEAD", SCOPE)).findings).toEqual([]);
   });
 
+  it("warns on a new lineage entry found only as a file's lone leftover pair (ADR 0029)", async () => {
+    const root = await makeGitRepo(UID);
+    const renamed = "export function b() {\n  return 1;\n}";
+    await write(root, "src/a.ts", `${renamed}\n`);
+    const unit = { ...appendVersion(unitFor(UID, "a", FN_A), renamed), name: "b" };
+    await writeUnitFile(root, { ...unit, lineage: [{ kind: "rename", from: "a", via: "lone", score: 0.43 }] });
+    const report = await checkChange(root, "HEAD", SCOPE);
+    expect(kinds(report).filter((k) => k.includes("lone"))).toEqual(["warning:lone-match"]);
+    expect(report.findings.find((f) => f.kind === "lone-match")!.message).toBe(
+      "b: rename from a was inferred only because it was the one unit left in its file (similarity 0.43); check it is the same unit, or declare which is which with lineage (poetics-refactor)",
+    );
+
+    await writeUnitFile(root, { ...unit, lineage: [{ kind: "rename", from: "a", via: "similarity", score: 0.8 }] });
+    expect(kinds(await checkChange(root, "HEAD", SCOPE))).not.toContain("warning:lone-match");
+  });
+
+  it("does not warn again about a lone match an earlier commit recorded", async () => {
+    const root = await makeGitRepo(UID);
+    await writeUnitFile(root, { ...unitFor(UID, "a", FN_A), lineage: [{ kind: "rename", from: "old", via: "lone", score: 0.3 }] });
+    runGit(root, "add", "-A");
+    runGit(root, "commit", "-q", "-m", "lone");
+    expect(kinds(await checkChange(root, "HEAD", SCOPE))).not.toContain("warning:lone-match");
+  });
+
   it("warns when an interface change leaves dependents without versions", async () => {
     const root = await makeGitRepo(UID);
     const callerSource = "export function b() {\n  return a();\n}";

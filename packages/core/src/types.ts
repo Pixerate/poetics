@@ -65,11 +65,18 @@ export interface Version {
 
 export type LineageKind = "rename" | "move" | "split" | "merge";
 
+/** How `poetics index` found a rename or move nobody declared, when it rested on shape alone (ADR 0029). */
+export type LineageInference = "similarity" | "lone";
+
 export interface LineageEntry {
   kind: LineageKind;
   from?: string;
   uids?: Uid[];
   commit?: string;
+  /** Set when the entry was inferred from similar syntax trees, not declared or found by content or owner. */
+  via?: LineageInference;
+  /** The similarity the inference rested on, with `via`. */
+  score?: number;
 }
 
 export interface TestLink {

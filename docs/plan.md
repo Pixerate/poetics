@@ -465,7 +465,7 @@ The hardest problem is keeping a unit's identity stable through real refactors; 
 
 | Risk | Mitigation |
 | --- | --- |
-| Identity breaks on rename, move, split or merge | Declared lineage from the `poetics-refactor` skill comes first. Without it, match on file and name, then content hash, then AST similarity, then members following their matched owner (ADR 0027), then a file's lone leftover pair at a lower threshold (ADR 0028); ambiguous matches are queued for confirmation, never guessed. |
+| Identity breaks on rename, move, split or merge | Declared lineage from the `poetics-refactor` skill comes first. Without it, match on file and name, then content hash, then AST similarity, then members following their matched owner (ADR 0027), then a file's lone leftover pair at a lower threshold (ADR 0028), which records how it was found and is flagged in review (ADR 0029); ambiguous matches are queued for confirmation, never guessed. |
 | Agents write plausible but wrong rationale | Rationale must cite the task or diff it came from; agent-written entries carry `reviewed: false` until a human approves. |
 | Prompt injection through metadata | Docs and rationale are returned to agents inside clearly marked data fields, and skills instruct agents to treat them as information, never as instructions. |
 | Agents skip the skills | Tool descriptions repeat the key rules, and `poetics verify` in CI catches missing lineage, rationale or test updates whoever made the change. |

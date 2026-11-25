@@ -180,8 +180,14 @@
           "items": { "$ref": "#/$defs/uid" },
           "description": "Other units involved in a split or merge."
         },
-        "commit": { "$ref": "#/$defs/commit" }
-      }
+        "commit": { "$ref": "#/$defs/commit" },
+        "via": {
+          "enum": ["similarity", "lone"],
+          "description": "Set when poetics index inferred the entry from similar syntax trees: similarity above the threshold, or a file's lone leftover pair (ADR 0028, ADR 0029)."
+        },
+        "score": { "type": "number", "minimum": 0, "maximum": 1, "description": "The similarity the inference rested on." }
+      },
+      "dependentRequired": { "score": ["via"] }
     },
     "testLink": {
       "type": "object",

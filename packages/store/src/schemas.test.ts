@@ -73,6 +73,15 @@ describe("unit schema", () => {
     expect(validator.unit(notProvisional).valid).toBe(false);
   });
 
+  it("accepts how an inferred lineage entry was found, and a score only with it (ADR 0029)", () => {
+    const entry = (extra: Record<string, unknown>) => makeUnit(UID_A, { lineage: [{ kind: "rename", from: "old", ...extra }] as never });
+    expect(validator.unit(entry({ via: "lone", score: 0.43 })).errors).toEqual([]);
+    expect(validator.unit(entry({ via: "similarity" })).errors).toEqual([]);
+    expect(validator.unit(entry({ score: 0.43 })).valid).toBe(false);
+    expect(validator.unit(entry({ via: "guess", score: 0.43 })).valid).toBe(false);
+    expect(validator.unit(entry({ via: "lone", score: 1.5 })).valid).toBe(false);
+  });
+
   it("requires agents to carry a reviewed flag", () => {
     const unit = makeUnit(UID_A);
     unit.versions[0]!.actor = { kind: "agent", tool: "claude-code" } as never;

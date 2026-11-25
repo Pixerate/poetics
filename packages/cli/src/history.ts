@@ -51,5 +51,5 @@ function linkLabel(link: Link): string {
 }
 
 function lineageLabel(entry: LineageEntry): string {
-  return `${entry.kind}${entry.from ? ` from ${entry.from}` : ""}${entry.uids ? ` with ${entry.uids.join(", ")}` : ""}${entry.commit ? ` in ${entry.commit.slice(0, 7)}` : ""}`;
+  return `${entry.kind}${entry.from ? ` from ${entry.from}` : ""}${entry.uids ? ` with ${entry.uids.join(", ")}` : ""}${entry.commit ? ` in ${entry.commit.slice(0, 7)}` : ""}${entry.via ? ` (found by ${entry.via}${entry.score !== undefined ? ` ${entry.score}` : ""})` : ""}`;
 }

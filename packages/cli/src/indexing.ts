@@ -166,7 +166,9 @@ export async function planIndex(root: string, config: PoeticsConfig, options: In
     const unit = unitByUid.get(match.uid)!;
     const at = codeByKey.get(match.key)!;
     uidOfKey.set(at.key, unit.uid);
-    const lineage = [...match.lineage];
+    // A match that rests on shape alone says so in its lineage, so a reviewer can find it later (ADR 0029).
+    const inferred = match.via === "similarity" || match.via === "lone" ? { via: match.via, ...(match.score !== undefined ? { score: match.score } : {}) } : {};
+    const lineage: LineageEntry[] = match.lineage.map((entry) => ({ ...entry, ...inferred }));
     if (match.splitInto) lineage.push({ kind: "split", uids: match.splitInto.map((key) => uidOfKey.get(key)!) });
     // A declared unit that kept its place and gained no lineage is simply where it was.
     if (lineage.length > 0) {

@@ -45,6 +45,30 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:e736eac66b93050f25d43a5612bfbf3bf7725b89c6ddc0bb2f66a9a567a64cde",
+      "interfaceHash": "b3:a944f4ca4f45118afbb953d9fd498012bfed476603fc6d2aa583a6457ee895ff",
+      "parent": "b3:c728ec79ae2af36596a032d15eca00fa56ff655bde1dfe678b1717b84a191eef",
+      "change": "interface",
+      "rationale": "Gains optional via and score: how poetics index inferred the entry from similar syntax trees, and the similarity it rested on. Declared entries and ones found by place, content or owner carry neither (ADR 0029).",
+      "deps": {
+        "01M8A7B2YHMQ2ZWA3RN3XHKAP7": "b3:79160ba796b666f0faebeb22564d92142726a3eb081b9143dd2b05c0130a4fe5",
+        "01M5XDBC764CF66C9RY7M4W1QP": "b3:db32636a8704f778df068860726587dc77ef6a9bb92f7dba8261c70e9d6049a4",
+        "01M5XDBC6X8QMJX479YKCJ7Z1C": "b3:eb4c67ba8849ebad3df37ffa4498b980d6d6b6a45af228ce7ef665fc04c4d0ce"
+      },
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0029-inferred-lineage-says-how.md"
+        }
+      ]
     }
   ],
   "tests": []
