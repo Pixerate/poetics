@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-24",
+  "date": "2026-11-25",
   "rounds": 10,
   "seed": 26,
   "results": [
@@ -71,8 +71,8 @@
         },
         "rename-edit": {
           "refactors": 10,
-          "kept": 9,
-          "lost": 1,
+          "kept": 10,
+          "lost": 0,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
@@ -108,7 +108,7 @@
           "touched": 66
         },
         "function": {
-          "kept": 24,
+          "kept": 25,
           "touched": 25
         },
         "hook": {
@@ -116,28 +116,24 @@
           "touched": 1
         }
       },
-      "spuriousCreated": 1,
-      "spurious": [
-        "round 10: lib/session.ts#getCurrentUserGate"
-      ],
+      "spuriousCreated": 0,
+      "spurious": [],
       "timings": {
-        "seedMs": 697,
+        "seedMs": 705,
         "indexMs": [
-          365,
-          349,
-          330,
           356,
-          347,
-          350,
-          394,
-          413,
-          391,
-          401
+          326,
+          396,
+          346,
+          355,
+          543,
+          606,
+          675,
+          713,
+          398
         ]
       },
-      "failures": [
-        "round 10 rename-edit: 01M876RQ2V7SRC65TEEX5ZN5WE removed, should be at lib/session.ts#getCurrentUserGate (2 statement(s), 10 fingerprint entries)"
-      ]
+      "failures": []
     },
     {
       "corpus": {
@@ -203,8 +199,8 @@
         },
         "rename-edit": {
           "refactors": 10,
-          "kept": 7,
-          "lost": 3,
+          "kept": 10,
+          "lost": 0,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
@@ -236,7 +232,7 @@
       },
       "byUnitKind": {
         "function": {
-          "kept": 74,
+          "kept": 77,
           "touched": 77
         },
         "component": {
@@ -248,32 +244,24 @@
           "touched": 2
         }
       },
-      "spuriousCreated": 3,
-      "spurious": [
-        "round 4: packages/cli/src/utils/utils.ts#isUrlGate",
-        "round 5: packages/cli/src/preset/preset.ts#generateRandomPresetGate",
-        "round 9: packages/cli/src/preset/preset.ts#isValidPresetGate"
-      ],
+      "spuriousCreated": 0,
+      "spurious": [],
       "timings": {
-        "seedMs": 7170,
+        "seedMs": 12452,
         "indexMs": [
-          1087,
-          1118,
-          1399,
-          1341,
-          1123,
-          1441,
-          1204,
-          1146,
-          1099,
-          1296
+          1113,
+          1205,
+          1082,
+          1600,
+          1366,
+          1056,
+          1049,
+          1021,
+          1059,
+          1076
         ]
       },
-      "failures": [
-        "round 4 rename-edit: 01M876SA70HK9TX2WRGXZXKZ2G removed, should be at packages/cli/src/utils/utils.ts#isUrlGate (2 statement(s), 13 fingerprint entries)",
-        "round 5 rename-edit: 01M876SA70T70J3HZH8NAN6AXM removed, should be at packages/cli/src/preset/preset.ts#generateRandomPresetGate (1 statement(s), 6 fingerprint entries)",
-        "round 9 rename-edit: 01M876SA70F2HWJ4M96AX7AF8N removed, should be at packages/cli/src/preset/preset.ts#isValidPresetGate (1 statement(s), 7 fingerprint entries)"
-      ]
+      "failures": []
     },
     {
       "corpus": {
@@ -343,8 +331,8 @@
         },
         "rename-edit": {
           "refactors": 9,
-          "kept": 6,
-          "lost": 3,
+          "kept": 9,
+          "lost": 0,
           "misplaced": 0,
           "queued": 0,
           "skipped": 1
@@ -384,7 +372,7 @@
       },
       "byUnitKind": {
         "function": {
-          "kept": 49,
+          "kept": 52,
           "touched": 52
         },
         "hook": {
@@ -400,32 +388,24 @@
           "touched": 1
         }
       },
-      "spuriousCreated": 3,
-      "spurious": [
-        "round 3: packages/query-core/src/utils.ts#isValidTimeoutGate",
-        "round 7: packages/query-core/src/retryer.ts#isCancelledErrorGate",
-        "round 9: packages/query-core/src/utils.ts#sleepGate"
-      ],
+      "spuriousCreated": 0,
+      "spurious": [],
       "timings": {
-        "seedMs": 695,
+        "seedMs": 609,
         "indexMs": [
-          541,
-          508,
-          1152,
-          958,
-          917,
-          540,
-          507,
-          472,
+          474,
+          436,
+          401,
+          397,
+          408,
+          443,
           451,
-          311
+          430,
+          405,
+          326
         ]
       },
-      "failures": [
-        "round 3 rename-edit: 01M876ZMN58AF4K9Z8B73ZT8ZF removed, should be at packages/query-core/src/utils.ts#isValidTimeoutGate (1 statement(s), 12 fingerprint entries)",
-        "round 7 rename-edit: 01M876ZMMZFW8F3Z8PEAVRNDFP removed, should be at packages/query-core/src/retryer.ts#isCancelledErrorGate (1 statement(s), 8 fingerprint entries)",
-        "round 9 rename-edit: 01M876ZMN58454ZSS31WACMM8M removed, should be at packages/query-core/src/utils.ts#sleepGate (1 statement(s), 13 fingerprint entries)"
-      ]
+      "failures": []
     },
     {
       "corpus": {
@@ -494,8 +474,8 @@
         },
         "rename-edit": {
           "refactors": 10,
-          "kept": 7,
-          "lost": 3,
+          "kept": 10,
+          "lost": 0,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
@@ -523,7 +503,7 @@
           "touched": 18
         },
         "function": {
-          "kept": 100,
+          "kept": 103,
           "touched": 103
         },
         "component": {
@@ -531,32 +511,24 @@
           "touched": 14
         }
       },
-      "spuriousCreated": 3,
-      "spurious": [
-        "round 1: Packages/Models/Sources/Models/ServerFilter.swift#ServerFilter.hasExpiryGate()",
-        "round 3: Packages/Env/Sources/Env/DeepLUserAPIHandler.swift#DeepLUserAPIHandler.readKeyGate()",
-        "round 7: Packages/Account/Sources/Account/Detail/Tabs/Base/AccountTabManager.swift#AccountTabManager.refreshCurrentTabGate()"
-      ],
+      "spuriousCreated": 0,
+      "spurious": [],
       "timings": {
-        "seedMs": 3311,
+        "seedMs": 3576,
         "indexMs": [
-          2317,
-          2488,
-          5108,
-          2384,
-          2538,
-          4488,
-          2236,
-          2234,
-          2311,
-          2234
+          2239,
+          2319,
+          2200,
+          2131,
+          2247,
+          4241,
+          2351,
+          2268,
+          2284,
+          2383
         ]
       },
-      "failures": [
-        "round 1 rename-edit: 01M8770BVC0DS48D9FRK3WCWSS removed, should be at Packages/Models/Sources/Models/ServerFilter.swift#ServerFilter.hasExpiryGate() (1 statement(s), 6 fingerprint entries)",
-        "round 3 rename-edit: 01M8770BVBH3C2VVR2FX7TDDXM removed, should be at Packages/Env/Sources/Env/DeepLUserAPIHandler.swift#DeepLUserAPIHandler.readKeyGate() (1 statement(s), 9 fingerprint entries)",
-        "round 7 rename-edit: 01M8770BVA3T1V4BX1G2TZ4B3E removed, should be at Packages/Account/Sources/Account/Detail/Tabs/Base/AccountTabManager.swift#AccountTabManager.refreshCurrentTabGate() (1 statement(s), 8 fingerprint entries)"
-      ]
+      "failures": []
     },
     {
       "corpus": {
@@ -620,8 +592,8 @@
         },
         "rename-edit": {
           "refactors": 10,
-          "kept": 9,
-          "lost": 1,
+          "kept": 10,
+          "lost": 0,
           "misplaced": 0,
           "queued": 0,
           "skipped": 0
@@ -645,7 +617,7 @@
       },
       "byUnitKind": {
         "function": {
-          "kept": 267,
+          "kept": 268,
           "touched": 268
         },
         "type": {
@@ -653,28 +625,24 @@
           "touched": 62
         }
       },
-      "spuriousCreated": 1,
-      "spurious": [
-        "round 5: Source/Core/HTTPHeaders.swift#HTTPHeader.acceptLanguageGate(_:)"
-      ],
+      "spuriousCreated": 0,
+      "spurious": [],
       "timings": {
-        "seedMs": 1618,
+        "seedMs": 1744,
         "indexMs": [
-          2220,
-          2279,
-          1358,
-          2582,
-          1297,
-          1956,
-          1277,
-          1818,
-          1494,
-          1569
+          1316,
+          1177,
+          1266,
+          1509,
+          1299,
+          1740,
+          1148,
+          1839,
+          1407,
+          1438
         ]
       },
-      "failures": [
-        "round 5 rename-edit: 01M8771ZDHNFQ0JSTA1MRAJEYW removed, should be at Source/Core/HTTPHeaders.swift#HTTPHeader.acceptLanguageGate(_:) (1 statement(s), 11 fingerprint entries)"
-      ]
+      "failures": []
     }
   ]
 }

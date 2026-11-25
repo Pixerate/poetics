@@ -95,6 +95,31 @@ Query with all three. `--adapters typescript` reruns phase 1's
 configuration. The report counts the seeded units by kind and the uids kept by
 the kind of unit each refactor picked.
 
+## Lone-pair findings (2026-11-25)
+
+- **Every corpus keeps every uid**: taxonomy 92 of 92, shadcn-svelte 98 of
+  98, TanStack Query 77 of 77, IceCubesApp 135 of 135 and Alamofire 330 of
+  330. No unit is misplaced or queued, and the gate creates no unit that no
+  refactor made. The same held for seeds 7 and 99 when the stage was a
+  prototype.
+- The misses had one cause. One added statement changes about four
+  fingerprint entries, so a small function scores about (_n_ − 2) / (_n_ + 4)
+  against its old self. Across three seeds, 30 of 147 rename-edits were lost,
+  with 4 to 13 entries and scores from 0.25 to 0.65. In each one, its file
+  had exactly one unit removed and one created.
+- Identity matching now has a sixth stage for that shape: a file's lone
+  leftover pair matches when its similarity is at least 0.2
+  ([ADR 0028](../../docs/decisions/0028-lone-pair-in-a-file.md)). In the
+  recent history of TanStack Query and shadcn-svelte, the 6 lone pairs that
+  were different units scored 0.08 or less, and the one that was a rename
+  scored 0.67.
+- The gate is a friendly test for this stage, since its rename-edit makes
+  exactly that shape. Real lone pairs of tiny unrelated helpers are the
+  case to watch.
+- With seed 7, IceCubesApp stops in the gate's split refactor: "No unit
+  RouterPath.handleRest() in Packages/Env/Sources/Env/Router.swift after the
+  refactor". This is a gate bug, separate from matching.
+
 ## Rename findings (2026-11-24)
 
 - **Every plain rename now keeps its uid, on every corpus.** The gate's

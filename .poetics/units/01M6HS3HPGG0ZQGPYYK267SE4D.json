@@ -64,6 +64,25 @@
           "ref": "docs/decisions/0027-members-follow-their-owner.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:a6d92edffd0fb6dbf5e2adc919f6eab8b6ecf30d979c7cb1d63caee88d7112ed",
+      "interfaceHash": "b3:e723bcf8975af617d6d0c023beadbe9a33498f961b786c768e727a57889df963",
+      "parent": "b3:a99093b2c79422e215faff992af304008001c8d206c86096dc564dfadd0fbc42",
+      "change": "interface",
+      "rationale": "Adds \"lone\" for a file's one leftover tracked unit and one new unit paired at the lower threshold of stage 6, so poetics index shows a reviewer which renames rest on that weaker evidence (ADR 0028).",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0028-lone-pair-in-a-file.md"
+        }
+      ]
     }
   ],
   "docs": "The stage that found a match: declared, location, content or similarity.",

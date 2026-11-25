@@ -45,6 +45,25 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:cf0c150f35d4fc8dd89611772dafdeed00ab964a5e249448b3708144118a4415",
+      "interfaceHash": "b3:ec2741e7e3028fe8e29bc70c8c46f57c52197b2a7e658fe2dc2d1bdde5e99a3e",
+      "parent": "b3:9fb130bfaced1e35289f7c67acd067440a54759e4bb45f305b8225d0eeb437ef",
+      "change": "interface",
+      "rationale": "Adds loneThreshold, the similarity a file's lone leftover pair needs in stage 6, default 0.2: between the 0.08 of the different units we found in real history and the 0.25 of the gate's lost rename-edits (ADR 0028).",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0028-lone-pair-in-a-file.md"
+        }
+      ]
     }
   ],
   "docs": "The similarity threshold and minimum fingerprint size for similarity matches.",
