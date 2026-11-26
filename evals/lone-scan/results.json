@@ -1,0 +1,1090 @@
+{
+  "date": "2026-11-26",
+  "commits": 1500,
+  "results": [
+    {
+      "name": "taxonomy",
+      "repo": "shadcn-ui/taxonomy",
+      "head": "298a8857c7128a0d121e7f699dfd729f23b3966d",
+      "commits": 118,
+      "skipped": 2,
+      "pairs": [
+        {
+          "commit": "9ad43152c",
+          "subject": "feat: contentlayer (#22)",
+          "file": "app/(marketing)/[...slug]/page.tsx",
+          "from": "BasicPage",
+          "to": "PagePage",
+          "score": 0.284,
+          "keepsBaseName": false,
+          "sizes": [
+            58,
+            64
+          ]
+        }
+      ]
+    },
+    {
+      "name": "shadcn-svelte",
+      "repo": "huntabyte/shadcn-svelte",
+      "head": "3c4152d7d3904e76f6f756ec8ffca7c9ec72f977",
+      "commits": 1500,
+      "skipped": 10,
+      "pairs": [
+        {
+          "commit": "44b2445be",
+          "subject": "feat(cli-next): import map support (#2005)",
+          "file": "packages/cli/src/utils/resolve-imports.ts",
+          "from": "resolveImport",
+          "to": "resolveImportAlias",
+          "score": 0.043,
+          "keepsBaseName": false,
+          "sizes": [
+            19,
+            77
+          ]
+        },
+        {
+          "commit": "9488a618a",
+          "subject": "feat(cli): configurable typescript config paths (#1980)",
+          "file": "packages/cli/src/utils/get-config.ts",
+          "from": "Config",
+          "to": "ResolvedConfig",
+          "score": 0.667,
+          "keepsBaseName": false,
+          "sizes": [
+            5,
+            5
+          ]
+        },
+        {
+          "commit": "8132b0711",
+          "subject": "fix(v4): Re-enable remote dependencies (#1807)",
+          "file": "packages/cli/src/utils/utils.ts",
+          "from": "urlSplitLastPathSegment",
+          "to": "resolveURL",
+          "score": 0.083,
+          "keepsBaseName": false,
+          "sizes": [
+            25,
+            14
+          ]
+        },
+        {
+          "commit": "5cc7477f8",
+          "subject": "feat(v4): Add remote components (#1781)",
+          "file": "packages/cli/src/utils/registry/index.ts",
+          "from": "setRegistry",
+          "to": "getRegistryIndexes",
+          "score": 0,
+          "keepsBaseName": false,
+          "sizes": [
+            12,
+            34
+          ]
+        },
+        {
+          "commit": "6c9b9eeb1",
+          "subject": "feat: Add flags for `init` command (#1186)",
+          "file": "packages/cli/src/utils/registry/index.ts",
+          "from": "getRegistryStyles",
+          "to": "getStyles",
+          "score": 0,
+          "keepsBaseName": false,
+          "sizes": [
+            22,
+            11
+          ]
+        },
+        {
+          "commit": "ebd04c48b",
+          "subject": "chore: Added import path validators (#969)",
+          "file": "packages/cli/src/utils/get-config.ts",
+          "from": "getAliases",
+          "to": "getTSConfig",
+          "score": 0.058,
+          "keepsBaseName": false,
+          "sizes": [
+            29,
+            26
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tanstack-query",
+      "repo": "TanStack/query",
+      "head": "b1243facc8b88c4cfe5ea9d7f3b4e1ea550bc91f",
+      "commits": 1500,
+      "skipped": 1,
+      "pairs": []
+    },
+    {
+      "name": "icecubes",
+      "repo": "Dimillian/IceCubesApp",
+      "head": "98098b9c4b5928f89f338203193c2bf40ab7f38c",
+      "commits": 1500,
+      "skipped": 11,
+      "pairs": [
+        {
+          "commit": "91d58dd49",
+          "subject": "fix: prevent composer rotation crash (#2473)",
+          "file": "Packages/StatusKit/Sources/StatusKit/Editor/UITextView/Representable.swift",
+          "from": "TextView.Representable.makeUIView(context:)",
+          "to": "TextView.Representable.makeUIViewController(context:)",
+          "score": 0.429,
+          "keepsBaseName": false,
+          "sizes": [
+            9,
+            11
+          ]
+        },
+        {
+          "commit": "b7886e2d0",
+          "subject": "Add functionality to hide posts created by bots (#2419)",
+          "file": "Packages/Timeline/Sources/Timeline/TimelineContentFilter.swift",
+          "from": "TimelineContentFilter.Snapshot.init(showBoosts:showReplies:showThreads:showQuotePosts:hidePostsWithMedia:)",
+          "to": "TimelineContentFilter.Snapshot.init(showBoosts:showReplies:showThreads:showQuotePosts:hidePostsWithMedia:hidePostsFromBots:)",
+          "score": 0.576,
+          "keepsBaseName": true,
+          "sizes": [
+            24,
+            28
+          ]
+        },
+        {
+          "commit": "65fa910c5",
+          "subject": "Fix filter context handling for notifications and timelines (#2416) close #639, #2211, #2210, #2227",
+          "file": "Packages/StatusKit/Sources/StatusKit/List/StatusesListView.swift",
+          "from": "StatusesListView.init(fetcher:client:routerPath:isRemote:)",
+          "to": "StatusesListView.init(fetcher:client:routerPath:isRemote:filterContext:)",
+          "score": 0.514,
+          "keepsBaseName": true,
+          "sizes": [
+            23,
+            30
+          ]
+        },
+        {
+          "commit": "bf959812f",
+          "subject": "feat: add preference to hide posts containing media (#2382) (#2400)",
+          "file": "Packages/Timeline/Sources/Timeline/TimelineContentFilter.swift",
+          "from": "TimelineContentFilter.Snapshot.init(showBoosts:showReplies:showThreads:showQuotePosts:)",
+          "to": "TimelineContentFilter.Snapshot.init(showBoosts:showReplies:showThreads:showQuotePosts:hidePostsWithMedia:)",
+          "score": 0.517,
+          "keepsBaseName": true,
+          "sizes": [
+            20,
+            24
+          ]
+        },
+        {
+          "commit": "b29ef8681",
+          "subject": "Refactor ViewModel to EditorStore in editor components",
+          "file": "Packages/StatusKit/Sources/StatusKit/Editor/Components/MediaView.swift",
+          "from": "StatusEditor.MediaView.init(viewModel:editingMediaContainer:)",
+          "to": "StatusEditor.MediaView.init(store:editingMediaContainer:)",
+          "score": 0.6,
+          "keepsBaseName": true,
+          "sizes": [
+            16,
+            16
+          ]
+        },
+        {
+          "commit": "03cf3f641",
+          "subject": "Editor: review DI",
+          "file": "Packages/StatusKit/Sources/StatusKit/Editor/Services/TextEditingService.swift",
+          "from": "StatusEditor.TextEditingService.initialTextChanges(for:currentAccount:currentInstance:)",
+          "to": "StatusEditor.TextEditingService.initialTextChanges(for:currentAccount:currentInstance:preferences:)",
+          "score": 0.464,
+          "keepsBaseName": true,
+          "sizes": [
+            19,
+            22
+          ]
+        },
+        {
+          "commit": "246f69775",
+          "subject": "Add transition namespace for account selector views",
+          "file": "Packages/AppAccount/Sources/AppAccount/AppAccountsSelectorView.swift",
+          "from": "AppAccountsSelectorView.init(routerPath:accountCreationEnabled:avatarConfig:)",
+          "to": "AppAccountsSelectorView.init(transition:routerPath:accountCreationEnabled:avatarConfig:)",
+          "score": 0.567,
+          "keepsBaseName": true,
+          "sizes": [
+            21,
+            26
+          ]
+        },
+        {
+          "commit": "0b1ae2379",
+          "subject": "Refactor timeline caching to support TimelineItem",
+          "file": "Packages/Models/Sources/Models/Timeline/TimelineItem.swift",
+          "from": "TimelineGap.init(sinceId:maxId:direction:)",
+          "to": "TimelineGap.init(sinceId:maxId:)",
+          "score": 0.512,
+          "keepsBaseName": true,
+          "sizes": [
+            34,
+            28
+          ]
+        },
+        {
+          "commit": "42105a753",
+          "subject": "Remove partialAccounts from GroupedNotificationsResults",
+          "file": "Packages/Models/Sources/Models/GroupedNotificationsResults.swift",
+          "from": "GroupedNotificationsResults.init(accounts:partialAccounts:statuses:notificationGroups:)",
+          "to": "GroupedNotificationsResults.init(accounts:statuses:notificationGroups:)",
+          "score": 0.5,
+          "keepsBaseName": true,
+          "sizes": [
+            26,
+            19
+          ]
+        },
+        {
+          "commit": "6c9d9161d",
+          "subject": "Extract function from TimelineViewModel",
+          "file": "Packages/Timeline/Sources/Timeline/View/TimelineViewModel.swift",
+          "from": "TimelineViewModel.init()",
+          "to": "TimelineViewModel.init(statusFetcher:)",
+          "score": 0.536,
+          "keepsBaseName": true,
+          "sizes": [
+            18,
+            25
+          ]
+        },
+        {
+          "commit": "aaeb9eaa3",
+          "subject": "Fix the upload of heavy avatar or header image (#2103)",
+          "file": "Packages/StatusKit/Sources/StatusKit/Editor/Components/Compressor.swift",
+          "from": "StatusEditor.Compressor.compressImageForUpload(_:)",
+          "to": "StatusEditor.Compressor.compressImageForUpload(_:maxSize:maxHeight:maxWidth:)",
+          "score": 0.466,
+          "keepsBaseName": true,
+          "sizes": [
+            87,
+            127
+          ]
+        },
+        {
+          "commit": "5c32c24ae",
+          "subject": "Add supports for notifications filter API",
+          "file": "Packages/Notifications/Sources/Notifications/NotificationsListView.swift",
+          "from": "NotificationsListView.init(lockedType:scrollToTopSignal:)",
+          "to": "NotificationsListView.init(lockedType:lockedAccountId:scrollToTopSignal:)",
+          "score": 0.414,
+          "keepsBaseName": true,
+          "sizes": [
+            17,
+            24
+          ]
+        },
+        {
+          "commit": "76a8f4547",
+          "subject": "hide context indicator for statuses inside `StatusDetailView` (#1899)",
+          "file": "Packages/StatusKit/Sources/StatusKit/Row/StatusRowView.swift",
+          "from": "StatusRowView.init(viewModel:)",
+          "to": "StatusRowView.init(viewModel:context:)",
+          "score": 0.125,
+          "keepsBaseName": true,
+          "sizes": [
+            10,
+            17
+          ]
+        },
+        {
+          "commit": "36cc3d520",
+          "subject": "ProxyRepresentation -> DataRepresentation",
+          "file": "Packages/MediaUI/Sources/MediaUI/MediaUITransferableImage.swift",
+          "from": "MediaUIImageTransferable.fetchAsImage()",
+          "to": "MediaUIImageTransferable.fetchData()",
+          "score": 0.041,
+          "keepsBaseName": false,
+          "sizes": [
+            30,
+            21
+          ]
+        },
+        {
+          "commit": "bfc1f61e4",
+          "subject": "Add access to profile from account selector",
+          "file": "Packages/AppAccount/Sources/AppAccount/AppAccountView.swift",
+          "from": "AppAccountView.init(viewModel:)",
+          "to": "AppAccountView.init(viewModel:isParentPresented:)",
+          "score": 0.158,
+          "keepsBaseName": true,
+          "sizes": [
+            8,
+            14
+          ]
+        },
+        {
+          "commit": "fe66acbd3",
+          "subject": "Timeline: Add pills quick access",
+          "file": "Packages/Timeline/Sources/Timeline/View/TimelineView.swift",
+          "from": "TimelineView.init(timeline:selectedTagGroup:scrollToTopSignal:canFilterTimeline:)",
+          "to": "TimelineView.init(timeline:pinnedFilters:selectedTagGroup:scrollToTopSignal:canFilterTimeline:)",
+          "score": 0.605,
+          "keepsBaseName": true,
+          "sizes": [
+            27,
+            34
+          ]
+        },
+        {
+          "commit": "d065ae6aa",
+          "subject": "Add settings to toggle between share and bookmark button",
+          "file": "Packages/Status/Sources/Status/Row/Subviews/StatusRowActionsView.swift",
+          "from": "StatusRowActionsView.Action.allCases",
+          "to": "StatusRowActionsView.actions",
+          "score": 0.235,
+          "keepsBaseName": false,
+          "sizes": [
+            18,
+            45
+          ]
+        },
+        {
+          "commit": "f326bbefe",
+          "subject": "Fix: Search Instances Feature (#1766)",
+          "file": "Packages/Network/Sources/Network/InstanceSocialClient.swift",
+          "from": "InstanceSocialClient.fetchInstances()",
+          "to": "InstanceSocialClient.fetchInstances(keyword:)",
+          "score": 0.29,
+          "keepsBaseName": true,
+          "sizes": [
+            61,
+            99
+          ]
+        },
+        {
+          "commit": "1977b1a57",
+          "subject": "Feature: Post and Reply by Threads (#1740)",
+          "file": "Packages/Status/Sources/Status/Editor/Components/StatusEditorMediaView.swift",
+          "from": "StatusEditorMediaView.init(viewModel:editingContainer:)",
+          "to": "StatusEditorMediaView.init(viewModel:editingMediaContainer:)",
+          "score": 0.6,
+          "keepsBaseName": true,
+          "sizes": [
+            16,
+            16
+          ]
+        },
+        {
+          "commit": "774ba834b",
+          "subject": "Improve media selection on the status editor. (#1722)",
+          "file": "Packages/Status/Sources/Status/Editor/StatusEditorViewModel.swift",
+          "from": "StatusEditorViewModel.inflateSelectedMedias()",
+          "to": "StatusEditorViewModel.makeMediaContainer(from:)",
+          "score": 0.028,
+          "keepsBaseName": false,
+          "sizes": [
+            157,
+            67
+          ]
+        },
+        {
+          "commit": "94172cef2",
+          "subject": "Feature: popover the account overview when hovering on the avatar (#1682)",
+          "file": "Packages/AppAccount/Sources/AppAccount/AppAccountsSelectorView.swift",
+          "from": "AppAccountsSelectorView.init(routerPath:accountCreationEnabled:avatarSize:)",
+          "to": "AppAccountsSelectorView.init(routerPath:accountCreationEnabled:avatarConfig:)",
+          "score": 0.6,
+          "keepsBaseName": true,
+          "sizes": [
+            20,
+            20
+          ]
+        },
+        {
+          "commit": "4266ac4b4",
+          "subject": "Improve SoundEffectManager & HapticManager (#1662)",
+          "file": "Packages/Env/Sources/Env/SoundEffectManager.swift",
+          "from": "SoundEffectManager.playSound(of:)",
+          "to": "SoundEffectManager.playSound(_:)",
+          "score": 0.078,
+          "keepsBaseName": true,
+          "sizes": [
+            78,
+            19
+          ]
+        },
+        {
+          "commit": "8ed6d548e",
+          "subject": "Always autoplay video in the new media viewer",
+          "file": "Packages/MediaUI/Sources/MediaUI/MediaUIAttachmentVideoView.swift",
+          "from": "MediaUIAttachmentVideoViewModel.init(url:)",
+          "to": "MediaUIAttachmentVideoViewModel.init(url:forceAutoPlay:)",
+          "score": 0.167,
+          "keepsBaseName": true,
+          "sizes": [
+            8,
+            13
+          ]
+        },
+        {
+          "commit": "fd5502053",
+          "subject": "New media viewer",
+          "file": "Packages/Env/Sources/Env/QuickLook.swift",
+          "from": "QuickLook.prepareFor(urls:selectedURL:)",
+          "to": "QuickLook.prepareFor(selectedMediaAttachment:mediaAttachments:)",
+          "score": 0.007,
+          "keepsBaseName": true,
+          "sizes": [
+            137,
+            14
+          ]
+        },
+        {
+          "commit": "1bf4d9e39",
+          "subject": "Feature: Tab bar scroll to top (#1598)",
+          "file": "Packages/Conversations/Sources/Conversations/List/ConversationsListView.swift",
+          "from": "ConversationsListView.init()",
+          "to": "ConversationsListView.init(scrollToTopSignal:)",
+          "score": 0,
+          "keepsBaseName": true,
+          "sizes": [
+            2,
+            10
+          ]
+        },
+        {
+          "commit": "1bf4d9e39",
+          "subject": "Feature: Tab bar scroll to top (#1598)",
+          "file": "Packages/Explore/Sources/Explore/ExploreView.swift",
+          "from": "ExploreView.init()",
+          "to": "ExploreView.init(scrollToTopSignal:)",
+          "score": 0,
+          "keepsBaseName": true,
+          "sizes": [
+            2,
+            10
+          ]
+        },
+        {
+          "commit": "1bf4d9e39",
+          "subject": "Feature: Tab bar scroll to top (#1598)",
+          "file": "Packages/Notifications/Sources/Notifications/NotificationsListView.swift",
+          "from": "NotificationsListView.init(lockedType:)",
+          "to": "NotificationsListView.init(lockedType:scrollToTopSignal:)",
+          "score": 0.273,
+          "keepsBaseName": true,
+          "sizes": [
+            11,
+            17
+          ]
+        },
+        {
+          "commit": "4870b202d",
+          "subject": "Migrate TagGroup to SwiftData",
+          "file": "Packages/Timeline/Sources/Timeline/TimelineView.swift",
+          "from": "TimelineView.init(timeline:scrollToTopSignal:canFilterTimeline:)",
+          "to": "TimelineView.init(timeline:selectedTagGroup:scrollToTopSignal:canFilterTimeline:)",
+          "score": 0.516,
+          "keepsBaseName": true,
+          "sizes": [
+            20,
+            27
+          ]
+        },
+        {
+          "commit": "b2f594f17",
+          "subject": "Accessibility tweaks + Notifications and Messages tab uplift (#1292)",
+          "file": "Packages/Timeline/Sources/Timeline/TimelineView.swift",
+          "from": "TimelineView.init(timeline:scrollToTopSignal:)",
+          "to": "TimelineView.init(timeline:scrollToTopSignal:canFilterTimeline:)",
+          "score": 0.44,
+          "keepsBaseName": true,
+          "sizes": [
+            16,
+            20
+          ]
+        },
+        {
+          "commit": "baf853f46",
+          "subject": "Add the ability to translate using deepl even if the instance offers its own service (#1237)",
+          "file": "Packages/Network/Sources/Network/DeepLClient.swift",
+          "from": "DeepLClient.init()",
+          "to": "DeepLClient.init(userAPIKey:userAPIFree:)",
+          "score": 0,
+          "keepsBaseName": true,
+          "sizes": [
+            2,
+            11
+          ]
+        },
+        {
+          "commit": "15b704c97",
+          "subject": "All new accounts selector",
+          "file": "Packages/AppAccount/Sources/AppAccount/AppAccountViewModel.swift",
+          "from": "AppAccountViewModel.init(appAccount:isCompact:)",
+          "to": "AppAccountViewModel.init(appAccount:isCompact:isInNavigation:showBadge:)",
+          "score": 0.444,
+          "keepsBaseName": true,
+          "sizes": [
+            21,
+            31
+          ]
+        },
+        {
+          "commit": "d2c58482f",
+          "subject": "StatusDataController: Handle remote status",
+          "file": "Packages/Env/Sources/Env/StatusDataController.swift",
+          "from": "StatusDataController.toggleBookmark()",
+          "to": "StatusDataController.toggleBookmark(remoteStatus:)",
+          "score": 0.635,
+          "keepsBaseName": true,
+          "sizes": [
+            48,
+            55
+          ]
+        },
+        {
+          "commit": "9ad9b2d93",
+          "subject": "Fix status data controller",
+          "file": "Packages/Env/Sources/Env/StatusDataController.swift",
+          "from": "StatusDataController.updateFrom(status:)",
+          "to": "StatusDataController.updateFrom(status:publishUpdate:)",
+          "score": 0.558,
+          "keepsBaseName": true,
+          "sizes": [
+            29,
+            38
+          ]
+        },
+        {
+          "commit": "54198c877",
+          "subject": "Notifications: fix rocket icon",
+          "file": "Packages/Notifications/Sources/Notifications/NotificationTypeExt.swift",
+          "from": "Models.Notification.NotificationType.iconName(isPrivate:)",
+          "to": "Models.Notification.NotificationType.icon(isPrivate:)",
+          "score": 0.541,
+          "keepsBaseName": false,
+          "sizes": [
+            76,
+            92
+          ]
+        },
+        {
+          "commit": "9ebe0b314",
+          "subject": "Change arrows icon to rocket for boosts (#1099)",
+          "file": "Packages/Status/Sources/Status/Row/Subviews/StatusRowActionsView.swift",
+          "from": "StatusRowActionsView.Action.iconName(dataController:privateBoost:)",
+          "to": "StatusRowActionsView.Action.image(dataController:privateBoost:)",
+          "score": 0.504,
+          "keepsBaseName": false,
+          "sizes": [
+            75,
+            95
+          ]
+        }
+      ]
+    },
+    {
+      "name": "alamofire",
+      "repo": "Alamofire/Alamofire",
+      "head": "dea4bab91767a971d6e112bc955c6a82295589b7",
+      "commits": 1500,
+      "skipped": 0,
+      "pairs": [
+        {
+          "commit": "824ce8bd3",
+          "subject": "Add automaticallyCancelling parameter to serializingDownloadedFileURL (#3597)",
+          "file": "Source/Concurrency.swift",
+          "from": "DownloadRequest.serializingDownloadedFileURL()",
+          "to": "DownloadRequest.serializingDownloadedFileURL(automaticallyCancelling:)",
+          "score": 0.368,
+          "keepsBaseName": true,
+          "sizes": [
+            11,
+            15
+          ]
+        },
+        {
+          "commit": "92c76834f",
+          "subject": "Add .indexInBrackets array serialization option for URL parameters (#3516)",
+          "file": "Source/ParameterEncoding.swift",
+          "from": "URLEncoding.ArrayEncoding.encode(key:)",
+          "to": "URLEncoding.ArrayEncoding.encode(key:atIndex:)",
+          "score": 0.477,
+          "keepsBaseName": true,
+          "sizes": [
+            26,
+            39
+          ]
+        },
+        {
+          "commit": "92c76834f",
+          "subject": "Add .indexInBrackets array serialization option for URL parameters (#3516)",
+          "file": "Source/URLEncodedFormEncoder.swift",
+          "from": "URLEncodedFormEncoder.ArrayEncoding.encode(_:)",
+          "to": "URLEncodedFormEncoder.ArrayEncoding.encode(_:atIndex:)",
+          "score": 0.477,
+          "keepsBaseName": true,
+          "sizes": [
+            26,
+            39
+          ]
+        },
+        {
+          "commit": "5a625bcaa",
+          "subject": "Make MultipartUpload more thread-safe. (#3421)",
+          "file": "Source/MultipartUpload.swift",
+          "from": "MultipartUpload.init(isInBackgroundSession:encodingMemoryThreshold:request:multipartFormData:)",
+          "to": "MultipartUpload.init(encodingMemoryThreshold:request:multipartFormData:)",
+          "score": 0.556,
+          "keepsBaseName": true,
+          "sizes": [
+            23,
+            19
+          ]
+        },
+        {
+          "commit": "505babfec",
+          "subject": "Enable Interceptor to be built from other RequestInterceptors (#3155)",
+          "file": "Source/RequestInterceptor.swift",
+          "from": "Interceptor.init(adapters:retriers:)",
+          "to": "Interceptor.init(adapters:retriers:interceptors:)",
+          "score": 0.346,
+          "keepsBaseName": true,
+          "sizes": [
+            16,
+            19
+          ]
+        },
+        {
+          "commit": "44bcedf24",
+          "subject": "Add SwiftPM Testing; Make Tests More Reliable (#3102)",
+          "file": "Source/Session.swift",
+          "from": "Session.didCompleteTask(_:)",
+          "to": "Session.didCompleteTask(_:completion:)",
+          "score": 0.1,
+          "keepsBaseName": true,
+          "sizes": [
+            9,
+            35
+          ]
+        },
+        {
+          "commit": "9187007b0",
+          "subject": "Stable encoded parameter order for URLEncodedFormEncoder (#2961)",
+          "file": "Source/URLEncodedFormEncoder.swift",
+          "from": "URLEncodedFormSerializer.init(arrayEncoding:keyEncoding:spaceEncoding:allowedCharacters:)",
+          "to": "URLEncodedFormSerializer.init(alphabetizeKeyValuePairs:arrayEncoding:keyEncoding:spaceEncoding:allowedCharacters:)",
+          "score": 0.613,
+          "keepsBaseName": true,
+          "sizes": [
+            23,
+            27
+          ]
+        },
+        {
+          "commit": "052c2c235",
+          "subject": "Refactor Reachability (#2915)",
+          "file": "Source/NetworkReachabilityManager.swift",
+          "from": "NetworkReachabilityManager.ConnectionType",
+          "to": "NetworkReachabilityManager.NetworkReachabilityStatus.ConnectionType",
+          "score": 0.714,
+          "keepsBaseName": false,
+          "sizes": [
+            6,
+            6
+          ]
+        },
+        {
+          "commit": "5bedc2af7",
+          "subject": "Refactor Request Event Management (#2796)",
+          "file": "Source/Session.swift",
+          "from": "Session.resumeOrSuspendTask(_:ifNecessaryForRequest:)",
+          "to": "Session.updateStatesForTask(_:request:)",
+          "score": 0.124,
+          "keepsBaseName": false,
+          "sizes": [
+            31,
+            78
+          ]
+        },
+        {
+          "commit": "9dc80efb3",
+          "subject": "Refactored upload APIs for MultipartFormData to support custom boundaries",
+          "file": "Source/MultipartUpload.swift",
+          "from": "MultipartUpload.init(isInBackgroundSession:encodingMemoryThreshold:request:fileManager:multipartBuilder:)",
+          "to": "MultipartUpload.init(isInBackgroundSession:encodingMemoryThreshold:request:multipartFormData:)",
+          "score": 0.439,
+          "keepsBaseName": true,
+          "sizes": [
+            33,
+            26
+          ]
+        },
+        {
+          "commit": "9dc80efb3",
+          "subject": "Refactored upload APIs for MultipartFormData to support custom boundaries",
+          "file": "Source/Session.swift",
+          "from": "Session.upload(multipartFormData:usingThreshold:fileManager:with:interceptor:)",
+          "to": "Session.upload(multipartFormData:usingThreshold:with:interceptor:)",
+          "score": 0.553,
+          "keepsBaseName": true,
+          "sizes": [
+            41,
+            32
+          ]
+        },
+        {
+          "commit": "218561dee",
+          "subject": "Condensed 3 MultipartFormData data APIs into 1 (#2766)",
+          "file": "Source/MultipartFormData.swift",
+          "from": "MultipartFormData.append(_:withName:mimeType:)",
+          "to": "MultipartFormData.append(_:withName:)",
+          "score": 0.116,
+          "keepsBaseName": true,
+          "sizes": [
+            32,
+            45
+          ]
+        },
+        {
+          "commit": "7b4bb4b1e",
+          "subject": "[PR #2691] Simplified and refactored queue and switch logic throughout (#2765)",
+          "file": "Source/ParameterEncoding.swift",
+          "from": "URLEncoding.methodDependent",
+          "to": "URLEncoding.Destination.encodesParametersInURL(for:)",
+          "score": 0.022,
+          "keepsBaseName": false,
+          "sizes": [
+            7,
+            40
+          ]
+        },
+        {
+          "commit": "9ab2a22e8",
+          "subject": "Fix #2682: Cancel all requests on session invalidation or deinit. (#2728)",
+          "file": "Source/Notifications.swift",
+          "from": "AlamofireNotifications.request(_:didCompleteTask:with:)",
+          "to": "AlamofireNotifications.requestDidFinish(_:)",
+          "score": 0.421,
+          "keepsBaseName": false,
+          "sizes": [
+            15,
+            12
+          ]
+        },
+        {
+          "commit": "9fe966a11",
+          "subject": "Updated Request to use new hash(into:) API for hashing (#2696)",
+          "file": "Source/Request.swift",
+          "from": "Request.hashValue",
+          "to": "Request.hash(into:)",
+          "score": 0,
+          "keepsBaseName": false,
+          "sizes": [
+            7,
+            10
+          ]
+        },
+        {
+          "commit": "c7759c970",
+          "subject": "Refactored interceptor protocol, added RetryResult, Adapter, and Retrier",
+          "file": "Source/RetryPolicy.swift",
+          "from": "RetryPolicy.should(_:retry:with:completion:)",
+          "to": "RetryPolicy.retry(_:for:dueTo:completion:)",
+          "score": 0.577,
+          "keepsBaseName": false,
+          "sizes": [
+            64,
+            59
+          ]
+        },
+        {
+          "commit": "7c2918152",
+          "subject": "Added precondition safety check to cacheResponse API and added docstring",
+          "file": "Source/Request.swift",
+          "from": "Request.cacheResponse(with:)",
+          "to": "Request.cacheResponse(using:)",
+          "score": 0.379,
+          "keepsBaseName": true,
+          "sizes": [
+            16,
+            24
+          ]
+        },
+        {
+          "commit": "30fd33dce",
+          "subject": "Cleaned up docs and updated redirect API to “using” external parameter name",
+          "file": "Source/Request.swift",
+          "from": "Request.redirect(with:)",
+          "to": "Request.redirect(using:)",
+          "score": 0.379,
+          "keepsBaseName": true,
+          "sizes": [
+            16,
+            24
+          ]
+        },
+        {
+          "commit": "3e488dcd5",
+          "subject": "Alamofire 5! (#2375)",
+          "file": "Source/MultipartFormData.swift",
+          "from": "MultipartFormData.init()",
+          "to": "MultipartFormData.init(fileManager:boundary:)",
+          "score": 0.31,
+          "keepsBaseName": true,
+          "sizes": [
+            14,
+            24
+          ]
+        },
+        {
+          "commit": "7e8f79b10",
+          "subject": "Switched AdaptError extraction over to optional underlyingAdaptError property.",
+          "file": "Source/AFError.swift",
+          "from": "Error.extractedAdaptError",
+          "to": "Error.underlyingAdaptError",
+          "score": 0.154,
+          "keepsBaseName": false,
+          "sizes": [
+            17,
+            13
+          ]
+        },
+        {
+          "commit": "e48a78e68",
+          "subject": "Refactored URLStringCovertible to URLConvertible and removed protocol property.",
+          "file": "Source/Alamofire.swift",
+          "from": "URLStringConvertible",
+          "to": "URLConvertible",
+          "score": 0.111,
+          "keepsBaseName": false,
+          "sizes": [
+            13,
+            7
+          ]
+        },
+        {
+          "commit": "763747a94",
+          "subject": "Refactored RequestType to RequestTask and moved TaskConvertible in as well.",
+          "file": "Source/Request.swift",
+          "from": "Request.RequestType",
+          "to": "Request.RequestTask",
+          "score": 0,
+          "keepsBaseName": false,
+          "sizes": [
+            4,
+            34
+          ]
+        },
+        {
+          "commit": "763747a94",
+          "subject": "Refactored RequestType to RequestTask and moved TaskConvertible in as well.",
+          "file": "Source/Request.swift",
+          "from": "Request.init(session:requestType:task:originalTask:error:)",
+          "to": "Request.init(session:requestTask:error:)",
+          "score": 0.255,
+          "keepsBaseName": true,
+          "sizes": [
+            104,
+            103
+          ]
+        },
+        {
+          "commit": "95a0ad51b",
+          "subject": "Added safety to URLStringConvertible, URLRequestConvertible and RequestAdapter.",
+          "file": "Source/Request.swift",
+          "from": "Request.init(session:task:originalTask:)",
+          "to": "Request.init(session:requestType:task:originalTask:error:)",
+          "score": 0.314,
+          "keepsBaseName": true,
+          "sizes": [
+            55,
+            104
+          ]
+        },
+        {
+          "commit": "722b701e4",
+          "subject": "Method now defaults to `.get` for request and download and `.post` for upload.",
+          "file": "Source/Alamofire.swift",
+          "from": "request(_:)",
+          "to": "request(resource:)",
+          "score": 0.5,
+          "keepsBaseName": true,
+          "sizes": [
+            14,
+            13
+          ]
+        },
+        {
+          "commit": "7b419b76a",
+          "subject": "[PR #1419] Refactored Error to new AFError system across all APIs.",
+          "file": "Source/MultipartFormData.swift",
+          "from": "MultipartFormData.writeEncodedDataToDisk(_:)",
+          "to": "MultipartFormData.writeEncodedData(to:)",
+          "score": 0.383,
+          "keepsBaseName": false,
+          "sizes": [
+            113,
+            93
+          ]
+        },
+        {
+          "commit": "d9fb21e5c",
+          "subject": "Refactored all Core APIs and documentation to match Swift 3 API design guidelines.",
+          "file": "Source/ParameterEncoding.swift",
+          "from": "Method",
+          "to": "HTTPMethod",
+          "score": 0.038,
+          "keepsBaseName": false,
+          "sizes": [
+            6,
+            49
+          ]
+        },
+        {
+          "commit": "e5e2d6b73",
+          "subject": "Split SessionDelegate, TaskDelegate and subclasses into global namespace.",
+          "file": "Source/SessionManager.swift",
+          "from": "SessionManager.SessionDelegate",
+          "to": "SessionManager.MultipartFormDataEncodingResult",
+          "score": 0,
+          "keepsBaseName": false,
+          "sizes": [
+            545,
+            15
+          ]
+        },
+        {
+          "commit": "eb0923ec6",
+          "subject": "Initial Swift 3 Migration",
+          "file": "Source/ParameterEncoding.swift",
+          "from": "ParameterEncoding.escape(string:)",
+          "to": "ParameterEncoding.escape(_:)",
+          "score": 0.493,
+          "keepsBaseName": true,
+          "sizes": [
+            103,
+            109
+          ]
+        },
+        {
+          "commit": "7a6017de8",
+          "subject": "Added Timeline struct to capture timings through the lifecycle of a Request.",
+          "file": "Source/Response.swift",
+          "from": "Response.init(request:response:data:result:)",
+          "to": "Response.init(request:response:data:result:timeline:)",
+          "score": 0.611,
+          "keepsBaseName": true,
+          "sizes": [
+            27,
+            31
+          ]
+        },
+        {
+          "commit": "4e633d6d9",
+          "subject": "[Issue 719] Added `parameters` and `encoding` parameters to download APIs.",
+          "file": "Source/Alamofire.swift",
+          "from": "download(method:_:headers:destination:)",
+          "to": "download(method:_:parameters:encoding:headers:destination:)",
+          "score": 0.514,
+          "keepsBaseName": true,
+          "sizes": [
+            22,
+            31
+          ]
+        },
+        {
+          "commit": "4e633d6d9",
+          "subject": "[Issue 719] Added `parameters` and `encoding` parameters to download APIs.",
+          "file": "Source/Download.swift",
+          "from": "Manager.download(method:_:headers:destination:)",
+          "to": "Manager.download(method:_:parameters:encoding:headers:destination:)",
+          "score": 0.478,
+          "keepsBaseName": true,
+          "sizes": [
+            26,
+            42
+          ]
+        },
+        {
+          "commit": "94d112881",
+          "subject": "Refactored the MultipartFormData encoding to leverage Swift 2.0 error handling.",
+          "file": "Source/MultipartFormData.swift",
+          "from": "MultipartFormData.writeEncodedDataToDisk(fileURL:completionHandler:)",
+          "to": "MultipartFormData.writeEncodedDataToDisk(fileURL:)",
+          "score": 0.498,
+          "keepsBaseName": true,
+          "sizes": [
+            185,
+            128
+          ]
+        },
+        {
+          "commit": "84330a929",
+          "subject": "Extended request/download/upload methods to support custom headers.",
+          "file": "Source/Download.swift",
+          "from": "Manager.download(method:_:destination:)",
+          "to": "Manager.download(method:_:headers:destination:)",
+          "score": 0.265,
+          "keepsBaseName": true,
+          "sizes": [
+            17,
+            26
+          ]
+        },
+        {
+          "commit": "84330a929",
+          "subject": "Extended request/download/upload methods to support custom headers.",
+          "file": "Source/Manager.swift",
+          "from": "Manager.request(method:_:parameters:encoding:)",
+          "to": "Manager.request(method:_:parameters:encoding:headers:)",
+          "score": 0.3,
+          "keepsBaseName": true,
+          "sizes": [
+            26,
+            39
+          ]
+        },
+        {
+          "commit": "cb9e11b96",
+          "subject": "[Issue #537] Exposed persistence parameter for basic auth credentials.",
+          "file": "Source/Request.swift",
+          "from": "Request.authenticate(:password:)",
+          "to": "Request.authenticate(:password:persistence:)",
+          "score": 0.556,
+          "keepsBaseName": true,
+          "sizes": [
+            20,
+            22
+          ]
+        },
+        {
+          "commit": "7bfc0c411",
+          "subject": "Multipart form data now exposes boundary and no longer requires string encoding.",
+          "file": "Source/MultipartFormData.swift",
+          "from": "MultipartFormData.init(stringEncoding:)",
+          "to": "MultipartFormData.init()",
+          "score": 0.375,
+          "keepsBaseName": true,
+          "sizes": [
+            19,
+            14
+          ]
+        },
+        {
+          "commit": "6cffddcf1",
+          "subject": "[Issue #359][Issue #358] Respect server provided character encoding with overrideable configuration, defaulting string response serialization to ISO-8859-1, as per the HTTP/1.1 specification.",
+          "file": "Source/Alamofire.swift",
+          "from": "Request.stringResponseSerializer(encoding:)",
+          "to": "Request.stringResponseSerializer(var:)",
+          "score": 0.246,
+          "keepsBaseName": true,
+          "sizes": [
+            25,
+            61
+          ]
+        }
+      ]
+    }
+  ]
+}

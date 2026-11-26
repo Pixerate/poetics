@@ -35,6 +35,7 @@
     "site:build": "pnpm --filter @poetics/site build",
     "site:data": "node --conditions=poetics-source scripts/export-site-data.ts",
     "gate": "node --conditions=poetics-source scripts/gate.ts",
+    "lone-scan": "node --conditions=poetics-source scripts/lone-scan.ts",
     "eval:backfill": "node --conditions=poetics-source scripts/backfill-eval.ts"
   },
   "devDependencies": {

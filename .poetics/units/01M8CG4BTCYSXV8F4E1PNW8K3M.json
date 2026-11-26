@@ -1,0 +1,47 @@
+{
+  "uid": "01M8CG4BTCYSXV8F4E1PNW8K3M",
+  "kind": "function",
+  "framework": "none",
+  "name": "scanHistory",
+  "location": {
+    "file": "scripts/lib/lone-scan.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:88e128b592113346c1f212788c0a2a0f6904516291fc43380bd7e8f93199eb16",
+      "interfaceHash": "b3:3cc2e83c7c729e5a2b15bd436eb2324cb80670848c26702efd02518597016db7",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Walks a corpus's non-merge commits from its pinned commit and indexes each commit's modified in-scope files before and after with the corpus's adapters. ADR 0030 rested on a one-off scratch scan; this makes the measurement repeatable on every gate corpus.",
+      "deps": {
+        "01M7MRHZ80JM8HJC0A1SNB23AB": "b3:980af9eeb2406741fc52b16825982520b1f9f09a7e2bfdcf6d52737a4974f48e",
+        "01M7MRHZ80MC7SFVMXQFYDD0JR": "b3:50ed63fb25c1fb51d3d64c06de822841fd975b2a7a850f24b39ac0acbac7b084",
+        "01M7MRHZ809787T2DQ62Z6K76X": "b3:157ecd025c4183a40df306e42186505b1ecc56c4f17ca72165e66aad6c522a3e",
+        "01M7MRHZ810VPR7DQXT4EF9D3X": "b3:2558c14e3ac5dd37c48a3904ed709dce8a2b22c6c7436ed9afd839efdbf6c201",
+        "01M5Z1F6NV9Q4BF2C1KBZD09MQ": "b3:73bb120c04ff81df07603ebd00c8a7b85a52b560589afe2ec8b7691c4be3c18a",
+        "01M6J0611RWR0GXQFD30AW6JBG": "b3:d2bf36e56ac1a5d623a41eb3f82d98da54e076b7e7bc3374f1bacfd0a1b90d52",
+        "01M8CG4BTCCKZ6DABVNFQGXEPN": "b3:770cc5d7c8df79d2bf2266aa8acebc7a978e324865cc7a60fed999025e2e508f",
+        "01M8CG4BTCV4XN1QXG59REZ2FT": "b3:f348beec8818406c462039c78b6349d03955908b7bf0b678106f231ce3f8fb63"
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0030-lone-pair-keeps-base-name.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Walks `commits` non-merge commits back from `head` in the git repository at `gitDir`, indexing the files each one\nmodified, as they were before and after it, with the corpus's adapters.",
+  "tests": [
+    {
+      "file": "scripts/lib/lone-scan.test.ts",
+      "via": "static"
+    }
+  ]
+}
