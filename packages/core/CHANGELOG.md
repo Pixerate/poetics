@@ -1,5 +1,11 @@
 # @poetics/core
 
+## 0.12.1
+
+### Patch Changes
+
+- [#113](https://github.com/Pixerate/poetics/pull/113) [`9d4f365`](https://github.com/Pixerate/poetics/commit/9d4f3653e819835a169f29faef1bfced212a4c13) Thanks [@surrealroad](https://github.com/surrealroad)! - A file's lone leftover pair now matches at any similarity when it keeps its base name, the name before any argument labels (ADR 0030). Giving a small Swift function or initializer a new parameter, or changing a label, no longer loses its uid: `ExploreView.init()` becoming `ExploreView.init(scrollToTopSignal:)` keeps its history.
+
 ## 0.12.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @poetics/store
 
+## 0.8.6
+
+### Patch Changes
+
+- Updated dependencies [[`9d4f365`](https://github.com/Pixerate/poetics/commit/9d4f3653e819835a169f29faef1bfced212a4c13)]:
+  - @poetics/core@0.12.1
+
 ## 0.8.5
 
 ### Patch Changes
