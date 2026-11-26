@@ -1,6 +1,6 @@
 # 0030. A lone pair that keeps its base name matches at any similarity
 
-- Status: Proposed
+- Status: Accepted (2026-11-26)
 - Date: 2026-11-26
 - Refines: [ADR 0028](0028-lone-pair-in-a-file.md)
 
