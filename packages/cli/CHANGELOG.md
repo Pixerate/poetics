@@ -1,5 +1,20 @@
 # @poetics/cli
 
+## 0.13.0
+
+### Minor Changes
+
+- [#111](https://github.com/Pixerate/poetics/pull/111) [`34f52a4`](https://github.com/Pixerate/poetics/commit/34f52a476161663e3bcbd366dd10843945be676d) Thanks [@surrealroad](https://github.com/surrealroad)! - Lineage entries that `poetics index` inferred from similar syntax trees now record how they were found, with `via` (`"similarity"` or `"lone"`) and `score` (ADR 0029). `poetics:check` warns with `lone-match` on each new entry found only as a file's lone leftover pair, and `poetics history` and `poetics why` show how an entry was found. `LineageEntry` gains `via` and `score`, and `LineageInference` is new.
+
+### Patch Changes
+
+- Updated dependencies [[`34f52a4`](https://github.com/Pixerate/poetics/commit/34f52a476161663e3bcbd366dd10843945be676d)]:
+  - @poetics/core@0.12.0
+  - @poetics/adapter-react@0.3.15
+  - @poetics/adapter-typescript@0.6.7
+  - @poetics/store@0.8.5
+  - @poetics/adapter-svelte@0.7.7
+
 ## 0.12.4
 
 ### Patch Changes
