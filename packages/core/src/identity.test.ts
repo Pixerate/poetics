@@ -174,6 +174,28 @@ describe("matchIdentities", () => {
       ]);
     });
 
+    it("pairs a lone pair that keeps its base name at any similarity, as a Swift function given a parameter (ADR 0030)", () => {
+      const result = matchIdentities(
+        [tracked("U1", code("a.swift#ExploreView.init()", "i", ["e0", "e1"]))],
+        [code("a.swift#ExploreView.init(scrollToTopSignal:)", "i2", ["p0", "p1", "p2", "p3", "p4"])],
+      );
+      expect(result.matched).toEqual([
+        { uid: "U1", key: "a.swift#ExploreView.init(scrollToTopSignal:)", via: "lone", score: 0, lineage: [{ kind: "rename", from: "ExploreView.init()" }] },
+      ]);
+      const labelsOnly = matchIdentities([tracked("U1", code("a.swift#playSound(of:)", "p", SMALL))], [code("a.swift#playSound(_:)", "p2", ["z0"])], [], { loneThreshold: 0.9 });
+      expect(labelsOnly.matched.map((m) => m.via)).toEqual(["lone"]);
+    });
+
+    it("does not let a shared base name pair units that are not alone, or that changed their base name", () => {
+      const twoNew = matchIdentities([tracked("U1", code("a.swift#init()", "i", ["e0"]))], [code("a.swift#init(a:)", "a", ["x0"]), code("a.swift#init(b:)", "b", ["y0"])]);
+      expect(twoNew.matched).toEqual([]);
+      const otherBase = matchIdentities([tracked("U1", code("a.swift#viewDidLoad()", "v", ["e0", "e1"]))], [code("a.swift#viewDidAppear()", "w", ["x0", "x1"])]);
+      expect(otherBase.matched).toEqual([]);
+      // Owners count: a member keeps its base name only under the same type.
+      const otherOwner = matchIdentities([tracked("U1", code("a.swift#A.init()", "i", ["e0"]))], [code("a.swift#B.init(x:)", "j", ["x0"])]);
+      expect(otherOwner.matched).toEqual([]);
+    });
+
     it("leaves what an earlier stage queued for a person", () => {
       const result = matchIdentities([tracked("U1", code("a.ts#f", "same")), tracked("U2", code("a.ts#g", "same"))], [code("a.ts#f2", "same"), code("a.ts#g2", "same")]);
       expect(result.matched).toEqual([]);

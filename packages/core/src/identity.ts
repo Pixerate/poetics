@@ -101,7 +101,10 @@ export interface MatchOptions {
   threshold?: number;
   /** Fewest fingerprint entries a unit needs to be matched by similarity. Default 8. */
   minSize?: number;
-  /** The similarity at which a file's one leftover tracked unit and one new unit are the same (ADR 0028). Default 0.2. */
+  /**
+   * The similarity at which a file's one leftover tracked unit and one new unit are the same (ADR 0028), unless they
+   * keep their base name, which pairs them at any similarity (ADR 0030). Default 0.2.
+   */
   loneThreshold?: number;
 }
 
@@ -325,7 +328,8 @@ export function matchIdentities(
 
   // 6. A lone pair (ADR 0028): when one file has exactly one tracked unit and one new unit of a namespace left open,
   // a small unit renamed and edited is the likeliest story, if the two share some shape. The file and the lack of
-  // any alternative stand in for the size the similarity stage needs.
+  // any alternative stand in for the size the similarity stage needs. A pair that keeps its base name, the name
+  // before any argument labels, needs no shape at all (ADR 0030): in Swift a new parameter renames the function.
   {
     const loneThreshold = options.loneThreshold ?? DEFAULT_LONE_THRESHOLD;
     const slot = (unit: CodeUnit) => `${unit.file}\0${space(unit.kind)}`;
@@ -339,7 +343,7 @@ export function matchIdentities(
       const to = leftTo.get(key);
       if (from.length !== 1 || to?.length !== 1) continue;
       const score = similarity(from[0]!.fingerprint, to[0]!.fingerprint);
-      if (score >= loneThreshold) match(from[0]!, to[0]!, "lone", { score: Math.round(score * 1000) / 1000 });
+      if (score >= loneThreshold || baseName(from[0]!.name) === baseName(to[0]!.name)) match(from[0]!, to[0]!, "lone", { score: Math.round(score * 1000) / 1000 });
     }
   }
 
@@ -430,6 +434,12 @@ function components<P extends { from: TrackedUnit; to: CodeUnit }>(pairs: readon
 }
 
 // Types and values live in separate namespaces: a function never becomes a type.
+/** A unit's name before any argument labels: `Session.didCompleteTask` for `Session.didCompleteTask(_:)`. */
+function baseName(name: string): string {
+  const paren = name.indexOf("(");
+  return paren === -1 ? name : name.slice(0, paren);
+}
+
 function space(kind: UnitKind): "type" | "value" {
   return kind === "type" ? "type" : "value";
 }

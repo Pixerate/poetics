@@ -273,6 +273,8 @@ stages and never revisits a decision:
 6. **Lone pair** ([ADR 0028](decisions/0028-lone-pair-in-a-file.md)). When a
    file has exactly one tracked unit and one code unit of a namespace still
    open, they pair if their similarity is at least 0.2, whatever their size,
+   or at any similarity if they keep their base name (the name before any
+   argument labels, [ADR 0030](decisions/0030-lone-pair-keeps-base-name.md)),
    with `via: "lone"`. This keeps small functions that are renamed and edited
    together, which score too low or are too small for stage 4.
 
