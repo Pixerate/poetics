@@ -1,6 +1,6 @@
 # 0029. Lineage inferred from shape says how it was found
 
-- Status: Proposed
+- Status: Accepted (2026-11-26)
 - Date: 2026-11-25
 - Refines: [ADR 0028](0028-lone-pair-in-a-file.md)
 
