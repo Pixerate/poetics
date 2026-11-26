@@ -35,6 +35,6 @@ new record here.
 | [0026](0026-swift-units.md) | Swift units are non-private declarations, with SwiftUI views as components | Accepted |
 | [0027](0027-members-follow-their-owner.md) | A member follows its owner when the owner is renamed or moved | Accepted |
 | [0028](0028-lone-pair-in-a-file.md) | A lone removed and created unit in one file pair at a lower threshold | Accepted |
-| [0029](0029-inferred-lineage-says-how.md) | Lineage inferred from shape says how it was found | Proposed |
+| [0029](0029-inferred-lineage-says-how.md) | Lineage inferred from shape says how it was found | Accepted |
 
 New records copy [`template.md`](template.md).
