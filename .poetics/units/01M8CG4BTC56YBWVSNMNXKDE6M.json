@@ -1,0 +1,34 @@
+{
+  "uid": "01M8CG4BTC56YBWVSNMNXKDE6M",
+  "kind": "function",
+  "framework": "none",
+  "name": "fetchHistory",
+  "location": {
+    "file": "scripts/lone-scan.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:163b6772804866b2d722aa349978d096fc04022e5e7a6596358ffc1a8b16ca3e",
+      "interfaceHash": "b3:931ba769bc2afdeb37beff257923e3c0bdbd91b50d3ee8a0a1cdbb3b339bbcf1",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Clones a corpus's full history, bare, into evals/lone-scan/.cache/, since the gate's shallow clones hold one commit and the scan needs every commit before it. Nothing is checked out or run.",
+      "deps": {
+        "01M6J0611RWR0GXQFD30AW6JBG": "b3:d2bf36e56ac1a5d623a41eb3f82d98da54e076b7e7bc3374f1bacfd0a1b90d52"
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0030-lone-pair-keeps-base-name.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Clones a corpus's full history, bare, unless the cache already holds its pinned commit."
+}

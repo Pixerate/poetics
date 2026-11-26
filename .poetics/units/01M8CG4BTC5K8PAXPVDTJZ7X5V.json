@@ -1,0 +1,41 @@
+{
+  "uid": "01M8CG4BTC5K8PAXPVDTJZ7X5V",
+  "kind": "function",
+  "framework": "none",
+  "name": "formatScan",
+  "location": {
+    "file": "scripts/lib/lone-scan.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:74e7be006aaf2be7b0554806c12c97838a0423d12efe0d374b4a1326fdf37503",
+      "interfaceHash": "b3:3a49837ec77ac9f2c23e605d5b2b38cdfb0b334c19316e0882fd506e9b802e0f",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Writes the scan as counts per corpus by how stage 6 decides each pair, then every pair with a link to its commit, because the scan can only find pairs and a person has to judge them.",
+      "deps": {
+        "01M8CG4BTCFVS80EHB6267A82C": "b3:2834373e985a7d2a5d40a3f0577ac5e970db1c0dbf34a60b627a9963eda73a09",
+        "01M8CG4BTCCKZ6DABVNFQGXEPN": "b3:770cc5d7c8df79d2bf2266aa8acebc7a978e324865cc7a60fed999025e2e508f"
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0030-lone-pair-keeps-base-name.md"
+        }
+      ]
+    }
+  ],
+  "docs": "The scan as Markdown: counts by how stage 6 decides each pair, then every pair for a person to judge.",
+  "tests": [
+    {
+      "file": "scripts/lib/lone-scan.test.ts",
+      "via": "static"
+    }
+  ]
+}

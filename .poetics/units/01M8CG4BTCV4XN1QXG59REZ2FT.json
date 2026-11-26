@@ -1,0 +1,45 @@
+{
+  "uid": "01M8CG4BTCV4XN1QXG59REZ2FT",
+  "kind": "function",
+  "framework": "none",
+  "name": "lonePairs",
+  "location": {
+    "file": "scripts/lib/lone-scan.ts"
+  },
+  "versions": [
+    {
+      "contentHash": "b3:f348beec8818406c462039c78b6349d03955908b7bf0b678106f231ce3f8fb63",
+      "interfaceHash": "b3:23e20c24e4083a7adf4980d26de805f6d9fce5251d6551295c0cb5d189b9996d",
+      "parent": null,
+      "change": "created",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "rationale": "Runs identity matching on a commit's files before and after with no floor on stage 6 and keeps what that stage pairs, so the scan sees every lone pair real history produces, not only those today's floor accepts. Keys stand in for uids so members still follow their owners first.",
+      "deps": {
+        "01M6HS3HPGZVH440C5ZV7AYGMS": "b3:a382d507fe8f9bcd7711123e579ce0297edacb38144f89ae572b3613a89739d5",
+        "01M6HS3HPGWQSVQ3NJ5VJ8WEVV": "b3:ee83babe749f50e51d8299d8ebdb158111f841ac77d4fa94c18c7b5d166f83c9",
+        "01M6HS3HPGM7XKCBTGKAJ8RCSH": "b3:2ffd23841fd2e44a94dadeb3b4520817185c1bfca0948dca719934b41e04a953",
+        "01M8CG4BTCFVS80EHB6267A82C": "b3:2834373e985a7d2a5d40a3f0577ac5e970db1c0dbf34a60b627a9963eda73a09",
+        "01M8CG4BTB3MHHKVTA7M4Y328J": "b3:cce6bc5204f87400febd88563b8036c3910479f8cc8a0b8530a908729e86f38c",
+        "01M8CG4BTCAQ52PJ4ACJHRFP59": "b3:0ff13a931aa469a4e001a1724bd7ca96ce57c7112c514e8c75e5db57b32c8837"
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0030-lone-pair-keeps-base-name.md"
+        }
+      ]
+    }
+  ],
+  "docs": "Every lone pair matching would be left with between two snapshots of the same files, whatever its score.",
+  "tests": [
+    {
+      "file": "scripts/lib/lone-scan.test.ts",
+      "via": "static"
+    }
+  ]
+}
