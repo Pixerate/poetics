@@ -43,7 +43,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "svelte": "5.57.3"
+    "svelte": "5.59.1"
   },
   "peerDependencies": {
     "svelte": "^4.0.0 || ^5.0.0"
