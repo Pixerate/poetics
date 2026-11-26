@@ -62,6 +62,10 @@ describe("formatWhy", () => {
     );
   });
 
+  it("says how an inferred lineage entry was found (ADR 0029)", () => {
+    expect(formatWhy({ ...unit, lineage: [{ kind: "rename", from: "fmtPrice", via: "lone", score: 0.43 }] })).toContain("  rename from fmtPrice (found by lone 0.43)");
+  });
+
   it("leaves out lineage when there is none", () => {
     expect(formatWhy({ ...unit, lineage: [] })).not.toContain("Along the way");
   });

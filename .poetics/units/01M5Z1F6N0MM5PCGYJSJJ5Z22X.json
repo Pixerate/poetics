@@ -68,6 +68,25 @@
           "ref": "docs/decisions/0014-rehash-versions.md"
         }
       ]
+    },
+    {
+      "contentHash": "b3:f886c40a531f2029ecd3bb226a76b6389dcde1dbb3e9c1d4b0342dc81fa11f29",
+      "interfaceHash": "b3:74111077d845c3293f9f46a5025ae66a9fe265d901cd2dc3b56d255426af3dd7",
+      "parent": "b3:c0b988b3d6e7a6cd2836926420b6f9a06eddec0f08109860cd8df682f747064e",
+      "change": "interface",
+      "rationale": "Adds \"lone-match\", the warning for a new lineage entry poetics index inferred only because the unit was its file's one leftover on each side, so a reviewer looks at it (ADR 0029).",
+      "actor": {
+        "kind": "agent",
+        "tool": "claude-code",
+        "model": "claude-opus-5-5",
+        "reviewed": false
+      },
+      "links": [
+        {
+          "kind": "decision",
+          "ref": "docs/decisions/0029-inferred-lineage-says-how.md"
+        }
+      ]
     }
   ],
   "tests": [

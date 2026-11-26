@@ -45,6 +45,7 @@ before you commit.
 | `rewritten-history` | error | Earlier versions in a unit file were edited or removed. Versions are append-only. |
 | `deleted-unit` | error | A unit file was deleted. Restore it and append a `removed` version instead ([ADR 0010](decisions/0010-removed-versions.md)). |
 | `missing-lineage` | error | A unit's name or location changed without a new `lineage` entry. |
+| `lone-match` | warning | `poetics index` paired a unit only because it was its file's one leftover unit on each side (`via: "lone"`, [ADR 0028](decisions/0028-lone-pair-in-a-file.md)). Check it is the same unit; if not, declare which is which with lineage ([ADR 0029](decisions/0029-inferred-lineage-says-how.md)). |
 | `no-links` | warning | A new version cites no issue, task, decision or plan section. |
 | `repeated-rationale` | warning | Three or more new versions share one rationale. Say what changed for each unit. |
 | `unverified` | warning | A `behaviour` or `interface` version, but none of the unit's linked tests changed (or it has none). |

@@ -26,7 +26,9 @@ description: Use when reviewing a diff or pull request in a Poetics repo, to lis
 5. **Refactors:** renames, moves, splits and merges keep uids and add
    `lineage` (`poetics_history` shows it). A deleted unit file is a finding:
    removals are a final `removed` version, and their dependents need versions
-   too.
+   too. For each `lone-match` warning (an entry with `via: "lone"`), compare
+   the old and new code: a different unit taking the old one's history is a
+   finding, fixed by declaring lineage.
 6. **Tests:** each `behaviour` or `interface` change has a changed or new test
    (`poetics_tests_for` lists a unit's linked tests).
 7. **Rationale quality:** specific to the unit, says why rather than what, and

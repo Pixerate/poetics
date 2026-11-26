@@ -22,6 +22,7 @@ export type ChangeFindingKind =
   | "changed-rehash"
   | "deleted-unit"
   | "missing-lineage"
+  | "lone-match"
   | "no-links"
   | "unverified"
   | "callers-not-updated"
@@ -105,6 +106,16 @@ export async function checkChange(root: string, since: string, scope: Scope): Pr
           message: `${head.name}: name or location changed (${before.name} in ${before.location.file}) without a lineage entry`,
         });
       }
+    }
+    // A lone pair is the weakest evidence identity matching accepts (ADR 0028): ask a person to look (ADR 0029).
+    for (const entry of (head.lineage ?? []).slice(before?.lineage?.length ?? 0)) {
+      if (entry.via !== "lone") continue;
+      findings.push({
+        severity: "warning",
+        kind: "lone-match",
+        file: change.path,
+        message: `${head.name}: ${entry.kind} from ${entry.from} was inferred only because it was the one unit left in its file${entry.score !== undefined ? ` (similarity ${entry.score})` : ""}; check it is the same unit, or declare which is which with lineage (poetics-refactor)`,
+      });
     }
     for (const version of head.versions.slice(before?.versions.length ?? 0)) newVersions.push({ unit: head, file: change.path, version });
   }

@@ -289,7 +289,11 @@ path, whether or not the unit itself moved. A test file moved without git
 seeing the rename (deleted and re-added unstaged) is not followed.
 
 Whatever is left over is created or removed. Matches carry the lineage entries
-(`move`, `rename`, `merge`) their unit files should gain. Splits and merges are
+(`move`, `rename`, `merge`) their unit files should gain. An entry from a
+similarity or lone match also records how it was found, with `via`
+(`"similarity"` or `"lone"`) and `score`, so a reviewer can find the ones that
+rest on shape alone; `poetics:check` warns on new lone entries
+([ADR 0029](decisions/0029-inferred-lineage-says-how.md)). Splits and merges are
 only ever applied when declared, never inferred.
 
 The defaults come from this repository. The closest unrelated pair of functions
