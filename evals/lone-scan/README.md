@@ -78,7 +78,21 @@ and TanStack Query.
   `setRegistry` to `getRegistryIndexes`, `resolveImport` to
   `resolveImportAlias`, `getAliases` to `getTSConfig`, and
   `urlSplitLastPathSegment` to `resolveURL`. All score 0.083 or less.
-- `getRegistryStyles` to `getStyles` (0.0, not matched) and `BasicPage` to
-  `PagePage` (0.284, matched) are not judged yet.
+- `BasicPage` to `PagePage` (0.284, matched) is the same unit, rightly
+  matched. It is the default export of `app/(marketing)/[...slug]/page.tsx`,
+  with the same props, rewritten to load pages through contentlayer instead
+  of reading MDX files ([`9ad4315`](https://github.com/shadcn-ui/taxonomy/commit/9ad43152c)).
+- `getRegistryStyles` to `getStyles` (0.0, not matched) is the same unit,
+  missed. It still returns the list of styles, now written out instead of
+  fetched from the registry, and its one caller in `init.ts` switched to it
+  ([`6c9b9ee`](https://github.com/huntabyte/shadcn-svelte/commit/6c9b9eeb1)).
+  Its neighbour `getRegistryBaseColors`, renamed to `getBaseColors` in the
+  same commit, was matched by an earlier stage. Nothing in the two bodies
+  connects them: the old one awaited a fetch, the new one returns a literal.
+  Only the call site that changed from one to the other does, and identity
+  matching does not read call sites.
 
-None of these keeps its base name, since TypeScript names have no labels.
+So of the 7, the floor matched the two same units that kept some shape
+(`Config` and `BasicPage`), missed one reimplementation, and left the four
+different units, all at 0.083 or less, unmatched. None of
+these keeps its base name, since TypeScript names have no labels.
