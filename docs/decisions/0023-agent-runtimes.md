@@ -1,6 +1,6 @@
 # 0023. Skills ship once in the Agent Skills format, and evals run an agent through a configured command
 
-- Status: Proposed
+- Status: Accepted (2026-11-28)
 - Date: 2026-11-14
 
 ## Context
