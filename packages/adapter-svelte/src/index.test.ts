@@ -131,7 +131,11 @@ const APP = {
   "src/main.ts": `import App from "./App.svelte";\nexport function start(): typeof App {\n  return App;\n}\n`,
 };
 
-describe("sveltePlugin with the TypeScript indexer", () => {
+// Each test compiles components through svelte2tsx and a TypeScript program, which can pass Vitest's 5s default when the
+// whole suite runs at once.
+const SLOW_TIMEOUT_MS = 30_000;
+
+describe("sveltePlugin with the TypeScript indexer", { timeout: SLOW_TIMEOUT_MS }, () => {
   const index = (root: string, files = Object.keys(APP), cacheFile?: string) =>
     createTypeScriptIndexer({ root, files, plugins: [sveltePlugin()], ...(cacheFile ? { cacheFile } : {}) }).index();
   const byKey = (units: IndexedUnit[]) => new Map(units.map((unit) => [unit.key, unit]));

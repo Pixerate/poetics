@@ -48,7 +48,11 @@ describe("contentWords and score", () => {
   });
 });
 
-describe("versionCommits", () => {
+// These tests build a git repository and run git or the snapshot backfill on it: a few seconds alone, past Vitest's
+// 5s default when the whole suite runs at once.
+const EVAL_TIMEOUT_MS = 30_000;
+
+describe("versionCommits", { timeout: EVAL_TIMEOUT_MS }, () => {
   it("names the commit that added each version of a unit file", async () => {
     const root = await recordedRepo();
     const [first, second] = git(root, "log", "--reverse", "--format=%H").trim().split("\n");
@@ -56,9 +60,6 @@ describe("versionCommits", () => {
     expect(versionCommits(root, file)).toEqual([first, second]);
   });
 });
-
-// Each test clones a repository and runs the snapshot backfill: about 3 s alone, longer under the full suite.
-const EVAL_TIMEOUT_MS = 30_000;
 
 describe("runBackfillEval", { timeout: EVAL_TIMEOUT_MS }, () => {
   it("infers every unit from a clone without its unit files, and pairs each with the version from the same commit", async () => {
