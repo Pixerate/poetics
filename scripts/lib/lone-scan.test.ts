@@ -49,7 +49,11 @@ describe("lonePairs", () => {
   });
 });
 
-describe("scanHistory", () => {
+// Each test builds a git repository and indexes every commit, which can pass Vitest's 5s default when the whole suite
+// runs at once.
+const SLOW_TIMEOUT_MS = 30_000;
+
+describe("scanHistory", { timeout: SLOW_TIMEOUT_MS }, () => {
   const git = (root: string, ...args: string[]) => execFileSync("git", ["-C", root, ...args], { encoding: "utf8" });
   const commit = async (root: string, files: Record<string, string>, message: string) => {
     for (const [file, text] of Object.entries(files)) {

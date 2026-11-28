@@ -3,12 +3,12 @@
   "id": "01M6JZZ0WZKRDBQHG52NHE3XVY",
   "kind": "gotcha",
   "area": "tooling",
-  "title": "Tests that run the indexer over a git workspace time out under the full suite",
+  "title": "Tests that run git or the indexer time out under the full suite",
   "symptoms": [
     "Error: Test timed out in 5000ms."
   ],
-  "cause": "runGate builds a git workspace and runs poetics index once per round. Alone the gate test takes about 3s, but when pnpm test runs every file in parallel it can pass Vitest's 5s default, so preflight fails at random while the test passes when run by itself.",
-  "fix": "Give such a test its own timeout as the last argument to it(), as scripts/lib/gate.test.ts does with GATE_TIMEOUT_MS, rather than raising the global testTimeout for fast tests too. scripts/lib/backfill-eval.test.ts does the same for a whole describe block with EVAL_TIMEOUT_MS.",
+  "cause": "Tests that build a git workspace, run the indexer or compile through a TypeScript program take a few seconds alone. When pnpm test runs every file in parallel, or the machine is busy with other work, they can pass Vitest's 5s default, so preflight fails at random while the test passes when run by itself.",
+  "fix": "Give such a test, or its whole describe block, its own timeout, as scripts/lib/gate.test.ts does with GATE_TIMEOUT_MS on it() and the other listed test files do with { timeout: ... } on describe(), rather than raising the global testTimeout for fast tests too. When a new test file builds a repository or indexes one, give it the same timeout from the start.",
   "anchors": {
     "units": [
       {
@@ -19,7 +19,12 @@
     "paths": [
       "scripts/lib/gate.test.ts",
       "packages/cli/src/backfill.test.ts",
-      "scripts/lib/backfill-eval.test.ts"
+      "scripts/lib/backfill-eval.test.ts",
+      "packages/cli/src/indexing.test.ts",
+      "packages/cli/src/init.test.ts",
+      "packages/mcp/src/write-tools.test.ts",
+      "packages/adapter-svelte/src/index.test.ts",
+      "scripts/lib/lone-scan.test.ts"
     ],
     "dependencies": [
       {

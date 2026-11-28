@@ -57,12 +57,12 @@ Problems that cost someone time, and how to get past them. Each entry is a note 
 - **See:** [docs/decisions/0007-change-check-and-coverage.md](docs/decisions/0007-change-check-and-coverage.md)
 - **Note:** `01M5Z1HP0KRF5JE401H3B81EGN`
 
-### Tests that run the indexer over a git workspace time out under the full suite
+### Tests that run git or the indexer time out under the full suite
 
 - **Symptom:** `Error: Test timed out in 5000ms.`
-- **Cause:** runGate builds a git workspace and runs poetics index once per round. Alone the gate test takes about 3s, but when pnpm test runs every file in parallel it can pass Vitest's 5s default, so preflight fails at random while the test passes when run by itself.
-- **Fix:** Give such a test its own timeout as the last argument to it(), as scripts/lib/gate.test.ts does with GATE_TIMEOUT_MS, rather than raising the global testTimeout for fast tests too. scripts/lib/backfill-eval.test.ts does the same for a whole describe block with EVAL_TIMEOUT_MS.
-- **Applies to:** `pnpm test`, `pnpm preflight`, `vitest@^5`, `scripts/lib/gate.test.ts`, `packages/cli/src/backfill.test.ts`, `scripts/lib/backfill-eval.test.ts`, `runGate`
+- **Cause:** Tests that build a git workspace, run the indexer or compile through a TypeScript program take a few seconds alone. When pnpm test runs every file in parallel, or the machine is busy with other work, they can pass Vitest's 5s default, so preflight fails at random while the test passes when run by itself.
+- **Fix:** Give such a test, or its whole describe block, its own timeout, as scripts/lib/gate.test.ts does with GATE_TIMEOUT_MS on it() and the other listed test files do with { timeout: ... } on describe(), rather than raising the global testTimeout for fast tests too. When a new test file builds a repository or indexes one, give it the same timeout from the start.
+- **Applies to:** `pnpm test`, `pnpm preflight`, `vitest@^5`, `scripts/lib/gate.test.ts`, `packages/cli/src/backfill.test.ts`, `scripts/lib/backfill-eval.test.ts`, `packages/cli/src/indexing.test.ts`, `packages/cli/src/init.test.ts`, `packages/mcp/src/write-tools.test.ts`, `packages/adapter-svelte/src/index.test.ts`, `scripts/lib/lone-scan.test.ts`, `runGate`
 - **Caught by:** test `scripts/lib/gate.test.ts` (applies every refactor and keeps every uid on code with room to match)
 - **Note:** `01M6JZZ0WZKRDBQHG52NHE3XVY`
 

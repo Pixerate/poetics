@@ -39,7 +39,10 @@ async function store(root: string): Promise<Map<string, Unit>> {
   return new Map(units.map((unit) => [unit.name, unit]));
 }
 
-describe("planIndex and applyIndex", () => {
+// Each test builds a git workspace and indexes it, which can pass Vitest's 5s default when the whole suite runs at once.
+const SLOW_TIMEOUT_MS = 30_000;
+
+describe("planIndex and applyIndex", { timeout: SLOW_TIMEOUT_MS }, () => {
   it("records a Svelte component once and matches it on the next run (ADR 0020)", async () => {
     const root = await mkdtemp(join(tmpdir(), "poetics-index-svelte-"));
     runGit(root, "init", "-q", "-b", "main");

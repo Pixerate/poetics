@@ -54,7 +54,11 @@ describe("poetics_record_rationale", () => {
   });
 });
 
-describe("poetics_declare_lineage", () => {
+// Each test indexes a workspace and checks lineage against the code, which can pass Vitest's 5s default when the whole
+// suite runs at once.
+const SLOW_TIMEOUT_MS = 30_000;
+
+describe("poetics_declare_lineage", { timeout: SLOW_TIMEOUT_MS }, () => {
   it("settles a queued move, checked against the code, and refuses one the code disagrees with", async () => {
     const pair = TOTAL("total") + TOTAL("totalWithTax");
     const root = await repo({ "src/cart.ts": pair });

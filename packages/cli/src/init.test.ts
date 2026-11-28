@@ -16,7 +16,10 @@ async function repo(files: Record<string, string>): Promise<string> {
 
 const FN = "export function a(n: number) {\n  return n + 1;\n}\n";
 
-describe("planInit", () => {
+// Each test builds a workspace and indexes it, which can pass Vitest's 5s default when the whole suite runs at once.
+const SLOW_TIMEOUT_MS = 30_000;
+
+describe("planInit", { timeout: SLOW_TIMEOUT_MS }, () => {
   it("detects React from dependencies and scopes the config to src/", async () => {
     const root = await repo({
       "package.json": JSON.stringify({ name: "app", dependencies: { react: "^19.0.0" } }),
